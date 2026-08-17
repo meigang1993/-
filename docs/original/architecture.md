@@ -90,7 +90,10 @@
   `npm run check:toolchain` launched Chromium `149.0.7827.55`.
 - Chromium Linux libraries and fonts are installed into the development
   container with `npm run playwright:install:deps`; they are not copied into
-  `publish/` or tracked as binary repository content.
+  `publish/` or tracked as binary repository content. The repository-owned
+  version lock and critical loader-path inventory is
+  `tools/chromium-system-dependencies.json`; `npm run check:playwright`
+  validates the running container against it before launching Chromium.
 - The installed GLib runtime is Debian package `libglib2.0-0`
   `2.74.6-2+deb12u9` (`amd64`). Its loader path is
   `/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0`, resolving to

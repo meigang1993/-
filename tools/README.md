@@ -15,6 +15,8 @@ These tools are for development only. They do not change the static game runtime
   Installs Linux shared-library and font dependencies required by Chromium.
   This changes the development container rather than the repository and is
   needed only when the browser launch check reports a missing system library.
+  Exact Debian package versions and critical loader paths are tracked in
+  `tools/chromium-system-dependencies.json`.
 
 - `npm run qa:install`
   Verifies the original Node, npm package, and Playwright/Chromium components.
@@ -123,8 +125,8 @@ These tools are for development only. They do not change the static game runtime
   duplicated-line budget.
 
 - `npm run check:playwright`
-  Launches the repository Chromium once and fails when its binary or required
-  libraries are missing.
+  Validates the pinned Debian package versions and critical shared-library
+  paths, then launches the repository Chromium once.
 
 - `npm run check:toolchain`
   Verifies only the original Node, npm package, Playwright browser, and Chromium
