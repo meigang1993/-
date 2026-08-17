@@ -72,6 +72,20 @@ test("fresh games guide the first expedition and retire the hint after entry", a
   await expect(page.locator("[data-open-modal='team']")).toHaveText("准备启程");
 });
 
+test("update notice shows the August 17 player-facing fixes", async ({ page }) => {
+  await openGame(page);
+  await startFreshGame(page);
+  await expect(page.locator(".hall-update-button small")).toHaveText("2026.08.17");
+  await page.locator(".hall-update-button").click();
+  const notice = page.locator(".update-notice");
+  await expect(notice.locator("time")).toHaveAttribute("datetime", "2026-08-17");
+  await expect(notice).toContainText("战斗时序");
+  await expect(notice).toContainText("战斗帧性能");
+  await expect(notice).toContainText("神速之袭");
+  await expect(notice).toContainText("饰品图鉴");
+  await expect(notice).not.toContainText(/测试|提交|bundle|构建验证/);
+});
+
 test("relic codex exposes every formal relic and closes without leaving the library", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
