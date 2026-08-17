@@ -169,6 +169,45 @@ test("scene bundles stay deferred until requested", async ({ page }) => {
   }))).toEqual({ battle: true, dungeon: true, dungeonScripts: 1, dungeonStyles: 1 });
 });
 
+test("a failed battle bundle part resumes without reloading completed parts", async ({ page }) => {
+  await openGame(page, { loadFeatures: false });
+  const result = await page.evaluate(async () => {
+    const append = document.head.append.bind(document.head);
+    let failed = false;
+    document.head.append = node => {
+      if (!failed && node.dataset?.gameBundlePart?.endsWith("/battle-skills.min.js")) {
+        failed = true;
+        queueMicrotask(() => node.onerror?.());
+        return node;
+      }
+      return append(node);
+    };
+    const first = await window.GameBundles.load("battle").then(
+      () => "resolved",
+      error => error.code
+    );
+    document.head.append = append;
+    const afterFailure = [...document.querySelectorAll('script[data-game-bundle="battle"]')]
+      .map(script => script.dataset.gameBundlePart?.split("/").pop());
+    await window.GameBundles.load("battle");
+    const afterRetry = [...document.querySelectorAll('script[data-game-bundle="battle"]')]
+      .map(script => script.dataset.gameBundlePart?.split("/").pop());
+    return { first, afterFailure, afterRetry };
+  });
+  expect(result).toEqual({
+    first: "BUNDLE_LOAD_FAILED",
+    afterFailure: ["battle-rules.min.js"],
+    afterRetry: [
+      "battle-rules.min.js",
+      "battle-skills.min.js",
+      "battle-flow.min.js",
+      "battle-ai.min.js",
+      "battle-presentation.min.js",
+      "battle-ui.min.js",
+    ],
+  });
+});
+
 test("hall collection bundle loads before entering a new game", async ({ page }) => {
   await openGame(page, { loadFeatures: false });
   await startFreshGame(page);

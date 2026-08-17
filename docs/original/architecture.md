@@ -25,7 +25,7 @@
   registered exactly once in `tools/publish-bundles.json`, and delivered to
   players only through its generated bundle. Never place an unminified source
   module anywhere under `publish/`, including a nested scripts directory.
-- `npm run build:bundles` compiles `src/original/` into the six generated
+- `npm run build:bundles` compiles `src/original/` into the eleven generated
   files under `publish/bundles/`; it rejects unlisted source modules,
   unbundled published JavaScript at any depth, and unexpected bundle files. If
   generated bundle bytes or any published stylesheet differ from `HEAD`, the
@@ -60,12 +60,12 @@
   LocalCore, and ServerCore; `startup-app.min.js` owns save-slot UI, common UI,
   relic runtime, application rendering/actions, boot, and runtime recovery.
 - Battle-only UI renderers (`ui-battle-pickers.js`, `ui-battle-targeting.js`,
-  `ui-battle-units.js`, and `ui-battle-scene.js`) live in the deferred battle
-  bundle. The startup `GameUI` facade resolves the complete scene renderer
+  `ui-battle-units.js`, and `ui-battle-scene.js`) live in the deferred
+  `battle-ui` bundle. The startup `GameUI` facade resolves the complete scene renderer
   lazily only when rendering a loaded battle.
-- `card-art.js` and `ui-common-cards.js` also live in the deferred battle
-  bundle. They load before battle renderers, while the startup `UICommon`
-  facade resolves card rendering lazily only after the battle bundle is ready.
+- `card-art.js` and `ui-common-cards.js` live in `battle-rules`. They load
+  before battle renderers, while the startup `UICommon` facade resolves card
+  rendering lazily only after the complete battle bundle set is ready.
 - The full Game Studio release unit always contains `publish/`. Top-level
   `functions/*.ts` are included only for features that currently invoke them;
   player save storage has no serverless-function dependency.
@@ -74,6 +74,21 @@
   `battle-skills`, `battle-flow`, `battle-ai`, `battle-presentation`, and
   `battle-ui` bundles; `GameBundles.load("battle")` loads the complete set
   serially and remains the only public scene-loading entry.
+
+## Development Toolchain
+
+- The QA container is Debian GNU/Linux 12 (`bookworm`).
+- Playwright uses the repository-local Chromium build; on August 17, 2026,
+  `npm run check:toolchain` launched Chromium `149.0.7827.55`.
+- Chromium Linux libraries and fonts are installed into the development
+  container with `npm run playwright:install:deps`; they are not copied into
+  `publish/` or tracked as binary repository content.
+- The installed GLib runtime is Debian package `libglib2.0-0`
+  `2.74.6-2+deb12u9` (`amd64`). Its loader path is
+  `/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0`, resolving to
+  `/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.7400.6`. It is required for the
+  repository Chromium used by browser QA.
+
 ## Source Ownership
 
 | Domain | Canonical owners |

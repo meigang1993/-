@@ -73,7 +73,7 @@ These tools are for development only. They do not change the static game runtime
   through the Game Studio git endpoint when every stage passes.
 
 - `npm run build:publish`
-  Atomically rebuilds the six runtime bundles from `src/original/`, then
+  Atomically rebuilds the eleven runtime bundles from `src/original/`, then
   verifies that they exactly match source and that no unbundled JavaScript is
   present under `publish/`. When generated bundle or published CSS bytes differ
   from `HEAD`, `meta[name="game-build"]` must first be advanced beyond the
