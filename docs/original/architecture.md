@@ -113,6 +113,16 @@
   operation out of file-watch events, then rename it atomically on the
   `/workspace` filesystem to `uploads/SuccubusKill-win64.zip`. Remove the
   delivered archive after download so workspace size does not grow.
+- Wormhole browser delivery uses Playwright Chromium with one dedicated
+  persistent profile outside the watched workspace, such as
+  `/tmp/game-2971485-wormhole-profile`, and launches with
+  `--disable-dev-shm-usage` because the container `/dev/shm` is only 64 MiB.
+  Selecting the archive and receiving a share URL is not completion: keep the
+  originating browser context alive until the page reports both `Encrypted`
+  and `Uploaded`. Then open the full URL, including its fragment key, in an
+  independent browser context and verify the expected filename, byte-size
+  presentation, and enabled download control without starting a download.
+  Delete the delivered archive and browser profile after verification.
 
 ## Source Ownership
 
