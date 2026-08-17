@@ -4,12 +4,8 @@
 
 - Unminified runtime modules live only under `src/original/`; they are
   development sources and must never be copied into `publish/`.
-- `desktop/` contains the optional Electron packaging shell for the Windows
-  x64 portable edition. It copies the complete static `publish/` runtime into
-  an ASAR during packaging and does not add a server or change the web release.
-- The desktop toolchain uses Electron `43.3.0` and
-  `@electron/packager` `20.2.0`; generated dependencies, staging files, and
-  `desktop/out/` remain untracked.
+- The Electron desktop packaging shell was removed on August 17, 2026. The
+  repository ships only the static Game Studio runtime under `publish/`.
 - `publish/index.html` loads the ordered generated startup bundle set with
   deferred classic scripts: `startup`, `startup-store`, then `startup-app`.
   Browsers may fetch those files in parallel, but execution order remains the
