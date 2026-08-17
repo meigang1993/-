@@ -2,6 +2,7 @@ const assert = require("assert");
 const fs = require("fs");
 
 global.window = global;
+require("../src/original/data-skins.js");
 require("../src/original/skins.js");
 require("../src/original/skin-fx-runtime.js");
 require("../src/original/flora-sonic-skin-fx.js");
@@ -48,10 +49,10 @@ assert(!FloraSonicSkinFX.active({ ref: "flora", skinDynamicEffect: "flora-sonic"
 delete window.state;
 
 [
-  ["flora-carlos-skills.js", "FloraSonicSkinFX?.assault"],
-  ["flora-carlos-skills.js", "FloraSonicSkinFX?.assaultDefeat"],
-  ["flora-carlos-skills.js", "FloraSonicSkinFX?.wing"],
-  ["flora-carlos-skills.js", "FloraSonicSkinFX?.flyingBlade"],
+  ["flora-speed-assault.js", "FloraSonicSkinFX?.assault"],
+  ["flora-speed-assault.js", "FloraSonicSkinFX?.assaultDefeat"],
+  ["flora-skills.js", "FloraSonicSkinFX?.wing"],
+  ["flora-skills.js", "FloraSonicSkinFX?.flyingBlade"],
   ["battle-victory.js", "flora-sonic-victory-show"],
   ["app-render.js", "FloraSonicSkinFX?.sync"],
   ["battle-fx.js", "FloraSonicSkinFX?.cancel"],

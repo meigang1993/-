@@ -52,6 +52,12 @@ async function waitForImages(page) {
   await page.waitForFunction(() => [...document.images].every(image => image.complete));
 }
 
+async function expectImagesLoaded(locator) {
+  await expect.poll(() => locator.evaluateAll(images =>
+    images.length > 0 && images.every(image => image.complete
+      && image.naturalWidth > 0 && image.naturalHeight > 0))).toBe(true);
+}
+
 async function startFreshGame(page) {
   await page.locator("[data-start-game]").click();
   await expect(page.locator(".villa-hall")).toBeVisible();
@@ -123,6 +129,6 @@ async function capturedAoeLineCount(page, key) {
 }
 
 module.exports = {
-  collectErrors, relevantErrors, openGame, waitForImages, startFreshGame,
+  collectErrors, relevantErrors, openGame, waitForImages, expectImagesLoaded, startFreshGame,
   startRegressionBattle, enterRegressionBattle, prepareAoeLineCapture, capturedAoeLineCount,
 };

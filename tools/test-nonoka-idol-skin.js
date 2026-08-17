@@ -2,6 +2,7 @@ const assert = require("assert");
 const fs = require("fs");
 
 global.window = global;
+require("../src/original/data-skins.js");
 require("../src/original/skins.js");
 require("../src/original/skin-fx-runtime.js");
 require("../src/original/nonoka-idol-skin-fx.js");

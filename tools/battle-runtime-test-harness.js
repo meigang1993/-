@@ -36,6 +36,8 @@ window.render = () => { renders += 1; };
 window.BattleLog = { add() {} };
 window.BattleLines = { skill() {} };
 window.GuestCharacterSkills = { visibleHandCount: unit => unit.hand.length };
+load("src/original/ui-common-skill-model.js");
+load("src/original/ui-common-skill-view.js");
 load("src/original/ui-common-skills.js");
 window.UICommon = window.UICommonSkills({
   esc: value => String(value),

@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-
 const groups = Object.freeze({
   platform: [
     ["accessibility", "accessibility.spec.js"],
@@ -20,11 +19,16 @@ const groups = Object.freeze({
     ["dungeon-flow", "dungeon-flow.spec.js"],
     ["dungeon-map", "dungeon-map.spec.js"],
     ["battle-rewards", "preview-battle-rewards.spec.js"],
-    ["progression-ui", "preview-progression.spec.js"],
+    ["progression-character", "preview-progression-character.spec.js"],
+    ["progression-equipment", "preview-progression-equipment.spec.js"],
+    ["progression-skins", "preview-progression-skins.spec.js"],
     ["unlocks", "preview-unlocks.spec.js"],
   ],
   "battle-core": [
-    ["battle-basics", "preview-battle-core.spec.js"],
+    ["battle-status", "preview-battle-status.spec.js"],
+    ["battle-hand", "preview-battle-hand.spec.js"],
+    ["battle-card-sizing", "preview-battle-card-sizing.spec.js"],
+    ["battle-layout", "preview-battle-layout.spec.js"],
     ["battle-hand-owner", "preview-battle-hand-owner.spec.js"],
     ["battle-pile-stats", "preview-battle-pile-stats.spec.js"],
     ["battle-play-stress", "preview-battle-play-stress.spec.js"],
@@ -60,12 +64,9 @@ const groups = Object.freeze({
     ["skins-effects", "preview-skins-effects.spec.js"],
   ],
 });
-
 const tests = Object.entries(groups).flatMap(([group, entries]) =>
   entries.map(([id, file]) => ({ group, id, file })));
-
 const scenarioPattern = /require\(["']\.\/([^"']+\.scenario\.js)["']\)/g;
-
 const suites = Object.freeze({
   release: [
     "accessibility.spec.js",
@@ -83,8 +84,13 @@ const suites = Object.freeze({
     "dungeon-flow-2.scenario.js",
     "dungeon-map.spec.js",
     "preview-battle-rewards.spec.js",
-    "preview-progression.spec.js",
-    "preview-battle-core.spec.js",
+    "preview-progression-character.spec.js",
+    "preview-progression-equipment.spec.js",
+    "preview-progression-skins.spec.js",
+    "preview-battle-status.spec.js",
+    "preview-battle-hand.spec.js",
+    "preview-battle-card-sizing.spec.js",
+    "preview-battle-layout.spec.js",
     "preview-battle-hand-owner.spec.js",
     "preview-battle-play-stress.spec.js",
     "preview-battle-effect-lifecycle-3.scenario.js",

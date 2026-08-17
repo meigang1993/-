@@ -46,6 +46,8 @@ require("../src/original/enemy-skills.js");
 require("../src/original/battle-setup.js");
 
 window.GameData = { ...window.GameDataCards };
+require("../src/original/ui-common-skill-model.js");
+require("../src/original/ui-common-skill-view.js");
 require("../src/original/ui-common-skills.js");
 require("../src/original/ui-common-art.js");
 require("../src/original/ui-common-card-art.js");

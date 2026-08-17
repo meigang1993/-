@@ -62,6 +62,8 @@ require("../src/original/battle-audio-samples.js");
 require("../src/original/battle-audio.js");
 window.BattleAudio.floatSfx = kind => feedbackOrder.push(`sfx:${kind}`);
 require("../src/original/battle-bump-fx.js");
+require("../src/original/battle-hit-fx-fallback.js");
+require("../src/original/battle-float-numbers.js");
 require("../src/original/battle-float-fx.js");
 require("../src/original/battle-fx.js");
 

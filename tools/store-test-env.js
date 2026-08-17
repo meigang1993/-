@@ -91,6 +91,7 @@ global.testDzmm = window.dzmm;
 require("../src/original/data-future-relics.js");
 require("../src/original/data-relics.js");
 require("../src/original/relics.js");
+require("../src/original/data-skins.js");
 require("../src/original/skins.js");
 require("../src/original/unlock-event-progress.js");
 require("../src/original/store-save-schema.js");

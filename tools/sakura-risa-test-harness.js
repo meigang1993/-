@@ -31,7 +31,12 @@ window.BattleSystem = { pushFloat() {} };
   "battle-combat-card-effects.js", "battle-combat-attack-values.js",
   "battle-combat-attack-flow.js", "battle-combat-attack.js", "battle-combat-resolver.js",
   "battle-enemy-turn.js", "guest-ophelia-guard.js",
-  "battle-damage-response.js", "battle-damage-triggers.js", "battle-combat-responses.js", "battle-manual-flow.js",
+  "battle-thunder-hammer-response.js", "battle-dodge-cards.js",
+  "battle-dodge-resume.js", "battle-dodge-response.js",
+  "battle-damage-response.js", "battle-damage-triggers.js",
+  "battle-combat-responses.js", "battle-manual-hit-resume.js",
+  "battle-manual-continuation.js", "battle-manual-actions.js",
+  "battle-manual-flow.js",
   "dungeon-enemies.js",
 ].forEach(load);
 const template = GameData.enemies.orc_dungeon.find(enemy => enemy.id === "assassin_sakura_risa");

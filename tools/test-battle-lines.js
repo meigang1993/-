@@ -37,6 +37,8 @@ function captureTimedSpeech(start) {
 load("./src/original/battle-line-data.js");
 load("./src/original/new-character-line-data.js");
 load("./src/original/battle-line-intro.js");
+load("./src/original/battle-speech-controller.js");
+load("./src/original/battle-caption-controller.js");
 load("./src/original/battle-lines.js");
 
 const chargeLine = window.BattleLineData?.skillLines?.aileng?.["充能精华"];

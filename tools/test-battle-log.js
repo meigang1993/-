@@ -20,6 +20,8 @@ function assert(condition, message) {
 load("./src/original/battle-line-data.js");
 load("./src/original/battle-log.js");
 load("./src/original/battle-line-intro.js");
+load("./src/original/battle-speech-controller.js");
+load("./src/original/battle-caption-controller.js");
 load("./src/original/battle-lines.js");
 
 const actor = {

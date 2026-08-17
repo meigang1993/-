@@ -106,7 +106,9 @@ for (const file of [
   "dungeon-flow-1.scenario.js",
   "preview-battle-effect-lifecycle-3.scenario.js",
   "preview-battle-play-stress.spec.js",
-  "preview-progression.spec.js",
+  "preview-progression-character.spec.js",
+  "preview-progression-equipment.spec.js",
+  "preview-progression-skins.spec.js",
   "preview-modal-focus.spec.js",
   "accessibility.spec.js",
 ]) {

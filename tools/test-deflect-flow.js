@@ -45,6 +45,10 @@ global.window = {
 require("../src/original/game-random.js");
 require("../src/original/witherer-relic-skills.js");
 require("../src/original/witherer-skills.js");
+require("../src/original/battle-thunder-hammer-response.js");
+require("../src/original/battle-dodge-cards.js");
+require("../src/original/battle-dodge-resume.js");
+require("../src/original/battle-dodge-response.js");
 require("../src/original/battle-damage-response.js");
 window.UICommon = { esc: value => String(value), card: card => card.name };
 require("../src/original/battle-response-ui.js");

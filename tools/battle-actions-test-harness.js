@@ -42,6 +42,9 @@ global.BattleSystem = {
   "battle-actions.js",
   "battle-enemy-turn.js",
   "battle-action-guard.js",
+  "battle-manual-hit-resume.js",
+  "battle-manual-continuation.js",
+  "battle-manual-actions.js",
   "battle-manual-flow.js",
   "battle-resolution-actions.js",
 ].forEach(file => vm.runInThisContext(fs.readFileSync(`src/original/${file}`, "utf8")));

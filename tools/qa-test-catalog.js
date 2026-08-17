@@ -14,7 +14,10 @@ const groups = Object.freeze({
   ],
   storage: [
     "test-battle-start-save.js",
-    "test-battle-resume-save.js",
+    "test-battle-save-io.js",
+    "test-battle-checkpoint-codec.js",
+    "test-battle-checkpoint-snapshot.js",
+    "test-battle-checkpoint-scheduling.js",
     "test-store.js",
     "test-save-slots.js",
     "test-save-fuzz.js",

@@ -25,6 +25,8 @@ vm.runInThisContext(fs.readFileSync("src/original/wendy-cadicis-skills.js", "utf
 vm.runInThisContext(fs.readFileSync("src/original/ui-battle-pickers.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/battle-damage-attributes.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/card-art.js", "utf8"));
+vm.runInThisContext(fs.readFileSync("src/original/ui-common-skill-model.js", "utf8"));
+vm.runInThisContext(fs.readFileSync("src/original/ui-common-skill-view.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/ui-common-skills.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/ui-common-art.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/ui-common-card-art.js", "utf8"));

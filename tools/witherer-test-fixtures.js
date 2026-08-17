@@ -20,6 +20,7 @@ function setup() {
     "data-future-relics.js", "data-relics.js", "relics.js", "economy-config.js", "data-cards.js", "card-utils.js", "battle-card-cleanup.js",
     "data-future-orc-enemies.js", "data-bakar-enemy.js", "data-future-enemies.js",
     "witherer-relic-skills.js", "witherer-skills.js",
+    "ui-common-skill-model.js", "ui-common-skill-view.js",
     "ui-common-skills.js", "ui-common-art.js", "ui-common-card-art.js",
     "ui-common-card-combat.js", "ui-common-cards.js",
     "ui-common-relics.js", "ui-common.js",
