@@ -21,7 +21,7 @@ test("Bertis Arrogant Queen renders anchored skill and victory effects", async (
   await expect(page.locator(".battle-screen")).toBeVisible();
   await expect(page.locator(".ally-unit .skin-effect-bertis-queen")).toHaveCount(1);
   expect(await page.locator(".ally-unit .skin-effect-bertis-queen > img")
-    .evaluate(image => getComputedStyle(image).animationName)).toContain("bertisQueenIdle");
+    .evaluate(image => getComputedStyle(image).animationName)).toBe("none");
 
   const placement = await page.evaluate(() => {
     const bertis = window.state.battle.allies.find(unit => unit.ref === "bertis");

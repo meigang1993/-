@@ -2,6 +2,7 @@ window.FloraCarlosSkills = (() => {
   const assaultBattles = new WeakMap();
   const alive = u => u && u.hp > 0;
   const visible = u => (u.hand || []).filter(c => !c._pendingDraw);
+  const hasSkill = (u, name) => (u?.skills || []).some(s => s.name === name);
   const isKill = c => window.CardUtils.isKillCard(c);
   const singleKill = c => window.CardUtils.isSingleKill(c);
   const stat = (u, k) => (u.stats?.[k] || 0) + (k === "attack" ? (u.tempAttack || 0) : k === "magic" ? (u.tempMagic || 0) : 0);
@@ -130,8 +131,10 @@ window.FloraCarlosSkills = (() => {
     for (let i = 0; i < n && target.hp > 0; i++) api.directDamage(state, target, amount, "疯狂刺刀", actor, 120 * i);
   }
   function speedBlade(state, actor, target, card, api) {
-    if (!singleKill(card) || card._floraBlade || actor?.side !== "ally") return;
-    const flora = state.battle?.allies.find(u => u.ref === "flora" && u.uid !== actor.uid && alive(u));
+    if (!singleKill(card) || card._floraBlade || actor?.side !== "ally"
+      || actor.ref === "flora" || target?.side !== "enemy") return;
+    const flora = state.battle?.allies.find(u => u.ref === "flora"
+      && u.uid !== actor.uid && alive(u) && hasSkill(u, "神速飞剑"));
     if (!flora || !alive(target)) return;
     const battle = state.battle;
     const turnNo = battle.turn || 0;

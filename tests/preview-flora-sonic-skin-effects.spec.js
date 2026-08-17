@@ -29,7 +29,7 @@ test("Flora Sonic Assassin renders combat and victory effects", async ({ page })
   });
   await expect(page.locator(".ally-unit .skin-effect-flora-sonic")).toHaveCount(1);
   expect(await page.locator(".ally-unit .skin-effect-flora-sonic > img")
-    .evaluate(image => getComputedStyle(image).animationName)).toContain("floraSonicIdle");
+    .evaluate(image => getComputedStyle(image).animationName)).toBe("none");
   expect(await page.evaluate(() => window.state.battle.allies
     .find(unit => unit.ref === "flora")?._floraSonicEntryShown)).toBe(true);
 

@@ -11,6 +11,7 @@ const guard = require("./battle-actions-guard-tests");
   await guard.testManualContinuationReplacement();
   await guard.testDimensionTransferReplacement();
   await guard.testActionGenerationLocks();
+  await guard.testQueuedPromptWaitsForEffects();
   console.log("Battle action recovery tests passed");
 })().catch(error => {
   console.error(error.message);

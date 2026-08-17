@@ -1,7 +1,7 @@
 .skin-effect-manny-gun { position: relative; }
 .skin-effect-manny-gun::before { content: none; display: block; background-image: none; }
 .skin-effect-manny-gun::after { content: ""; position: absolute; left: 8%; right: 8%; bottom: 0; z-index: 2; height: 26%; background: radial-gradient(ellipse, rgba(80,72,75,.4), transparent 68%); opacity: .5; pointer-events: none; }
-.unit:not(.dead) .unit-art.skin-effect-manny-gun > img { animation: mannyGunIdle 3.4s ease-in-out infinite; transform-origin: 50% 74%; will-change: transform; backface-visibility: hidden; }
+.unit:not(.dead) .unit-art.skin-effect-manny-gun > img { transform-origin: 50% 74%; backface-visibility: hidden; }
 .manny-gun-entering { animation: mannyGunEnter .98s cubic-bezier(.18,.82,.2,1) both !important; }
 .manny-gun-fx { position: fixed; z-index: 48; pointer-events: none; overflow: visible; transform: translateZ(0); }
 .manny-gun-line { position: fixed; z-index: 49; height: 5px; transform-origin: 0 50%; transform: rotate(var(--line-angle)); pointer-events: none; }
@@ -81,7 +81,6 @@
 @keyframes mannyPortalShells { from { opacity: 0; transform: translateY(-28px) rotate(-8deg); } 35% { opacity: 1; } to { opacity: 0; transform: translateY(45px) rotate(18deg); } }
 @keyframes mannySpikeBlink { from { opacity: .45; } to { opacity: 1; } } @keyframes mannySpikeExplosion { from { opacity: 0; scale: .12; rotate: 0; } 38% { opacity: 1; } to { opacity: 0; scale: 1.35; rotate: 65deg; } }
 @keyframes mannyVictoryPose { from { transform: scale(1.02); } to { transform: scale(1.055) translateY(-4px); } }
-@keyframes mannyGunIdle { 0%,100% { transform: translateY(0) scale(1.01); } 50% { transform: translateY(-2px) scale(1.035); } }
 @keyframes mannyVictoryRecoil { 0%,28% { opacity: .45; transform: rotate(calc((var(--i) - 3) * 10deg)) translateX(8px); } 34% { opacity: 1; transform: rotate(calc((var(--i) - 3) * 10deg)) translateX(-4px); } 55%,100% { opacity: .45; transform: rotate(calc((var(--i) - 3) * 10deg)) translateX(8px); } } @keyframes mannyShellPile { from { opacity: .55; transform: scaleY(.85); } to { opacity: .9; transform: scaleY(1.08); } }
 @media (max-height:520px) { .manny-gun-victory-show { width: 35%; } .victory-screen.manny-gun-victory .victory-stats { width: 70%; } }
 @media (prefers-reduced-motion:reduce) {

@@ -87,7 +87,10 @@ window.GameUIHandState = (() => {
       ? (battle.kaiichiShare.indexes || []).filter(index => actor.hand[index] && !actor.hand[index]._pendingDraw)
       : [];
     const miller = modes.millerShare
-      ? (battle.millerShare.indexes || []).filter(index => canDiscardInPhase(actor.hand[index]))
+      ? window.MillerSkills?.selectedIndexes?.(
+        actor, battle.millerShare, canDiscardInPhase)
+        || (battle.millerShare.indexes || [])
+          .filter(index => canDiscardInPhase(actor.hand[index]))
       : [];
     return {
       discard, discardSet: new Set(discard),

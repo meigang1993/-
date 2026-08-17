@@ -2,7 +2,7 @@
 .skin-effect-flora-sonic::before, .skin-effect-flora-sonic::after { content: ""; position: absolute; z-index: 2; pointer-events: none; }
 .skin-effect-flora-sonic::before { inset: 8% 12%; border: 1px solid rgba(68,255,162,.42); clip-path: polygon(0 49%,14% 43%,24% 57%,36% 36%,49% 64%,62% 41%,76% 55%,100% 48%,100% 53%,76% 60%,62% 46%,49% 70%,36% 42%,24% 63%,14% 49%,0 55%); background: rgba(78,255,174,.28); filter: drop-shadow(0 0 7px #38f39a); opacity: .5; }
 .skin-effect-flora-sonic::after { inset: 4%; border: 1px solid rgba(64,255,169,.25); border-radius: 45%; box-shadow: 0 0 14px rgba(40,255,144,.26), inset 0 0 14px rgba(40,255,144,.12); opacity: .42; }
-.unit:not(.dead) .unit-art.skin-effect-flora-sonic > img { animation: floraSonicIdle 2.8s ease-in-out infinite; transform-origin: 50% 76%; will-change: transform; backface-visibility: hidden; }
+.unit:not(.dead) .unit-art.skin-effect-flora-sonic > img { transform-origin: 50% 76%; backface-visibility: hidden; }
 .flora-sonic-entering { animation: floraSonicEntryBody .92s cubic-bezier(.16,.86,.26,1) both !important; }
 .flora-sonic-shifting { animation: floraSonicShiftBody .62s steps(2,end) both !important; }
 .flora-sonic-fx, .flora-sonic-line { position: fixed; z-index: 48; pointer-events: none; transform: translateZ(0); }
@@ -46,7 +46,6 @@
 .flora-sonic-victory-arcs { position: absolute; left: 14%; top: 44%; width: 64%; height: 24%; border-top: 4px solid #6affb5; border-bottom: 3px solid rgba(61,255,165,.6); border-radius: 50%; filter: drop-shadow(0 0 9px #38ef95); animation: floraSonicVictoryArc 2s ease-in-out infinite; }
 .victory-screen.flora-sonic-victory .victory-stats { z-index: 5; width: 64%; margin-left: auto; background: rgba(3,12,10,.76); backdrop-filter: blur(8px); }
 @keyframes floraSonicEntryBody { 0% { opacity: 0; transform: translateX(-58px) scale(.82); filter: hue-rotate(70deg) brightness(1.8); } 55% { opacity: .25; transform: translateX(10px) scale(1.04); } 64% { opacity: 0; } 72%,100% { opacity: 1; transform: translateX(0) scale(1); filter: none; } }
-@keyframes floraSonicIdle { 0%,100% { transform: translate(0,0) scale(1.015); } 42% { transform: translate(-1px,-2px) scale(1.035); } 46% { transform: translate(1px,-2px) scale(1.035); } 50% { transform: translate(0,-2px) scale(1.035); } }
 @keyframes floraSonicShiftBody { 0%,100% { opacity: 1; transform: translateX(0); } 28% { opacity: .05; transform: translateX(-28px); } 55% { opacity: .18; transform: translateX(8px); } }
 @keyframes floraSonicEcho { 0% { opacity: 0; transform: translateX(-44%) scale(.9); } 32% { opacity: .8; } 100% { opacity: 0; transform: translateX(24%) scale(1.06); } }
 @keyframes floraSonicAfterimage { 0% { opacity: 0; transform: translateX(-55%); } 28% { opacity: .8; } 100% { opacity: 0; transform: translateX(38%); } }

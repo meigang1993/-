@@ -112,6 +112,53 @@ function testMillerSlotOdds() {
   }
 }
 
+function testMillerShareIdentity() {
+  const card = name => ({ name, type: "tactic", suit: "♥" });
+  const selectedA = card("原选A"), selectedB = card("原选B");
+  const inserted = card("后插入"), kept = card("保留");
+  const miller = {
+    uid: "miller", ref: "miller", name: "米勒", side: "ally",
+    hp: 10, hand: [selectedA, selectedB, kept],
+    stats: { handLimit: 1 }, skills: [{ name: "收获分享" }],
+  };
+  const target = {
+    uid: "target", name: "队友", side: "ally", hp: 10, hand: [], stats: {},
+  };
+  const state = {
+    battle: {
+      phase: 5, allies: [miller, target], enemies: [], animQueue: [],
+    },
+  };
+  const rules = {
+    canDiscardCard: (_unit, item) => !!item,
+    maxCount: 2,
+    discardCards() {},
+  };
+  assert(MillerSkills.offerShare(state, miller, 0, rules)
+    && MillerSkills.offerShare(state, miller, 1, rules),
+  "Harvest Share should select the original card objects");
+  miller.hand.unshift(inserted);
+  const result = MillerSkills.resolveShare(state, target.uid, rules);
+  assert(result.ok && result.cards[0] === selectedA && result.cards[1] === selectedB,
+    "Harvest Share must transfer the selected objects after hand reordering");
+  assert(miller.hand[0] === inserted && miller.hand[1] === kept,
+    "Harvest Share must not transfer a newly inserted card");
+
+  const stale = card("失效原选");
+  miller.hand = [stale, kept, inserted];
+  state.battle.millerShare = null;
+  assert(MillerSkills.offerShare(state, miller, 0, rules),
+    "Harvest Share should select a card before invalidation");
+  miller.hand.splice(miller.hand.indexOf(stale), 1);
+  const invalid = MillerSkills.resolveShare(state, target.uid, rules);
+  assert(!invalid.ok && invalid.staleSelection
+    && state.battle.millerShare
+    && state.battle.millerShare.indexes.length === 0
+    && state.battle.millerShare.cards.length === 0,
+  "an invalid Harvest Share object must clear selection and keep the prompt for reselection");
+}
+
 module.exports = {
-  testMillerSlotOdds, testRecoveryTimers, testTurnAndMillerTimers,
+  testMillerShareIdentity, testMillerSlotOdds, testRecoveryTimers,
+  testTurnAndMillerTimers,
 };

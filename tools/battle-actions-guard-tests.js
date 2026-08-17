@@ -78,8 +78,34 @@ async function testActionGenerationLocks() {
   assert(stagedReady, "staged follow-up input must resume when the current action releases");
 }
 
+async function testQueuedPromptWaitsForEffects() {
+  const originalWhenIdle = BattleEffects.whenIdle;
+  let releaseEffects;
+  let runs = 0;
+  const prompt = {};
+  const actionState = { battle: { millerShare: prompt } };
+  global.state = actionState;
+  BattleEffects.whenIdle = () => new Promise(resolve => { releaseEffects = resolve; });
+  const task = BattleActionGuard.runWhenIdle(
+    "queued prompt",
+    async () => { runs += 1; return true; },
+    {
+      isCurrent: () => global.state === actionState
+        && actionState.battle.millerShare === prompt,
+    },
+  );
+  await Promise.resolve();
+  assert(runs === 0, "queued prompt input must wait for battle effects to become idle");
+  actionState.battle.millerShare = {};
+  releaseEffects();
+  assert(await task === false && runs === 0,
+    "queued prompt input must reject a replaced prompt after effects become idle");
+  BattleEffects.whenIdle = originalWhenIdle;
+}
+
 module.exports = {
   testActionGenerationLocks,
   testDimensionTransferReplacement,
   testManualContinuationReplacement,
+  testQueuedPromptWaitsForEffects,
 };

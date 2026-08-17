@@ -8,6 +8,7 @@ try {
   cards.testRecklessResponse();
   cards.testForgedCharacterSkillsFailClosed();
   timers.testTurnAndMillerTimers();
+  timers.testMillerShareIdentity();
   trails.testSpecialCardTrails();
   timers.testRecoveryTimers();
   timers.testMillerSlotOdds();

@@ -27,12 +27,17 @@ window.GameUIBattleTargeting = (() => {
     const gerdaComfort = battle.gerdaComfort;
     const kaiichiShare = battle.kaiichiShare;
     const millerShare = battle.millerShare;
+    const millerOwner = millerShare
+      && battle.allies.find(unit => unit.uid === millerShare.unitUid);
+    const millerReady = !!millerShare?.cards?.length
+      && millerShare.cards.every(selected => millerOwner?.hand.includes(selected));
     let allowed;
     if (kaiichiShare) allowed = (kaiichiShare.indexes || []).length > 0
       && unitData.side === "ally" && unitData.uid !== kaiichiShare.unitUid;
     else if (gerdaComfort) allowed = unitData.side === "ally"
       && unitData.uid !== gerdaComfort.unitUid;
-    else if (millerShare) allowed = unitData.side === "ally" && unitData.uid !== millerShare.unitUid;
+    else if (millerShare) allowed = millerReady
+      && unitData.side === "ally" && unitData.uid !== millerShare.unitUid;
     else if (share) allowed = (share.indexes || []).length === share.count
       && unitData.side === "ally" && unitData.uid !== share.unitUid;
     else if (card?.mimicVoice) allowed = unitData.uid !== battle.activeUid;

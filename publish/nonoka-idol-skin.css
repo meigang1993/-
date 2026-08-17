@@ -1,7 +1,6 @@
 .skin-effect-nonoka-idol { position: relative; }
 .skin-effect-nonoka-idol::after { content: ""; position: absolute; inset: 8% 10%; z-index: 2; border: 1px solid rgba(126,232,255,.5); border-radius: 50%; opacity: .5; pointer-events: none; }
-.unit:not(.dead) .unit-art.skin-effect-nonoka-idol > img { animation: nonokaIdolIdle 3.8s ease-in-out infinite; transform-origin: 50% 70%; will-change: transform; backface-visibility: hidden; }
-.unit.active-unit:not(.dead) .unit-art.skin-effect-nonoka-idol > img { animation-duration: 2.8s; }
+.unit:not(.dead) .unit-art.skin-effect-nonoka-idol > img { transform-origin: 50% 70%; backface-visibility: hidden; }
 .nonoka-idol-entering { animation: nonokaIdolEnter .9s cubic-bezier(.18,.9,.24,1) both !important; }
 .nonoka-idol-entry-fx, .nonoka-idol-note-fx, .nonoka-idol-mimic-fx { position: fixed; z-index: 48; pointer-events: none; transform: translateZ(0); }
 .nonoka-idol-entry-fx::before, .nonoka-idol-entry-fx::after { content: ""; position: absolute; left: 50%; top: -115%; width: 22%; height: 230%; transform-origin: 50% 0; background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(92,203,255,.34) 38%, transparent 76%); filter: blur(2px); animation: nonokaSpotlight .72s ease-out both; }
@@ -46,7 +45,6 @@
 .idol-victory-kiss { position: absolute; left: 45%; top: 38%; z-index: 4; color: #ff8fc8; font-size: 34px; text-shadow: 0 0 12px #fff, 0 0 22px #ff5cab; animation: nonokaVictoryKiss 2s ease-out infinite; }
 .victory-screen.idol-victory .victory-stats { z-index: 5; width: 64%; margin-left: auto; background: rgba(5,8,28,.72); backdrop-filter: blur(8px); }
 @keyframes nonokaIdolEnter { 0% { opacity: 0; transform: translateY(-42px) rotate(-16deg) scale(.72); } 68% { opacity: 1; transform: translateY(3px) rotate(4deg) scale(1.08); } 100% { transform: translateY(0) rotate(0) scale(1); } }
-@keyframes nonokaIdolIdle { 0%,100% { transform: translateY(0) rotate(-.4deg) scale(1.01); } 50% { transform: translateY(-2px) rotate(.7deg) scale(1.035); } }
 @keyframes nonokaSpotlight { from { opacity: 0; } 35% { opacity: .95; } to { opacity: 0; } }
 @keyframes nonokaWave { 0% { opacity: 0; scale: .2; } 28% { opacity: 1; } 100% { opacity: 0; scale: 1.5; } }
 @keyframes nonokaStars { 20% { opacity: .9; } 100% { opacity: 0; transform: translateY(-18px) scale(1.2); } }

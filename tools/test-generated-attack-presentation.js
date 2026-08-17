@@ -34,7 +34,9 @@ const unit = (uid, side, extra = {}) => ({
 });
 const scenario = () => {
   const actor = unit("actor", "ally");
-  const flora = unit("flora", "ally");
+  const flora = unit("flora", "ally", {
+    skills: [{ name: "神速飞剑" }],
+  });
   const target = unit("target", "enemy", {
     hand: [window.CardUtils.cloneEntity("蓄力")],
   });

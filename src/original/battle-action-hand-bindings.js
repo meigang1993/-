@@ -26,6 +26,18 @@ window.BattleActionHandBindings = (() => {
     return renderedUid && renderedUid === String(expectedHandOwner(battle));
   }
 
+  function queuePromptCard(label, key, cardNode, task) {
+    const actionState = state;
+    const battle = actionState.battle;
+    const prompt = battle?.[key];
+    if (!prompt) return false;
+    return BattleActionGuard.runWhenIdle(label, task, {
+      control: cardNode,
+      isCurrent: () => window.state === actionState
+        && actionState.battle === battle && battle[key] === prompt,
+    });
+  }
+
   function bindCards() {
     document.querySelectorAll("[data-card-index]").forEach(card => {
       card.onclick = event => handleCardClick(event, card);
@@ -54,12 +66,19 @@ window.BattleActionHandBindings = (() => {
       }, { control: cardNode });
     }
     if (dimensionTransferVisible(battle)) {
-      if (MannySkills.selectDimensionTransferCard(state, index)) render();
-      return;
+      return queuePromptCard(
+        "次元转移选牌失败", "dimensionTransfer", cardNode,
+        () => { if (MannySkills.selectDimensionTransferCard(state, index)) render(); },
+      );
     }
     if (battle?.kaiichiShare) {
-      if (kaiichiShareVisible(battle) && BattleSystem.toggleKaiichiShareCard(state, index)) render();
-      return;
+      return queuePromptCard(
+        "半魅魔血选牌失败", "kaiichiShare", cardNode,
+        () => {
+          if (kaiichiShareVisible(state.battle)
+            && BattleSystem.toggleKaiichiShareCard(state, index)) render();
+        },
+      );
     }
     if (responsibilityVisible(battle)) {
       const actionState = state;
@@ -75,13 +94,23 @@ window.BattleActionHandBindings = (() => {
       );
     }
     if (battle?.millerShare) {
-      if (!BattleEffects.animating && BattleSystem.toggleMillerShareCard(state, index)) render();
-      return;
+      const owner = battle.allies.find(unit => unit.uid === battle.millerShare.unitUid);
+      const pickedCard = owner?.hand[index];
+      return queuePromptCard(
+        "米勒收获分享选牌失败", "millerShare", cardNode,
+        () => {
+          const currentIndex = owner?.hand.indexOf(pickedCard) ?? -1;
+          if (BattleSystem.toggleMillerShareCard(
+            state, currentIndex, pickedCard)) render();
+        },
+      );
     }
     if (battle?.locked || cardNode.dataset.dragged === "1") return;
     if (battle?.newMoonShare) {
-      if (!BattleEffects.animating && BattleSystem.toggleNewMoonCard(state, index)) render();
-      return;
+      return queuePromptCard(
+        "新月之歌选牌失败", "newMoonShare", cardNode,
+        () => { if (BattleSystem.toggleNewMoonCard(state, index)) render(); },
+      );
     }
     const actor = BattleSystem.active(battle);
     const picked = battleCardView(actor, actor?.hand[index]);

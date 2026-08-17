@@ -1,7 +1,7 @@
 .skin-effect-bertis-queen { position: relative; }
 .skin-effect-bertis-queen::before { content: ""; position: absolute; inset: 7%; z-index: 2; border: 1px solid rgba(128,55,176,.6); border-radius: 50%; pointer-events: none; }
 .skin-effect-bertis-queen::after { content: ""; position: absolute; left: 18%; right: 18%; bottom: 3%; z-index: 2; height: 16%; background: radial-gradient(ellipse,rgba(116,31,142,.48),transparent 70%); opacity: .58; pointer-events: none; }
-.unit:not(.dead) .unit-art.skin-effect-bertis-queen > img { animation: bertisQueenIdle 999s steps(1,end) infinite; transform-origin: 50% 72%; }
+.unit:not(.dead) .unit-art.skin-effect-bertis-queen > img { transform-origin: 50% 72%; }
 .bertis-queen-entering { animation: bertisQueenEnter .98s cubic-bezier(.18,.85,.22,1) both !important; }
 .bertis-queen-angry > img { animation: bertisQueenAngry .58s ease-in-out both !important; }
 .bertis-queen-arrogant::before { border-color: #d7ac45; }
@@ -43,7 +43,6 @@
 .bertis-victory-whip { position: absolute; left: 10%; right: 8%; bottom: 11%; z-index: 4; height: 34%; border: 5px solid #32132d; border-left-color: transparent; border-radius: 50%; filter: drop-shadow(0 0 7px #8c3a85); animation: bertisVictoryWhip 3.8s ease-in-out infinite; }
 .victory-screen.bertis-queen-victory .victory-stats { z-index: 5; width: 64%; margin-left: auto; background: rgba(9,5,12,.78); backdrop-filter: blur(8px); }
 @keyframes bertisQueenEnter { 0% { opacity: 0; transform: translateY(-30px) scale(.76); } 66% { opacity: 1; transform: translateY(4px) scale(1.07); } 100% { transform: none; } }
-@keyframes bertisQueenIdle { 0%,100% { transform: translateY(0) rotate(-.4deg) scale(1.01); } 50% { transform: translateY(-3px) rotate(.7deg) scale(1.035); } }
 @keyframes bertisEntryLace { from { opacity: 0; scale: .2; rotate: -90deg; } 45% { opacity: 1; } to { opacity: 0; scale: 1.35; rotate: 80deg; } }
 @keyframes bertisRoseScatter { from { opacity: 0; transform: translate(-50%,0) scale(.2); } 40% { opacity: 1; } to { opacity: 0; transform: translate(calc(-60px + 120px * var(--i,1)), -78px) rotate(160deg); } }
 @keyframes bertisThroneBreak { from { opacity: 0; scale: .4; } 45% { opacity: .9; } to { opacity: 0; scale: 1.08; filter: blur(3px); } }

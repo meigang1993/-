@@ -80,12 +80,20 @@ window.BattleActionGuard = (() => {
     queued += 1;
     const execute = async () => {
       if (running) await new Promise(resolve => runningWaiters.push(resolve));
-      if (queuedGeneration === queueGeneration) queued = Math.max(0, queued - 1);
       if (queuedGeneration !== queueGeneration
         || (options.isCurrent && !options.isCurrent())) {
+        if (queuedGeneration === queueGeneration) queued = Math.max(0, queued - 1);
         releaseIdleWaiters();
         return false;
       }
+      await window.BattleEffects?.whenIdle?.();
+      if (queuedGeneration !== queueGeneration
+        || (options.isCurrent && !options.isCurrent())) {
+        if (queuedGeneration === queueGeneration) queued = Math.max(0, queued - 1);
+        releaseIdleWaiters();
+        return false;
+      }
+      queued = Math.max(0, queued - 1);
       return run(label, task, {
         ...options,
         control: control?.isConnected ? control : null,

@@ -100,17 +100,21 @@ test("Harvest Share card clicks follow the prompt owner after active unit change
     battle.phase = 5;
     battle.locked = false;
     battle.animQueue = [];
-    battle.millerShare = { unitUid: owner.uid, indexes: [0] };
+    const selected = owner.hand[0];
+    battle.millerShare = { unitUid: owner.uid, indexes: [0], cards: [selected] };
+    owner.hand.unshift(
+      { name: "收获后插入", type: "tactic", suit: "♣", text: "不得被交出。" },
+    );
     window.render();
     return { ownerUid: owner.uid, targetUid: target.uid, enemyUid: enemy.uid };
   });
   await expect(page.locator(".active-hand")).toHaveAttribute("data-hand-owner", ids.ownerUid);
-  await page.locator("[data-card-index='1']").click();
+  await page.locator("[data-card-index='2']").click();
   await expect.poll(() => page.evaluate(() => ({
     picked: window.state.battle.millerShare?.indexes || [],
     enemyCards: window.state.battle.enemies[0].hand.map(card => card.name),
   }))).toEqual({
-    picked: [0, 1],
+    picked: [1, 2],
     enemyCards: ["敌方保留牌"],
   });
   await page.locator(`[data-target="${ids.targetUid}"]`).click();
@@ -124,7 +128,7 @@ test("Harvest Share card clicks follow the prompt owner after active unit change
     };
   })).toEqual({
     promptCleared: true,
-    ownerCards: ["收获保留"],
+    ownerCards: ["收获后插入", "收获保留"],
     targetCards: ["收获交牌A", "收获交牌B"],
     enemyCards: ["敌方保留牌"],
   });

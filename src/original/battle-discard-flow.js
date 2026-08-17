@@ -55,14 +55,14 @@ window.BattleDiscardFlow = (deps) => {
     if (ok && onStep) onStep();
     return ok;
   }
-  function toggleMillerShareCard(state, cardIndex) {
+  function toggleMillerShareCard(state, cardIndex, expectedCard = null) {
     const b = state.battle, picker = b?.millerShare;
     const unit = picker && b.allies.find(item => item.uid === picker.unitUid);
     if (!picker || !unit) return false;
     return window.MillerSkills?.offerShare?.(state, unit, cardIndex, {
       canDiscardCard,
       maxCount: discardNeed(unit),
-    }) || false;
+    }, expectedCard) || false;
   }
   return { enterDiscardOrEnd, completeDiscardPhase, confirmDiscard, discardCard, discardCards, toggleMillerShareCard };
 };

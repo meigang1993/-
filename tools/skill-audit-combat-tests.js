@@ -284,7 +284,9 @@ module.exports = ({
       && hit.damageCard.attackType === "physical" && !hit.damageCard.shock),
   "Heavy Fire Support must inherit the entity Slash damage attribute without duplicating its status effect");
 
-  const flora = unit("flora", "ally", { ref: "flora" });
+  const flora = unit("flora", "ally", {
+    ref: "flora", skills: [{ name: "神速飞剑" }],
+  });
   const carlos = unit("carlos", "ally", {
     ref: "carlos", hand: [card("Held Slash", "slash")],
   });
@@ -310,6 +312,27 @@ module.exports = ({
   });
   assert(bladeHits === 2,
     "Flora Speed Blade must become available for the same target next turn");
+  flora.skills = [];
+  state.battle.turn = 2;
+  FloraCarlosSkills.afterSlashDamage(state, carlos, plainTarget, { ...incoming }, 1, {
+    directDamage: () => { bayonetHits += 1; },
+    damage: () => { bladeHits += 1; },
+  });
+  assert(bladeHits === 2,
+    "Flora Speed Blade must not trigger after the skill is removed");
+  flora.skills = [{ name: "神速飞剑" }];
+  const friendlyTarget = unit("friendly-target", "ally");
+  state.battle.allies.push(friendlyTarget);
+  FloraCarlosSkills.afterSlashDamage(state, carlos, friendlyTarget, { ...incoming }, 1, {
+    directDamage: () => { bayonetHits += 1; },
+    damage: () => { bladeHits += 1; },
+  });
+  FloraCarlosSkills.afterSlashDamage(state, flora, plainTarget, { ...incoming }, 1, {
+    directDamage: () => { bayonetHits += 1; },
+    damage: () => { bladeHits += 1; },
+  });
+  assert(bladeHits === 2,
+    "Flora Speed Blade must reject friendly fire and Flora's own Slash");
 
   const assaultFlora = unit("speed-assault-flora", "ally", {
     ref: "flora", stats: { attack: 3, magic: 1 },

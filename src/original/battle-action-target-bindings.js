@@ -1,4 +1,14 @@
 window.BattleActionTargetBindings = (() => {
+  function queuedPrompt(battle) {
+    if (battle?.dimensionTransfer
+      && (window.MannySkills?.dimensionTransferVisible?.(battle) ?? true)) {
+      return ["dimensionTransfer", battle.dimensionTransfer];
+    }
+    const key = ["millerShare", "newMoonShare", "kaiichiShare", "gerdaComfort"]
+      .find(name => battle?.[name]);
+    return key ? [key, battle[key]] : null;
+  }
+
   function bindTargetActions() {
     document.querySelectorAll(".selectable-target .unit-art").forEach(art => {
       art.onpointerenter = () => previewTarget(art);
@@ -8,18 +18,18 @@ window.BattleActionTargetBindings = (() => {
       target.onclick = event => {
         event.stopPropagation();
         const actionState = state;
-        const transfer = actionState.battle?.dimensionTransfer;
+        const battle = actionState.battle;
+        const queued = queuedPrompt(battle);
         const targetUid = target.dataset.target;
-        if (transfer
-          && (window.MannySkills?.dimensionTransferVisible?.(
-            actionState.battle) ?? true)) {
+        if (queued) {
+          const [key, prompt] = queued;
           BattleActionGuard.runWhenIdle(
             "目标选择处理失败",
             () => selectBattleTarget(targetUid),
             {
               control: target,
               isCurrent: () => window.state === actionState
-                && actionState.battle?.dimensionTransfer === transfer,
+                && actionState.battle === battle && battle[key] === prompt,
             },
           );
           return;

@@ -220,6 +220,8 @@ Required guards:
 - rebuild persisted bounty tasks from a field whitelist and escape every stored
   text or attribute value before inserting task markup;
 - validate hand-owner uid before processing a card index;
+- retain selected card object identity across asynchronous hand reordering, and
+  clear the whole selection when any retained object no longer exists;
 - keep controls visibly locked while a hidden prompt is not yet interactive.
 - damage-interception prompts such as 为我护驾, 次元转移, and 指挥官责任
   must establish their gameplay lock immediately but delay captions, hand

@@ -21,7 +21,7 @@ test("Nonoka Idol Rising Star renders skill and victory effects", async ({ page 
   await expect(page.locator(".battle-screen")).toBeVisible();
   await expect(page.locator(".ally-unit .skin-effect-nonoka-idol")).toHaveCount(1);
   expect(await page.locator(".ally-unit .skin-effect-nonoka-idol > img")
-    .evaluate(image => getComputedStyle(image).animationName)).toContain("nonokaIdolIdle");
+    .evaluate(image => getComputedStyle(image).animationName)).toBe("none");
   expect(await page.evaluate(() => {
     const actor = window.state.battle.allies.find(unit => unit.ref === "nonoka");
     window.NonokaIdolSkinFX.entry(window.state, actor);

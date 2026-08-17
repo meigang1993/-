@@ -25,7 +25,7 @@ test("Manny Gun Succubus renders weapon skeleton, portal, spike, and victory eff
     return { content: style.content, backgroundImage: style.backgroundImage };
   })).toEqual({ content: "none", backgroundImage: "none" });
   expect(await page.locator(".ally-unit .skin-effect-manny-gun > img")
-    .evaluate(image => getComputedStyle(image).animationName)).toContain("mannyGunIdle");
+    .evaluate(image => getComputedStyle(image).animationName)).toBe("none");
   await page.evaluate(() => {
     const actor = window.state.battle.allies.find(unit => unit.ref === "manny");
     const originalTarget = window.state.battle.allies.find(unit => unit.ref === "lokar");

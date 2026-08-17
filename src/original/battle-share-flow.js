@@ -96,16 +96,21 @@ window.BattleShareFlow = deps => {
   async function resolveMillerShare(state, targetUid, onStep) {
     const current = actionGuard(state);
     const battle = state.battle;
-    const unit = battle?.allies.find(item => item.uid === battle.millerShare?.unitUid);
-    if (!battle?.millerShare || !unit || battle.millerShare.unitUid !== unit.uid
-      || !battle.millerShare.indexes?.length) return false;
+    const prompt = battle?.millerShare;
+    const unit = battle?.allies.find(item => item.uid === prompt?.unitUid);
+    if (!prompt || !unit || prompt.unitUid !== unit.uid
+      || state.battle !== battle || battle.millerShare !== prompt) return false;
     const result = window.MillerSkills?.resolveShare?.(state, targetUid, {
       canDiscardCard, discardCards,
     });
     if (!result?.ok) { if (onStep) onStep(); return true; }
+    if (onStep) onStep();
+    await waitEffects();
+    if (!current() || state.battle !== battle || battle.millerShare !== null
+      || battle.locked) return true;
     const done = completeDiscardPhase(state, unit);
     if (onStep) onStep();
-    if (done && current() && state.battle && !state.battle.locked) {
+    if (done && current() && state.battle === battle && !battle.locked) {
       await advanceToInput(state, onStep, current);
     }
     return true;
