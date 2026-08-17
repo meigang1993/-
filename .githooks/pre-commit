@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+if ! git diff --quiet --; then
+  echo "Commit blocked: unstaged tracked changes would bypass publish validation." >&2
+  exit 1
+fi
+
+untracked_runtime="$(git ls-files --others --exclude-standard -- src/original publish)"
+if [[ -n "$untracked_runtime" ]]; then
+  echo "Commit blocked: untracked runtime files must be staged before validation:" >&2
+  printf '%s\n' "$untracked_runtime" >&2
+  exit 1
+fi
+
+node tools/build-publish-bundles.js --check
+node tools/check-static.js
+node tools/check-resources.js
+node tools/check-asset-budget.js
+node tools/check-script-contracts.js
+
+invalid_paths="$(
+  find publish \( -type f -o -type d \) 2>/dev/null \
+    | LC_ALL=C grep -nP '[^\x00-\x7f]| ' || true
+)"
+if [[ -n "$invalid_paths" ]]; then
+  echo "Commit blocked: publish paths must be ASCII-only and contain no spaces:" >&2
+  printf '%s\n' "$invalid_paths" >&2
+  exit 1
+fi
+
+git_dir="$(git rev-parse --git-dir)"
+date -u +"%Y-%m-%dT%H:%M:%SZ" > "$git_dir/game-save-guard.last"

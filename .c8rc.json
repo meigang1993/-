@@ -1,0 +1,17 @@
+{
+  "all": true,
+  "include": [
+    "publish/*.js"
+  ],
+  "exclude": [
+    "publish/bundles/**"
+  ],
+  "reporter": [
+    "text-summary",
+    "html",
+    "json-summary"
+  ],
+  "reports-dir": ".qa-artifacts/coverage",
+  "temp-directory": ".qa-cache/c8",
+  "clean": true
+}

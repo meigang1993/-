@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "name": "dark gothic anime card battle portraits",
+  "description": "Detailed dark fantasy anime card portraits for a gothic succubus card battle game, dramatic lighting, polished character art, optional cinematic painted backgrounds.",
+  "palette": ["#0b0d14", "#4b1024", "#b4163a", "#d8b56d", "#6f8cff"],
+  "view": "front-facing character portrait or centered square card-action vignette",
+  "outline": "clean anime silhouette with high contrast edges",
+  "lighting": "dramatic rim light, glossy highlights",
+  "cardIllustration": "Illustration-only square vignettes with one readable focal action or object, no baked card frame or text. Runtime HTML supplies suit, title, type, effect copy, and type-colored borders.",
+  "adultOrientedPolicy": "Clearly adult characters only. Convey mature glamour through tailoring, pose, expression, lighting, and environment while keeping characters fully clothed and suitable for DZMM game-asset review.",
+  "avoid": ["text", "logo", "watermark", "copyrighted characters", "real brands", "childlike proportions", "youthful styling", "revealing costume", "suggestive action", "explicit anatomy terms in prompts"]
+}

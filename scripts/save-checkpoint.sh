@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+message="${1:-Checkpoint game changes}"
+secret="${CONTAINER_SECRET:?CONTAINER_SECRET is required}"
+
+node tools/install-git-hooks.js --check
+node tools/build-publish-bundles.js
+node tools/run-qa.js quick
+
+payload="$(node -e 'process.stdout.write(JSON.stringify({ message: process.argv[1] }))' "$message")"
+curl --fail-with-body -sS -X POST http://localhost:3005/git/save \
+  -H "X-Container-Secret: ${secret}" \
+  -H "Content-Type: application/json" \
+  -d "$payload"
+printf '\n'
