@@ -3,6 +3,42 @@
 This is a cross-cutting risk index. Exact behavior remains in
 `game-settings.md`; platform SDK contracts remain in `platform-runtime.md`.
 
+## Repository Scale, Sync, And Container Availability
+
+Risk: repository growth, excessive file enumeration, disk pressure, or a
+size-amplifying maintenance task stalls file synchronization, times out Git
+operations, or exhausts the container process so the editor becomes
+unreachable.
+
+Required guards:
+
+- do not describe one workspace GiB value as a verified platform cutoff; use
+  the measured limits and internal warning thresholds in `project-rules.md`;
+- keep generated dependencies, caches, logs, reports, archives, backups, and
+  temporary binary variants untracked;
+- monitor tracked `HEAD` archive size separately from workspace and `.git`
+  size, because the health scan snapshots every tracked file, not only
+  `publish/`;
+- keep the health scan streaming and fail closed above its snapshot ceiling;
+  it is advisory and must never block startup or create `.git` on a workspace
+  that does not contain a usable repository;
+- preserve any nonempty or damaged workspace before restoring a missing clone,
+  and refuse an incomplete restore instead of booting a partial tree;
+- treat a file-watcher heartbeat disconnect as a synchronization symptom, not
+  proof that the health scan caused the failure;
+- investigate file count, Git objects, archive size, free disk, agent logs, and
+  proxy status before deleting repository data.
+
+Historical relation, verified against the local Game Studio agent source on
+August 17, 2026: health scanning did cause container-entry failures when the
+old implementation buffered gigabyte-scale tracked trees and exhausted the
+1.5 GiB no-swap container, and when health gate state could leave a gate-only
+`.git` that made startup skip clone restoration. Current platform code streams
+and caps the snapshot, avoids creating `.git` without a repository, and
+restores a missing clone while preserving existing data. An oversized scan
+should now become an unavailable health report rather than an unopenable
+container.
+
 ## Stale Async Work
 
 Risk: an old animation, preload, AI wait, timer, or promise commits into a

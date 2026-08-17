@@ -42,9 +42,12 @@ documentation task in game `2971485`.
   letters, digits, `_`, `-`, and `.`; spaces are forbidden.
 - Use relative asset paths.
 - Keep `publish/` limited to files required by the player runtime.
-- Game Studio experience reports and health scans receive only the player-facing
-  files under `publish/`; source modules, tests, tools, documentation, and
-  other repository files stay outside the export.
+- Game Studio player export and experience reports receive only the
+  player-facing files under `publish/`; source modules, tests, tools,
+  documentation, and other repository files stay outside the player export.
+- The container health scan is different from the player export: it creates a
+  temporary archive snapshot of the complete tracked `HEAD`, so every tracked
+  source, test, tool, document, and binary contributes to its snapshot limit.
 - Each JavaScript source under `src/original/` must be at most 200 lines. Start
   splitting near 150 lines.
 - CSS files over 500 lines should be split by responsibility while preserving
@@ -79,10 +82,40 @@ documentation task in game `2971485`.
 - Images and audio are the main history-growth risk. Optimize final assets
   before committing and do not commit temporary, duplicate, intermediate, or
   repeatedly regenerated binary variants.
-- Check repository growth with `git count-objects -vH` and `du -sh .git`.
+- There is no verified Game Studio rule saying that a workspace becomes
+  unsynchronizable or unopenable at one fixed number of GiB. Failure also
+  depends on tracked archive size, Git object history, file count, filesystem
+  headroom, process memory, and operation time.
+- As verified against the local Game Studio agent source on August 17, 2026,
+  the container agent has a 1.5 GiB memory cgroup with no swap. A previous
+  health-scan implementation buffered the complete tracked tree; on
+  repositories whose tracked tree reached the gigabyte range, that could kill
+  PID 1 and surface as a persistent 502. The current scanner streams the tree
+  and refuses a tracked `HEAD` archive above 256 MiB, so an oversized advisory
+  scan fails instead of taking down the editor.
+- The health scan runs after startup and is best effort. Its 256 MiB ceiling is
+  not a workspace quota, publish quota, or Git clone limit. Treat a tracked
+  `HEAD` archive above 200 MiB as an internal warning so there is room below
+  that hard scan ceiling.
+- File-panel synchronization uses a WebSocket heartbeat and closes a client
+  after 60 seconds without a ping or protocol pong. Git save operations abort a
+  subprocess after 120 seconds without output. Large file counts, heavy
+  enumeration, disk pressure, or Git growth can therefore cause a sync or save
+  failure before any fixed GiB total is reached.
+- Check growth and headroom with:
+
+  ```bash
+  du -sh . .git publish
+  find . -type f | wc -l
+  git count-objects -vH
+  git ls-tree -r -l HEAD | awk '{ total += $4 } END { print total }'
+  git archive --format=tar HEAD | wc -c
+  df -h /workspace
+  ```
+
   Treat `.git` above 1 GiB or the workspace above 2 GiB as internal warning
-  levels requiring review; these are conservative project thresholds, not
-  published Game Studio platform limits.
+  levels requiring cleanup or history review. These remain conservative
+  project thresholds, not published Game Studio platform limits.
 
 ## Product Baseline
 

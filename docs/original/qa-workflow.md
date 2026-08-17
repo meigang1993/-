@@ -6,8 +6,9 @@ authority. This document stores policy only, not test inventories or results.
 ## Scope
 
 - Run the smallest directly relevant check after an implementation change.
-- Game Studio experience reports and health scans inspect only the exported
-  `publish/` game files. Local QA still inspects `src/original/` directly.
+- Game Studio experience reports inspect only the exported `publish/` game
+  files. The container health scan instead snapshots the complete tracked
+  `HEAD`; local QA also inspects `src/original/` directly.
 - Documentation-only changes require consistency inspection only.
 - Bundled source changes must rebuild the affected bundles and confirm that
   generated output is current.
