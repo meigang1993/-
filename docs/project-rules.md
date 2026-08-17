@@ -61,6 +61,29 @@ documentation task in game `2971485`.
 - Before declaring a release package complete, verify that
   `publish/index.html` is present.
 
+## Repository History and Capacity
+
+- On August 17, 2026, `main` was intentionally rewritten to the clean root
+  commit `6a4410c22b0cf953e6473a696b16656e33ea0340`. Earlier commit IDs are not
+  rollback points in this repository. Any stale clone must be freshly cloned
+  or explicitly reset to the rewritten remote branch before it can push.
+- History rewriting is exceptional and requires explicit user authorization.
+  Routine cleanup must not discard reachable commits.
+- The remote Git service may retain unreachable pre-rewrite objects until its
+  own garbage collection runs. This can delay server-side storage reclamation,
+  although normal clones and syncs should use only the rewritten reachable
+  history.
+- Keep `node_modules/`, caches, logs, test output, migration archives, transfer
+  packages, backups, and uploaded temporary files outside Git. Never stage them
+  to solve a local tooling or packaging problem.
+- Images and audio are the main history-growth risk. Optimize final assets
+  before committing and do not commit temporary, duplicate, intermediate, or
+  repeatedly regenerated binary variants.
+- Check repository growth with `git count-objects -vH` and `du -sh .git`.
+  Treat `.git` above 1 GiB or the workspace above 2 GiB as internal warning
+  levels requiring review; these are conservative project thresholds, not
+  published Game Studio platform limits.
+
 ## Product Baseline
 
 - The game is landscape-first and optimized for mouse and keyboard.
