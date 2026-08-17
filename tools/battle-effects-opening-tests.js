@@ -21,6 +21,14 @@ async function run() {
   drawReleases.enemy();
   await groupedDraw;
 
+  let commitCount = 0;
+  let commitRenders = 0;
+  await groupRunner.runEvent({}, {
+    type: "battleCommit", commit: () => { commitCount += 1; },
+  }, () => { commitRenders += 1; }, () => {}, () => true);
+  assert(commitCount === 1 && commitRenders === 1,
+    "battle commit events must apply once and rerender after prior effects");
+
   const initialBattle = {
     allies: [
       {

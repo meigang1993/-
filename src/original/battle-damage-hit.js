@@ -17,6 +17,7 @@ window.BattleDamageHit = ({
         state, actor, target, amount, source, card, () => {
           hitWithoutDodge(state, actor, target, amount, source, card);
           lifecycle.finalizeDamage(state);
+          window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, card);
           ctx.checkEnd(state);
         })) return { dodged: false, hpLoss: 0 };
     amount = card?.skipDamageModify
@@ -53,6 +54,8 @@ window.BattleDamageHit = ({
     target.block -= blocked;
     target.hp = Math.max(0, target.hp - hpLoss);
     window.SakuraRisaSkills?.preventDeath?.(state, target);
+    window.FloraCarlosSkills?.recordSpeedAssaultHit?.(
+      state, card, target, hpBefore, hpLoss);
     window.BattleStats?.damage?.(
       state.battle, effectiveActor, target, Math.min(hpBefore, hpLoss), hpBefore);
     const armorBreak = beforeBlock > 0 && target.block === 0;
@@ -88,6 +91,7 @@ window.BattleDamageHit = ({
     ctx.checkDefeat(state);
     const extra = window.BattleDamageRelics.resolveEdisSwordHit(
       state, actor, target, amount, card, hitWithoutDodge);
+    window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, card);
     return {
       dodged: false,
       hpLoss: hpLoss + (extra?.hpLoss || 0),

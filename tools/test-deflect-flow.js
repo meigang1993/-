@@ -31,6 +31,16 @@ global.window = {
     isKillCard: card => card?.type === "slash",
     canRespondTo: (_rule, card) => card?.type === "response",
   },
+  FloraCarlosSkills: {
+    queueSpeedAssaultSettlement(state, card) {
+      const settlement = card?._speedAssaultSettlement;
+      if (!settlement || settlement.queued
+        || state.battle !== settlement.battle) return false;
+      settlement.queued = true;
+      state.battle.animQueue.push({ type: "battleCommit" });
+      return true;
+    },
+  },
 };
 require("../src/original/game-random.js");
 require("../src/original/witherer-relic-skills.js");
@@ -189,4 +199,16 @@ assert.strictEqual(discards.length, 1);
 assert.deepStrictEqual(autoFlow.events.map(event => event.type), ["reflect", "dodged"]);
 assert.strictEqual(autoFlow.events[0].responseInHand, false);
 
-console.log("Deflect flow tests passed: 9 outcomes, repeated ties, manual/auto response, forced continuation, single consumption, damage ordering");
+discards.length = 0;
+const assaultFlow = manualHarness();
+assaultFlow.state.battle.manualDodge.card._speedAssaultSettlement = {
+  battle: assaultFlow.state.battle, queued: false,
+};
+assert.strictEqual(
+  assaultFlow.api.resolveManualDodge(assaultFlow.state, true, 0), true);
+assert.deepStrictEqual(
+  assaultFlow.state.battle.animQueue.map(event => event.type),
+  ["response", "battleCommit"],
+);
+
+console.log("Deflect flow tests passed: 9 outcomes, repeated ties, manual/auto response, forced continuation, single consumption, damage ordering, delayed assault settlement");

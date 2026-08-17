@@ -137,6 +137,9 @@ Required guards:
 - preserve hit index, target index, source, actor, phase, and pending queue;
 - resume only after all required prompts and reactions finish;
 - recheck source survival, active actor, phase ownership, and settlement lock;
+- post-animation skill rewards must capture the first direct-hit result before
+  synchronous chain triggers, commit once at the tail of the final effect
+  queue, and reject commits from a replaced battle;
 - propagate continuation failures to the owning action boundary and never
   persist a stable-operation checkpoint after failed recovery;
 - never rerun completed target selection, response, or damage modifiers.

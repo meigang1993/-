@@ -1,4 +1,6 @@
 window.BattleDamageResponses = ({ deps, ctx, canDodge, damage, hitWithoutDodge, finalizeDamage, triggers }) => {
+  const settleAssault = (state, card) =>
+    window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, card);
   function shouldManualDodge(state, actor, target, card, response) {
     if (!state.settings?.manualResponse && !response?.deflect) return false;
     if (card?.forceAutoResponse) return false;
@@ -40,7 +42,7 @@ window.BattleDamageResponses = ({ deps, ctx, canDodge, damage, hitWithoutDodge, 
         window.BattleLog.add(state, `${target.name} 手动${responseAction(p.card)}${dodgeLabel(target, picked)}，抵消一次${responseLabel(p.card)}伤害。`);
         const hammer = queueThunderHammer(state, actor, target, p.amount, p.source, p.card); clearManual(b, hammer);
         if (hammer) { triggers.afterDodged(state, actor, target, p.card); b.thunderHammer.afterDodgedFired = true; queueManualResume(b, p); }
-        else { triggers.afterDodged(state, actor, target, p.card); queueManualResume(b, p); }
+        else { triggers.afterDodged(state, actor, target, p.card); queueManualResume(b, p); settleAssault(state, p.card); }
         ctx.checkEnd(state); return true;
       }
     }
@@ -48,6 +50,7 @@ window.BattleDamageResponses = ({ deps, ctx, canDodge, damage, hitWithoutDodge, 
     const rootDamage = !b._damageDepth; b._damageDepth = (b._damageDepth || 0) + 1;
     try { hitWithoutDodge(state, actor, target, p.amount, p.source, p.card); queueManualResume(b, p); }
     finally { b._damageDepth -= 1; if (rootDamage) finalizeDamage(state); }
+    settleAssault(state, p.card);
     ctx.checkEnd(state); return true;
   }
   function confirmDeflectResult(state) {
@@ -62,12 +65,14 @@ window.BattleDamageResponses = ({ deps, ctx, canDodge, damage, hitWithoutDodge, 
     if (result.outcome === "defender") {
       clearManual(b);
       damage(state, actor, p.amount, "弹反", target, { ...p.card, name: "弹反", type: "skill", ignoreResponse: true, skipDamageModify: true });
-      triggers.afterDodged(state, actor, target, p.card); queueManualResume(b, p); ctx.checkEnd(state); return true;
+      triggers.afterDodged(state, actor, target, p.card); queueManualResume(b, p);
+      settleAssault(state, p.card); ctx.checkEnd(state); return true;
     }
     clearManual(b);
     const rootDamage = !b._damageDepth; b._damageDepth = (b._damageDepth || 0) + 1;
     try { hitWithoutDodge(state, actor, target, p.amount, p.source, p.card); queueManualResume(b, p); }
     finally { b._damageDepth -= 1; if (rootDamage) finalizeDamage(state); }
+    settleAssault(state, p.card);
     ctx.checkEnd(state); return true;
   }
   function queueManualResume(b, p) {
@@ -146,12 +151,16 @@ window.BattleDamageResponses = ({ deps, ctx, canDodge, damage, hitWithoutDodge, 
     if (!h || h.used || !actor || !target || !discard || discard._pendingDraw) return false;
     actor.hand.splice(cardIndex, 1); window.BattleCards?.put(b, actor, discard, "discard", { showDiscard: true }); h.used = true; b.thunderHammer = null; b.locked = false;
     window.BattleLog.add(state,`${actor.name} 弃置${discard.suit || ""}${discard.name}发动霹雳之锤，该杀强制造成伤害。`);
-    damage(state, target, h.amount, h.source, actor, h.card); if (h.card.greenGatlingQueue?.length) b.greenGatlingResume = { actorUid: actor.uid, targetUid: target.uid, card: h.card }; ctx.checkEnd(state); return true;
+    damage(state, target, h.amount, h.source, actor, h.card);
+    settleAssault(state, h.card);
+    if (h.card.greenGatlingQueue?.length) b.greenGatlingResume = { actorUid: actor.uid, targetUid: target.uid, card: h.card }; ctx.checkEnd(state); return true;
   }
   function cancelThunderHammer(state) {
     const b = state.battle, h = b?.thunderHammer; if (!h) return false;
     const actor = ctx.allUnits(b).find(u => u.uid === h.actorUid), target = ctx.allUnits(b).find(u => u.uid === h.targetUid);
-    b.thunderHammer = null; b.locked = false; if (actor && target && !h.afterDodgedFired) triggers.afterDodged(state, actor, target, h.card); if (h.card.greenGatlingQueue?.length) b.greenGatlingResume = { actorUid: h.actorUid, targetUid: h.targetUid, card: h.card }; return true;
+    b.thunderHammer = null; b.locked = false; if (actor && target && !h.afterDodgedFired) triggers.afterDodged(state, actor, target, h.card);
+    settleAssault(state, h.card);
+    if (h.card.greenGatlingQueue?.length) b.greenGatlingResume = { actorUid: h.actorUid, targetUid: h.targetUid, card: h.card }; return true;
   }
   return { shouldManualDodge, queueManualDodge, autoDodge, resolveManualDodge, confirmDeflectResult, resolveThunderHammer, cancelThunderHammer };
 };

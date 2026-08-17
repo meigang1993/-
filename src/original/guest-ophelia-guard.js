@@ -62,6 +62,7 @@ window.GuestOpheliaGuard = (deps) => {
       b._damageDepth -= 1;
       if (rootDamage) api.finalizeDamage?.(state);
     }
+    window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, p.card);
     const groupCard = p.groupCard || p.card;
     const settling = b.pendingVictory || b.pendingDefeat || b.victoryScreen
       || b.defeat || b.testComplete;

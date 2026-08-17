@@ -101,6 +101,7 @@ window.MannySkills = (() => {
         if (rootDamage) damage.finalizeDamage?.(state);
       }
     }
+    window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, p.card);
     if (actor?.hp <= 0 && b.manualDodgeResume?.actorUid === actor.uid) {
       b.manualDodgeResume = null;
     }

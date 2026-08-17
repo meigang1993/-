@@ -335,8 +335,14 @@ module.exports = ({
   state.battle.phase = 6;
   assert(useAssault() && assaultHits === 2 && assaultFlora.usedSpeedAssaultEnd,
     "End-phase Speed Assault must remain available after preparation use");
+  assert(!assaultFlora.faceDown,
+    "End-phase Speed Assault must wait for its animation settlement before turning face-down");
+  state.battle.animQueue
+    .filter(event => event.type === "battleCommit")
+    .forEach(event => event.commit());
   assert(assaultFlora.faceDown && assaultFlora.statuses.includes("翻面"),
     "End-phase Speed Assault must turn Flora face-down");
+  require("./skill-audit-speed-assault-tests")({ assert, unit });
 
   const bertis = unit("bertis", "ally", {
     ref: "bertis", hp: 38, maxHp: 38,

@@ -9,16 +9,21 @@ window.BattleDamageResolution = ({
     if (window.GerdaSkills?.allowKill?.(state, actor, target, card) === false) {
       queueAttackAnim(state, actor, target, card);
       window.WithererSkills?.afterKillFailed?.(state, actor, card);
+      window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, card);
       return { dodged: false, hpLoss: 0, blockLoss: 0 };
     }
     if (window.BondiSkills?.invalidateKillCard?.(state, target, card)) {
       queueAttackAnim(state, actor, target, card);
       window.WithererSkills?.afterKillFailed?.(state, actor, card);
+      window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, card);
       return { dodged: false, hpLoss: 0, blockLoss: 0 };
     }
     const protectedTarget = window.NonokaLokiSkills?.protectNonoka?.(
       state, actor, target, card, deps);
-    if (protectedTarget === null) return { dodged: true, hpLoss: 0 };
+    if (protectedTarget === null) {
+      window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, card);
+      return { dodged: true, hpLoss: 0 };
+    }
     target = protectedTarget || target;
     const effectiveCard = card?.krowFemaleTarget && target?.gender !== "female"
       ? {
@@ -30,6 +35,8 @@ window.BattleDamageResolution = ({
       state, target, effectiveCard)) {
       queueAttackAnim(state, actor, target, effectiveCard);
       window.WithererSkills?.afterKillFailed?.(state, actor, effectiveCard);
+      window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(
+        state, effectiveCard);
       return { dodged: false, hpLoss: 0, blockLoss: 0 };
     }
     window.ElranaAceNanaliSkills?.beforeKillTargeted?.(
@@ -93,11 +100,19 @@ window.BattleDamageResolution = ({
     }
     if (response && getResponseApi().autoDodge(
       state, actor, target, amount, source, effectiveCard, response
-    )) return { dodged: true, hpLoss: 0 };
+    )) {
+      window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(
+        state, effectiveCard);
+      return { dodged: true, hpLoss: 0 };
+    }
     const guarded = window.GuestCharacterSkills?.guardOphelia?.(
       state, actor, target, amount, source, effectiveCard,
       { canDodge, draw: deps.draw, hitWithoutDodge: getHitWithoutDodge() });
-    if (guarded) return guarded;
+    if (guarded) {
+      window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(
+        state, effectiveCard);
+      return guarded;
+    }
     if (state.battle?.locked) return { dodged: false, hpLoss: 0 };
     return getHitWithoutDodge()(
       state, actor, target, amount, source, effectiveCard);

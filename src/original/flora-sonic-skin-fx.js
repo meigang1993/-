@@ -55,11 +55,12 @@ window.FloraSonicSkinFX = (() => {
     tone(680, .055, "triangle", 0, .02);
   }
   function assault(state, actor, target) {
-    if (!active(actor)) return;
+    if (!active(actor) || !hasDocument()) return 0;
     anchored(state, actor, "flora-sonic-assault-launch", 920, "<b></b><i></i><span></span>");
     ray(state, actor, target, "flora-sonic-assault-line", 820);
     targetFx(state, target, "flora-sonic-assault-hit", 980, "<b></b><i></i><i></i><span></span>");
     tone(240, .08, "sawtooth", 0, .035); tone(1320, .06, "square", 120, .04);
+    return window.BattleEffectAnimation?.scaleMs?.(980) || 980;
   }
   function assaultDefeat(state, actor) {
     anchored(state, actor, "flora-sonic-assault-return", 1100,

@@ -1,4 +1,5 @@
 window.FloraCarlosSkills = (() => {
+  const assaultBattles = new WeakMap();
   const alive = u => u && u.hp > 0;
   const visible = u => (u.hand || []).filter(c => !c._pendingDraw);
   const isKill = c => window.CardUtils.isKillCard(c);
@@ -20,16 +21,73 @@ window.FloraCarlosSkills = (() => {
     actor[usageKey] = true; actor.usedSpeedAssault = true; actor.playedSlashThisTurn = true;
     line(state, actor, "神速之袭", target);
     discardOne(state, actor, target);
-    window.FloraSonicSkinFX?.assault?.(state, actor, target);
-    const before = target.hp;
+    const assaultMs =
+      window.FloraSonicSkinFX?.assault?.(state, actor, target) || 0;
+    const settlement = {
+      actorUid: actor.uid, targetUid: target.uid,
+      endPhase, draw: deps.draw, queued: false, settled: false, directHit: null,
+      notBefore: assaultMs ? Date.now() + assaultMs : 0,
+    };
+    assaultBattles.set(settlement, state.battle);
+    const assaultCard = virtualCard("刺杀", {
+      _entitySourceCard: sourceCard, _speedAssaultSettlement: settlement,
+    });
     ctx.damage(state, target, stat(actor, "attack"), "神速之袭", actor,
-      virtualCard("刺杀", { _entitySourceCard: sourceCard }));
-    if (before > 0 && target.hp <= 0 && !window.SakuraRisaSkills?.pendingRevival?.(target)) {
+      assaultCard);
+    queueSpeedAssaultSettlement(state, assaultCard);
+    return true;
+  }
+  function recordSpeedAssaultHit(state, card, target, hpBefore, hpLoss) {
+    const settlement = card?._speedAssaultSettlement;
+    if (!settlement || settlement.directHit
+      || state.battle !== assaultBattles.get(settlement)) return false;
+    const actualLoss = Math.min(Math.max(0, hpBefore || 0), Math.max(0, hpLoss || 0));
+    settlement.directHit = {
+      targetUid: target?.uid, hpBefore, hpLoss: actualLoss,
+      killed: hpBefore > 0 && actualLoss > 0 && target?.hp <= 0
+        && !window.SakuraRisaSkills?.pendingRevival?.(target),
+    };
+    return true;
+  }
+  function queueSpeedAssaultSettlement(state, card) {
+    const settlement = card?._speedAssaultSettlement;
+    const battle = state.battle;
+    if (!settlement || settlement.settled
+      || battle !== assaultBattles.get(settlement) || !battle?.animQueue) return false;
+    if (settlement.queued) {
+      const index = battle.animQueue.indexOf(settlement.event);
+      if (index >= 0 && index !== battle.animQueue.length - 1) {
+        battle.animQueue.splice(index, 1);
+        battle.animQueue.push(settlement.event);
+      }
+      return index >= 0;
+    }
+    if (battle.locked && !settlement.directHit) return false;
+    settlement.queued = true;
+    settlement.event = {
+      type: "battleCommit",
+      notBefore: settlement.notBefore,
+      commit: () => commitSpeedAssault(state, settlement),
+    };
+    battle.animQueue.push(settlement.event);
+    return true;
+  }
+  function commitSpeedAssault(state, settlement) {
+    const battle = settlement && assaultBattles.get(settlement);
+    if (!settlement || settlement.settled || state.battle !== battle) return false;
+    const actor = battle.allies.concat(battle.enemies || [])
+      .find(unit => unit.uid === settlement.actorUid);
+    if (!actor) return false;
+    settlement.settled = true;
+    if (settlement.directHit?.killed) {
       window.FloraSonicSkinFX?.assaultDefeat?.(state, actor);
-      const count = initialDraw(actor), drawn = deps.draw(actor, count, state.battle);
+      const count = initialDraw(actor);
+      const drawn = settlement.draw(actor, count, battle);
       window.BattleLog.add(state, `${actor.name} 击杀目标，神速之袭${window.BattleDrawFeedback.action(actor, count, drawn)}。`);
     }
-    if (endPhase && actor.hp > 0) window.GuardKellySkills?.markFaceDown?.(state, actor);
+    if (settlement.endPhase && actor.hp > 0) {
+      window.GuardKellySkills?.markFaceDown?.(state, actor);
+    }
     return true;
   }
   function crazyShooting(state, actor, deps, ctx) {
@@ -102,5 +160,8 @@ window.FloraCarlosSkills = (() => {
     const d = target.hand.splice(i, 1)[0]; window.BattleCards?.put(state.battle, target, d, "discard", { forcedDiscard: true });
     window.BattleLog.add(state, `${actor.name} 的刺杀弃置${target.name}一张${d.name}。`);
   }
-  return { handleSpecialCard, dodgeAsFlash, afterSlashDamage };
+  return {
+    handleSpecialCard, dodgeAsFlash, afterSlashDamage,
+    recordSpeedAssaultHit, queueSpeedAssaultSettlement,
+  };
 })();

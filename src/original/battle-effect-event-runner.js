@@ -107,6 +107,12 @@ window.BattleEffectEventRunner = handlers => {
       await handlers.slashText(event, state, renderStep, active);
     } else if (event.type === "float") {
       await floatEvent(state, event, renderStep, active);
+    } else if (event.type === "battleCommit" && active()) {
+      const remaining = Math.max(0, (event.notBefore || 0) - Date.now());
+      if (remaining) await new Promise(resolve => setTimeout(resolve, remaining));
+      if (!active()) return;
+      event.commit?.();
+      renderStep();
     } else if (event.type === "battleCourage" && active()) {
       const owner = state.battle?.allies.concat(state.battle.enemies || [])
         .find(unit => unit.uid === event.uid);
