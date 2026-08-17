@@ -4,6 +4,18 @@ These tools are for development only. They do not change the static game runtime
 
 ## Setup
 
+- `npm run playwright:install`
+  Downloads the Playwright Chromium build pinned by the lockfile into the
+  repository-local `.playwright-browsers/` directory. The directory is
+  intentionally Git-ignored because browser binaries are large and
+  platform-specific. Run this after cloning, when the Playwright package
+  version changes, or when `npm run check:playwright` reports a missing binary.
+
+- `npm run playwright:install:deps`
+  Installs Linux shared-library and font dependencies required by Chromium.
+  This changes the development container rather than the repository and is
+  needed only when the browser launch check reports a missing system library.
+
 - `npm run qa:install`
   Verifies the original Node, npm package, and Playwright/Chromium components.
   It performs no network installation.

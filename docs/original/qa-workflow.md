@@ -15,6 +15,12 @@ authority. This document stores policy only, not test inventories or results.
 - Published CSS or bundle changes must advance `meta[name="game-build"]`
   according to the repository build contract.
 - Browser checks run sequentially with one Playwright worker.
+- Playwright uses the repository-local `.playwright-browsers/` directory by
+  default. Keep the binary directory Git-ignored; install the lockfile-pinned
+  Chromium with `npm run playwright:install` after cloning or upgrading
+  Playwright. If launch reports a missing Linux library, run
+  `npm run playwright:install:deps`, then verify with
+  `npm run check:toolchain`.
 - Full, unrelated, performance, coverage, soak, screenshot, accessibility, or
   optimization suites require the user's explicit request.
 - Do not retain per-bug regression lists, command transcripts, pass/fail
