@@ -25,6 +25,27 @@ async function run() {
     "settlement failures should expose a blocked state");
   setSettlementError(null);
 
+  let retryCommitAttempts = 0;
+  const retryCommitEvent = {
+    type: "battleCommit",
+    runtimeRecovery: "restart",
+    commit() {
+      retryCommitAttempts += 1;
+      if (retryCommitAttempts === 1) throw new Error("retryable commit failed");
+    },
+  };
+  const retryCommitState = {
+    view: "battle", battle: { animQueue: [retryCommitEvent] },
+  };
+  window.state = retryCommitState;
+  await BattleEffects.drain(retryCommitState, () => {});
+  assert(retryCommitAttempts === 1
+    && retryCommitState.battle.animQueue[0] === retryCommitEvent,
+  "a failed recovery-critical battle commit must remain queued without an immediate retry loop");
+  await BattleEffects.drain(retryCommitState, () => {});
+  assert(retryCommitAttempts === 2 && retryCommitState.battle.animQueue.length === 0,
+    "a later drain must retry and complete the preserved battle commit");
+
   let staleCommits = 0;
   const staleState = { view: "battle", battle: { animQueue: [] } };
   window.state = staleState;

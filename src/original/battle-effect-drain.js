@@ -54,7 +54,9 @@ window.BattleEffectDrain = ({ runtime, isCurrent, resolveIdle, recover }) => {
     } catch (err) {
       if (!active()) return;
       console.error("战斗动画结算失败:", err.message, err.stack);
-      try { finishCommit?.(); }
+      try {
+        if (currentEvent?.runtimeCommitState !== "failed") finishCommit?.();
+      }
       catch (commitErr) { console.error("战斗事件补偿提交失败:", commitErr.message, commitErr.stack); }
       recovery.recoverEvent(state, currentEvent);
       if (!currentEvent && state.battle) runtime.settleBlockedBattle = state.battle;

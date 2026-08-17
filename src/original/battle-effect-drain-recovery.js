@@ -2,11 +2,23 @@ window.BattleEffectDrainRecovery = recover => {
   function guardCommit(event) {
     if (typeof event?.commit !== "function") return null;
     const commit = event.commit;
-    let attempted = false;
+    let complete = false;
+    let running = false;
     event.commit = () => {
-      if (attempted) return;
-      attempted = true;
-      return commit();
+      if (complete || running) return;
+      running = true;
+      event.runtimeCommitState = "running";
+      try {
+        const result = commit();
+        complete = true;
+        event.runtimeCommitState = "complete";
+        return result;
+      } catch (error) {
+        event.runtimeCommitState = "failed";
+        throw error;
+      } finally {
+        running = false;
+      }
     };
     return () => event.commit();
   }
@@ -22,6 +34,11 @@ window.BattleEffectDrainRecovery = recover => {
     }
     if (event?.type === "clash" && battle?.lastClash?.id === event.id) {
       battle.lastClash = null;
+    }
+    if (event?.runtimeRecovery === "restart"
+      && event.runtimeCommitState !== "complete" && battle?.animQueue
+      && !battle.animQueue.includes(event)) {
+      battle.animQueue.unshift(event);
     }
     recover(state, false);
   }

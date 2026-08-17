@@ -1,4 +1,5 @@
 const assert = require("assert");
+const fs = require("fs");
 
 global.window = global;
 require("../src/original/game-random.js");
@@ -6,6 +7,7 @@ require("../src/original/economy-config.js");
 require("../src/original/data-cards.js");
 require("../src/original/card-utils.js");
 require("../src/original/battle-damage-utils.js");
+require("../src/original/battle-draw-transaction.js");
 require("../src/original/flora-carlos-skills.js");
 require("../src/original/witherer-relic-skills.js");
 require("../src/original/manny-skills.js");
@@ -179,6 +181,13 @@ const flightCount = state =>
   );
   assert.strictEqual(flightCount(state), 1,
     "Default Speed Blade must retain one generic target flight");
+}
+
+{
+  const unitCss = fs.readFileSync("publish/battle-units.css", "utf8");
+  assert.match(unitCss,
+    /\.unit-speech-bubble\[data-dismiss-speech\]\s*\{[^}]*pointer-events:\s*auto;[^}]*cursor:\s*pointer;/,
+    "Dismissible unit speech must receive its own click instead of targeting the unit below");
 }
 
 console.log("Generated attack presentation tests passed");

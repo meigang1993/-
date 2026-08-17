@@ -45,10 +45,17 @@ module.exports = ({ assert, unit }) => {
       pendingRevival: target => !!target?.risaRevivePending,
     };
 
-    function runCase({ hp = 2, phase = 6, chainKill = false, pending = false } = {}) {
+    function runCase({
+      hp = 2, phase = 6, chainKill = false, pending = false,
+      failDrawOnce = false,
+    } = {}) {
       const actor = unit("assault-actor", "ally", {
         ref: "flora", stats: { attack: 3, initialDraw: 2 },
       });
+      if (failDrawOnce) {
+        actor.deck = Array.from({ length: 12 }, (_, index) =>
+          ({ name: `Reward ${index}` }));
+      }
       const target = unit("assault-target", "enemy", {
         hp, maxHp: hp, testPendingRevival: pending,
       });
@@ -56,8 +63,12 @@ module.exports = ({ assert, unit }) => {
         phase, allies: [actor], enemies: [target], animQueue: [],
         hitFxId: 0, defeatedEnemyIds: [],
       };
-      const state = { battle, log: [] };
+      const state = {
+        battle, log: ["before"], battleLog: ["before"],
+        random: { version: 1, seed: 7, cursor: 3 },
+      };
       let drawn = 0;
+      let drawAttempts = 0;
       const ctx = {
         checkDefeat() {},
         holdVisual() {},
@@ -91,7 +102,23 @@ module.exports = ({ assert, unit }) => {
       window.FloraCarlosSkills.handleSpecialCard(
         state, actor, target, { speedAssault: true },
         {
-          draw(_actor, count) {
+          draw(_actor, count, currentBattle) {
+            drawAttempts += 1;
+            if (failDrawOnce) {
+              const cards = actor.deck.splice(-count);
+              cards.forEach(card => { card._pendingDraw = true; });
+              actor.hand.push(...cards);
+              actor.shuffleCount = (actor.shuffleCount || 0) + 1;
+              state.random.cursor += 1;
+              state.log = ["changed"];
+              state.battleLog = ["changed"];
+              currentBattle.animQueue.push({
+                type: "drawBatch", uid: actor.uid, cards,
+              });
+              if (drawAttempts === 1) throw new Error("draw failed");
+              drawn += cards.length;
+              return cards;
+            }
             drawn += count;
             return Array.from({ length: count }, () => ({}));
           },
@@ -103,7 +130,10 @@ module.exports = ({ assert, unit }) => {
           },
         },
       );
-      return { actor, target, state, battle, drawn: () => drawn };
+      return {
+        actor, target, state, battle,
+        drawn: () => drawn, drawAttempts: () => drawAttempts,
+      };
     }
 
     const lethal = runCase();
@@ -140,6 +170,37 @@ module.exports = ({ assert, unit }) => {
     staleCommit.commit();
     assert(stale.drawn() === 0 && !stale.actor.faceDown,
       "A replaced battle must reject stale Speed Assault settlement");
+
+    const retryable = runCase({ failDrawOnce: true });
+    const retryCommit = retryable.battle.animQueue.at(-1);
+    const queueBefore = retryable.battle.animQueue.slice();
+    let firstError = null;
+    try {
+      retryCommit.commit();
+    } catch (error) {
+      firstError = error;
+    }
+    assert(firstError?.message === "draw failed"
+      && retryable.actor.hand.length === 0
+      && retryable.actor.deck.length === 12
+      && !retryable.actor.shuffleCount
+      && retryable.state.random.cursor === 3
+      && retryable.state.log[0] === "before"
+      && retryable.state.battleLog[0] === "before"
+      && retryable.battle.animQueue.length === queueBefore.length
+      && retryable.battle.animQueue.every((event, index) =>
+        event === queueBefore[index])
+      && !retryable.actor.faceDown,
+    "A failed Speed Assault draw must roll back cards, effects, and face-down state");
+    retryCommit.commit();
+    retryCommit.commit();
+    assert(retryable.drawAttempts() === 2 && retryable.drawn() === 6
+      && retryable.actor.hand.length === 6
+      && retryable.actor.deck.length === 6
+      && retryable.battle.animQueue.filter(event =>
+        event.type === "drawBatch").length === 1
+      && retryable.actor.faceDown,
+    "Retrying Speed Assault settlement must grant and face-down exactly once");
   } finally {
     Object.assign(window, saved);
   }

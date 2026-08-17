@@ -68,6 +68,7 @@ window.FloraCarlosSkills = (() => {
     settlement.event = {
       type: "battleCommit",
       notBefore: settlement.notBefore,
+      runtimeRecovery: "restart",
       commit: () => commitSpeedAssault(state, settlement),
     };
     battle.animQueue.push(settlement.event);
@@ -79,16 +80,31 @@ window.FloraCarlosSkills = (() => {
     const actor = battle.allies.concat(battle.enemies || [])
       .find(unit => unit.uid === settlement.actorUid);
     if (!actor) return false;
-    settlement.settled = true;
     if (settlement.directHit?.killed) {
-      window.FloraSonicSkinFX?.assaultDefeat?.(state, actor);
-      const count = initialDraw(actor);
-      const drawn = settlement.draw(actor, count, battle);
-      window.BattleLog.add(state, `${actor.name} 击杀目标，神速之袭${window.BattleDrawFeedback.action(actor, count, drawn)}。`);
+      if (!settlement.defeatFxDone) {
+        window.FloraSonicSkinFX?.assaultDefeat?.(state, actor);
+        settlement.defeatFxDone = true;
+      }
+      if (!settlement.rewardDone) {
+        const count = initialDraw(actor);
+        settlement.rewardText = window.BattleDrawTransaction.run(
+          state, battle, () => {
+            const drawn = settlement.draw(actor, count, battle);
+            return window.BattleDrawFeedback.action(actor, count, drawn);
+          });
+        settlement.rewardDone = true;
+      }
+      if (!settlement.rewardLogDone) {
+        window.BattleLog.add(state,
+          `${actor.name} 击杀目标，神速之袭${settlement.rewardText}。`);
+        settlement.rewardLogDone = true;
+      }
     }
-    if (settlement.endPhase && actor.hp > 0) {
+    if (settlement.endPhase && actor.hp > 0 && !settlement.faceDownDone) {
       window.GuardKellySkills?.markFaceDown?.(state, actor);
+      settlement.faceDownDone = true;
     }
+    settlement.settled = true;
     return true;
   }
   function crazyShooting(state, actor, deps, ctx) {
