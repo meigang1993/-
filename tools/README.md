@@ -75,7 +75,9 @@ These tools are for development only. They do not change the static game runtime
 - `npm run build:publish`
   Atomically rebuilds the eleven runtime bundles from `src/original/`, then
   verifies that they exactly match source and that no unbundled JavaScript is
-  present under `publish/`. When generated bundle or published CSS bytes differ
+  present under `publish/`. JavaScript is compressed with three Terser passes
+  and identifier mangling; Brotli remains a CDN transport concern rather than
+  a committed `.br` artifact. When generated bundle or published CSS bytes differ
   from `HEAD`, `meta[name="game-build"]` must first be advanced beyond the
   `HEAD` value. Development copies without Git history are rejected.
 

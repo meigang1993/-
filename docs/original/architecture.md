@@ -31,6 +31,14 @@
   generated bundle bytes or any published stylesheet differ from `HEAD`, the
   command requires `meta[name="game-build"]` to be newer than the `HEAD` value
   before writing. A copied development tree without Git history fails closed.
+- Generated JavaScript uses Terser compression with three passes plus identifier
+  mangling while preserving function and class names required by diagnostics
+  and compatibility contracts. Property mangling remains disabled because
+  runtime modules communicate through named global and object properties.
+- HTTP Brotli compression is a Game Studio/CDN transport responsibility.
+  Precompressed `.br` files are not committed under `publish/` because the
+  static runtime cannot assign their required `Content-Encoding` response
+  metadata or negotiate them from the browser.
 - The bundle check recompiles in memory and byte-compares every
   committed bundle with its current sources and applies the same cache-version
   gate to generated bundles plus every `publish/**/*.css` file. After changing
