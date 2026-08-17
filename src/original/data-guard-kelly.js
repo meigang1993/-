@@ -9,7 +9,7 @@ window.GameDataFutureEnemies.orc_dungeon.push({
   gender: "female",
   face: "凯",
   art: "./assets/new-portraits/guard-kelly.webp",
-  bgm: "./assets/sounds/guard-kelly.m4a",
+  bgm: "./assets/sounds/guard-kelly.ogg",
   hp: 210,
   attack: 8,
   magic: 8,

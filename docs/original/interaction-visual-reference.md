@@ -457,10 +457,10 @@ The following table records the current screen families.
 ### Audio
 
 - Scene BGM roles are:
-  - title: `op.m4a`;
-  - villa: `villa.m4a`;
-  - dungeon: `dungeon-map.m4a`;
-  - default machine-factory battle: `machine-factory-battle.m4a`;
+  - title: `op.ogg`;
+  - villa: `villa.ogg`;
+  - dungeon: `dungeon-map.ogg`;
+  - default machine-factory battle: `machine-factory-battle.ogg`;
   - mission, elite, boss, and character-specific overrides from canonical data.
 - BGM starts only after player interaction, loops, and crossfades between
   scenes. Victory and completed test battles stop battle BGM.

@@ -32,6 +32,9 @@ function encodeArgs(format, targetKbps) {
   if (format === "mp3") {
     return ["-codec:a", "libmp3lame", "-b:a", `${targetKbps}k`, "-ar", "44100"];
   }
+  if (format === "ogg") {
+    return ["-codec:a", "libvorbis", "-b:a", `${targetKbps}k`, "-ar", "44100"];
+  }
   return null;
 }
 

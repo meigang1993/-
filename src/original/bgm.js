@@ -1,9 +1,9 @@
 window.GameBGM = (() => {
   const tracks = {
-    op: "./assets/sounds/op.m4a",
-    villa: "./assets/sounds/villa.m4a",
-    dungeon: "./assets/sounds/dungeon-map.m4a",
-    battle: "./assets/sounds/machine-factory-battle.m4a",
+    op: "./assets/sounds/op.ogg",
+    villa: "./assets/sounds/villa.ogg",
+    dungeon: "./assets/sounds/dungeon-map.ogg",
+    battle: "./assets/sounds/machine-factory-battle.ogg",
   };
   const audio = new Audio();
   audio.loop = true; audio.volume = 0.42; audio.preload = "none";
