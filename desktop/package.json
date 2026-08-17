@@ -1,0 +1,14 @@
+{
+  "name": "succubus-kill-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portable Windows wrapper for the Succubus Kill static game.",
+  "main": "main.cjs",
+  "scripts": {
+    "build:win": "node build-portable.cjs"
+  },
+  "devDependencies": {
+    "@electron/packager": "20.2.0",
+    "electron": "43.3.0"
+  }
+}
