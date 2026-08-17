@@ -121,6 +121,7 @@
     "app-start-new-game.js",
     "app-start-save-actions.js",
     "app-start-actions.js",
+    "app-desktop-controls.js",
     "app-action-bindings.js",
     "app-actions.js",
     "app-scroll.js",

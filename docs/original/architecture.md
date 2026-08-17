@@ -16,6 +16,8 @@
   That compatibility entry imports the four villa owner files in cascade order
   with the same build version, avoiding four separate startup link elements.
 - Runtime code uses ordered classic scripts and global public APIs.
+- `src/original/app-desktop-controls.js` owns desktop fullscreen commands,
+  including the settings action and the `F11` keyboard shortcut.
 - `tools/publish-bundles.json` is the canonical source order for the three
   startup bundles plus the deferred hall, battle, and dungeon bundles.
 - Every new or split runtime source module is created under `src/original/`,
