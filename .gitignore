@@ -6,8 +6,6 @@ playwright-report/
 .playwright-browsers/
 .qa-cache/
 .qa-artifacts/
-desktop/node_modules/
-desktop/out/
 .cache/
 **/.cache/
 cache/

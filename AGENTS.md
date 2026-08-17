@@ -23,8 +23,6 @@ documents and contains only rules that must be visible before every task.
 - Read `docs/original/platform-runtime.md` before using `dzmm`, KV, loading state,
   completions, drawing, sharing, workshop, or serverless functions.
 - Follow `docs/original/qa-workflow.md` for minimal original verification.
-- Read `docs/desktop/architecture.md` and `docs/desktop/qa-workflow.md` before
-  changing the desktop shell, local storage bridge, or Windows packaging.
 
 ## Hard Stops
 
@@ -34,8 +32,6 @@ documents and contains only rules that must be visible before every task.
 - Runtime code is a static frontend under `publish/`; `publish/index.html` is
   the entry point. Do not add servers, ports, backend frameworks, or non-static
   runtime requirements.
-- The desktop edition under `desktop/` packages the approved `publish/` tree
-  through Electron without adding a local HTTP server or gameplay fork.
 - After each implementation update, run only the focused QA or test commands
   that cover its directly affected behavior. Do not run full or unrelated
   suites without the user's explicit request.
@@ -59,7 +55,6 @@ documents and contains only rules that must be visible before every task.
 - Original visual identity belongs in `docs/original/art-bible.md`.
 - Original goals and experience principles belong in
   `docs/original/game-design.md`.
-- Desktop shell and packaging contracts belong under `docs/desktop/`.
 - When a user changes a rule, update the implementation first, then update the
   matching canonical document. If code and memory disagree, treat the conflict
   as a bug and reconcile it instead of silently choosing one copy.

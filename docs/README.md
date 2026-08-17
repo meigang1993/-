@@ -1,6 +1,6 @@
 # Project Memory Index
 
-The repository contains the original static game and its desktop wrapper.
+The repository contains the original static game and its development tools.
 
 ## Shared Memory
 
@@ -22,22 +22,12 @@ The repository contains the original static game and its desktop wrapper.
 - Platform: `docs/original/platform-runtime.md`
 - Verification policy: `docs/original/qa-workflow.md`
 
-## Desktop HTML Edition
-
-- Shell and packaging: `desktop/`
-- Memory index: `docs/desktop/README.md`
-- Architecture and local storage: `docs/desktop/architecture.md`
-- Focused QA and packaging: `docs/desktop/qa-workflow.md`
-- Runtime authority: the current approved `publish/` tree
-
 ## Selection Rules
 
 - Original gameplay, content, UI, animation, save, browser runtime, or assets:
   read only the relevant `docs/original/` memory.
 - Product changes are implemented in `src/original/`, generated into
   `publish/bundles/`, and recorded in the matching original memory document.
-- Desktop changes may adapt host APIs, local persistence, and packaging around
-  `publish/`, but must not fork original gameplay or presentation.
 
 ## Precedence
 
