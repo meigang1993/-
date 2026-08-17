@@ -5,6 +5,14 @@ const { chromium } = require("@playwright/test");
 const { startDungeon, relevantErrors, collectErrors } = require("../tests/helpers/dungeon-flow");
 const { root, writeReport, formatBytes } = require("./optimization-utils");
 const { startupBundlePaths } = require("./publish-bundle-groups");
+const battleBundleFiles = [
+  "battle-rules.min.js",
+  "battle-skills.min.js",
+  "battle-flow.min.js",
+  "battle-ai.min.js",
+  "battle-presentation.min.js",
+  "battle-ui.min.js",
+];
 
 function mergeRanges(ranges) {
   const sorted = ranges.filter(range => range.end > range.start).sort((a, b) => a.start - b.start);
@@ -93,7 +101,7 @@ function summarize(entries, kind) {
   const missingStartup = startupBundlePaths.filter(relative =>
     !javascript.some(item => item.file.endsWith(path.basename(relative))));
   if (missingStartup.length
-    || !javascript.some(item => item.file.endsWith("battle.min.js"))
+    || battleBundleFiles.some(file => !javascript.some(item => item.file.endsWith(file)))
     || !javascript.some(item => item.file.endsWith("dungeon.min.js"))) {
     throw new Error(
       `browser coverage did not capture all runtime bundles; missing startup: ${missingStartup.join(", ") || "none"}`

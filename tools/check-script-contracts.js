@@ -74,7 +74,7 @@ const expectedExports = {
   "startup-store": "GameStore",
   "startup-app": "AppRuntimeErrors",
   hall: "VillaCollectionUI",
-  battle: "BattleSystem",
+  "battle-flow": "BattleSystem",
   dungeon: "DungeonSystem",
 };
 Object.entries(expectedExports).forEach(([group, name]) => {
@@ -129,13 +129,20 @@ if (!badgeTag || badgeBuild !== buildVersion || badgeLabel !== expectedLabel) {
 }
 
 const loader = fs.readFileSync(path.join(sourceDir, "runtime-loader.js"), "utf8");
-["hall", "battle", "dungeon"].forEach(group => {
-  if (!loader.includes(`${group}: "./bundles/${group}.min.js"`)) {
-    failures.push(`runtime loader is missing the ${group} bundle mapping`);
-  }
+const deferredBundleParts = {
+  hall: ["hall"],
+  battle: ["battle-rules", "battle-skills", "battle-flow", "battle-ai", "battle-presentation", "battle-ui"],
+  dungeon: ["dungeon"],
+};
+Object.entries(deferredBundleParts).forEach(([scene, groups]) => {
+  groups.forEach(group => {
+    if (!loader.includes(`"./bundles/${group}.min.js"`)) {
+      failures.push(`runtime loader is missing the ${scene} bundle part ${group}`);
+    }
+  });
 });
 if (!loader.includes("meta[name=\"game-build\"]")
-  || !loader.includes("versioned(scripts[name])")
+  || !loader.includes("versioned(source)")
   || !loader.includes("versioned(href)")) {
   failures.push("runtime loader must apply the index build version to deferred bundles and styles");
 }

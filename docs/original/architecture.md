@@ -19,7 +19,8 @@
   with the same build version, avoiding four separate startup link elements.
 - Runtime code uses ordered classic scripts and global public APIs.
 - `tools/publish-bundles.json` is the canonical source order for the three
-  startup bundles plus the deferred hall, battle, and dungeon bundles.
+  startup bundles plus the deferred hall, battle responsibility set, and
+  dungeon bundle.
 - Every new or split runtime source module is created under `src/original/`,
   registered exactly once in `tools/publish-bundles.json`, and delivered to
   players only through its generated bundle. Never place an unminified source
@@ -68,10 +69,11 @@
 - The full Game Studio release unit always contains `publish/`. Top-level
   `functions/*.ts` are included only for features that currently invoke them;
   player save storage has no serverless-function dependency.
-- The only JavaScript files allowed in `publish/` are
-  `bundles/startup.min.js`, `bundles/startup-store.min.js`,
-  `bundles/startup-app.min.js`, `bundles/hall.min.js`,
-  `bundles/battle.min.js`, and `bundles/dungeon.min.js`.
+- The only JavaScript files allowed in `publish/` are the generated manifest
+  outputs. Battle delivery is split into ordered `battle-rules`,
+  `battle-skills`, `battle-flow`, `battle-ai`, `battle-presentation`, and
+  `battle-ui` bundles; `GameBundles.load("battle")` loads the complete set
+  serially and remains the only public scene-loading entry.
 ## Source Ownership
 
 | Domain | Canonical owners |
@@ -91,7 +93,7 @@
 | Skins and assets | `src/original/data-skins.js` owns purchased, initial, level-gated, and test-trial appearance metadata; `src/original/skins.js` owns ownership, equipment, and runtime appearance selection; `src/original/skin-fx-runtime.js` owns shared dynamic-effect, timer, mount, and invalidation infrastructure used by dedicated skin controllers including `src/original/flora-sonic-skin-fx.js`, `src/original/wendy-teacher-skin-fx.js`, and `src/original/elrana-fallen-physician-skin-fx.js`; `src/original/assets.js`, skin CSS, `publish/assets/` |
 | Interaction and visual memory | `docs/original/interaction-visual-reference.md` |
 | Skill-state skin variants | `src/original/skins.js` selects the equipped-skin-only variant from live skill state using metadata from `src/original/data-skins.js`, with rendering in `src/original/ui-common-art.js`; no timed full-screen damage-art controller remains |
-| Bundle order | `tools/publish-bundles.json` |
+| Bundle order | `tools/publish-bundles.json`; battle sources are published by rules, skills, flow/settlement, AI, presentation/audio, and UI responsibility |
 | Intended contracts | `docs/original/game-settings.md` |
 | Verification policy | `docs/original/qa-workflow.md` |
 

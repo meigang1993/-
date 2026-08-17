@@ -1,9 +1,16 @@
 window.GameBundles = (() => {
   const buildVersion = document.querySelector('meta[name="game-build"]')?.content || "";
   const scripts = {
-    hall: "./bundles/hall.min.js",
-    battle: "./bundles/battle.min.js",
-    dungeon: "./bundles/dungeon.min.js",
+    hall: ["./bundles/hall.min.js"],
+    battle: [
+      "./bundles/battle-rules.min.js",
+      "./bundles/battle-skills.min.js",
+      "./bundles/battle-flow.min.js",
+      "./bundles/battle-ai.min.js",
+      "./bundles/battle-presentation.min.js",
+      "./bundles/battle-ui.min.js",
+    ],
+    dungeon: ["./bundles/dungeon.min.js"],
   };
   const styles = {
     battle: window.GameBattleStyles.core,
@@ -13,6 +20,7 @@ window.GameBundles = (() => {
   const styleLinks = new Map();
   const pendingStyles = new Map();
   const pendingScripts = new Map();
+  const loadedScripts = new Set();
   const STYLE_RETRY_DELAY_MS = 160;
   const versioned = path => buildVersion
     ? `${path}?v=${encodeURIComponent(buildVersion)}`
@@ -84,34 +92,48 @@ window.GameBundles = (() => {
     });
   }
 
-  function loadScript(name) {
-    if (runtimeReady(name)) return Promise.resolve(true);
-    if (pendingScripts.has(name)) return pendingScripts.get(name);
-    const promise = new Promise((resolve, reject) => {
+  function loadScriptPart(name, source) {
+    if (loadedScripts.has(source)) return Promise.resolve(true);
+    return new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = versioned(scripts[name]);
-      script.async = true;
+      script.src = versioned(source);
+      script.async = false;
       script.dataset.gameBundle = name;
+      script.dataset.gameBundlePart = source;
       script.onload = () => {
-        pendingScripts.delete(name);
-        if (!runtimeReady(name)) {
-          script.remove();
-          const error = new Error(`${name} bundle loaded without its runtime`);
-          error.code = "BUNDLE_INVALID";
-          reject(error);
-          return;
-        }
+        loadedScripts.add(source);
         resolve(true);
       };
       script.onerror = () => {
-        pendingScripts.delete(name);
         script.remove();
-        const error = new Error(`${name} bundle failed to load`);
+        const error = new Error(`${name} bundle part failed to load: ${source}`);
         error.code = "BUNDLE_LOAD_FAILED";
         reject(error);
       };
       document.head.append(script);
     });
+  }
+
+  function resetScriptParts(name) {
+    scripts[name].forEach(source => loadedScripts.delete(source));
+    document.querySelectorAll(`script[data-game-bundle="${name}"]`).forEach(script => script.remove());
+  }
+
+  function loadScript(name) {
+    if (runtimeReady(name)) return Promise.resolve(true);
+    if (pendingScripts.has(name)) return pendingScripts.get(name);
+    const promise = scripts[name].reduce(
+      (chain, source) => chain.then(() => loadScriptPart(name, source)),
+      Promise.resolve()
+    ).then(() => {
+      if (!runtimeReady(name)) {
+        resetScriptParts(name);
+        const error = new Error(`${name} bundles loaded without their runtime`);
+        error.code = "BUNDLE_INVALID";
+        throw error;
+      }
+      return true;
+    }).finally(() => pendingScripts.delete(name));
     pendingScripts.set(name, promise);
     return promise;
   }

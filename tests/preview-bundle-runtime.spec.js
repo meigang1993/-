@@ -105,13 +105,21 @@ test("scene bundles stay deferred until requested", async ({ page }) => {
       window.GameUIBattleTargeting,
       window.GameUIBattleUnits,
     ].map(value => typeof value),
-    battleScripts: document.querySelectorAll('script[data-game-bundle="battle"]').length,
+    battleScripts: [...document.querySelectorAll('script[data-game-bundle="battle"]')]
+      .map(script => script.dataset.gameBundlePart?.split("/").pop()),
     battleStyles: document.querySelectorAll('link[data-game-style="battle"]').length,
   }))).toEqual({
     battle: true,
     dungeon: false,
     battleUi: ["function", "object", "function"],
-    battleScripts: 1,
+    battleScripts: [
+      "battle-rules.min.js",
+      "battle-skills.min.js",
+      "battle-flow.min.js",
+      "battle-ai.min.js",
+      "battle-presentation.min.js",
+      "battle-ui.min.js",
+    ],
     battleStyles: 8,
   });
   const optionalStyles = await page.evaluate(async () => {
