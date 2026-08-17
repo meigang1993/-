@@ -390,8 +390,8 @@ assert(overlayHtml.includes("card-art-healing-mana-bottle"), "show and reveal ov
 assert(overlayHtml.includes("reveal-card-wrap"), "show overlays must flip from a card-back wrapper instead of a blank backface");
 const compactCss = fs.readFileSync("publish/animations.css", "utf8");
 assert(compactCss.includes(".play-card { min-height: 132px; }"), "short desktop layout must shrink illustrated cards");
-assert(compactCss.includes(".judge-card-wrap { width: 88px; }"), "short judgement cards must match short reveal cards");
-assert(compactCss.includes(".judge-card-wrap { width: 76px; }"), "very short judgement cards must match very short reveal cards");
+assert(compactCss.includes(".judge-card-wrap { --judge-card-width: 88px;"), "short judgement cards must match short reveal cards");
+assert(compactCss.includes(".judge-card-wrap { --judge-card-width: 76px;"), "very short judgement cards must match very short reveal cards");
 assert(compactCss.includes(".public-cards .card-art { flex-basis: 17px; }"), "very short public cards must shrink their artwork");
 assert(compactCss.includes("@keyframes revealPopIn"), "reveal entry animation must preserve horizontal centering");
 assert(overlayCss.includes("overflow: hidden auto"), "hand reveal panel must scroll vertically when illustrated cards exceed its height");

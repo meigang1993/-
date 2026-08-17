@@ -32,14 +32,15 @@ window.RelicUICodexInteractions = (() => {
     document.addEventListener("focusout", hideHover);
   }
   function pick(event, ctx, update, stop) {
+    const button = event.target.closest?.("[data-codex-relic]");
+    if (!button) return;
     stop(event, () => {
       suppressHover = true;
       removeHover();
       const grid = document.querySelector(".relic-codex-pop .codex-grid");
       const top = grid?.scrollTop || 0;
       update(ctx, () => {
-        ctx.state().selectedCodexRelic = event.currentTarget?.dataset.codexRelic
-          || event.target.closest("[data-codex-relic]")?.dataset.codexRelic;
+        ctx.state().selectedCodexRelic = button.dataset.codexRelic;
       });
       requestAnimationFrame(() => {
         const next = document.querySelector(".relic-codex-pop .codex-grid");
