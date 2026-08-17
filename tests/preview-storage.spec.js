@@ -249,7 +249,7 @@ test("only milestone changes reach gameplay persistence", async ({ page }) => {
   await page.evaluate(() => window.persist({ flush: true }));
   expect(await page.evaluate(() => window.__automaticSaveCalls)).toEqual([
     { method: "overwrite", flush: true },
-    { method: "save" },
-    { method: "save", flush: true },
+    { method: "save", trusted: true },
+    { method: "save", flush: true, trusted: true },
   ]);
 });

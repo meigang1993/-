@@ -56,6 +56,8 @@ async function compile(name, files) {
     compress: {
       passes: 3,
     },
+    keep_classnames: true,
+    keep_fnames: true,
     mangle: {
       keep_classnames: true,
       keep_fnames: true,

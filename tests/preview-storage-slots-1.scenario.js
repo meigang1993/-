@@ -112,7 +112,7 @@ test("automatic save slot is read-only in save mode and loadable in load mode", 
   await page.locator(".settings-menu [data-load-game]").click();
   const loadAuto = page.locator("[data-save-slot='auto']");
   await expect(loadAuto).toContainText("莉莉丝元：2468");
-  await expect(loadAuto).toContainText("战斗开始、完整回合检查点和结束");
+  await expect(loadAuto).toContainText("战斗开始、稳定操作检查点和结束");
   await page.evaluate(() => {
     window.state.resources.gold = 1;
     window.state.resources.essence = 2;

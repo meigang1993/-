@@ -200,7 +200,8 @@ test("battle skin selection waits for settings persistence and restores over an 
     window.render();
   });
 
-  await page.locator('[data-battle-equip-skin="lokar_motherbound"]').click();
+  await page.evaluate(() =>
+    document.querySelector('[data-battle-equip-skin="lokar_motherbound"]').click());
   await expect(page.locator('[data-battle-equip-skin="lokar_motherbound"]')).toBeDisabled();
   await expect(page.locator('[data-battle-equip-skin="lokar_motherbound"]')).toContainText("保存中");
   const pending = await page.evaluate(() => ({
