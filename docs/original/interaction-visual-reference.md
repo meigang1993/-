@@ -185,8 +185,6 @@ The highest visible blocking layer receives input. Lower layers are marked
 
 - Controls use click or Pointer Events so mouse input remains primary and
   unified pointer behavior remains available.
-- `F11` and the Settings fullscreen command share the same desktop fullscreen
-  action and the same Preview-sandbox fallback.
 - Interactive cards and portraits expose stable labels or ARIA names.
 - Save slots support keyboard focus and activation.
 - Credits move focus to the close button after opening.

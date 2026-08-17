@@ -10,7 +10,6 @@ function bindActions() {
   document.onkeydown = e => {
     if (window.AppRuntimeErrors?.handleKeydown?.(e)) return;
     if (window.RelicUI?.handleKeydown?.(e, state, render)) return;
-    if (window.DesktopControls?.handleKeydown?.(e)) return;
     if (e.key !== "Escape") return;
     const finish = action => {
       e.preventDefault();
@@ -104,9 +103,7 @@ function bindActions() {
   document.querySelector("[data-repair-main]")?.addEventListener("click", e => AppActionGuard.run("主存档修复失败", async ({ isCurrent }) => { await GameStore.repairMain().then(() => log("损坏的主存档副本已修复。")).catch(err => { console.warn("main repair failed:", err.code, err.message, err.stack); log(`主存档修复失败：${err.storage === "cloud" ? "云端不可写" : "本地不可写"}。`); }); if (isCurrent()) render(); }, { control: e.currentTarget, busyText: "修复中…", captureRun: false }));
   document.querySelectorAll("[data-retry-settlement]").forEach(button => button.addEventListener("click", e => AppActionGuard.run("附加结算重试失败", async ({ state: actionState, isCurrent }) => { const ok = await DungeonRewards.retryPending(actionState); if (!isCurrent()) return false; log(ok ? "附加结算已全部补齐。" : "附加结算仍未完成，请稍后重试。"); render(); await persist({ flush: true }); return ok; }, { control: e.currentTarget, busyText: "结算中…", captureRun: false, key: "shop-operation" })));
   document.querySelectorAll("[data-load-game]").forEach(button => button.addEventListener("click", async () => { await SaveSlots.open("load", render); }));
-  document.querySelector("[data-fullscreen]")?.addEventListener("click", () => {
-    window.DesktopControls?.toggleFullscreen?.();
-  });
+  document.querySelector("[data-fullscreen]")?.addEventListener("click", async () => { try { if (document.fullscreenElement) await document.exitFullscreen(); else if (document.fullscreenEnabled && document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); else alert("当前预览沙箱不允许游戏内部全屏，请使用 Preview 面板自带的全屏按钮。"); } catch (err) { console.warn("fullscreen failed:", err.message, err.stack); alert("全屏被浏览器或预览沙箱拦截，请使用 Preview 面板自带的全屏按钮。"); } });
   document.querySelector("[data-settings-retreat]")?.addEventListener("click", () => {
     if (!state.explore || state.view === "battle") return;
     askGameConfirm({
