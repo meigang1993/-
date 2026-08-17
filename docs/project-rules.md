@@ -22,6 +22,11 @@ documentation task in game `2971485`.
   Python/Flask, or another backend framework.
 - Platform serverless functions, when required, live as independent
   `functions/*.ts` endpoints and follow their existing platform contract.
+- The downloadable desktop edition lives under `desktop/`. It packages the
+  approved `publish/` tree as a read-only Electron resource and must not
+  rewrite, normalize, or generate files into `publish/`.
+- Desktop runtime loading is in-process through the `game://` protocol. It
+  must not start an HTTP server, listen on a port, or add a server framework.
 
 ## Published Files
 
@@ -63,6 +68,8 @@ documentation task in game `2971485`.
   actually invokes that function; never copy functions into the static runtime.
 - Before declaring a release package complete, verify that
   `publish/index.html` is present.
+- A desktop release must package the complete current `publish/` tree and
+  verify the packaged copy byte for byte before creating its portable ZIP.
 
 ## Repository History and Capacity
 
@@ -198,6 +205,12 @@ for the focused verification required by the update.
 
 - `docs/original/` owns the shipped static game's current product,
   architecture, risk, platform, visual, and verification policy.
+- `docs/desktop/` owns the Electron boundary, local durable storage,
+  packaging, and desktop-specific verification policy.
+- Original changes that affect standalone gameplay, presentation, assets,
+  saves, settings, offline loading, audio, or desktop input flow into the
+  desktop package through the shared `publish/` tree. Platform-only changes do
+  not require a desktop bridge change.
 - After installing, upgrading, replacing, or removing a development SDK,
   compiler, runtime, browser, system tool, or direct package, update the
   matching version's architecture inventory in the same task. Record the exact
