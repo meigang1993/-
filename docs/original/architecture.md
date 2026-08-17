@@ -102,6 +102,17 @@
   Chromium dependency set were installed and verified on August 17, 2026 with
   `apt-get install -y libglib2.0-0` followed by
   `npm run playwright:install:deps`.
+- Any future Windows/Electron package is a disposable development artifact,
+  not part of the static player runtime. Install packaging dependencies, stage
+  `publish/`, create the unpacked Windows application, and compress it entirely
+  below `/tmp/game-2971485-windows/`; never generate Electron `node_modules`,
+  staging trees, unpacked output, caches, or an in-progress archive anywhere
+  below `/workspace`. `.gitignore` does not protect these paths from the Game
+  Studio file watcher. To expose one completed archive for download, copy it
+  to `uploads/SuccubusKill-win64.zip~` first; the trailing `~` keeps the copy
+  operation out of file-watch events, then rename it atomically on the
+  `/workspace` filesystem to `uploads/SuccubusKill-win64.zip`. Remove the
+  delivered archive after download so workspace size does not grow.
 
 ## Source Ownership
 
