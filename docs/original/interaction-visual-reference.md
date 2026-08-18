@@ -42,6 +42,9 @@ an instruction page.
 - Long content scrolls inside its owning panel: modal body, codex grid, shop,
   task list, dungeon map, battle hand, public card trail, battle log, or
   character detail.
+- Unlock story events use the event modal as a non-scrolling frame; only the
+  `.vn-lines` dialogue region scrolls. New unlock events must follow the same
+  single-scroll-owner contract.
 - Same-stage battle picker rerenders preserve the picker option list's internal
   scroll position. Moving to a different picker stage starts that new list at
   its own initial position.
@@ -250,6 +253,7 @@ The following table records the current screen families.
 | Party Roster | Scrollable roster cards with portrait, role, skin action, and selected outline | Clicking a card toggles party membership; full party blocks unselected cards; at least one member remains; back returns to expedition |
 | Shop | Six-stock card grid, resource/capacity tags, card text, prices, and delete-service section | Sold slots stay visible as sold; insufficient currency/capacity disables purchase; purchase and deletion use guarded async states and visible retry |
 | Deck | Four-column dense card collection with type filters, suit inventory, counts, and codex command | Filters do not alter the stored deck; grouped cards preserve physical suit counts; internal modal scrolling retains surrounding shell |
+| Card Codex | Topmost independent card codex dialog with collection counters, scrollable card grid, and detail pane | Opens from the deck; the deck remains inert underneath; card grid/detail scroll inside the codex, and `Escape`, right-click/backdrop, or close dismisses only the codex |
 | Card Codex | Same deck shell with codex mode selected | Shows discovery rather than physical ownership; unknown entries remain unavailable; card details and art use the canonical card renderer |
 | Relic Inventory | Two-column party equipment layout with inventory summary and codex command | Each character has two direct-action slots; picker remains anchored to the opened character and preserves modal scroll position |
 | Relic Codex | Topmost purple relic codex dialog with a four-column name grid and a fixed detail pane | Opens only from the hall relic inventory; the Living Room character-detail Relics tab contains equip controls but no second codex entry; grid and detail scroll independently; owned entries glow and unknown entries remain gray; focus is trapped and restored; `Escape`, backdrop, or close dismisses only the codex |

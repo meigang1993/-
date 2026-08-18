@@ -219,3 +219,24 @@ test("relic codex exposes every formal relic and closes without leaving the libr
   await expect(page.locator(".villa-modal")).toBeVisible();
   await expect(opener).toBeFocused();
 });
+
+test("card codex is an independent overlay and outside context closes only the codex", async ({ page }) => {
+  await openGame(page);
+  await startFreshGame(page);
+  await page.locator("[data-open-modal='deck']").click();
+  await page.locator("[data-card-codex='1']").click();
+  await expect(page.locator(".card-codex-pop")).toBeVisible();
+  await expect(page.locator(".card-codex-grid")).toBeVisible();
+  await expect(page.locator(".modal-card")).toContainText("公共牌库");
+  await page.locator(".card-codex-overlay").click({ position: { x: 2, y: 2 } });
+  await expect(page.locator(".card-codex-pop")).toHaveCount(0);
+  await expect(page.locator(".modal-card")).toBeVisible();
+  await page.locator("[data-card-codex='1']").click();
+  await page.locator(".card-codex-overlay").click({ position: { x: 2, y: 2 }, button: "right" });
+  await expect(page.locator(".card-codex-pop")).toHaveCount(0);
+  await expect(page.locator(".modal-card")).toBeVisible();
+  await page.locator("[data-card-codex='1']").click();
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".card-codex-pop")).toHaveCount(0);
+  await expect(page.locator(".modal-card")).toBeVisible();
+});
