@@ -88,6 +88,10 @@
 - The QA container is Debian GNU/Linux 12 (`bookworm`).
 - Playwright uses the repository-local Chromium build; on August 17, 2026,
   `npm run check:toolchain` launched Chromium `149.0.7827.55`.
+- On August 18, 2026, `npm run playwright:install` installed Chrome for
+  Testing and the matching Headless Shell `149.0.7827.55` (Playwright
+  Chromium v1228), plus FFmpeg v1011, under the ignored
+  `/workspace/.playwright-browsers/` directory for browser QA.
 - Chromium Linux libraries and fonts are installed into the development
   container with `npm run playwright:install:deps`; they are not copied into
   `publish/` or tracked as binary repository content. The repository-owned
