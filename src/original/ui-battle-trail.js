@@ -35,7 +35,14 @@ window.GameUIBattleTrail = U => {
     const html = cards(battle).map(U.trailCard).join("");
     if (trail.innerHTML === html) return false;
     trail.innerHTML = html;
-    trail.scrollLeft = trail.scrollWidth;
+    // Card art and the flex row can settle after the DOM replacement. Follow
+    // the actual end on the next frame so the newest card remains visible.
+    const followLatest = () => {
+      if (document.querySelector(".public-cards") !== trail) return;
+      trail.scrollLeft = trail.scrollWidth;
+    };
+    followLatest();
+    requestAnimationFrame(followLatest);
     return true;
   }
 
