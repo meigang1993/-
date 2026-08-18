@@ -73,7 +73,7 @@ body.battle-mode .bottom-nav, body.dungeon-mode .bottom-nav { display: none; }
 body.dungeon-mode .main-grid { transform: translateY(-18px); padding-bottom: 20px; }
 .panel { border-radius: 16px; padding: 8px; min-height: 0; overflow: hidden; }
 .side-panel, .content-panel { display: flex; flex-direction: column; min-width: 0; }
-.content-panel { overflow-y: auto; overscroll-behavior: auto; }
+.content-panel { overflow: hidden; overscroll-behavior: none; }
 .content-panel.victory-mode, .content-panel.dungeon-view, .main-grid.battle-mode .content-panel { overflow: hidden; display: block; }
 #view { height: 100%; min-height: 0; }
 .resource-row, .nav-list { display: grid; gap: 8px; }

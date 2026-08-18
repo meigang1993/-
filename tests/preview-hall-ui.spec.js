@@ -40,6 +40,33 @@ test("hall actions remain reachable in minimum compact landscape", async ({ page
   });
 });
 
+test("shell keeps one scroll owner on hall and modal surfaces", async ({ page }) => {
+  await page.setViewportSize({ width: 480, height: 270 });
+  await openGame(page);
+  await startFreshGame(page);
+  const measure = selector => page.locator(selector).evaluate(element => ({
+    scrollable: element.scrollHeight > element.clientHeight + 1,
+    overflowY: getComputedStyle(element).overflowY,
+  }));
+  expect(await measure(".content-panel")).toEqual({
+    scrollable: false,
+    overflowY: "hidden",
+  });
+  expect(await measure(".villa-actions")).toEqual({
+    scrollable: true,
+    overflowY: "auto",
+  });
+  await page.locator("[data-open-modal='team']").click();
+  expect(await measure(".content-panel")).toEqual({
+    scrollable: false,
+    overflowY: "hidden",
+  });
+  expect(await measure(".modal-card")).toEqual({
+    scrollable: true,
+    overflowY: "auto",
+  });
+});
+
 test("fresh games guide the first expedition and retire the hint after entry", async ({ page }) => {
   await openGame(page, { loadFeatures: false });
   await startFreshGame(page);
