@@ -24,6 +24,18 @@ These tools are for development only. They do not change the static game runtime
 
 ## Commands
 
+- `npm run impact -- [files...]`
+  Analyzes changed or explicitly named files and reports affected publish
+  bundles, focused logic/browser tests, cache-version requirements, resource
+  checks, and memory documents to review.
+
+- `npm run dev:save -- "message"`
+  Runs the hook check, publish path check, bundle rebuild when runtime files
+  changed, quick QA, and the authenticated Game Studio save endpoint. It uses
+  all three provisioning headers through curl config input so secrets are not
+  exposed in process arguments. After a successful save, refresh the Preview
+  panel.
+
 - `npm run qa`
   Runs the complete automatic QA chain. This is an alias for `qa:full`.
 
