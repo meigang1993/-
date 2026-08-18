@@ -113,6 +113,36 @@ test("update notice shows the August 17 player-facing fixes", async ({ page }) =
   await expect(notice).not.toContainText(/测试|提交|bundle|构建验证/);
 });
 
+test("announcement and every unlock event keep scrolling inside their content", async ({ page }) => {
+  await page.setViewportSize({ width: 480, height: 270 });
+  await openGame(page);
+  await startFreshGame(page);
+  const eventModals = [
+    "firstDefeat", "secondDefeat", "millerUnlock", "gerlotUnlock", "cadicisUnlock",
+    "lukaUnlock", "littleElranaUnlock", "aceUnlock", "underwaterTrainUnlock",
+    "opheliaUnlock", "bestaNurseryUnlock", "orcDungeonUnlock", "soniaNurseryUnlock",
+    "chiyoRecruitUnlock", "gerdaNurseryUnlock", "hoshinoFamilyUnlock",
+  ];
+  const measure = selector => page.locator(selector).evaluate(element => ({
+    scrollable: element.scrollHeight > element.clientHeight + 1,
+    overflowY: getComputedStyle(element).overflowY,
+  }));
+  await page.evaluate(() => { window.state.hallModal = "updates"; window.render(); });
+  expect(await measure(".modal-card.update-modal")).toMatchObject({ overflowY: "hidden" });
+  expect(await measure(".update-notice-list")).toEqual({ scrollable: true, overflowY: "auto" });
+  await expect(page.locator(".update-notice-list")).toBeVisible();
+  for (const modal of eventModals) {
+    await page.evaluate(name => { window.state.hallModal = name; window.render(); }, modal);
+    await expect(page.locator(".modal-card.event-modal")).toHaveCount(1);
+    expect(await measure(".modal-card.event-modal")).toMatchObject({ overflowY: "hidden" });
+    const lines = page.locator(".vn-lines");
+    if (await lines.count()) {
+      expect(await measure(".vn-lines")).toEqual({ scrollable: true, overflowY: "auto" });
+    }
+    await expect(page.locator(".event-modal .actions button")).toBeVisible();
+  }
+});
+
 test("relic codex exposes every formal relic and closes without leaving the library", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);

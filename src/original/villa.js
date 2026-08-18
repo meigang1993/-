@@ -50,7 +50,15 @@ window.VillaUI = (() => {
     };
     if (!map[state.hallModal]) { state.hallModal = null; return ""; }
     const close = state.hallModal === "teamRoster" ? `data-open-modal="team" title="返回准备启程"` : `data-close-modal="1"`;
-    const modalClass = state.hallModal === "updates" ? " update-modal" : "";
+    const eventModals = new Set([
+      "firstDefeat", "secondDefeat", "millerUnlock", "gerlotUnlock", "cadicisUnlock",
+      "lukaUnlock", "littleElranaUnlock", "aceUnlock", "underwaterTrainUnlock",
+      "opheliaUnlock", "bestaNurseryUnlock", "orcDungeonUnlock", "soniaNurseryUnlock",
+      "chiyoRecruitUnlock", "gerdaNurseryUnlock", "hoshinoFamilyUnlock",
+    ]);
+    const modalClass = state.hallModal === "updates"
+      ? " update-modal"
+      : eventModals.has(state.hallModal) ? " event-modal" : "";
     return `<div class="villa-modal" role="dialog" aria-modal="true" aria-label="据点面板"><div class="modal-card${modalClass}"><button class="info-close" ${close} aria-label="关闭">×</button>${map[state.hallModal](state)}</div></div>`;
   }
   return {
