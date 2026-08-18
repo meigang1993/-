@@ -5,7 +5,7 @@ const {
 
 test("Nanali skills resolve through the real battle system", async ({ page }) => {
   await startRegressionBattle(page);
-  const result = await page.evaluate(() => {
+  const result = await page.evaluate(async () => {
     const battle = window.state.battle;
     const nanali = battle.allies[0];
     const ally = battle.allies[1] || { ...nanali, uid: "nanali-test-ally" };
@@ -97,12 +97,17 @@ test("Nanali skills resolve through the real battle system", async ({ page }) =>
       source,
       window.CardUtils.fromEntity("杀（普攻）", { ignoreResponse: true }),
     );
+    window.render();
+    await window.BattleEffects.whenIdle();
+    const revengePrompt = battle.counterTrigger?.skill || null;
+    await window.BattleSystem.resolveCounterTrigger(window.state, true, window.render);
     return {
       apollo,
       returned,
       converted,
       virtual,
       revenge: {
+        prompt: revengePrompt,
         allyHp: ally.hp,
         sourceHp: source.hp,
         sealed: source.nanaliSealed?.length || 0,
@@ -115,6 +120,9 @@ test("Nanali skills resolve through the real battle system", async ({ page }) =>
     returned: { targetHand: 2, sealed: 0 },
     converted: { targetHp: 24, sealed: 1, targetHand: 0 },
     virtual: { targetHp: 22, sealed: 1, targetHand: 0 },
-    revenge: { allyHp: 18, sourceHp: 24, sealed: 1, sourceHand: 0 },
+    revenge: {
+      prompt: "复仇之刃", allyHp: 18, sourceHp: 24,
+      sealed: 1, sourceHand: 0,
+    },
   });
 });

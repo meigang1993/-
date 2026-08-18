@@ -103,9 +103,10 @@
   `/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0`, resolving to
   `/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.7400.6`. It is required for the
   repository Chromium used by browser QA. The package and the complete
-  Chromium dependency set were installed and verified on August 17, 2026 with
-  `apt-get install -y libglib2.0-0` followed by
-  `npm run playwright:install:deps`.
+  Chromium dependency set were restored and verified on August 18, 2026 with
+  `npm run playwright:install:deps` after the container was found without the
+  GLib loader. `npm run check:toolchain` then confirmed Chromium
+  `149.0.7827.55` could launch.
 - Any future Windows/Electron package is a disposable development artifact,
   not part of the static player runtime. Install packaging dependencies, stage
   `publish/`, create the unpacked Windows application, and compress it entirely
