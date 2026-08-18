@@ -11,7 +11,7 @@ window.BattleCounterTriggers = (() => {
     };
   }
   function activateNext(battle) {
-    if (!battle || battle.counterTrigger) return false;
+    if (!battle || battle.counterTrigger || battle.animQueue?.length) return false;
     const next = battle.counterTriggerQueue?.shift();
     if (!battle.counterTriggerQueue?.length) battle.counterTriggerQueue = null;
     if (!next) return false;

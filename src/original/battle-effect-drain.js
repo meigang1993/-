@@ -53,6 +53,7 @@ window.BattleEffectDrain = ({ runtime, isCurrent, resolveIdle, recover }) => {
       }
       if (!active()) return;
       handlers.clearVisuals(state);
+      window.BattleCounterTriggers?.activatePending?.(state.battle);
       shouldRender = !!window.BattleSystem?.settlePending?.(state) || state.view === "battle";
     } catch (err) {
       if (!active()) return;
