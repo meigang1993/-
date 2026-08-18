@@ -20,8 +20,12 @@ window.BattleManualContinuation = deps => {
     const current = actionGuard(state, inherited);
     if (!current()) return;
     const unit = active(state.battle);
-    if (unit?.side === "enemy" && state.battle.phase === 4
-      && !await runEnemyPlayPhase(state, unit, onStep, false, current)) return;
+    if (unit?.side === "enemy" && state.battle.phase === 4) {
+      const continued = await runEnemyPlayPhase(state, unit, onStep, false, current);
+      const waitingReaction = window.BattleReactionQueue?.pending?.(state.battle)
+        || state.battle.counterTrigger || state.battle.counterTriggerQueue?.length;
+      if (!continued && (unit.hp > 0 || waitingReaction || state.battle.locked)) return;
+    }
     if (!current()) return;
     finishTurn(state);
     combat.checkEnd(state);

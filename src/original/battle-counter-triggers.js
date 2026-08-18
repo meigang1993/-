@@ -39,6 +39,7 @@ window.BattleCounterTriggers = (() => {
     const battle = state?.battle, prompt = battle?.counterTrigger;
     if (!prompt) return false;
     battle.counterTrigger = null;
+    const wasLocked = battle.locked;
     battle.locked = false;
     battle._counterTriggerResolving = true;
     const units = battle.allies.concat(battle.enemies);
@@ -79,7 +80,10 @@ window.BattleCounterTriggers = (() => {
     if (settling) {
       battle.counterTrigger = null;
       battle.counterTriggerQueue = null;
-    } else activateNext(battle);
+    } else {
+      battle.locked = wasLocked && !!battle.counterTriggerQueue?.length;
+      activateNext(battle);
+    }
     return true;
   }
   return {
