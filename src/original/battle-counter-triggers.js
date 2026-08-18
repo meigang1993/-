@@ -57,7 +57,12 @@ window.BattleCounterTriggers = (() => {
           "刺刀AK47": () => window.MannySkills?.resolveCounterTrigger?.(state, source, target, api),
           "血色刺伞": () => window.SakuraRisaSkills?.resolveUmbrellaTrigger?.(state, source, api),
         };
-        resolvers[prompt.skill]?.();
+        const resolver = resolvers[prompt.skill];
+        if (!resolver) {
+          window.BattleLog?.add?.(state, `${prompt.skill} 暂无可用执行器，已取消本次触发。`);
+          return false;
+        }
+        resolver();
       } else {
         window.BattleLog?.add?.(state, `${source?.name || "角色"}跳过${prompt.skill}。`);
       }

@@ -106,8 +106,10 @@ window.BertisGerlotSkills = (() => {
   }
   function queueHeadshot(state, actor, target, amount, source, card, resume) {
     const b = state.battle, root = headshotCard(card);
-    if (actor?.ref !== "gerlot" || !isKill(card) || root?.headshotDone || !b?.animQueue) return false;
+    if (actor?.ref !== "gerlot" || !isKill(card)
+      || root?.headshotDone || root?.headshotQueued || !b?.animQueue) return false;
     const judge = drawJudge(state, actor), success = !!judge?.suit && sameColor(judge.suit, root.suit);
+    root.headshotQueued = true;
     root.headshotDone = true; root.headshotMultiplier = success ? 2 : 1; b.locked = true;
     line(state, actor, success ? "爆头成功" : "爆头失败");
     window.BattleLog.add(state, `${actor.name} 爆头一击判定：${judge?.suit || "?"}${judge?.name || "无牌"}，${success ? "伤害翻倍" : "未触发"}。`);
