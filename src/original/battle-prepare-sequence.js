@@ -19,6 +19,7 @@ window.BattlePrepareSequence = deps => {
       } else if (step === 2) {
         if (window.EnemySkills?.prepare?.(state, unit, combat.damage, nextAnim) === false) return false;
         battle.prepareStep += 1;
+        if (window.BattleCounterTriggers?.pending?.(battle)) return false;
       } else if (step === 3) {
         battle.prepareStep += 1;
         if (unit.hp > 0) relicPrepare(state, unit);

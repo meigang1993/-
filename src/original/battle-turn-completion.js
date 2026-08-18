@@ -49,6 +49,8 @@ window.BattleTurnCompletion = ({
     advanceToInput,
     runEnemyPlayPhase,
     waitEffects,
+    continuePreparedTurn,
+    record,
   });
   const discardTools = window.BattleDiscardOverflow({
     visibleHand,
