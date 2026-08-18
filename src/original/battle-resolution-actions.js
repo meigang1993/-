@@ -54,6 +54,21 @@ window.BattleResolutionActions = ({
     return true;
   }
 
+  async function resolveCounterTrigger(state, use, onStep) {
+    const current = actionGuard(state);
+    const wasEnemy = active(state.battle)?.side === "enemy";
+    if (!combat.resolveCounterTrigger(state, use)) return false;
+    onStep?.();
+    await waitEffects();
+    if (!current() || !state.battle || state.battle.locked) return true;
+    if (wasEnemy) {
+      await manualFlow.resumeAfterManualResponse(state, onStep, current);
+    } else {
+      await manualFlow.resumeInterruptedActions(state, onStep, current);
+    }
+    return true;
+  }
+
   function resolveRisaEye(state, choice, onStep) {
     const ok = window.SakuraRisaSkills?.resolveEyeChoice?.(state, choice) || false;
     if (ok) onStep?.();
@@ -70,6 +85,7 @@ window.BattleResolutionActions = ({
     resolveHandReveal,
     resolveOpheliaGuard,
     resolveDimensionTransfer,
+    resolveCounterTrigger,
     resolveRisaEye,
     confirmRisaEye,
   };

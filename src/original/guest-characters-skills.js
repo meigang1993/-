@@ -116,6 +116,7 @@ window.GuestCharacterSkills = (() => {
     resolveEndSpin(state, target, actor, api, count);
   }
   function resolveEndSpin(state, target, actor, api, count = visible(target).filter(item => black(item) && isSlash(item)).length) {
+    const foes = state.battle.enemies.filter(alive);
     line(state, target, "终焉回旋斩", actor);
     for (let i = 0; i < count; i++) {
       const targets = foes.filter(alive), slash = virtualCard("魔杀", { allTargets: targets.map(enemy => enemy.uid), aoeLineShown: true });

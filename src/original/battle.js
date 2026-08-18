@@ -10,6 +10,8 @@ window.BattleSystem = (() => {
     || battle?.manualDodgeResume
     || battle?.demonInvasionResume
     || battle?.groupHealResume
+    || battle?.counterTrigger
+    || battle?.counterTriggerQueue?.length
     || battle?.cardResumeQueue?.length
     || battle?.comboAttackResume
     || battle?.greenGatlingResume

@@ -100,8 +100,8 @@ window.BertisGerlotSkills = (() => {
   function revengeSlash(state, api, source, target, times) {
     for (let i = 0; i < times && alive(source) && alive(target); i++) api.damage(state, target, stat(source, "attack"), "复仇反击", source, virtualCard("杀（普攻）", { revengeCounter: true }));
   }
-  function resolveRevengeTrigger(state, source, target, times, api) {
-    line(state, source, times > 1 ? "贝尔蒂丝受伤反击" : (target?.ref === "bertis" ? "护母反击" : "复仇反击"), target);
+  function resolveRevengeTrigger(state, source, target, times, api, skill = "复仇反击") {
+    line(state, source, skill, target);
     revengeSlash(state, api, source, target, times);
   }
   function queueHeadshot(state, actor, target, amount, source, card, resume) {

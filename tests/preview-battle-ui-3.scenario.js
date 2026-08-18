@@ -224,3 +224,58 @@ test("an explicitly queued Slash is not queued again by damage resolution", asyn
   });
   expect(result).toBe(1);
 });
+
+test("counter triggers queue, resolve through BattleSystem, and preserve multi-target revenge", async ({ page }) => {
+  await startRegressionBattle(page);
+  const result = await page.evaluate(async () => {
+    const battle = window.state.battle;
+    const source = battle.allies[0];
+    const second = battle.allies[1] || battle.allies[0];
+    const enemy = battle.enemies[0];
+    battle.locked = false;
+    battle._damageDepth = 1;
+    window.BattleCounterTriggers.open(window.state, {
+      skill: "复仇反击", unitUid: source.uid, sourceUid: enemy.uid,
+      targetUid: enemy.uid,
+    });
+    window.BattleCounterTriggers.open(window.state, {
+      skill: "刺刀AK47", unitUid: second.uid, sourceUid: enemy.uid,
+      targetUid: enemy.uid,
+    });
+    delete battle._damageDepth;
+    window.BattleCounterTriggers.activatePending(battle);
+    const queued = battle.counterTriggerQueue?.length || 0;
+    const first = battle.counterTrigger?.skill;
+    await window.BattleSystem.resolveCounterTrigger(window.state, false, window.render);
+    const secondPrompt = battle.counterTrigger?.skill;
+    await window.BattleSystem.resolveCounterTrigger(window.state, false, window.render);
+    const settled = {
+      queued, first, secondPrompt,
+      hasPublicResolver: typeof window.BattleSystem.resolveCounterTrigger === "function",
+      locked: battle.locked,
+    };
+    const besta = battle.allies[0];
+    besta.ref = "besta";
+    besta.hand = [{ name: "黑杀", type: "slash", suit: "♠" }];
+    battle.enemies.forEach(unit => {
+      unit.skills = [];
+      unit.block = 0;
+      unit.hp = 30;
+      unit.maxHp = 30;
+    });
+    battle.locked = false;
+    window.BattleCounterTriggers.open(window.state, {
+      skill: "终焉回旋斩", unitUid: besta.uid, sourceUid: enemy.uid,
+      targetUid: enemy.uid, count: 1,
+    });
+    const before = enemy.hp;
+    await window.BattleSystem.resolveCounterTrigger(window.state, true, window.render);
+    return { ...settled, endSpinDamage: before - enemy.hp };
+  });
+  expect(result.hasPublicResolver).toBe(true);
+  expect(result.queued).toBe(1);
+  expect(result.first).toBe("复仇反击");
+  expect(result.secondPrompt).toBe("刺刀AK47");
+  expect(result.locked).toBe(false);
+  expect(result.endSpinDamage).toBeGreaterThan(0);
+});
