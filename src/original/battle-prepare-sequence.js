@@ -3,6 +3,12 @@ window.BattlePrepareSequence = deps => {
     combat, draw, intentMax, nextAnim, record, relicPrepare,
   } = deps;
 
+  const interrupted = battle => !!(
+    battle?.locked
+    || window.BattleCounterTriggers?.pending?.(battle)
+    || window.BattleReactionQueue?.pending?.(battle)
+  );
+
   function resolve(state, unit) {
     const battle = state.battle;
     if (!battle || battle.prepareUnitUid !== unit.uid) return true;
@@ -19,7 +25,6 @@ window.BattlePrepareSequence = deps => {
       } else if (step === 2) {
         if (window.EnemySkills?.prepare?.(state, unit, combat.damage, nextAnim) === false) return false;
         battle.prepareStep += 1;
-        if (window.BattleCounterTriggers?.pending?.(battle)) return false;
       } else if (step === 3) {
         battle.prepareStep += 1;
         if (unit.hp > 0) relicPrepare(state, unit);
@@ -36,7 +41,7 @@ window.BattlePrepareSequence = deps => {
         battle.prepareStep += 1;
         window.BertisGerlotSkills?.beginTurn?.(state, unit);
       }
-      if (unit.hp <= 0 || battle.locked) break;
+      if (unit.hp <= 0 || interrupted(battle)) break;
     }
     combat.checkDefeat(state);
     combat.checkEnd(state);
