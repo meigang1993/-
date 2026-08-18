@@ -59,6 +59,7 @@ window.NanaliSkills = deps => {
     const actions = foes.map(foe => ({
       kind: "nanaliRevenge", actorUid: nanali.uid, targetUid: foe.uid,
     }));
+    line(state, nanali, skill, actor);
     if (actions.length === 1 && window.BattleCounterTriggers?.open(state, {
       skill, unitUid: nanali.uid, sourceUid: actor.uid,
       targetUid: actions[0].targetUid, count: 1,

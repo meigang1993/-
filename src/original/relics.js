@@ -138,5 +138,5 @@ window.RelicSystem = (() => {
     if (!d) return "";
     return d.activeCard ? "⚔️" : d.skillType === "trigger" ? "🔵" : "⭐";
   };
-  return { data, all, ownedNames, availableCount, statsOf, statsForNames, typeName, isActive, useHint, skillIcon, equippedBy, hasEquipped, skills, skillsForNames, activeSkills, randomElite, enemyRelics, isKnown, isFormalId, normalizeNames, normalizeSlots, normalizeMap, equip, unequip, bind };
+  return { data, all, ownedNames, availableCount, statsOf, statsForNames, typeName, isActive, useHint, skillIcon, statText, equippedBy, hasEquipped, skills, skillsForNames, activeSkills, randomElite, enemyRelics, isKnown, isFormalId, normalizeNames, normalizeSlots, normalizeMap, equip, unequip, bind };
 })();
