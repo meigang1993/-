@@ -39,6 +39,33 @@ restores a missing clone while preserving existing data. An oversized scan
 should now become an unavailable health report rather than an unopenable
 container.
 
+## Development Tooling And Save Gates
+
+Risk: development convenience tools can hide an incomplete verification step
+or block a legitimate save because the repository's aggregate QA gate has an
+unrelated baseline failure.
+
+Required guards:
+
+- `npm run impact -- [files...]` is an impact hint, not proof of coverage. Its
+  recommendations use bundle ownership, filename/domain heuristics, and
+  textual references; directly run the affected focused tests before treating
+  a change as verified.
+- `npm run dev:save -- "message"` must remain fail-closed. It runs the quick QA
+  chain before calling the Game Studio save endpoint and must not save when any
+  gate fails.
+- Existing duplicate-code violations must be distinguished from regressions
+  introduced by the current change. The current baseline contains 13
+  JavaScript clone findings and exceeds the configured `0.30%` duplication
+  budget; until that baseline is repaired, `dev:save` is expected to stop
+  before saving runtime changes.
+- Documentation-only changes still require hooks/path checks and the
+  authenticated Game Studio save endpoint. They do not require rebuilding
+  runtime bundles unless `src/original/` or `publish/` changes.
+- Changes to the impact rules, QA catalogs, save command, or authentication
+  flow must update `tools/README.md` and run the focused contract checks for
+  the affected tooling.
+
 ## Stale Async Work
 
 Risk: an old animation, preload, AI wait, timer, or promise commits into a
