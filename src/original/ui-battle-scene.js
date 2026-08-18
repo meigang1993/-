@@ -69,7 +69,7 @@ window.GameUIBattleScene = (U, I) => {
       .includes(battle.handReveal?.mode);
     const handSharing = visible.kaiichiVisible || visible.responsibilityVisible
       || visible.dimensionVisible || borrowChoice;
-    return `${battle.locked ? "battle-locked" : ""} ${visible.dimensionVisible ? "dimension-transfering" : ""} ${battle.gerdaComfort ? "gerda-comforting" : ""} ${visible.kaiichiVisible ? "kaiichi-sharing" : ""} ${visible.reactionPending ? "reaction-prompt-pending" : ""} ${handSharing ? "hand-sharing" : ""} ${battle.manualDodge || battle.manualCounter || battle.counterTrigger || battle.recklessPrompt || battle.risaEyePrompt || ["magicBullet", "magicBulletReveal"].includes(battle.handReveal?.mode) ? "manual-dodge-active" : ""}`;
+    return `${battle.locked ? "battle-locked" : ""} ${battle.judgement?.skill === "爆头一击" ? "headshot-pending" : ""} ${visible.dimensionVisible ? "dimension-transfering" : ""} ${battle.gerdaComfort ? "gerda-comforting" : ""} ${visible.kaiichiVisible ? "kaiichi-sharing" : ""} ${visible.reactionPending ? "reaction-prompt-pending" : ""} ${handSharing ? "hand-sharing" : ""} ${battle.manualDodge || battle.manualCounter || battle.counterTrigger || battle.recklessPrompt || battle.risaEyePrompt || ["magicBullet", "magicBulletReveal"].includes(battle.handReveal?.mode) ? "manual-dodge-active" : ""}`;
   }
   function skillCaption(battle) {
     const caption = battle.skillCaption;

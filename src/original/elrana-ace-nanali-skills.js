@@ -35,6 +35,7 @@ window.ElranaAceNanaliSkills = (() => {
     modifySlashDamage: combat.modifySlashDamage,
     afterDamage: combat.afterDamage,
     resolveRevenge: combat.resolveRevenge,
+    resolveRevengeTrigger: combat.resolveRevengeTrigger,
     endTurn,
   };
 })();

@@ -52,8 +52,8 @@ window.BattleCounterTriggers = (() => {
           "复仇反击": () => window.BertisGerlotSkills?.resolveRevengeTrigger?.(state, source, target, prompt.count, api, prompt.skill),
           "护母反击": () => window.BertisGerlotSkills?.resolveRevengeTrigger?.(state, source, target, prompt.count, api, prompt.skill),
           "贝尔蒂丝受伤反击": () => window.BertisGerlotSkills?.resolveRevengeTrigger?.(state, source, target, prompt.count, api, prompt.skill),
-          "复仇之刃": () => window.NanaliSkills?.resolveRevengeTrigger?.(state, source, target, prompt.count, api),
-          "罗卡尔受伤复仇": () => window.NanaliSkills?.resolveRevengeTrigger?.(state, source, target, prompt.count, api, prompt.targetUids),
+          "复仇之刃": () => window.ElranaAceNanaliSkills?.resolveRevengeTrigger?.(state, source, target, prompt.count, api),
+          "罗卡尔受伤复仇": () => window.ElranaAceNanaliSkills?.resolveRevengeTrigger?.(state, source, target, prompt.count, api, prompt.targetUids),
           "刺刀AK47": () => window.MannySkills?.resolveCounterTrigger?.(state, source, target, api),
           "血色刺伞": () => window.SakuraRisaSkills?.resolveUmbrellaTrigger?.(state, source, api),
         };

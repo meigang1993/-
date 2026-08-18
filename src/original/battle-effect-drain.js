@@ -46,6 +46,9 @@ window.BattleEffectDrain = ({ runtime, isCurrent, resolveIdle, recover }) => {
         currentEvent = null;
         runtime.currentEvent = null;
         finishCommit = null;
+        if (state.battle?.locked && (
+          state.battle.counterTrigger || state.battle.counterTriggerQueue?.length
+        )) break;
         await wait(0);
       }
       if (!active()) return;
