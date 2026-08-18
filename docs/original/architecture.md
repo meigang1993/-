@@ -98,6 +98,16 @@
   version lock and critical loader-path inventory is
   `tools/chromium-system-dependencies.json`; `npm run check:playwright`
   validates the running container against it before launching Chromium.
+- Browser QA recovery: before running Playwright tests, check the
+  repository-local `.playwright-browsers/` installation and system
+  dependencies with `npm run check:playwright`. If Chromium, the headless
+  shell, FFmpeg, required Linux libraries, or the locked
+  `fonts-freefont-ttf` package is missing, restore them with
+  `npm run playwright:install` followed by
+  `npm run playwright:install:deps`, then rerun
+  `npm run check:playwright` before reporting browser tests as blocked.
+  Missing browser artifacts are environment failures, not product-test
+  failures.
 - The installed GLib runtime is Debian package `libglib2.0-0`
   `2.74.6-2+deb12u9` (`amd64`). Its loader path is
   `/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0`, resolving to
