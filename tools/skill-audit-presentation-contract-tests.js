@@ -105,13 +105,19 @@ module.exports = ({ assert, unit }) => {
   });
 
   const expectedLockedIcons = new Set([
-    "神速之翼", "神速飞剑", "重火力支援", "复仇之刃",
-    "鬼牌狂欢", "剑盾反攻", "爱之鞭挞",
+    "神速之翼", "神速飞剑", "重火力支援",
+    "鬼牌狂欢", "爱之鞭挞",
   ]);
   expectedLockedIcons.forEach(name => {
     const skill = skills.find(entry => entry.name === name);
     assert(skill?.icon === "⭐" && skill?.type === "passive",
       `${name} must use the automatic locked-skill presentation`);
+  });
+  const expectedTriggerIcons = new Set(["复仇之刃", "剑盾反攻"]);
+  expectedTriggerIcons.forEach(name => {
+    const skill = skills.find(entry => entry.name === name);
+    assert(skill?.icon === "🔵" && skill?.type === "trigger",
+      `${name} must use the player-facing trigger presentation`);
   });
   const cadicis = GameData.characters.find(character => character.id === "cadicis");
   const commander = cadicis.skills.find(skill => skill.name === "战场指挥官");
