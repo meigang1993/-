@@ -293,6 +293,7 @@
     "guest-characters-skills.js"
   ],
   "battle-flow": [
+    "battle-counter-triggers.js",
     "battle-outcomes.js",
     "battle-setup.js",
     "battle-turn-state.js",

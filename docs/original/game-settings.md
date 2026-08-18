@@ -448,7 +448,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 仇杀 deals 2 + attack damage and doubles once for each truly dead friendly character; a 丽莎 waiting to revive is not dead for this calculation.
 - Relic drops: 写给艾尔拉娜的情书 and 血色刺伞.
 - 写给艾尔拉娜的情书: after a friendly female character takes hp damage, each living or pending-revival friendly female character draws one card.
-- 血色刺伞: after its holder uses or plays a response card, that holder uses a virtual 机枪扫杀. Recursion protection is tracked per holder, so another holder may trigger once in the same response chain while the same holder cannot loop indefinitely. Nested forced-response sweeps resolve 为我护驾 automatically and must not create overlapping manual-response locks. If the nested sweep reduces the original attacker to 0 hp or causes victory or defeat, the terminal result takes priority: stale response prompts are cleared, the old response flow must not unlock combat, and the original attacker's 霹雳之锤 cannot trigger afterward. This also applies while 丽莎 is in `待复活`: she is not defeated for battle settlement, but cannot perform response-after effects at 0 hp.
+- 血色刺伞: after its holder uses or plays a response card, that holder receives a player-facing trigger prompt and may use a virtual 机枪扫杀. Recursion protection is tracked per holder, so another holder may trigger once in the same response chain while the same holder cannot loop indefinitely. Nested sweeps resolve 为我护驾 automatically and must not create overlapping manual-response locks. If the nested sweep reduces the original attacker to 0 hp or causes victory or defeat, the terminal result takes priority: stale response prompts are cleared, the old response flow must not unlock combat, and the original attacker's 霹雳之锤 cannot trigger afterward. This also applies while 丽莎 is in `待复活`: she is not defeated for battle settlement, but cannot perform response-after effects at 0 hp.
 
 ### 翻面 Mechanism
 
@@ -533,7 +533,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 榨取精华使用蓝色触发图标；发动后，本回合所有原本属于物理攻击的攻击牌均转换为魔法攻击，但保留各牌原本的伤害公式与属性。
 - 魔力反馈覆盖魔力缩放卡牌、榨取精华转换后的物理攻击牌、魔法对决、魔弹特攻、魔王军入侵，以及锁魂镰刀、终焉鬼影斩、鬼牌狂欢、爱之鞭挞、充能精华反伤、自爆倒计时、贝丝妲与奥菲莉娅的魔力转换杀、莫娜的圣属性杀等以魔力或魔法技能结算的伤害。魔王军入侵固定为物理+魔法复合攻击：每次伤害依次显示物理与魔法特效，但只播放一次同步命中音效。
 - 娜娜莉的魔刀阿波罗适用于实体、转换和虚拟的单体【杀】，以使用前的手牌数计算扣置数量；实体【杀】须包含刚刚离开手牌的该牌，转换【杀】须包含刚刚作为转换费用离开手牌的来源牌。同一张【杀】对同一目标至多触发一次魔刀阿波罗。目标未被扣空时，手牌数量也必须在扣置飞牌动画开始前立即刷新，不能等动画结束后才显示减少；连击或连续反击多次触发时，每次封牌动画必须显示该次独立扣减，不能提前跳到最终手牌数。
-- 娜娜莉技能实效固定：魔刀阿波罗只响应单体【杀】且扣置牌于任意角色回合结束时返还并恢复状态牌标记；虚弱斩杀只对单体【杀】和无手牌目标翻倍；复仇之刃仅在敌方造成实际生命伤害后触发，罗卡尔受伤时逐个反击所有当时存活的敌人，娜娜莉在反击链中阵亡后停止后续反击。
+- 娜娜莉技能实效固定：魔刀阿波罗只响应单体【杀】且扣置牌于任意角色回合结束时返还并恢复状态牌标记；虚弱斩杀只对单体【杀】和无手牌目标翻倍；复仇之刃为蓝色触发技，敌方造成实际生命伤害后由玩家决定是否发动，罗卡尔受伤时逐个反击所有当时存活的敌人，娜娜莉在反击链中阵亡后停止后续反击。
 - 敌我双方角色受到致死伤害或致死生命流失时，必须先完成对应浮字与死亡动画，再执行死亡弃牌和胜负检查，不得在玩家仍看到角色存活时提前清空手牌。
 - 我方角色在自己的出牌阶段获得实际摸牌后，手牌横向滚动自动跟随到最右侧的新牌；其他阶段与没有新增手牌的重绘继续保留玩家阅读位置。重绘后的下一帧补偿恢复不得覆盖玩家在该帧前已经进行的手牌、公共出牌区或牌局记录滚动。
 - 手牌选择反馈固定为无布局位移的上移动画：新选中的牌平滑抬起并轻微回弹，取消选择时平滑落回；多选时只动画本次变化的牌，已经选中的牌在战斗重绘后保持原位，不得重复弹跳或闪烁。短屏按可用高度降低抬起距离，并尊重系统减少动态效果设置。
@@ -545,7 +545,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 新月之歌、收获分享、半魅魔血与指挥官责任等非正常出牌阶段的交牌提示，必须将手牌区切换为技能发动者的真实手牌；即使当前行动权属于敌方或其他角色，也不得继续显示当前行动者手牌。交牌点击与选择上限必须按提示记录的发动者 uid 处理，禁止回退到当前行动角色；点击携带的手牌归属与当前提示 uid 不一致时必须拒绝输入并刷新，不得把旧手牌 DOM 的索引套用到新的发动者。收获分享必须同时保存原选牌对象引用与用于显示的派生下标；等待动画期间手牌插入、移除或重排后只能交出仍存在的原对象，任一原选牌失效时清空整组选择并留在提示中要求重选，交牌动画完全结束后才可推进弃牌阶段。半魅魔血、指挥官责任与次元转移在等待当前卡牌、伤害、摸牌或浮字动画期间提示尚不可见，此时必须保留逻辑锁但不得提前切换手牌区、目标模式或技能字幕，并拒绝所有相关输入；动画队列完全空闲后才同时显示提示与可操作控件。指挥官责任直接点击该手牌区完成逐张交付，不再使用独立弹窗复制一套牌按钮。若异步动作在重绘出下一张交牌、次元转移或萌虎慰劳提示后仍处于收尾阶段，新提示的点击必须绑定当前 state 与 prompt 身份并排队到动作守卫空闲；不得显示可点击控件却静默丢弃输入，也不得让旧提示回调落入新提示。
 - 全体攻击牌在出牌动画中必须从所用牌显示指向所有存活敌方目标的目标线；除机枪扫杀与魔王军入侵外，疯狂射击、聚焦喷火器、火力压制及未来在结算前由单体牌转换成全体攻击的效果同样适用。
 - 地下城地图节点必须显示层数；已完成的当前节点明确显示“已完成”并保持不可重复点击，下一层开放节点保持可点击，避免把正常推进误判为跳层。所有副本、难度和随机地图中的每个节点必须从起点可达、能继续到达最终BOSS、只连接下一层且能从任一合法前驱点击进入；挂起结算时全部节点禁用，中断恢复后仍须开放正确的下一层节点。离线延迟加载完成后必须直接进入地图，不得借用中断恢复分支；地图入场动画不得移动可点击节点，玩家进入副本后的第一次按下与松开必须能触发对应节点。
-- 贝丝妲的终焉回旋斩在【闪】抵消【杀】后，按手牌中的黑色【杀】数量使用指定所有敌方角色为目标的虚拟【魔杀】，伤害按贝丝妲当前魔力结算。
+- 贝丝妲的终焉回旋斩为蓝色触发技；在【闪】抵消【杀】后，玩家决定是否按手牌中的黑色【杀】数量使用指定所有敌方角色为目标的虚拟【魔杀】，伤害按贝丝妲当前魔力结算。
 - 魔力反馈与属性反馈独立兼容。同一伤害附带毒、雷、火、圣、暗或冰属性时，先按既有属性优先级播放全部属性特效，再播放魔力魔法阵；例如暗属性魔力伤害固定为暗雾后叠加魔法阵，互不覆盖。范围魔力伤害沿用多目标预排队机制，以短间隔触发各目标形成连锁节奏。
 
 ### Save And Runtime Robustness
@@ -613,7 +613,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 曼妮军火库衍生的`巴特雷`属于角色衍生技能，来源固定为`derived`，不得伪装成饰品技能或进入饰品主动技选择链。诺诺卡的`新月之歌`固定为被动技能，角色主动技可用性与AI不得保留不存在的`newMoonSong`主动牌分支。
 - 索尼娅与凋零者的`杀欲窥视`为主动技且每回合限一次；指定一名敌方角色后，直接复制其每张可见【杀】为同名同花色的临时消耗牌，不打开或排队任何展示手牌界面。复制牌保留`generatedBySkill`来源且不消耗杀意。首次执行后，可用性层、AI与执行器都必须读取`usedWithererPeek`并拒绝同回合再次发动，重复调用不得再次生成临时【杀】。
 - 技能图标按已确认语义保持：普通主动技`⚔️`、自动锁定技默认`⭐`、可选触发/响应技可使用`🔵`、限定技`🔺`、觉醒/使命技`💰`、转换技`🔄`。已记录的专用图标优先，例如榨取精华固定为`🔵`；不能仅根据`type`字段批量覆盖这些例外。
-- 芙萝娅的`神速之翼`、`神速飞剑`，卡迪西斯的`重火力支援`，娜娜莉的`复仇之刃`，拉芙的`鬼牌狂欢`，莫娜的`剑盾反攻`均为自动锁定技，固定使用`⭐`。机器魅魔的`爱之鞭挞`由准备阶段自动执行，数据类型固定为`passive`并使用`⭐`，不得显示为可主动发动的`⚔️`技能。
+- 芙萝娅的`神速之翼`、`神速飞剑`，卡迪西斯的`重火力支援`，拉芙的`鬼牌狂欢`均为自动锁定技，固定使用`⭐`。我方的`复仇之刃`、`终焉回旋斩`、`刺刀AK47`及`血色刺伞`为蓝色触发技，由玩家决定是否发动；敌方的`剑盾反攻`等反击效果也使用蓝色触发技图标和文案，但仍由敌方 AI 自动决定。机器魅魔的`爱之鞭挞`由准备阶段自动执行，数据类型固定为`passive`并使用`⭐`，不得显示为可主动发动的`⚔️`技能。
 - 卡迪西斯的`战场指挥官`记录【杀】或战术牌牌名；其他友方角色使用同名【杀】或战术牌时，该牌不可被响应且其造成的每次伤害翻倍。公开技能与技能牌描述必须同时覆盖这两类牌，不能继续只写同名【杀】。
 - 卡迪西斯的`重火力支援`只由其使用实体【杀】触发，对所有存活敌人造成等同于其攻击力的无视护甲伤害。该附加伤害继承触发【杀】的毒、雷、火、圣、暗、冰等伤害属性及物理/魔法类别，用于伤害反馈和对应防御判定；不重复附加原【杀】的中毒、感电、圣痕等后续状态效果。
 - 拉芙的`鬼牌狂欢`必须在判定动画结束后保存该次实际标准花色，并在她的战场头像与行动区头像上同步显示对应`♥/♦/♠/♣`圆形徽记；判定动画播放期间不得提前显示新花色。红色花色与黑色花色使用不同牌面配色，悬停提示同时说明当前大鬼牌或小鬼牌模式。后续判定在动画结束时替换旧花色，不得因同屏重绘丢失。

@@ -5,7 +5,7 @@ window.BattleSaveCheckpointValidation = (() => {
     "comboPartnerUid", "discardPick", "handReveal", "mannyArmoryPicker",
     "wendyTutorPicker", "ailengDrillPicker", "cadicisResponsibility",
     "cadicisResponsibilityResume", "manualDodge", "manualDodgeResume",
-    "manualCounter", "recklessPrompt", "risaEyePrompt", "thunderHammer",
+    "manualCounter", "counterTrigger", "recklessPrompt", "risaEyePrompt", "thunderHammer",
     "greenGatlingResume", "demonInvasionResume", "groupHealResume",
     "comboAttackResume", "dimensionTransfer", "newMoonShare", "gerdaComfort",
     "millerShare", "kaiichiShare", "kaiichiShareQueue", "reactionQueue",

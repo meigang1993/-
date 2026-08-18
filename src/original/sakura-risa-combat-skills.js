@@ -21,6 +21,13 @@ window.SakuraRisaCombatSkills = ({
       window.BattleLog.add(state, `${actor.name} 使用响应牌触发轻身飞翼，${window.BattleDrawFeedback.action(actor, 1, drawn)}。`);
     }
     if (actor.hp <= 0 || !hasRelic(state, actor, "血色刺伞")) return;
+    if (window.BattleCounterTriggers?.open(state, {
+      skill: "血色刺伞", unitUid: actor.uid, sourceUid: actor.uid, targetUid: actor.uid,
+    })) return;
+    resolveUmbrellaTrigger(state, actor, api);
+  }
+
+  function resolveUmbrellaTrigger(state, actor, api = {}) {
     const resolving = state.battle.risaUmbrellaResolvingUids ||= [];
     if (resolving.includes(actor.uid)) return;
     const useCard = api.useCard || window.BattleSystem?.useCard;
@@ -32,7 +39,7 @@ window.SakuraRisaCombatSkills = ({
         bloodUmbrella: true, forceAutoResponse: true,
       });
       window.BattleLines?.skill(state, actor, "血色刺伞");
-      window.BattleLog.add(state, `${actor.name} 的血色刺伞触发，视为使用一张虚拟机枪扫杀。`);
+      window.BattleLog.add(state, `${actor.name} 发动血色刺伞，视为使用一张虚拟机枪扫杀。`);
       const locked = state.battle.locked, manualDodge = state.battle.manualDodge;
       if (manualDodge) { state.battle.manualDodge = null; state.battle.locked = false; }
       try { useCard(state, actor, actor, sweep); }
@@ -108,6 +115,6 @@ window.SakuraRisaCombatSkills = ({
 
   return {
     beforeKillTargeted, afterResponse, modifyRevengeDamage, canBackflip,
-    backflipCandidates, resolveBackflip, aiMove,
+    backflipCandidates, resolveBackflip, resolveUmbrellaTrigger, aiMove,
   };
 };
