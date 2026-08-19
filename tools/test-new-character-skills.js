@@ -21,9 +21,9 @@ const milkSkill = kaiichiData.skills.find(skill => skill.name === "半魅魔精�
 const idolSkill = yiData.skills.find(skill => skill.name === "偶像之星");
 const truthSkill = yiData.skills.find(skill => skill.name === "梦想真理");
 
-assert(JSON.stringify(gerdaData.stats) === JSON.stringify({ attack: 2, magic: 2, speed: 4, maxHp: 40, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 }), "Gerda stats mismatch");
-assert(JSON.stringify(yiData.stats) === JSON.stringify({ attack: 2, magic: 3, speed: 3, maxHp: 34, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 }), "Hoshino Yi stats mismatch");
-assert(JSON.stringify(kaiichiData.stats) === JSON.stringify({ attack: 1, magic: 2, speed: 2, maxHp: 46, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 }), "Hoshino Kaiichi stats mismatch");
+assert(JSON.stringify(gerdaData.stats) === JSON.stringify({ attack: 3, magic: 3, speed: 4, maxHp: 40, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 }), "Gerda stats mismatch");
+assert(JSON.stringify(yiData.stats) === JSON.stringify({ attack: 3, magic: 3, speed: 3, maxHp: 34, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 }), "Hoshino Yi stats mismatch");
+assert(JSON.stringify(kaiichiData.stats) === JSON.stringify({ attack: 1, magic: 3, speed: 2, maxHp: 46, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 }), "Hoshino Kaiichi stats mismatch");
 assert(gerdaData.grandfather === "兽人王邦迪" && yiData.mother === "混沌女神" && kaiichiData.father === "艾伦格", "New character family metadata mismatch");
 assert(yiData.role === "XX型凋零者" && yiData.combatRoles[0] === "输出", "Hoshino Yi role positioning mismatch");
 assert(yiData.entrance === "晚上好，我是A小町，星野依，天才般偶像，今天演唱新曲。", "Hoshino Yi entrance line mismatch");

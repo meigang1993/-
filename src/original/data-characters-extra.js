@@ -1,7 +1,7 @@
 window.GameDataCharactersExtra = [
   {
     id: "bertis", name: "贝尔蒂丝", gender: "female", face: "贝", art: "./assets/images/bertis-portrait.png", avatar: "./assets/images/bertis-portrait.png", role: "束缚公主", locked: true, unlockCost: 18,
-    stats: { attack: 2, magic: 2, speed: 3, maxHp: 38, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
+    stats: { attack: 3, magic: 3, speed: 3, maxHp: 38, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "满生命强化与团队资源核心。傲慢雌小鬼在满生命时强化多项属性，苦肉鞭笞以友方伤害换取手牌和杀意，快速生长持续积累共享“粮食”。",
     skills: [
       { name: "傲慢雌小鬼", type: "passive", icon: "⭐", text: "锁定技，当你的生命值为满时，你的攻击力和魔力变为基础值的1.5倍，杀意上限和手牌上限各翻倍。" },
@@ -50,7 +50,7 @@ window.GameDataCharactersExtra = [
   },
   {
     id: "little_elrana", name: "小艾尔拉娜", gender: "female", face: "小", art: "./assets/images/elrana-clone.webp", avatar: "./assets/images/elrana-clone.webp", role: "艾尔拉娜的克隆女儿", locked: true,
-    stats: { attack: 2, magic: 3, speed: 3, maxHp: 32, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
+    stats: { attack: 3, magic: 3, speed: 3, maxHp: 32, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "持续毒伤与治疗联动辅助。毒针为杀牌附加可叠加的回合开始伤害，再生之躯提供自愈，协助母亲在艾尔拉娜完成有效治疗后为其补牌。",
     skills: [
       { name: "毒针", type: "passive", icon: "⭐", text: "锁定技，当你使用【杀】造成生命值伤害后，目标获得1枚“毒”标记。拥有“毒”标记的角色回合开始时，受到等同于其“毒”标记数的毒属性伤害。" },
@@ -60,7 +60,7 @@ window.GameDataCharactersExtra = [
   },
   {
     id: "ace", name: "艾斯", gender: "male", face: "斯", art: "./assets/images/ace-portrait.webp", avatar: "./assets/images/ace-portrait.webp", role: "医生之子", locked: true,
-    stats: { attack: 2, magic: 1, speed: 3, maxHp: 38, bloodlust: 1, handLimit: 5, drawPerTurn: 1, initialDraw: 2 },
+    stats: { attack: 3, magic: 1, speed: 3, maxHp: 38, bloodlust: 1, handLimit: 5, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "防守夺牌与手牌转移辅助。勾爪陷阱在成功响应敌方牌后夺取手牌，急逃为空手状态提供应急补牌，贡献计划将全部手牌和下回合杀意上限交给队友。",
     skills: [
       { name: "勾爪陷阱", type: "passive", icon: "⭐", text: "锁定技，当敌方角色使用牌指定你为目标后，若你因此使用【闪】或【看破】，你获得该角色1张手牌。" },
@@ -70,7 +70,7 @@ window.GameDataCharactersExtra = [
   },
   {
     id: "nanali", name: "娜娜莉", gender: "female", face: "娜", art: "./assets/images/nanali-portrait.webp", avatar: "./assets/images/nanali-portrait.webp", role: "纯血公主", locked: true, unlockCost: 30,
-    stats: { attack: 2, magic: 2, speed: 3, maxHp: 32, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
+    stats: { attack: 3, magic: 3, speed: 3, maxHp: 32, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "手牌封锁与反击终结核心。魔刀阿波罗暂时扣置目标手牌并补充自身资源，虚弱斩杀惩罚空手目标，复仇之刃在友方受伤后立即反攻。",
     skills: [
       { name: "魔刀阿波罗", type: "passive", icon: "⭐", text: "锁定技，当你使用单体【杀】指定一名敌方角色为目标时，你扣置其X张手牌（X为你使用此【杀】前的手牌数）；每扣置1张战术牌，你摸1张牌。任意角色回合结束时，以此法扣置的牌返回原角色手牌。" },
@@ -90,7 +90,7 @@ window.GameDataCharactersExtra = [
   },
   {
     id: "aileng", name: "艾伦格", gender: "male", face: "艾", art: "./assets/images/aileng-portrait.webp", avatar: "./assets/images/aileng-portrait.webp", role: "充能王子", locked: true,
-    stats: { attack: 2, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
+    stats: { attack: 3, magic: 3, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "手牌循环与牌权转移角色。计算下注重整手牌并可重置杀意，战斗演练把已结算的牌交给队友，征服欲望根据伤害次数或角色死亡觉醒为不同的衍生能力。",
     skills: [
       { name: "计算下注", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以弃置至少1张手牌，然后摸等量牌。若你弃置了全部手牌，额外摸1张牌并重置杀意。", card: { name: "计算下注", type: "tactic", targetless: true, elranaBag: true, ailengBet: true, icon: "⚔️", text: "弃置至少1张手牌并摸等量牌；若弃置全部手牌，额外摸1张牌并重置杀意。" } },

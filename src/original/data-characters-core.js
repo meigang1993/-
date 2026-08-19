@@ -30,7 +30,7 @@ window.GameDataCharactersCore = [
   },
   {
     id: "miller", name: "米勒", gender: "male", face: "米", art: "./assets/images/miller-portrait.webp", avatar: "./assets/images/miller-portrait.webp", role: "女仆之子", locked: true,
-    stats: { attack: 2, magic: 2, speed: 3, maxHp: 40, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
+    stats: { attack: 3, magic: 3, speed: 3, maxHp: 40, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "随机摸牌与手牌转移辅助。贪玩老虎机提供波动较大的补牌量，收获分享可将弃牌阶段需要弃置的手牌转交给其他友方角色。",
     skills: [
       { name: "贪玩老虎机", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以随机转动3格老虎机：3格均不同时摸1张牌，2格相同时摸4张牌，3格均相同时摸8张牌。", card: { name: "贪玩老虎机", type: "tactic", millerSlot: true, targetless: true, icon: "⚔️", text: "转动3格老虎机，并根据图标组合摸1张、4张或8张牌。" } },
@@ -71,7 +71,7 @@ window.GameDataCharactersCore = [
   {
     id: "wendy", name: "温蒂", gender: "female", face: "温", art: "./assets/images/wendy-portrait.f262b034.webp", avatar: "./assets/images/wendy-portrait.f262b034.webp", role: "智慧公主", locked: true, unlockCost: 8,
     twinWith: "flora",
-    stats: { attack: 1, magic: 2, speed: 4, maxHp: 34, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
+    stats: { attack: 1, magic: 3, speed: 4, maxHp: 34, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "战术牌生成与团队护甲辅助。读书的智慧从友方战术牌中补牌，解答迷惑定向制造临时战术牌，飘浮掩体把弃牌转化为全队护甲。",
     skills: [
       { name: "飘浮掩体", type: "passive", icon: "⭐", text: "锁定技，弃牌阶段，你每弃置2张手牌，所有友方角色各获得1点护甲；芙萝娅改为获得2点护甲。" },
@@ -81,7 +81,7 @@ window.GameDataCharactersCore = [
   },
   {
     id: "cadicis", name: "卡迪西斯", gender: "male", face: "卡", art: "./assets/images/cadicis-portrait.png", avatar: "./assets/images/cadicis-portrait.png", role: "教师之子", locked: true,
-    stats: { attack: 2, magic: 2, speed: 3, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
+    stats: { attack: 3, magic: 3, speed: 3, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "牌名强化与群体火力支援角色。战场指挥官强化友方同名杀牌与战术牌，指挥官责任在队友受击前调配手牌，重火力支援使实体杀牌附带继承其伤害属性的全体直伤。",
     skills: [
       { name: "战场指挥官", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以展示1张【杀】或战术牌并记录其牌名。其他友方角色使用同名【杀】或战术牌时，该牌造成的伤害翻倍且不可响应。", card: { name: "战场指挥官", type: "tactic", cadicisPlan: true, targetless: true, icon: "⚔️", text: "展示1张【杀】或战术牌并记录牌名，强化其他友方角色使用的同名【杀】或战术牌。" } },
