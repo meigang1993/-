@@ -65,6 +65,8 @@ window.BattleEffectGeometry = (() => {
   }
 
   function setLines(from, targets, flash = false, enemy = false) {
+    const existing = [...document.querySelectorAll(".target-line.aoe-line.show")];
+    if (existing.length === targets.length && existing.length > 0) return;
     hideLine();
     targets.forEach((to, index) => appendLine(
       from,
