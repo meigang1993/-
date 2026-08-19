@@ -81,6 +81,8 @@ window.NanaliSkills = deps => {
     const foe = units.find(unit => unit.uid === action?.targetUid);
     if (!alive(nanali) || !alive(foe) || !damage) return false;
     const revenge = CardUtils.fromEntity("杀（普攻）", { nanaliRevenge: true });
+    window.BattleAttackAnimations?.ensureInitialFlight?.(
+      state, nanali, foe, revenge);
     sealWithApollo(state, nanali, foe, { draw }, revenge);
     const amount = modifySlashDamage(
       state, nanali, foe, stat(nanali, "attack"), revenge
@@ -102,7 +104,7 @@ window.NanaliSkills = deps => {
         });
       }
     }
-    if (actions.length && window.BattleReactionQueue?.enqueue?.(state, actions)) {
+    if (actions.length && window.BattleReactionQueue?.prepend?.(state, actions)) {
       window.BattleReactionQueue.flush(state, api.damage);
       return;
     }
