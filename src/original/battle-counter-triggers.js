@@ -81,10 +81,20 @@ window.BattleCounterTriggers = (() => {
       battle.counterTrigger = null;
       battle.counterTriggerQueue = null;
     } else {
-      battle.locked = wasLocked && !!battle.counterTriggerQueue?.length;
+      if (!hasPromptLock(battle)) {
+        battle.locked = wasLocked && !!battle.counterTriggerQueue?.length;
+      }
       activateNext(battle);
     }
     return true;
+  }
+  function hasPromptLock(battle) {
+    return !!(battle.manualDodge || battle.opheliaGuard
+      || battle.thunderHammer || battle.dimensionTransfer
+      || battle.recklessPrompt || battle.risaEyePrompt
+      || battle.gerdaComfort || battle.kaiichiShare
+      || battle.millerShare || battle.newMoonShare
+      || battle.handReveal || battle.manualCounter);
   }
   return {
     open, resolve, activatePending: activateNext,
