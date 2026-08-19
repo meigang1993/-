@@ -94,11 +94,20 @@ window.NanaliSkills = deps => {
       state.battle.allies.concat(state.battle.enemies).find(unit => unit.uid === uid)
     ).filter(Boolean);
     line(state, nanali, targetUids ? "罗卡尔受伤复仇" : "复仇之刃", foe);
+    const actions = [];
     for (const enemy of foes) {
       for (let i = 0; i < count && alive(nanali) && alive(enemy); i++) {
-        resolveRevenge(state, { actorUid: nanali.uid, targetUid: enemy.uid }, api.damage, api.draw);
+        actions.push({
+          kind: "nanaliRevenge", actorUid: nanali.uid, targetUid: enemy.uid,
+        });
       }
     }
+    if (actions.length && window.BattleReactionQueue?.enqueue?.(state, actions)) {
+      window.BattleReactionQueue.flush(state, api.damage);
+      return;
+    }
+    actions.forEach(action =>
+      resolveRevenge(state, action, api.damage, api.draw));
   }
 
   function endTurn(state) {

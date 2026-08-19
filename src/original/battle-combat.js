@@ -120,6 +120,7 @@ window.BattleCombat = (deps) => {
   const damageApi = window.BattleDamage({ ...deps, nextAnim: deps.nextAnim }, { allUnits, hasSkill, statOf, holdVisual, visualOf, pushFloat, queueSlashText, queueSlashPlay, checkDefeat, checkEnd, clearSelection });
   const { damage, directDamage, triggerWhiteLolita, resolveThunderHammer: resolveDamageThunderHammer, cancelThunderHammer: cancelDamageThunderHammer, resolveManualDodge, confirmDeflectResult } = damageApi;
   damage.useCard = useCard;
+  damage.damageHandlesPreTargetHooks = true;
   specialCtx.damage = damage;
   cardResume = window.BattleCardResume({ deps, specials, damage, checkDefeat, allUnits, pushFloat });
   specialCtx.recordDeferredHit = cardResume.recordHit;
