@@ -81,9 +81,8 @@ window.BattleCounterTriggers = (() => {
       battle.counterTrigger = null;
       battle.counterTriggerQueue = null;
     } else {
-      if (!hasPromptLock(battle)) {
-        battle.locked = wasLocked && !!battle.counterTriggerQueue?.length;
-      }
+      battle.locked = hasPromptLock(battle)
+        || (wasLocked && !!battle.counterTriggerQueue?.length);
       activateNext(battle);
     }
     return true;

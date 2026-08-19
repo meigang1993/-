@@ -65,25 +65,14 @@ window.BattleEffectGeometry = (() => {
   }
 
   function setLines(from, targets, flash = false, enemy = false) {
-    const existing = [...document.querySelectorAll(".target-line.aoe-line.show")];
-    if (existing.length === targets.length && existing.length > 0
-      && existing.every((line, index) =>
-        line.dataset.targetLineFrom === `${from.x},${from.y}`
-        && line.dataset.targetLineTo === `${targets[index].x},${targets[index].y}`
-        && line.dataset.targetLineFlash === String(flash)
-        && line.dataset.targetLineEnemy === String(enemy))) return;
     hideLine();
     targets.forEach((to, index) => {
-      const line = appendLine(
+      appendLine(
         from,
         to,
         `target-line aoe-line show ${flash ? "flash" : ""} ${enemy ? "enemy-line" : ""}`,
         Math.max(.35, .85 - index * .08),
       );
-      line.dataset.targetLineFrom = `${from.x},${from.y}`;
-      line.dataset.targetLineTo = `${to.x},${to.y}`;
-      line.dataset.targetLineFlash = String(flash);
-      line.dataset.targetLineEnemy = String(enemy);
     });
   }
 
