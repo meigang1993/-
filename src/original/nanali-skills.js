@@ -59,7 +59,6 @@ window.NanaliSkills = deps => {
     const actions = foes.map(foe => ({
       kind: "nanaliRevenge", actorUid: nanali.uid, targetUid: foe.uid,
     }));
-    line(state, nanali, skill, actor);
     if (actions.length === 1 && window.BattleCounterTriggers?.open(state, {
       skill, unitUid: nanali.uid, sourceUid: actor.uid,
       targetUid: actions[0].targetUid, count: 1,
@@ -69,6 +68,7 @@ window.NanaliSkills = deps => {
       targetUid: actions[0].targetUid, targetUids: actions.map(action => action.targetUid),
       count: 1,
     })) return;
+    line(state, nanali, skill, actor);
     if (state.battle?._damageDepth
       && window.BattleReactionQueue?.enqueue?.(state, actions)) return;
     actions.forEach(action => resolveRevenge(state, action, api.damage, api.draw));
@@ -93,6 +93,7 @@ window.NanaliSkills = deps => {
     const foes = (targetUids || [foe?.uid]).map(uid =>
       state.battle.allies.concat(state.battle.enemies).find(unit => unit.uid === uid)
     ).filter(Boolean);
+    line(state, nanali, targetUids ? "罗卡尔受伤复仇" : "复仇之刃", foe);
     for (const enemy of foes) {
       for (let i = 0; i < count && alive(nanali) && alive(enemy); i++) {
         resolveRevenge(state, { actorUid: nanali.uid, targetUid: enemy.uid }, api.damage, api.draw);
