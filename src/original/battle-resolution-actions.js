@@ -66,6 +66,10 @@ window.BattleResolutionActions = ({
     } else {
       await manualFlow.resumeInterruptedActions(state, onStep, current);
     }
+    if (current() && state.battle && !state.battle.locked) {
+      onStep?.();
+      await waitEffects();
+    }
     return true;
   }
 
