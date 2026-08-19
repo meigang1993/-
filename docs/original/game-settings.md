@@ -47,6 +47,12 @@ gameplay values and behavior remain here rather than being duplicated in
 - Every playable character in `GameData.characters`, including future additions, must appear in the character codex. The codex may keep a curated order for established characters, but all IDs outside that order must be appended automatically rather than omitted.
 - Character-specific codex metadata such as mother, role, portrait, and skills should come from the character data when available instead of requiring a second hard-coded entry.
 
+## Canonical Unit Names
+
+- Playable characters (26): `lokar` 罗卡尔, `besta_doll` 贝丝妲魔偶, `manny` 曼妮, `miller` 米勒, `nonoka` 诺诺卡, `loki` 洛基, `flora` 芙萝娅, `wendy` 温蒂, `cadicis` 卡迪西斯, `carlos` 卡洛斯, `bertis` 贝尔蒂丝, `gerlot` 杰洛特, `angelica` 安洁莉卡, `luka` 鲁卡, `elrana` 艾尔拉娜, `little_elrana` 小艾尔拉娜, `ace` 艾斯, `nanali` 娜娜莉, `ophelia` 奥菲莉亚, `aileng` 艾伦格, `besta` 贝丝妲, `sonia` 索尼娅, `chiyo` 橘千樱, `gerda` 格尔达, `hoshino_yi` 星野依, `hoshino_kaiichi` 星野海一.
+- Enemies (24): `mechanical_goblin` 机械哥布林, `machine_succubus` 机器魅魔, `skeleton_patrol` 骷髅巡逻机, `mecha_minotaur` 机甲牛头怪, `elrana_clone` 艾尔拉娜克隆体, `krow_doctor` 克罗博士, `invader_chiyo` 入侵者橘千樱, `mechanical_bull_king` 机械牛头王, `pursuer_edis` 内英组杀手伊迪斯, `terror_slime` 恐怖史莱姆, `shark_pirate_crew` 狂鲨海盗团船员, `shark_pirate_raider` 狂鲨海盗团掠夺者, `shark_pirate_submarine` 狂鲨海盗团潜水艇, `raff_assassin` 内英组杀手拉芙, `abe_mike` 鱼人武士安倍麦克, `shark_captain_mordio` 狂鲨海盗团船长莫迪奥, `mona_eagle_captain` 天鹰突击队队长莫娜, `suicide_drone` 魔王军自杀式无人机, `demon_beast_unit` 魔王军猛兽部队, `demon_witch` 魔王军魔女, `demon_mecha_cerberus` 魔王军机械三头犬, `witherer_1124_split` 凋零者1124号分裂体, `xx_witherer_1124` XX型凋零者1124号, `demon_king_bakaar` 魔王巴卡尔.
+- These ID-to-name pairs are the player-facing naming authority. Combat logs, prompts, visual captions, tests, and documentation must use the data-source name exactly; do not invent shortened, translated, or approximate unit names.
+
 ## Card Collection Counts
 
 - The public deck UI must distinguish physical card count from collected card-name types. Every permanent card entry in `state.deck`, including duplicate names or suits, counts toward `实体卡总数`; the codex progress counts unique canonical card names only.
@@ -532,7 +538,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 魔力伤害的正式攻击类别固定为“魔法攻击”。伤害结算事件必须携带`attackType: "magic"`，卡牌伤害预览必须显示“魔法攻击”；保留`magicDamage`仅用于兼容旧事件，不再作为唯一规则字段。
 - 榨取精华使用蓝色触发图标；发动后，本回合所有原本属于物理攻击的攻击牌均转换为魔法攻击，但保留各牌原本的伤害公式与属性。
 - 魔力反馈覆盖魔力缩放卡牌、榨取精华转换后的物理攻击牌、魔法对决、魔弹特攻、魔王军入侵，以及锁魂镰刀、终焉鬼影斩、鬼牌狂欢、爱之鞭挞、充能精华反伤、自爆倒计时、贝丝妲与奥菲莉娅的魔力转换杀、莫娜的圣属性杀等以魔力或魔法技能结算的伤害。魔王军入侵固定为物理+魔法复合攻击：每次伤害依次显示物理与魔法特效，但只播放一次同步命中音效。
-- 娜娜莉的魔刀阿波罗适用于实体、转换和虚拟的单体【杀】，以使用前的手牌数计算扣置数量；实体【杀】须包含刚刚离开手牌的该牌，转换【杀】须包含刚刚作为转换费用离开手牌的来源牌。同一张【杀】对同一目标至多触发一次魔刀阿波罗。目标未被扣空时，手牌数量也必须在扣置飞牌动画开始前立即刷新，不能等动画结束后才显示减少；连击或连续反击多次触发时，每次封牌动画必须显示该次独立扣减，不能提前跳到最终手牌数。
+- 娜娜莉的魔刀阿波罗适用于实体、转换和虚拟的单体【杀】，以使用前的手牌数计算扣置数量；实体【杀】须包含刚刚离开手牌的该牌，转换【杀】须包含刚刚作为转换费用离开手牌的来源牌。同一张【杀】对同一目标至多触发一次魔刀阿波罗。必须先让本次攻击的目标线可见，再提交阿波罗扣置；目标线出现前不得提前扣牌或刷新目标手牌数。扣置开始后，目标未被扣空时的手牌数量必须在扣置飞牌动画开始前立即刷新，不能等动画结束后才显示减少；连击或连续反击多次触发时，每次封牌动画必须显示该次独立扣减，不能提前跳到最终手牌数。
 - 娜娜莉技能实效固定：魔刀阿波罗只响应单体【杀】且扣置牌于任意角色回合结束时返还并恢复状态牌标记；虚弱斩杀只对单体【杀】和无手牌目标翻倍；复仇之刃为蓝色触发技，敌方造成实际生命伤害后由玩家决定是否发动，罗卡尔受伤时逐个反击所有当时存活的敌人，娜娜莉在反击链中阵亡后停止后续反击。
 - 敌我双方角色受到致死伤害或致死生命流失时，必须先完成对应浮字与死亡动画，再执行死亡弃牌和胜负检查，不得在玩家仍看到角色存活时提前清空手牌。
 - 我方角色在自己的出牌阶段获得实际摸牌后，手牌横向滚动自动跟随到最右侧的新牌；其他阶段与没有新增手牌的重绘继续保留玩家阅读位置。重绘后的下一帧补偿恢复不得覆盖玩家在该帧前已经进行的手牌、公共出牌区或牌局记录滚动。
@@ -607,7 +613,7 @@ gameplay values and behavior remain here rather than being duplicated in
 ### Character And Enemy Skill Contracts
 
 - 角色与怪物技能的完整名称、类型、图标、公开描述和衍生技能以角色/敌人数据源为准；运行时技能模块实现这些公开设定，`game-settings.md`记录跨模块展示与交互契约。新增或修改技能时必须同步数据、运行时和本节契约，不能只改其中一处。
-- 当前正式内容包括26名可玩角色、71项角色技能、27类敌人、54项敌人技能和30件正式饰品；30件饰品均须保留独立运行契约，其中3件为主动饰品、1件为触发饰品。增删内容时必须同步更新数据总数和技能展示契约。
+- 当前正式内容包括26名可玩角色、71项角色技能、24类敌人、54项敌人技能和30件正式饰品；30件饰品均须保留独立运行契约，其中3件为主动饰品、1件为触发饰品。增删内容时必须同步更新数据总数和技能展示契约。
 - 所有我方角色主动技能必须只匹配一个规范主动技能身份，并由当前战斗中仍存活、持有同名且携带对应规范技能牌的当前行动角色发动；同时携带多个主动技能标记的混合伪造牌、只有同名但缺失规范技能牌的损坏技能对象、没有当前行动权的角色都直接拒绝。准备阶段技能只接受其准备窗口，出牌阶段技能只接受出牌阶段。自用技能只接受发动者本人，敌方目标、任意其他角色、其他友方、友方男性和友方女性目标分别按技能公开描述校验，倒下或不属于当前战斗的目标一律拒绝。需要单张费用或多张费用的技能必须确认所选实体手牌仍存在、可见且满足花色/牌型要求。任一角色、技能所有权、行动权、阶段、目标、次数、资源或费用校验失败，都必须在公共出牌区、战斗日志、出牌计数、手牌移动、使用标记和派生效果之前返回失败。上述统一契约由`src/original/character-skill-access.js`、`battle-card-playability.js`与`battle-combat.js`共同负责。
 - 受限手牌费用必须在同一共享规则下同时约束手牌禁用态、点击/拖拽选择和最终结算，不得只在发动末端报错。当前规则为：【偶像之吻】仅可选`♥`牌，【疯狂射击】仅可选`♥/♦`红牌，【战场指挥官】仅可选【杀】或战术牌，【鬼王扑克】仅可选非战术牌，【军令状】首张必须为标准花色且第二张必须与其花色完全相同；已选的【军令状】费用牌仍可点击取消。非法候选不得改写已选索引、待定目标或多选列表，脚本调用和旧状态仍须在最终结算再次拒绝。
 - 曼妮军火库衍生的`巴特雷`属于角色衍生技能，来源固定为`derived`，不得伪装成饰品技能或进入饰品主动技选择链。诺诺卡的`新月之歌`固定为被动技能，角色主动技可用性与AI不得保留不存在的`newMoonSong`主动牌分支。

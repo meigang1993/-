@@ -51,6 +51,12 @@ Required guards:
   recommendations use bundle ownership, filename/domain heuristics, and
   textual references; directly run the affected focused tests before treating
   a change as verified.
+- A Game Studio git-save response of generic `500 Save failed` is not a
+  successful save and must not be treated as a transient push result. Inspect
+  the worktree and the local pre-commit commands to identify the failing
+  contract, correct that contract, rerun its focused check, and retry the
+  authenticated save endpoint. Confirm the returned commit hash and a clean
+  worktree before reporting the change as saved.
 - `npm run dev:save -- "message"` must remain fail-closed. It runs the quick QA
   chain before calling the Game Studio save endpoint and must not save when any
   gate fails.
