@@ -29,7 +29,14 @@ window.NanaliSkills = deps => {
         type: "sealCards", uid: target.uid, side: target.side,
         count: cards.length, cards, visualHandBefore,
         visualHandCount: visible(target).length,
+        clearTargetLine: !!card?.nanaliRevenge,
       });
+    }
+    if (card?.nanaliRevenge) {
+      state.battle.targetLineHold = {
+        actorUid: actor.uid, targetUid: target.uid,
+        enemyLine: actor.side === "enemy",
+      };
     }
     const tactics = cards.filter(item => item.type === "tactic").length;
     const drawn = tactics ? api.draw?.(actor, tactics, state.battle) : [];
@@ -83,6 +90,10 @@ window.NanaliSkills = deps => {
     const revenge = CardUtils.fromEntity("杀（普攻）", { nanaliRevenge: true });
     window.BattleAttackAnimations?.ensureInitialFlight?.(
       state, nanali, foe, revenge);
+    const flight = state.battle?.animQueue?.find(event =>
+      event.type === "virtualPlay" && event.card === revenge
+      && event.targetUid === foe.uid);
+    if (flight) flight.preserveTargetLine = true;
     sealWithApollo(state, nanali, foe, { draw }, revenge);
     const amount = modifySlashDamage(
       state, nanali, foe, stat(nanali, "attack"), revenge

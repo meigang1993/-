@@ -1,6 +1,6 @@
 window.BattleEffectCardTransfers = U => {
   const {
-    publicZone, drawOrigin, pileZone, unitArt, handSpot,
+    publicZone, drawOrigin, pileZone, unitArt, handSpot, hideLine,
   } = U;
   const flight = window.BattleEffectCardMotion(U);
 
@@ -89,6 +89,11 @@ window.BattleEffectCardTransfers = U => {
     });
     if (!active()) return;
     if (moving) renderStep();
+    if (event.clearTargetLine && battle?.targetLineHold) {
+      delete battle.targetLineHold;
+      hideLine();
+      renderStep();
+    }
   }
 
   async function burnCard(state, event, renderStep, active = () => true) {

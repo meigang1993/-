@@ -46,7 +46,7 @@ window.BattleEffectPlayedCardFlight = U => {
     }
     BattleFX.cardLand();
     fly.remove();
-    hideLine();
+    if (!event?.preserveTargetLine) hideLine();
   }
 
   async function flyPlay(
@@ -123,7 +123,7 @@ window.BattleEffectPlayedCardFlight = U => {
     }
     if (!targeted) BattleFX.cardLand();
     fly.remove();
-    hideLine();
+    if (!event?.preserveTargetLine) hideLine();
   }
 
   return { flyPlayAoe, flyPlay };

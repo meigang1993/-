@@ -59,6 +59,7 @@ window.BattleResolutionActions = ({
     const wasEnemy = active(state.battle)?.side === "enemy";
     if (!combat.resolveCounterTrigger(state, use)) return false;
     onStep?.();
+    await window.BattleEffects?.drain?.(state, onStep);
     await waitEffects();
     if (!current() || !state.battle || state.battle.locked) return true;
     if (wasEnemy) {
