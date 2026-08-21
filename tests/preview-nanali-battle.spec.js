@@ -205,6 +205,12 @@ test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its targ
     const prompt = battle.counterTrigger?.skill || null;
     await window.BattleSystem.resolveCounterTrigger(window.state, true, window.render);
     await window.BattleEffects.whenIdle();
+    battle.locked = false;
+    battle.phase = 4;
+    battle.activeUid = abe.uid;
+    abe.entitySlashThisTurn = 0;
+    await window.BattleSystem.endPlay(window.state, window.render);
+    await window.BattleEffects.whenIdle();
     observer.disconnect();
     return {
       prompt,
@@ -216,6 +222,11 @@ test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its targ
       locked: battle.locked,
       pendingAnimations: battle.animQueue?.length || 0,
       pendingReactions: battle.reactionQueue?.length || 0,
+      returnedSealed: abe.nanaliSealed?.length || 0,
+      returnedPending: abe.hand.some(card => card._pendingDraw),
+      abeUid: abe.uid,
+      activeUid: battle.activeUid,
+      phase: battle.phase,
     };
   });
   expect(result.prompt).toBe("复仇之刃");
@@ -225,4 +236,8 @@ test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its targ
   expect(result.abeHp).toBe(24);
   expect(result.pendingAnimations).toBe(0);
   expect(result.pendingReactions).toBe(0);
+  expect(result.returnedSealed).toBe(0);
+  expect(result.returnedPending).toBe(false);
+  expect(result.activeUid).not.toBe(result.abeUid);
+  expect(result.phase).toBe(4);
 });
