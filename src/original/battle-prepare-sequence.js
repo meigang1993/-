@@ -23,8 +23,8 @@ window.BattlePrepareSequence = deps => {
         battle.prepareStep += 1;
         window.EnemySkills?.tickPoison?.(state, unit, combat.damage);
       } else if (step === 2) {
-        if (window.EnemySkills?.prepare?.(state, unit, combat.damage, nextAnim) === false) return false;
         battle.prepareStep += 1;
+        if (window.EnemySkills?.prepare?.(state, unit, combat.damage, nextAnim) === false) return false;
       } else if (step === 3) {
         battle.prepareStep += 1;
         if (unit.hp > 0) relicPrepare(state, unit);

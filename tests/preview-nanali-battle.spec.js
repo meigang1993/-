@@ -160,8 +160,10 @@ test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its targ
     battle.test = false;
     battle.locked = false;
     battle.animQueue = [];
-    battle.phase = 4;
+    battle.phase = 1;
     battle.activeUid = abe.uid;
+    battle.prepareUnitUid = abe.uid;
+    battle.prepareStep = 2;
     window.state.settings.manualResponse = false;
     Object.assign(nanali, {
       ref: "nanali", name: "娜娜莉", side: "ally", hp: 20, maxHp: 20,
@@ -181,7 +183,14 @@ test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its targ
       usedDragonSlash: false,
     });
     window.render();
-    window.AbeMikeSkills.prepare(window.state, abe, window.BattleSystem.damage);
+    window.BattlePrepareSequence({
+      combat: { damage: window.BattleSystem.damage },
+      draw: window.BattleSystem.draw,
+      intentMax: unit => unit.stats.bloodlust,
+      nextAnim: () => 1,
+      record: (state, text) => window.BattleLog.add(state, text),
+      relicPrepare: () => {},
+    }).resolve(window.state, abe);
     await window.BattleEffects.drain(window.state, window.render);
     abe.ai = null;
     const sequence = [];
@@ -204,12 +213,6 @@ test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its targ
     });
     const prompt = battle.counterTrigger?.skill || null;
     await window.BattleSystem.resolveCounterTrigger(window.state, true, window.render);
-    await window.BattleEffects.whenIdle();
-    battle.locked = false;
-    battle.phase = 4;
-    battle.activeUid = abe.uid;
-    abe.entitySlashThisTurn = 0;
-    await window.BattleSystem.endPlay(window.state, window.render);
     await window.BattleEffects.whenIdle();
     observer.disconnect();
     return {
