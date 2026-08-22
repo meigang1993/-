@@ -47,6 +47,15 @@ window.BattleManualContinuation = deps => {
       window.SakuraRisaSkills?.playPhaseStart?.(state, unit);
       record(state, `${unit.name} 可以出牌。`);
       onStep?.();
+      if (!await runEnemyPlayPhase(state, unit, onStep, true, current)
+        || !current()) return;
+      finishTurn(state);
+      combat.checkEnd(state);
+      onStep?.();
+      await waitEffects();
+      if (current() && state.battle && !state.battle.locked) {
+        await advanceToInput(state, onStep, current);
+      }
       return;
     }
     if (unit?.side === "ally" && state.battle.phase === 1) {
