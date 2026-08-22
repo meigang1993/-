@@ -70,10 +70,11 @@ window.AbeMikeSkills = (() => {
   }
   function endTurn(state, unit, damage) {
     if (unit.ai !== "abe_mike" || !unit.entitySlashThisTurn) return;
+    const times = unit.entitySlashThisTurn;
+    unit.entitySlashThisTurn = 0;
     const targets = alive(state.battle.allies);
     const target = window.GameRandom.sample(targets, state);
     if (!target) return;
-    const times = unit.entitySlashThisTurn;
     window.BattleLines?.skill(state, unit, "幻影剑舞", target);
     window.BattleLog.add(state, `${unit.name} 发动幻影剑舞，随机指定${target.name}使用${times}张虚拟杀。`);
     for (let i = 0; i < times && target.hp > 0 && !state.battle?.locked; i++) {

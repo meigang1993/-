@@ -47,6 +47,7 @@ window.BattleManualContinuation = deps => {
       window.SakuraRisaSkills?.playPhaseStart?.(state, unit);
       record(state, `${unit.name} 可以出牌。`);
       onStep?.();
+      if (!unit.ai) return;
       if (!await runEnemyPlayPhase(state, unit, onStep, true, current)
         || !current()) return;
       finishTurn(state);
