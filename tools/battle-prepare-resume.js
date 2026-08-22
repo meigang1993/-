@@ -1,4 +1,5 @@
 const assert = require("assert");
+global.window = global;
 
 require("../src/original/battle-prepare-sequence.js");
 
@@ -27,7 +28,13 @@ function runBattlePrepareResume() {
       events.push("poison");
       currentState.battle.locked = true;
     },
-    prepare() { events.push("enemy-prepare"); return true; },
+    prepare(currentState, currentUnit) {
+      events.push("enemy-prepare");
+      currentState.battle.enemyPrepareUnitUid = currentUnit.uid;
+      currentState.battle.enemyPrepareStep = 4;
+      currentState.battle.enemyPrepareHandled = true;
+      return true;
+    },
   };
   window.AngelicaLukaSkills = { beginTurn() { events.push("angelica"); } };
   window.NonokaLokiSkills = { beginTurn() { events.push("nonoka"); } };
@@ -55,6 +62,12 @@ function runBattlePrepareResume() {
   ], "resumed preparation must continue every later hook without repeating earlier status ticks");
   assert.strictEqual(state.battle.prepareUnitUid, undefined, "completed preparation must clear its unit cursor");
   assert.strictEqual(state.battle.prepareStep, undefined, "completed preparation must clear its step cursor");
+  assert.strictEqual(state.battle.enemyPrepareUnitUid, undefined,
+    "completed preparation must clear the nested enemy preparation cursor");
+  assert.strictEqual(state.battle.enemyPrepareStep, undefined,
+    "completed preparation must clear the nested enemy preparation step");
+  assert.strictEqual(state.battle.enemyPrepareHandled, undefined,
+    "completed preparation must clear the nested enemy preparation marker");
 
   Object.assign(window, saved);
 }

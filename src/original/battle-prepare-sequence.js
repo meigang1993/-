@@ -9,6 +9,13 @@ window.BattlePrepareSequence = deps => {
     || window.BattleReactionQueue?.pending?.(battle)
   );
 
+  function clearEnemyPrepareCursor(battle, unit) {
+    if (battle?.enemyPrepareUnitUid !== unit?.uid) return;
+    delete battle.enemyPrepareUnitUid;
+    delete battle.enemyPrepareStep;
+    delete battle.enemyPrepareHandled;
+  }
+
   function resolve(state, unit) {
     const battle = state.battle;
     if (!battle || battle.prepareUnitUid !== unit.uid) return true;
@@ -46,6 +53,7 @@ window.BattlePrepareSequence = deps => {
     combat.checkDefeat(state);
     combat.checkEnd(state);
     if (battle.locked) return false;
+    clearEnemyPrepareCursor(battle, unit);
     delete battle.prepareUnitUid;
     delete battle.prepareStep;
     return true;
