@@ -216,6 +216,23 @@ Required guards:
 High-risk examples include 半魅魔血, multi-hit attacks, full-target attacks,
 counterattacks, preparation damage, end-phase skills, and enemy AI continuation.
 
+Preparation sequences must advance their step cursor before invoking any hook
+that can open a prompt or enqueue a reaction. Nested enemy-preparation cursors
+must be cleared when the outer preparation completes. Recovery may continue an
+enemy play phase only when the unit has AI; test units must remain at manual
+input instead of entering an undefined automatic path. End-phase skills that
+consume per-turn counters must claim the current turn before starting nested
+damage, so counterattack recovery cannot re-enter the same skill.
+
+Full-target presentation has a separate race risk: manual group-card flight,
+preview-line synchronization, and virtual per-target settlement can overlap.
+While a manual multi-target flight is active, freeze battle DOM presentation
+sync and mark the battle as owning the group flight. Virtual group mirrors
+created by settlement must retain their gameplay/effect events but suppress
+their target-line draw when the manual flight already owns that batch. Clear
+the ownership marker only in the flight cleanup path so a later effect cannot
+leave duplicate or stale target lines.
+
 ## Save And Cloud Coordination
 
 Risk: stale writes overwrite newer progress, failed cloud reads appear empty,
