@@ -69,9 +69,11 @@ window.AbeMikeSkills = (() => {
     return true;
   }
   function endTurn(state, unit, damage) {
-    if (unit.ai !== "abe_mike" || !unit.entitySlashThisTurn) return;
+    if (unit.ai !== "abe_mike" || unit.abeMikeDanceTurn === state.battle.turn
+      || !unit.entitySlashThisTurn) return;
     const times = unit.entitySlashThisTurn;
     unit.entitySlashThisTurn = 0;
+    unit.abeMikeDanceTurn = state.battle.turn;
     const targets = alive(state.battle.allies);
     const target = window.GameRandom.sample(targets, state);
     if (!target) return;
