@@ -22,7 +22,7 @@ window.BattleEffectPlayedCardFlight = U => {
     const start = center(from);
     const points = targets.map(center);
     const end = center(zone || targets[0]);
-    setLines(start, points, true, !!enemyLine);
+    if (!event?.skipTargetLine) setLines(start, points, true, !!enemyLine);
     showSlashText(event);
     if (!active()) return;
     const fly = projectile(card, !!enemyLine);

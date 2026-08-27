@@ -71,7 +71,7 @@ window.BattleCardSpecials = (deps, ctx) => {
   function sweepDamage(state, actor, amount, card, adjustDamage = null) {
     const foes = actor.side === "enemy" ? state.battle.allies : state.battle.enemies, alive = foes.filter(u => u.hp > 0), targetUids = alive.map(u => u.uid), sweepCard = { ...card, targetless: true, allTargets: targetUids, targetUids, aoeLineShown: true, _entitySourceCard: card }, times = card.gatlingRepeats || 1;
     delete sweepCard.lastHpLoss; delete sweepCard.totalHpLoss; window.EdisSkills?.copyTargetedCards?.(state, actor, alive, card);
-    if (!card._playedFlightDone) state.battle.animQueue?.push({ type: "virtualPlay", id: `aoe${deps.nextAnim()}`, uid: actor.uid, side: actor.side, targetUids, card: sweepCard, enemyLine: actor.side === "enemy", show: false, slashText: true });
+    if (!card._playedFlightDone && !state.battle._manualGroupFlightShown) state.battle.animQueue?.push({ type: "virtualPlay", id: `aoe${deps.nextAnim()}`, uid: actor.uid, side: actor.side, targetUids, card: sweepCard, enemyLine: actor.side === "enemy", show: false, slashText: true });
     log(state, `${actor.name} 使用${card.name}，敌方全体受到扫射。`);
     for (let ti = 0; ti < alive.length; ti++) {
       const u = alive[ti], targetAmount = adjustDamage ? adjustDamage(u, amount) : amount, targetCard = window.EnemySkills?.prepareGroupKillTarget?.(state, actor, u, { ...sweepCard, targetUids, nextTargetIndex: ti + 1 }) || { ...sweepCard, targetUids, nextTargetIndex: ti + 1, _risaTargetedHit: true };

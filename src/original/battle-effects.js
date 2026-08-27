@@ -17,6 +17,7 @@ window.BattleEffects = (() => {
     return (b.pendingTargetUids || []).length >= Math.min(2, b.enemies.filter(u => u.hp > 0).length);
   }
   function sync(state) {
+    if (runtime.animating) return;
     window.BattleEffectAnimation.syncCssTiming(state);
     window.BattleEffectAnimation.stampCssTiming(
       document.querySelector(".battle-screen"), state);
