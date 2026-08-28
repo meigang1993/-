@@ -1,6 +1,6 @@
 # Project Memory Index
 
-The repository contains the original static game and its development tools.
+The repository contains the original static game and its development memory.
 
 ## Shared Memory
 

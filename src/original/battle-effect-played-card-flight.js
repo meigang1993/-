@@ -22,7 +22,7 @@ window.BattleEffectPlayedCardFlight = U => {
     const start = center(from);
     const points = targets.map(center);
     const end = center(zone || targets[0]);
-    setLines(start, points, true, !!enemyLine);
+    if (!event?.skipTargetLine) setLines(start, points, true, !!enemyLine);
     showSlashText(event);
     if (!active()) return;
     const fly = projectile(card, !!enemyLine);
@@ -46,7 +46,7 @@ window.BattleEffectPlayedCardFlight = U => {
     }
     BattleFX.cardLand();
     fly.remove();
-    hideLine();
+    if (!event?.preserveTargetLine) hideLine();
   }
 
   async function flyPlay(
@@ -123,7 +123,7 @@ window.BattleEffectPlayedCardFlight = U => {
     }
     if (!targeted) BattleFX.cardLand();
     fly.remove();
-    hideLine();
+    if (!event?.preserveTargetLine) hideLine();
   }
 
   return { flyPlayAoe, flyPlay };

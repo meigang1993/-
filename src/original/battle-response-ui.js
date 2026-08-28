@@ -40,6 +40,11 @@ window.BattleResponseUI = (() => {
   function responseHand(b) {
     if (b.manualDodge) return manualDodgeHand(b);
     if (b.manualCounter) return manualCounterHand(b);
+    if (b.counterTrigger) {
+      const p = b.counterTrigger;
+      const actor = b.allies.find(unit => unit.uid === p.unitUid);
+      return `<div class="hand-panel response-hand-panel counter-trigger-panel"><div class="hand-head"><b>${U.esc(actor?.name || "角色")} 的触发技</b><span class="tag">🔵 ${U.esc(p.skill)}</span><span class="muted">${U.esc(actor?.name || "角色")} 可以发动此技能。</span></div><div class="hand-body counter-trigger-actions"><button data-counter-trigger-use="1">发动</button><button class="ghost response-cancel" data-counter-trigger-skip="1">跳过</button></div></div>`;
+    }
     return magicBulletHand(b);
   }
   function manualDodgePrompt(b) {

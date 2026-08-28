@@ -1,13 +1,17 @@
 window.GameBGM = (() => {
   const tracks = {
-    op: "./assets/sounds/op.m4a",
-    villa: "./assets/sounds/villa.m4a",
-    dungeon: "./assets/sounds/dungeon-map.m4a",
-    battle: "./assets/sounds/machine-factory-battle.m4a",
+    op: "./assets/sounds/op.ogg",
+    villa: "./assets/sounds/villa.ogg",
+    dungeon: "./assets/sounds/dungeon-map.ogg",
+    battle: "./assets/sounds/machine-factory-battle.ogg",
   };
   const audio = new Audio();
-  audio.loop = true; audio.volume = 0.42; audio.preload = "none";
+  audio.loop = true; audio.volume = 0.42; audio.preload = "auto";
   let current = "", pending = "", enabled = false, fadeId = 0;
+  function loadSrc(src) {
+    audio.loop = true;
+    audio.src = src;
+  }
   function battleTrack(missionId, enemies = []) {
     const mission = window.GameData?.missions?.find(m => m.id === missionId);
     return enemies.find(e => e.type === "boss" && e.bgm)?.bgm
@@ -52,7 +56,7 @@ window.GameBGM = (() => {
     ++fadeId;
     if (next) {
       current = next; pending = "";
-      audio.src = tracks[next] || next;
+      loadSrc(tracks[next] || next);
       audio.currentTime = 0;
     }
     if (!current) {
@@ -70,20 +74,20 @@ window.GameBGM = (() => {
     if (!src) return;
     current = key; pending = ""; ++fadeId;
     if (audio.src && audio.src.endsWith(src.replace(/^\.\//, ""))) { audio.volume = 0; playCurrent(); return; }
-    audio.src = src; audio.currentTime = 0; audio.volume = 0; playCurrent();
+    loadSrc(src); audio.currentTime = 0; audio.volume = 0; playCurrent();
   }
   function update(state) {
     const targetVolume = clampVolume((Number(state?.settings?.musicVolume ?? 80) || 0) / 100 * .9);
     const key = keyFor(state), src = tracks[key] || key;
     if (!src) return stopCurrent();
     if (state?.battle?.introSfxPending) {
-      if (key !== current) { current = key; pending = ""; audio.src = src; audio.currentTime = 0; }
+      if (key !== current) { current = key; pending = ""; loadSrc(src); audio.currentTime = 0; }
       audio.volume = 0; playCurrent(); return;
     }
     if (key === current) { pending = ""; audio.volume = targetVolume; if (audio.paused) playCurrent(); return; }
     if (key === pending) return;
     pending = key; const token = ++fadeId;
-    const switchNow = () => { if (token !== fadeId) return; current = key; pending = ""; audio.src = src; audio.currentTime = 0; playCurrent(); fadeTo(targetVolume, 250, token); };
+    const switchNow = () => { if (token !== fadeId) return; current = key; pending = ""; loadSrc(src); audio.currentTime = 0; playCurrent(); fadeTo(targetVolume, 250, token); };
     if (!current || audio.paused) return switchNow();
     fadeTo(0, 250, token, switchNow);
   }
@@ -97,7 +101,6 @@ window.GameBGM = (() => {
     function step(now) { if (token !== fadeId) return; const p = Math.max(0, Math.min(1, (now - t0) / ms)); audio.volume = clampVolume(start + (target - start) * p); if (p < 1) requestAnimationFrame(step); else done?.(); }
     requestAnimationFrame(step);
   }
-  audio.addEventListener("ended", () => { audio.currentTime = 0; playCurrent(); });
   document.addEventListener("pointerdown", unlock, { once: true });
   document.addEventListener("click", unlock, { once: true });
   return { update, setVolume, unlock, playCurrent, primeBattle, battleTrack };

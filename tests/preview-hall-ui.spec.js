@@ -40,6 +40,33 @@ test("hall actions remain reachable in minimum compact landscape", async ({ page
   });
 });
 
+test("shell keeps one scroll owner on hall and modal surfaces", async ({ page }) => {
+  await page.setViewportSize({ width: 480, height: 270 });
+  await openGame(page);
+  await startFreshGame(page);
+  const measure = selector => page.locator(selector).evaluate(element => ({
+    scrollable: element.scrollHeight > element.clientHeight + 1,
+    overflowY: getComputedStyle(element).overflowY,
+  }));
+  expect(await measure(".content-panel")).toEqual({
+    scrollable: false,
+    overflowY: "hidden",
+  });
+  expect(await measure(".villa-actions")).toEqual({
+    scrollable: true,
+    overflowY: "auto",
+  });
+  await page.locator("[data-open-modal='team']").click();
+  expect(await measure(".content-panel")).toEqual({
+    scrollable: false,
+    overflowY: "hidden",
+  });
+  expect(await measure(".modal-card")).toEqual({
+    scrollable: true,
+    overflowY: "auto",
+  });
+});
+
 test("fresh games guide the first expedition and retire the hint after entry", async ({ page }) => {
   await openGame(page, { loadFeatures: false });
   await startFreshGame(page);
@@ -84,6 +111,36 @@ test("update notice shows the August 17 player-facing fixes", async ({ page }) =
   await expect(notice).toContainText("神速之袭");
   await expect(notice).toContainText("饰品图鉴");
   await expect(notice).not.toContainText(/测试|提交|bundle|构建验证/);
+});
+
+test("announcement and every unlock event keep scrolling inside their content", async ({ page }) => {
+  await page.setViewportSize({ width: 480, height: 270 });
+  await openGame(page);
+  await startFreshGame(page);
+  const eventModals = [
+    "firstDefeat", "secondDefeat", "millerUnlock", "gerlotUnlock", "cadicisUnlock",
+    "lukaUnlock", "littleElranaUnlock", "aceUnlock", "underwaterTrainUnlock",
+    "opheliaUnlock", "bestaNurseryUnlock", "orcDungeonUnlock", "soniaNurseryUnlock",
+    "chiyoRecruitUnlock", "gerdaNurseryUnlock", "hoshinoFamilyUnlock",
+  ];
+  const measure = selector => page.locator(selector).evaluate(element => ({
+    scrollable: element.scrollHeight > element.clientHeight + 1,
+    overflowY: getComputedStyle(element).overflowY,
+  }));
+  await page.evaluate(() => { window.state.hallModal = "updates"; window.render(); });
+  expect(await measure(".modal-card.update-modal")).toMatchObject({ overflowY: "hidden" });
+  expect(await measure(".update-notice-list")).toEqual({ scrollable: true, overflowY: "auto" });
+  await expect(page.locator(".update-notice-list")).toBeVisible();
+  for (const modal of eventModals) {
+    await page.evaluate(name => { window.state.hallModal = name; window.render(); }, modal);
+    await expect(page.locator(".modal-card.event-modal")).toHaveCount(1);
+    expect(await measure(".modal-card.event-modal")).toMatchObject({ overflowY: "hidden" });
+    const lines = page.locator(".vn-lines");
+    if (await lines.count()) {
+      expect(await measure(".vn-lines")).toEqual({ scrollable: true, overflowY: "auto" });
+    }
+    await expect(page.locator(".event-modal .actions button")).toBeVisible();
+  }
 });
 
 test("relic codex exposes every formal relic and closes without leaving the library", async ({ page }) => {
@@ -161,4 +218,25 @@ test("relic codex exposes every formal relic and closes without leaving the libr
   await expect(page.locator(".relic-codex-pop")).toHaveCount(0);
   await expect(page.locator(".villa-modal")).toBeVisible();
   await expect(opener).toBeFocused();
+});
+
+test("card codex is an independent overlay and outside context closes only the codex", async ({ page }) => {
+  await openGame(page);
+  await startFreshGame(page);
+  await page.locator("[data-open-modal='deck']").click();
+  await page.locator("[data-card-codex='1']").click();
+  await expect(page.locator(".card-codex-pop")).toBeVisible();
+  await expect(page.locator(".card-codex-grid")).toBeVisible();
+  await expect(page.locator(".modal-card")).toContainText("公共牌库");
+  await page.locator(".card-codex-overlay").click({ position: { x: 2, y: 2 } });
+  await expect(page.locator(".card-codex-pop")).toHaveCount(0);
+  await expect(page.locator(".modal-card")).toBeVisible();
+  await page.locator("[data-card-codex='1']").click();
+  await page.locator(".card-codex-overlay").click({ position: { x: 2, y: 2 }, button: "right" });
+  await expect(page.locator(".card-codex-pop")).toHaveCount(0);
+  await expect(page.locator(".modal-card")).toBeVisible();
+  await page.locator("[data-card-codex='1']").click();
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".card-codex-pop")).toHaveCount(0);
+  await expect(page.locator(".modal-card")).toBeVisible();
 });

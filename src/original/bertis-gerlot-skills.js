@@ -85,24 +85,31 @@ window.BertisGerlotSkills = (() => {
     const gerlot = state.battle.allies.find(u => u.ref === "gerlot" && alive(u) && hasSkill(u, "复仇反击"));
     const source = target?.ref === "bertis" ? gerlot : target;
     if (!alive(source) || !hasSkill(source, "复仇反击")) return;
-    line(state, source, target.ref === "bertis" ? "护母反击" : "复仇反击", actor);
-    revengeSlash(state, api, source, actor, 1);
+    const skill = target.ref === "bertis" ? "护母反击" : "复仇反击";
+    if (window.BattleCounterTriggers?.open(state, { skill, unitUid: source.uid, sourceUid: actor.uid, targetUid: actor.uid, count: 1 })) return;
+    resolveRevengeTrigger(state, source, actor, 1, api);
   }
   function afterDamage(state, actor, target, card, hpLoss, api) {
     if (hpLoss && target?.ref === "bertis") window.BertisQueenSkinFX?.hit?.(state, target, actor);
     if (!hpLoss || card?.revengeCounter || !hasTargetLine(card) || target?.ref !== "bertis" || !alive(actor)) return;
     const gerlot = state.battle.allies.find(u => u.ref === "gerlot" && alive(u) && hasSkill(u, "复仇反击"));
     if (!gerlot) return;
-    line(state, gerlot, "贝尔蒂丝受伤反击", actor);
-    revengeSlash(state, api, gerlot, actor, 2);
+    if (window.BattleCounterTriggers?.open(state, { skill: "贝尔蒂丝受伤反击", unitUid: gerlot.uid, sourceUid: actor.uid, targetUid: actor.uid, count: 2 })) return;
+    resolveRevengeTrigger(state, gerlot, actor, 2, api);
   }
   function revengeSlash(state, api, source, target, times) {
     for (let i = 0; i < times && alive(source) && alive(target); i++) api.damage(state, target, stat(source, "attack"), "复仇反击", source, virtualCard("杀（普攻）", { revengeCounter: true }));
   }
+  function resolveRevengeTrigger(state, source, target, times, api, skill = "复仇反击") {
+    line(state, source, skill, target);
+    revengeSlash(state, api, source, target, times);
+  }
   function queueHeadshot(state, actor, target, amount, source, card, resume) {
     const b = state.battle, root = headshotCard(card);
-    if (actor?.ref !== "gerlot" || !isKill(card) || root?.headshotDone || !b?.animQueue) return false;
+    if (actor?.ref !== "gerlot" || !isKill(card)
+      || root?.headshotDone || root?.headshotQueued || !b?.animQueue) return false;
     const judge = drawJudge(state, actor), success = !!judge?.suit && sameColor(judge.suit, root.suit);
+    root.headshotQueued = true;
     root.headshotDone = true; root.headshotMultiplier = success ? 2 : 1; b.locked = true;
     line(state, actor, success ? "爆头成功" : "爆头失败");
     window.BattleLog.add(state, `${actor.name} 爆头一击判定：${judge?.suit || "?"}${judge?.name || "无牌"}，${success ? "伤害翻倍" : "未触发"}。`);
@@ -132,5 +139,5 @@ window.BertisGerlotSkills = (() => {
       });
     });
   }
-  return { skills, refreshArrogance, beginTurn, endTurn, handleSpecialCard, afterDodge, afterDamage, queueHeadshot, modifyIncomingDamage, afterAnyDeath };
+  return { skills, refreshArrogance, beginTurn, endTurn, handleSpecialCard, afterDodge, afterDamage, resolveRevengeTrigger, queueHeadshot, modifyIncomingDamage, afterAnyDeath };
 })();

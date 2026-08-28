@@ -73,7 +73,7 @@ body.battle-mode .bottom-nav, body.dungeon-mode .bottom-nav { display: none; }
 body.dungeon-mode .main-grid { transform: translateY(-18px); padding-bottom: 20px; }
 .panel { border-radius: 16px; padding: 8px; min-height: 0; overflow: hidden; }
 .side-panel, .content-panel { display: flex; flex-direction: column; min-width: 0; }
-.content-panel { overflow-y: auto; overscroll-behavior: auto; }
+.content-panel { overflow: hidden; overscroll-behavior: none; }
 .content-panel.victory-mode, .content-panel.dungeon-view, .main-grid.battle-mode .content-panel { overflow: hidden; display: block; }
 #view { height: 100%; min-height: 0; }
 .resource-row, .nav-list { display: grid; gap: 8px; }
@@ -105,6 +105,11 @@ body.dungeon-mode .main-grid { transform: translateY(-18px); padding-bottom: 20p
 .codex-card.active { outline: 2px solid #ffc767; box-shadow: 0 0 18px rgba(255,199,103,.42); }
 .codex-card-detail { margin-top: 12px; display: grid; gap: 6px; padding: 14px; border-radius: 16px; background: rgba(0,0,0,.18); border: 1px solid rgba(255,215,166,.22); }
 .codex-card-detail b { color: #ffe4f3; font-size: 18px; }
+.card-codex-pop { position: relative; width: min(920px, 94%); max-height: 84%; overflow: hidden; display: flex; flex-direction: column; gap: 12px; padding: 18px; background: linear-gradient(145deg, rgba(38,7,52,.98), rgba(93,20,72,.96)); box-shadow: 0 26px 76px rgba(0,0,0,.62); }
+.codex-overlay.card-codex-overlay { position: fixed; inset: 0; z-index: 50; border-radius: 0; pointer-events: auto; }
+.card-codex-pop .codex-head { flex: 0 0 auto; }
+.card-codex-pop .card-codex-grid { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; }
+.card-codex-pop .codex-card-detail { flex: 0 0 auto; max-height: 25vh; overflow-y: auto; overscroll-behavior: contain; }
 .drop-source { color: #ffc767; font-weight: 800; }
 .boot-card { height: 100%; min-height: 260px; display: grid; place-content: center; justify-items: center; gap: 12px; color: #ffe4f3; }
 .boot-card b { font-size: 20px; text-shadow: 0 0 16px rgba(255,92,171,.7); }

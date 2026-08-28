@@ -27,6 +27,7 @@ function bindActions() {
     if (SaveSlots.isOpen()) return finish(() => { SaveSlots.close(); render(); });
     if (state.artZoom) return finish(() => { state.artZoom = null; render(); });
     if (state.infoUnit) return finish(closeInfoUnit);
+    if (state.cardCodex) return finish(() => { state.cardCodex = false; render(); });
     if (settingsOpen) return finish(() => { settingsOpen = false; render(); });
     if (creditsOpen) return finish(closeCreditsPanel);
     if (click(".villa-modal .info-close")) return;

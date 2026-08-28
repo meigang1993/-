@@ -1,5 +1,5 @@
 window.BattleEffects = (() => {
-  const { center, selectedCard, targetArt, setLine, setLines, setComboLines, flashComboPartner, hideLine } = window.BattleEffectUtils;
+  const { center, selectedCard, targetArt, unitArt, setLine, setLines, setComboLines, flashComboPartner, hideLine } = window.BattleEffectUtils;
   const H = window.BattleEffectHandlers, P = window.BattleEffectPlay;
   const effectiveCard = (actor, card) => window.WithererSkills?.displayCard?.(actor, card) || card;
   const runtime = { animating: false, draining: false, renderFrozen: false, idleResolvers: [], settleBlockedBattle: null, pendingState: null, currentEvent: null, version: 0 };
@@ -17,6 +17,7 @@ window.BattleEffects = (() => {
     return (b.pendingTargetUids || []).length >= Math.min(2, b.enemies.filter(u => u.hp > 0).length);
   }
   function sync(state) {
+    if (runtime.animating) return;
     window.BattleEffectAnimation.syncCssTiming(state);
     window.BattleEffectAnimation.stampCssTiming(
       document.querySelector(".battle-screen"), state);
@@ -24,6 +25,7 @@ window.BattleEffects = (() => {
     const manual = state.battle?.manualDodge;
     if (manual) { const from = targetArt(manual.actorUid), to = targetArt(manual.targetUid); if (from && to) return setLine(center(from), center(to), true, true); }
     const card = selectedCard(), b = state.battle,
+      heldLine = b?.targetLineHold,
       actor = b && window.BattleSystem.active(b),
       enemyLine = actor?.side === "enemy",
       source = b?.selectedSkillCard || actor?.hand?.[b?.selectedCardIndex],
@@ -33,6 +35,12 @@ window.BattleEffects = (() => {
       pendingUids = b?.pendingTargetUids || [],
       uids = pendingUids.length ? pendingUids : groupUids,
       arts = uids.map(targetArt).filter(Boolean);
+    if (heldLine) {
+      const from = unitArt(heldLine.actorUid), to = targetArt(heldLine.targetUid);
+      if (from && to) return setLine(
+        center(from), center(to), true, !!heldLine.enemyLine,
+      );
+    }
     const uid = b?.pendingTargetUid, art = uid && targetArt(uid);
     if (card && art && (selected?.comboAttack || selected?.borrowSlash)
       && b?.comboPartnerUid) {

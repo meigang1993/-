@@ -13,7 +13,7 @@ window.GameDataFutureCharacters = [
     mother: "混沌女神",
     sourceDungeon: "兽人地下城",
     entrance: "父亲大人，小心我们其他姐妹找你麻烦，嘿嘿",
-    stats: { attack: 2, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
+    stats: { attack: 3, magic: 3, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "复制杀牌与双形态转换核心。杀欲窥视复制目标手中的【杀】且不消耗杀意；暴走将红色牌转为不消耗杀意的【杀（普攻）】，极速使黑色牌不可响应并可当【闪】或【看破】使用或打出。出牌阶段满足另一形态条件时可再次切换，当前形态持续至其下回合开始。",
     skills: [
       { name: "杀欲窥视", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以指定敌方一名角色。若该角色有【杀】牌，你获得等量张临时同名同花色【杀】牌，带有消耗属性。以此技能获得的【杀】牌不消耗杀意。", card: { name: "杀欲窥视", type: "tactic", withererPeek: true, icon: "⚔️", text: "指定一名敌方角色，复制其持有的【杀】牌；复制牌为临时消耗牌且不消耗杀意。" } },

@@ -1,6 +1,7 @@
 window.AppRuntimeRecovery = (() => {
   const blockingBattleKeys = [
-    "manualDodge", "manualCounter", "recklessPrompt", "risaEyePrompt",
+    "manualDodge", "manualCounter", "counterTrigger", "counterTriggerQueue",
+    "recklessPrompt", "risaEyePrompt",
     "handReveal", "thunderHammer", "dimensionTransfer", "opheliaGuard",
     "cadicisResponsibility", "wendyTutorPicker", "ailengDrillPicker",
     "mannyArmoryPicker", "gerdaComfort", "kaiichiShare", "newMoonShare",

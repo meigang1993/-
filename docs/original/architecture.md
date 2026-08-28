@@ -4,6 +4,8 @@
 
 - Unminified runtime modules live only under `src/original/`; they are
   development sources and must never be copied into `publish/`.
+- The Electron desktop packaging shell was removed on August 17, 2026. The
+  repository ships only the static Game Studio runtime under `publish/`.
 - `publish/index.html` loads the ordered generated startup bundle set with
   deferred classic scripts: `startup`, `startup-store`, then `startup-app`.
   Browsers may fetch those files in parallel, but execution order remains the
@@ -17,17 +19,26 @@
   with the same build version, avoiding four separate startup link elements.
 - Runtime code uses ordered classic scripts and global public APIs.
 - `tools/publish-bundles.json` is the canonical source order for the three
-  startup bundles plus the deferred hall, battle, and dungeon bundles.
+  startup bundles plus the deferred hall, battle responsibility set, and
+  dungeon bundle.
 - Every new or split runtime source module is created under `src/original/`,
   registered exactly once in `tools/publish-bundles.json`, and delivered to
   players only through its generated bundle. Never place an unminified source
   module anywhere under `publish/`, including a nested scripts directory.
-- `npm run build:bundles` compiles `src/original/` into the six generated
+- `npm run build:bundles` compiles `src/original/` into the eleven generated
   files under `publish/bundles/`; it rejects unlisted source modules,
   unbundled published JavaScript at any depth, and unexpected bundle files. If
   generated bundle bytes or any published stylesheet differ from `HEAD`, the
   command requires `meta[name="game-build"]` to be newer than the `HEAD` value
   before writing. A copied development tree without Git history fails closed.
+- Generated JavaScript uses Terser compression with three passes plus identifier
+  mangling while preserving function and class names required by diagnostics
+  and compatibility contracts. Property mangling remains disabled because
+  runtime modules communicate through named global and object properties.
+- HTTP Brotli compression is a Game Studio/CDN transport responsibility.
+  Precompressed `.br` files are not committed under `publish/` because the
+  static runtime cannot assign their required `Content-Encoding` response
+  metadata or negotiate them from the browser.
 - The bundle check recompiles in memory and byte-compares every
   committed bundle with its current sources and applies the same cache-version
   gate to generated bundles plus every `publish/**/*.css` file. After changing
@@ -57,19 +68,77 @@
   LocalCore, and ServerCore; `startup-app.min.js` owns save-slot UI, common UI,
   relic runtime, application rendering/actions, boot, and runtime recovery.
 - Battle-only UI renderers (`ui-battle-pickers.js`, `ui-battle-targeting.js`,
-  `ui-battle-units.js`, and `ui-battle-scene.js`) live in the deferred battle
-  bundle. The startup `GameUI` facade resolves the complete scene renderer
+  `ui-battle-units.js`, and `ui-battle-scene.js`) live in the deferred
+  `battle-ui` bundle. The startup `GameUI` facade resolves the complete scene renderer
   lazily only when rendering a loaded battle.
-- `card-art.js` and `ui-common-cards.js` also live in the deferred battle
-  bundle. They load before battle renderers, while the startup `UICommon`
-  facade resolves card rendering lazily only after the battle bundle is ready.
+- `card-art.js` and `ui-common-cards.js` live in `battle-rules`. They load
+  before battle renderers, while the startup `UICommon` facade resolves card
+  rendering lazily only after the complete battle bundle set is ready.
 - The full Game Studio release unit always contains `publish/`. Top-level
   `functions/*.ts` are included only for features that currently invoke them;
   player save storage has no serverless-function dependency.
-- The only JavaScript files allowed in `publish/` are
-  `bundles/startup.min.js`, `bundles/startup-store.min.js`,
-  `bundles/startup-app.min.js`, `bundles/hall.min.js`,
-  `bundles/battle.min.js`, and `bundles/dungeon.min.js`.
+- The only JavaScript files allowed in `publish/` are the generated manifest
+  outputs. Battle delivery is split into ordered `battle-rules`,
+  `battle-skills`, `battle-flow`, `battle-ai`, `battle-presentation`, and
+  `battle-ui` bundles; `GameBundles.load("battle")` loads the complete set
+  serially and remains the only public scene-loading entry.
+
+## Development Toolchain
+
+- The QA container is Debian GNU/Linux 12 (`bookworm`).
+- Playwright uses the repository-local Chromium build; on August 17, 2026,
+  `npm run check:toolchain` launched Chromium `149.0.7827.55`.
+- On August 18, 2026, `npm run playwright:install` installed Chrome for
+  Testing and the matching Headless Shell `149.0.7827.55` (Playwright
+  Chromium v1228), plus FFmpeg v1011, under the ignored
+  `/workspace/.playwright-browsers/` directory for browser QA.
+- Chromium Linux libraries and fonts are installed into the development
+  container with `npm run playwright:install:deps`; they are not copied into
+  `publish/` or tracked as binary repository content. The repository-owned
+  version lock and critical loader-path inventory is
+  `tools/chromium-system-dependencies.json`; `npm run check:playwright`
+  validates the running container against it before launching Chromium.
+- Browser QA recovery: before running Playwright tests, check the
+  repository-local `.playwright-browsers/` installation and system
+  dependencies with `npm run check:playwright`. If Chromium, the headless
+  shell, FFmpeg, required Linux libraries, or the locked
+  `fonts-freefont-ttf` package is missing, restore them with
+  `npm run playwright:install` followed by
+  `npm run playwright:install:deps`, then rerun
+  `npm run check:playwright` before reporting browser tests as blocked.
+  Missing browser artifacts are environment failures, not product-test
+  failures.
+- The installed GLib runtime is Debian package `libglib2.0-0`
+  `2.74.6-2+deb12u9` (`amd64`). Its loader path is
+  `/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0`, resolving to
+  `/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.7400.6`. It is required for the
+  repository Chromium used by browser QA. The package and the complete
+  Chromium dependency set were restored and verified on August 18, 2026 with
+  `npm run playwright:install:deps` after the container was found without the
+  GLib loader. `npm run check:toolchain` then confirmed Chromium
+  `149.0.7827.55` could launch.
+- Any future Windows/Electron package is a disposable development artifact,
+  not part of the static player runtime. Install packaging dependencies, stage
+  `publish/`, create the unpacked Windows application, and compress it entirely
+  below `/tmp/game-2971485-windows/`; never generate Electron `node_modules`,
+  staging trees, unpacked output, caches, or an in-progress archive anywhere
+  below `/workspace`. `.gitignore` does not protect these paths from the Game
+  Studio file watcher. To expose one completed archive for download, copy it
+  to `uploads/SuccubusKill-win64.zip~` first; the trailing `~` keeps the copy
+  operation out of file-watch events, then rename it atomically on the
+  `/workspace` filesystem to `uploads/SuccubusKill-win64.zip`. Remove the
+  delivered archive after download so workspace size does not grow.
+- Wormhole browser delivery uses Playwright Chromium with one dedicated
+  persistent profile outside the watched workspace, such as
+  `/tmp/game-2971485-wormhole-profile`, and launches with
+  `--disable-dev-shm-usage` because the container `/dev/shm` is only 64 MiB.
+  Selecting the archive and receiving a share URL is not completion: keep the
+  originating browser context alive until the page reports both `Encrypted`
+  and `Uploaded`. Then open the full URL, including its fragment key, in an
+  independent browser context and verify the expected filename, byte-size
+  presentation, and enabled download control without starting a download.
+  Delete the delivered archive and browser profile after verification.
+
 ## Source Ownership
 
 | Domain | Canonical owners |
@@ -89,7 +158,7 @@
 | Skins and assets | `src/original/data-skins.js` owns purchased, initial, level-gated, and test-trial appearance metadata; `src/original/skins.js` owns ownership, equipment, and runtime appearance selection; `src/original/skin-fx-runtime.js` owns shared dynamic-effect, timer, mount, and invalidation infrastructure used by dedicated skin controllers including `src/original/flora-sonic-skin-fx.js`, `src/original/wendy-teacher-skin-fx.js`, and `src/original/elrana-fallen-physician-skin-fx.js`; `src/original/assets.js`, skin CSS, `publish/assets/` |
 | Interaction and visual memory | `docs/original/interaction-visual-reference.md` |
 | Skill-state skin variants | `src/original/skins.js` selects the equipped-skin-only variant from live skill state using metadata from `src/original/data-skins.js`, with rendering in `src/original/ui-common-art.js`; no timed full-screen damage-art controller remains |
-| Bundle order | `tools/publish-bundles.json` |
+| Bundle order | `tools/publish-bundles.json`; battle sources are published by rules, skills, flow/settlement, AI, presentation/audio, and UI responsibility |
 | Intended contracts | `docs/original/game-settings.md` |
 | Verification policy | `docs/original/qa-workflow.md` |
 

@@ -66,12 +66,14 @@ window.BattleEffectGeometry = (() => {
 
   function setLines(from, targets, flash = false, enemy = false) {
     hideLine();
-    targets.forEach((to, index) => appendLine(
-      from,
-      to,
-      `target-line aoe-line show ${flash ? "flash" : ""} ${enemy ? "enemy-line" : ""}`,
-      Math.max(.35, .85 - index * .08),
-    ));
+    targets.forEach((to, index) => {
+      appendLine(
+        from,
+        to,
+        `target-line aoe-line show ${flash ? "flash" : ""} ${enemy ? "enemy-line" : ""}`,
+        Math.max(.35, .85 - index * .08),
+      );
+    });
   }
 
   function setComboLines(actorPoint, partnerPoint, targetPoint, enemy = false) {

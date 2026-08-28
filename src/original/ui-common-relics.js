@@ -5,7 +5,7 @@ window.UICommonRelics = deps => {
     const relic = RelicSystem.data(name);
     if (!relic) return "";
     const tip = esc(RelicSystem.statText(name));
-    return `<span class="relic-name" data-tooltip="${tip}">${esc(prefix)}${esc(relic.name)}</span>`;
+    return `<span class="relic-name" data-tooltip="${tip}"><i class="relic-skill-icon" aria-hidden="true">${esc(RelicSystem.skillIcon(name))}</i>${esc(prefix)}${esc(relic.name)}</span>`;
   }
 
   function relicDetail(relic) {

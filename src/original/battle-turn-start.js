@@ -68,7 +68,12 @@ window.BattleTurnStart = ({
     if (!unit) return null;
     battle.activeUid = unit.uid;
     battle.phase = 1;
+    battle.prepareUnitUid = unit.uid;
+    battle.prepareStep = 0;
+    window.BattleTurnState.resetBeginTurn(unit, battle, intentMax(unit));
     window.SakuraRisaSkills?.beginTurn?.(state, unit);
+    if (battle.locked || window.BattleCounterTriggers?.pending?.(battle)
+      || window.BattleReactionQueue?.pending?.(battle)) return unit;
     if (window.GuardKellySkills?.consumeFaceDown?.(state, unit)) {
       window.BattleTurnState.resetBeginTurn(unit, battle, intentMax(unit));
       unit.faceDownTurnSkipped = true;
@@ -77,12 +82,15 @@ window.BattleTurnStart = ({
       return unit;
     }
     window.ElranaAceNanaliSkills?.beforeBeginTurn?.(state, unit);
+    if (battle.locked || window.BattleCounterTriggers?.pending?.(battle)
+      || window.BattleReactionQueue?.pending?.(battle)) return unit;
     window.BertisGerlotSkills?.refreshArrogance?.(state);
     window.BakarSkills?.beginTurn?.(state, unit);
-    window.BattleTurnState.resetBeginTurn(unit, battle, intentMax(unit));
+    if (battle.locked || window.BattleCounterTriggers?.pending?.(battle)
+      || window.BattleReactionQueue?.pending?.(battle)) return unit;
     window.HoshinoSkills?.beginTurn?.(state, unit);
-    battle.prepareUnitUid = unit.uid;
-    battle.prepareStep = 0;
+    if (battle.locked || window.BattleCounterTriggers?.pending?.(battle)
+      || window.BattleReactionQueue?.pending?.(battle)) return unit;
     return continuePreparedTurn(state, unit);
   }
 

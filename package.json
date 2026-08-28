@@ -30,6 +30,8 @@
     "check:scripts": "node tools/check-script-contracts.js",
     "check:performance": "node tools/check-startup-performance.js",
     "check:duplicates": "jscpd --config .jscpd.json --no-colors --no-tips",
+    "impact": "node tools/impact-check.js",
+    "dev:save": "node tools/dev-save.js",
     "check:bundles": "node tools/build-publish-bundles.js --check",
     "check:playwright": "node tools/check-playwright.js",
     "playwright:install": "node tools/install-playwright-chromium.js",

@@ -80,6 +80,7 @@ global.startOpen = true;
 require("../src/original/bgm.js");
 
 (async () => {
+  assert.strictEqual(FakeBgmAudio.instance.loop, true, "BGM must loop continuously");
   GameBGM.update({ view: "hall", settings: { musicVolume: 80 } });
   flushRaf();
   GameBGM.unlock();
@@ -87,7 +88,7 @@ require("../src/original/bgm.js");
   GameBGM.update({ view: "hall", settings: { musicVolume: 80 } });
   GameBGM.setVolume(0);
   flushRaf();
-  assert(FakeBgmAudio.instance.src.endsWith("villa.m4a"), "volume changes during a fade must finish the pending BGM switch");
+  assert(FakeBgmAudio.instance.src.endsWith("villa.ogg"), "volume changes during a fade must finish the pending BGM switch");
   assert.strictEqual(FakeBgmAudio.instance.volume, 0, "a fade must not overwrite the selected music volume");
   GameBGM.update({ view: "battle", battle: {}, settings: { musicVolume: 80 } });
   flushRaf();
@@ -108,7 +109,7 @@ require("../src/original/bgm.js");
   await Promise.resolve();
   const primed = FakeBgmAudio.instance.sources.slice(sourceCount);
   assert(FakeBgmAudio.instance.src.endsWith("boss-special.mp3"), "battle priming must use the final boss track");
-  assert(!primed.some(src => src.endsWith("machine-factory-battle.m4a")), "special battle priming must not assign the default battle track first");
+  assert(!primed.some(src => src.endsWith("machine-factory-battle.ogg")), "special battle priming must not assign the default battle track first");
   assert(!warnings.some(text => text.includes("BGM播放失败")), "stale BGM source-switch rejection must stay silent");
 
   let fetchCalls = 0, mediaLoads = 0, mediaPlays = 0;

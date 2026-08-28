@@ -53,7 +53,11 @@ function validatePublishBoundary() {
 
 async function compile(name, files) {
   const result = await terser.minify(readSources(files), {
-    compress: false,
+    compress: {
+      passes: 3,
+    },
+    keep_classnames: true,
+    keep_fnames: true,
     mangle: {
       keep_classnames: true,
       keep_fnames: true,

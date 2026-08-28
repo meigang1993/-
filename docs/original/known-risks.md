@@ -39,6 +39,39 @@ restores a missing clone while preserving existing data. An oversized scan
 should now become an unavailable health report rather than an unopenable
 container.
 
+## Development Tooling And Save Gates
+
+Risk: development convenience tools can hide an incomplete verification step
+or block a legitimate save because the repository's aggregate QA gate has an
+unrelated baseline failure.
+
+Required guards:
+
+- `npm run impact -- [files...]` is an impact hint, not proof of coverage. Its
+  recommendations use bundle ownership, filename/domain heuristics, and
+  textual references; directly run the affected focused tests before treating
+  a change as verified.
+- A Game Studio git-save response of generic `500 Save failed` is not a
+  successful save and must not be treated as a transient push result. Inspect
+  the worktree and the local pre-commit commands to identify the failing
+  contract, correct that contract, rerun its focused check, and retry the
+  authenticated save endpoint. Confirm the returned commit hash and a clean
+  worktree before reporting the change as saved.
+- `npm run dev:save -- "message"` must remain fail-closed. It runs the quick QA
+  chain before calling the Game Studio save endpoint and must not save when any
+  gate fails.
+- Existing duplicate-code violations must be distinguished from regressions
+  introduced by the current change. The current baseline contains 13
+  JavaScript clone findings and exceeds the configured `0.30%` duplication
+  budget; until that baseline is repaired, `dev:save` is expected to stop
+  before saving runtime changes.
+- Documentation-only changes still require hooks/path checks and the
+  authenticated Game Studio save endpoint. They do not require rebuilding
+  runtime bundles unless `src/original/` or `publish/` changes.
+- Changes to the impact rules, QA catalogs, save command, or authentication
+  flow must update `tools/README.md` and run the focused contract checks for
+  the affected tooling.
+
 ## Stale Async Work
 
 Risk: an old animation, preload, AI wait, timer, or promise commits into a
@@ -182,6 +215,23 @@ Required guards:
 
 High-risk examples include 半魅魔血, multi-hit attacks, full-target attacks,
 counterattacks, preparation damage, end-phase skills, and enemy AI continuation.
+
+Preparation sequences must advance their step cursor before invoking any hook
+that can open a prompt or enqueue a reaction. Nested enemy-preparation cursors
+must be cleared when the outer preparation completes. Recovery may continue an
+enemy play phase only when the unit has AI; test units must remain at manual
+input instead of entering an undefined automatic path. End-phase skills that
+consume per-turn counters must claim the current turn before starting nested
+damage, so counterattack recovery cannot re-enter the same skill.
+
+Full-target presentation has a separate race risk: manual group-card flight,
+preview-line synchronization, and virtual per-target settlement can overlap.
+While a manual multi-target flight is active, freeze battle DOM presentation
+sync and mark the battle as owning the group flight. Virtual group mirrors
+created by settlement must retain their gameplay/effect events but suppress
+their target-line draw when the manual flight already owns that batch. Clear
+the ownership marker only in the flight cleanup path so a later effect cannot
+leave duplicate or stale target lines.
 
 ## Save And Cloud Coordination
 

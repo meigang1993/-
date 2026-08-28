@@ -20,12 +20,34 @@ window.AbeMikeSkills = (() => {
     window.BattleLines?.skill(state, unit, "星光拔刀斩");
     reveal(state, "星光拔刀斩", [shown]);
     window.BattleLog.add(state, `${unit.name} 展示${shown.suit || ""}${shown.name}发动星光拔刀斩。`);
+    const actions = [];
     alive(state.battle.allies).forEach(target => {
       const lost = discardRandom(state, target);
       if (!lost) return;
       window.BattleLog.add(state, `${target.name} 被星光拔刀斩弃置${lost.suit || ""}${lost.name}。`);
-      if (lost.name !== shown.name) damage(state, target, stat(unit, "attack"), "星光拔刀斩", unit, { name: "星光拔刀斩", type: "skill", ignoreResponse: true, skipDamageModify: true });
+      if (lost.name !== shown.name) {
+        actions.push(window.BattleReactionQueue?.damageAction?.(
+          unit, target, stat(unit, "attack"), "星光拔刀斩",
+          { name: "星光拔刀斩", type: "skill", ignoreResponse: true, skipDamageModify: true },
+        ) || {
+          kind: "damage", actorUid: unit.uid, targetUid: target.uid,
+          amount: stat(unit, "attack"), source: "星光拔刀斩",
+          card: { name: "星光拔刀斩", type: "skill", ignoreResponse: true, skipDamageModify: true },
+        });
+      }
     });
+    if (actions.length && window.BattleReactionQueue?.enqueue?.(state, actions)) {
+      window.BattleReactionQueue.flush(state, damage);
+    } else {
+      actions.forEach(action => damage(
+        state,
+        state.battle.allies.find(target => target.uid === action.targetUid),
+        action.amount,
+        action.source,
+        unit,
+        action.card,
+      ));
+    }
     return true;
   }
   function dragonSlashMove(actor) {
@@ -47,11 +69,14 @@ window.AbeMikeSkills = (() => {
     return true;
   }
   function endTurn(state, unit, damage) {
-    if (unit.ai !== "abe_mike" || !unit.entitySlashThisTurn) return;
+    if (unit.ai !== "abe_mike" || unit.abeMikeDanceTurn === state.battle.turn
+      || !unit.entitySlashThisTurn) return;
+    const times = unit.entitySlashThisTurn;
+    unit.entitySlashThisTurn = 0;
+    unit.abeMikeDanceTurn = state.battle.turn;
     const targets = alive(state.battle.allies);
     const target = window.GameRandom.sample(targets, state);
     if (!target) return;
-    const times = unit.entitySlashThisTurn;
     window.BattleLines?.skill(state, unit, "幻影剑舞", target);
     window.BattleLog.add(state, `${unit.name} 发动幻影剑舞，随机指定${target.name}使用${times}张虚拟杀。`);
     for (let i = 0; i < times && target.hp > 0 && !state.battle?.locked; i++) {

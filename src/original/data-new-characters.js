@@ -13,7 +13,7 @@ window.GameDataNewCharacters = [
     grandfather: "兽人王邦迪",
     sourceDungeon: "兽人地下城",
     entrance: "兽人公主格尔达，来帮你们打赢这一战！",
-    stats: { attack: 2, magic: 2, speed: 4, maxHp: 40, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
+    stats: { attack: 3, magic: 3, speed: 4, maxHp: 40, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
     evaluation: "队友摸牌支援与杀牌防御核心。结束阶段可与一名其他队友各摸2张牌；敌方使用【杀】指定她时，必须额外弃置1张响应牌，否则该【杀】无效。",
     skills: [
       { name: "萌虎慰劳", type: "trigger", icon: "🔵", text: "结束阶段，你可以指定一名其他友方角色，你与该角色各摸2张牌。" },
@@ -32,7 +32,7 @@ window.GameDataNewCharacters = [
     mother: "混沌女神",
     sourceDungeon: "兽人地下城",
     entrance: "晚上好，我是A小町，星野依，天才般偶像，今天演唱新曲。",
-    stats: { attack: 2, magic: 3, speed: 3, maxHp: 34, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
+    stats: { attack: 3, magic: 3, speed: 3, maxHp: 34, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "颜色切换补牌与花色循环输出核心。偶像之星在颜色变化时为星野依和诺诺卡补牌；巨蛋演出集齐四种花色后对敌方全体造成攻击力与魔力复合伤害；梦想真理在三回合内完成20张用牌后获得花色成长，否则令敌方全体弃牌。",
     skills: [
       { name: "偶像之星", type: "passive", icon: "⭐", text: "锁定技，当你使用的牌与上一次使用的牌颜色不同时，你摸一张牌。若诺诺卡在队伍中，诺诺卡也摸一张牌。" },
@@ -53,7 +53,7 @@ window.GameDataNewCharacters = [
     father: "艾伦格",
     sourceDungeon: "兽人地下城",
     entrance: "我会把大家的魔力连接起来，一起战斗。",
-    stats: { attack: 1, magic: 2, speed: 2, maxHp: 46, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+    stats: { attack: 1, magic: 3, speed: 2, maxHp: 46, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
     evaluation: "受伤补牌与队友充能核心。生命值受损后摸牌并可分牌，星野依在场时获得治疗；每回合可承受一名女性队友的魔法伤害，令其按自己的每回合摸牌数补牌。",
     skills: [
       { name: "半魅魔血", type: "trigger", icon: "🔵", text: "当你受到生命值伤害后，你摸2张牌，然后可以选择至多2张手牌并将这些牌交给一名其他友方角色。若星野依在队伍中且存活，星野依令你恢复等同于其魔力值的生命值。" },

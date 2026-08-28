@@ -43,6 +43,31 @@ window.bindBattleActionButtons = function bindBattleActionButtons() {
   document.querySelectorAll("[data-manual-counter-pick]").forEach(b => b.onclick = e => { e.stopPropagation(); if (state.battle?.manualCounter) state.battle.manualCounter.selectedIndex = Number(b.dataset.manualCounterPick); render(); });
   document.querySelector("[data-manual-counter-use]")?.addEventListener("click", e => { e.stopPropagation(); BattleActionGuard.run("手动看破处理失败", async ({ state: actionState, isCurrent }) => { await BattleSystem.resolveManualCounter(actionState, true, actionState.battle?.manualCounter?.selectedIndex || 0, render); if (!isCurrent()) return false; render(); persist({ battleOperation: true }); }, { control: e.currentTarget }); });
   document.querySelector("[data-manual-counter-cancel]")?.addEventListener("click", e => { e.stopPropagation(); BattleActionGuard.run("取消手动看破失败", async ({ state: actionState, isCurrent }) => { await BattleSystem.resolveManualCounter(actionState, false, 0, render); if (!isCurrent()) return false; render(); persist({ battleOperation: true }); }, { control: e.currentTarget }); });
+  const bindCounterTrigger = (selector, use, label) => {
+    const control = document.querySelector(selector);
+    if (!control) return;
+    let fired = false;
+    let pointerHandled = false;
+    const run = e => {
+      e.preventDefault(); e.stopPropagation();
+      if (e.type === "click" && pointerHandled) {
+        pointerHandled = false;
+        return;
+      }
+      pointerHandled = e.type === "pointerdown";
+      if (fired) return;
+      fired = true;
+      BattleActionGuard.run(label, async ({ state: actionState, isCurrent }) => {
+        const resolved = await BattleSystem.resolveCounterTrigger(actionState, use, render);
+        if (!resolved || !isCurrent()) return false;
+        render(); persist({ battleOperation: true }); return true;
+      }, { control }).finally(() => { fired = false; });
+    };
+    control.addEventListener("pointerdown", run);
+    control.addEventListener("click", run);
+  };
+  bindCounterTrigger("[data-counter-trigger-use]", true, "触发技发动失败");
+  bindCounterTrigger("[data-counter-trigger-skip]", false, "触发技跳过失败");
   document.querySelectorAll("[data-hand-reveal-pick]").forEach(b => b.onpointerdown = e => { e.preventDefault(); e.stopPropagation(); BattleActionGuard.run("展示牌处理失败", async ({ state: actionState, isCurrent }) => { await BattleSystem.resolveHandReveal(actionState, Number(b.dataset.handRevealPick), render); if (!isCurrent()) return false; render(); await BattleEffects.whenIdle?.(); if (!isCurrent()) return false; render(); persist({ battleOperation: true }); }, { control: b }); });
   document.querySelector("[data-hand-reveal-close]")?.addEventListener("pointerdown", e => { e.preventDefault(); e.stopPropagation(); BattleActionGuard.run("关闭展示牌失败", async ({ state: actionState, isCurrent }) => { await BattleSystem.resolveHandReveal(actionState, null, render); if (!isCurrent()) return false; render(); persist({ battleOperation: true }); }, { control: e.currentTarget }); });
   document.querySelectorAll("[data-reckless-pick]").forEach(b => b.onclick = e => { e.stopPropagation(); if (state.battle?.recklessPrompt) state.battle.recklessPrompt.selectedIndex = Number(b.dataset.recklessPick); render(); });

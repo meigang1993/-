@@ -49,10 +49,13 @@ function validateScripts(publish, sourceDir, unique, fail, dependencies) {
       if (!fs.existsSync(path.join(sourceDir, src))) fail(`Bundle manifest references missing source: ${src}`);
     });
     const groupOf = new Map(Object.entries(manifest).flatMap(([group, files]) => files.map(file => [file, group])));
+    const sameDeferredSet = (before, after) =>
+      before?.startsWith("battle-") && after?.startsWith("battle-");
     dependencies.forEach(chain => {
       for (let i = 1; i < chain.length; i += 1) {
         const beforeGroup = groupOf.get(chain[i - 1]), afterGroup = groupOf.get(chain[i]);
-        if (beforeGroup !== afterGroup && !startupGroups.includes(beforeGroup)) {
+        if (beforeGroup !== afterGroup && !startupGroups.includes(beforeGroup)
+          && !sameDeferredSet(beforeGroup, afterGroup)) {
           fail(`Invalid cross-bundle dependency: ${chain[i - 1]} (${beforeGroup}) -> ${chain[i]} (${afterGroup})`);
         }
       }

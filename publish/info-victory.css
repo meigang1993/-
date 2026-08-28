@@ -31,7 +31,8 @@
 .relic-slot em { font-style: normal; color: #c9a1ff; font-size: 11px; }
 .relic-slot.selected { outline: 2px solid #ff5cab; box-shadow: 0 0 18px rgba(255,92,171,.46); }
 .relic-item.selected { outline: 2px solid #ff5cab; box-shadow: 0 0 18px rgba(255,92,171,.46); }
-.relic-name { position: relative; font-weight: 900; color: #ffe6f7; text-decoration: underline dotted rgba(255,215,166,.65); text-underline-offset: 3px; cursor: help; }
+.relic-name { position: relative; display: inline-flex; align-items: center; gap: 4px; font-weight: 900; color: #ffe6f7; text-decoration: underline dotted rgba(255,215,166,.65); text-underline-offset: 3px; cursor: help; }
+.relic-skill-icon { font-style: normal; text-decoration: none; }
 .card:has(.relic-name) { contain: layout; content-visibility: visible; overflow: visible; }
 .relic-name:hover::after { content: attr(data-tooltip); position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 100; width: max-content; max-width: min(420px, 78vw); padding: 12px 14px; border-radius: 14px; background: rgba(18,5,28,.96); border: 1px solid rgba(255,215,166,.5); box-shadow: 0 16px 42px rgba(0,0,0,.55); color: #fff4fb; white-space: pre-line; line-height: 1.5; text-align: left; pointer-events: none; }
 .relic-item .relic-name { flex: 1; min-width: 0; overflow: visible; white-space: nowrap; text-overflow: ellipsis; }
@@ -73,6 +74,7 @@
 .codex-overlay { position: absolute; inset: 0; z-index: 24; display: grid; place-items: center; padding: 24px; border-radius: 30px; background: rgba(4,0,9,.58); backdrop-filter: blur(7px); }
 .codex-panel { margin-top: 14px; padding: 14px; border-radius: 18px; background: rgba(0,0,0,.24); border: 1px solid rgba(255,215,166,.2); }
 .relic-codex-pop { position: relative; width: min(820px, 94%); max-height: 84%; overflow: auto; overscroll-behavior: contain; padding: 18px; background: linear-gradient(145deg, rgba(38,7,52,.98), rgba(93,20,72,.96)); box-shadow: 0 26px 76px rgba(0,0,0,.62); }
+.card-codex-pop .codex-head h2 { margin: 0; color: #ffd88d; }
 .relic-codex-pop h3 { margin-right: 42px; color: #ffd88d; }
 .codex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 10px; max-height: min(34vh, 300px); overflow-y: auto; overscroll-behavior: contain; align-content: start; padding-right: 4px; }
 .codex-relic { min-height: 54px; display: flex; align-items: center; justify-content: center; padding: 8px 10px; overflow: visible; border-radius: 14px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,215,166,.2); color: #eee; }

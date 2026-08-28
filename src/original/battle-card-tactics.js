@@ -93,7 +93,7 @@ window.BattleCardTactics = ({ log, ctx, deps, reveal, openHandReveal }) => {
       || (actor.side === "enemy" ? state.battle.allies : state.battle.enemies).filter(u => u.hp > 0);
     const targetUids = foes.map(u => u.uid), amount = ctx.statOf(actor, "attack") + ctx.statOf(actor, "magic"), base = damageCopy(card, { type: "tactic", responseKind: "slash" });
     window.EdisSkills?.copyTargetedCards?.(state, actor, foes, card);
-    if (!card._playedFlightDone) state.battle.animQueue?.push({ type: "virtualPlay", id: `di${deps.nextAnim()}`, uid: actor.uid, side: actor.side, targetUids, card: base, enemyLine: actor.side === "enemy", show: false });
+    if (!card._playedFlightDone && !state.battle._manualGroupFlightShown) state.battle.animQueue?.push({ type: "virtualPlay", id: `di${deps.nextAnim()}`, uid: actor.uid, side: actor.side, targetUids, card: base, enemyLine: actor.side === "enemy", show: false });
     for (let i = 0; i < foes.length && !state.battle.locked; i++) {
       state.battle.demonInvasionResume = i + 1 < foes.length
         ? { actorUid: actor.uid, targetUid: foes[i].uid, amount, source: card.name, card: base, targetUids, nextTargetIndex: i + 1 }

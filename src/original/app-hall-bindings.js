@@ -13,8 +13,22 @@ window.AppHallBindings = (() => {
     document.querySelectorAll("[data-unlock]").forEach(b => b.onclick = () => AppActionGuard.run("角色孕育失败", ({ state, isCurrent }) => unlockChar(b.dataset.unlock, state, isCurrent), { control: b, captureRun: false, key: `unlock:${b.dataset.unlock}` }));
     bindUnlockCompletes();
     document.querySelectorAll("[data-deck-filter]").forEach(b => b.onclick = () => updateModalState(() => { getState().deckFilter = b.dataset.deckFilter; }, { persist: false }));
-    document.querySelectorAll("[data-card-codex]").forEach(b => b.onclick = () => updateModalState(() => { const state = getState(); state.cardCodex = !state.cardCodex; }, { persist: false }));
+    document.querySelectorAll("[data-card-codex]").forEach(b => b.onclick = e => {
+      e.preventDefault();
+      e.stopPropagation();
+      updateModalState(() => {
+        const state = getState();
+        state.cardCodex = b.dataset.cardCodex === "close" ? false : !state.cardCodex;
+        if (state.cardCodex && !state.selectedCodexCard) {
+          state.selectedCodexCard = GameData.cardCodex?.[0]?.name || null;
+        }
+      }, { persist: false });
+    });
     document.querySelectorAll("[data-codex-card]").forEach(b => { b.onclick = () => updateModalState(() => { getState().selectedCodexCard = b.dataset.codexCard; }, { persist: false }); });
+    document.querySelector(".card-codex-overlay")?.addEventListener("click", e => {
+      if (e.target !== e.currentTarget) return;
+      updateModalState(() => { getState().cardCodex = false; }, { persist: false });
+    });
     document.querySelectorAll("[data-skin-filter]").forEach(b => b.onclick = () => updateModalState(() => { getState().skinFilterChar = b.dataset.skinFilter || null; }, { persist: false }));
     document.querySelectorAll("[data-test-skin]").forEach(b => b.onclick = () => preserveInteractionScroll(() => updateModalState(() => { SkinSystem.testEquip(getState(), b.dataset.testSkinChar, b.dataset.testSkin); })));
     bindShopAndBounty(ctx);

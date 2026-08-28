@@ -82,7 +82,7 @@ test("pending settlement saves load the dungeon recovery UI in the hall", async 
   });
   await page.locator("[data-retry-settlement]").click();
   await expect.poll(() => page.evaluate(() => window.__settlementSaveCalls))
-    .toEqual([{ flush: true }]);
+    .toEqual([{ flush: true, trusted: true }]);
 });
 
 test("unconfirmed shop stock stays unavailable until a core refresh succeeds", async ({ page }) => {
@@ -133,7 +133,7 @@ test("unconfirmed shop stock stays unavailable until a core refresh succeeds", a
     confirmed: window.ShopSystem.confirmed(window.state),
     count: window.state.shopCards.length,
     saves: window.__shopSaveCalls,
-  }))).toEqual({ confirmed: true, count: 6, saves: [{ flush: true }] });
+  }))).toEqual({ confirmed: true, count: 6, saves: [{ flush: true, trusted: true }] });
 });
 
 test("full dungeon inventory can free the exact pending card slot and resume", async ({ page }) => {

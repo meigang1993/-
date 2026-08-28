@@ -60,6 +60,9 @@ window.EnemySkills = (() => {
         if (unit.ai === "succubus") succubusPrepare(state, unit, damage);
         else machine.prepare(state, unit, damage, nextAnim);
       }
+      if (battle.locked
+        || window.BattleCounterTriggers?.pending?.(battle)
+        || window.BattleReactionQueue?.pending?.(battle)) return false;
     }
     if (battle.locked) return false;
     delete battle.enemyPrepareUnitUid;

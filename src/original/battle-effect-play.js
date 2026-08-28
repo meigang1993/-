@@ -37,7 +37,16 @@ window.BattleEffectPlay = (() => {
     let ok, committed = false, fly = null, failure = null;
     const commitOnce = () => {
       if (committed) return ok;
+      const queuedBefore = b.animQueue?.length || 0;
       ok = commit();
+      if (targetUids.length > 1) {
+        (b.animQueue || []).slice(queuedBefore).forEach(event => {
+          if (event.type === "virtualPlay" && event.uid === actor?.uid
+            && event.targetUids?.join() === targetUids.join()) {
+            event.skipTargetLine = true;
+          }
+        });
+      }
       committed = true;
       return ok;
     };
@@ -52,7 +61,14 @@ window.BattleEffectPlay = (() => {
       }
       if (!active()) return false;
       fly = projectile(played, actor?.side === "enemy");
-      if (playedSource) { playedSource._playedFlightDone = true; playedSource._playedTargetUid = targetUid; }
+      if (playedSource) {
+        playedSource._playedFlightDone = true;
+        playedSource._playedTargetUid = targetUid;
+        if (targetUids.length > 1) {
+          b._manualGroupFlightShown = true;
+          played._playedFlightDone = true;
+        }
+      }
       const a = center(from), t = center(art), z = center(zone);
       fly.style.left = `${a.x}px`; fly.style.top = `${a.y}px`;
       BattleFX.cardMove();
@@ -66,6 +82,7 @@ window.BattleEffectPlay = (() => {
       console.error("出牌动画失败:", err.message, err.stack);
       throw err;
     } finally {
+      if (b?._manualGroupFlightShown) delete b._manualGroupFlightShown;
       setRenderFrozen(false); if (active()) hideLine(); fly?.remove(); setAnimating(false); if (!failure && active()) window.render?.(); resolveIdle();
     }
   }

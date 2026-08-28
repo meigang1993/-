@@ -120,6 +120,7 @@ window.BattleCombat = (deps) => {
   const damageApi = window.BattleDamage({ ...deps, nextAnim: deps.nextAnim }, { allUnits, hasSkill, statOf, holdVisual, visualOf, pushFloat, queueSlashText, queueSlashPlay, checkDefeat, checkEnd, clearSelection });
   const { damage, directDamage, triggerWhiteLolita, resolveThunderHammer: resolveDamageThunderHammer, cancelThunderHammer: cancelDamageThunderHammer, resolveManualDodge, confirmDeflectResult } = damageApi;
   damage.useCard = useCard;
+  damage.damageHandlesPreTargetHooks = true;
   specialCtx.damage = damage;
   cardResume = window.BattleCardResume({ deps, specials, damage, checkDefeat, allUnits, pushFloat });
   specialCtx.recordDeferredHit = cardResume.recordHit;
@@ -128,6 +129,12 @@ window.BattleCombat = (deps) => {
   function resolveThunderHammer(state, cardIndex) { const ok = resolveDamageThunderHammer(state, cardIndex), p = state.battle?.greenGatlingResume; if (!ok || !p || state.battle?.locked) return ok; state.battle.greenGatlingResume = null; const actor = allUnits(state.battle).find(u => u.uid === p.actorUid), target = allUnits(state.battle).find(u => u.uid === p.targetUid); if (actor && target) resumeGreenGatling(state, actor, target, p.card); return ok; }
   function cancelThunderHammer(state) { const ok = cancelDamageThunderHammer(state), p = state.battle?.greenGatlingResume; if (!ok || !p || state.battle?.locked) return ok; state.battle.greenGatlingResume = null; const actor = allUnits(state.battle).find(u => u.uid === p.actorUid), target = allUnits(state.battle).find(u => u.uid === p.targetUid); if (actor && target) resumeGreenGatling(state, actor, target, p.card); return ok; }
   function resolveDimensionTransfer(state, targetUid) { const ok = window.MannySkills?.resolveDimensionTransfer?.(state, targetUid, damage); if (ok) { checkDefeat(state); checkEnd(state); } return ok; }
+  function resolveCounterTrigger(state, use) {
+    return window.BattleCounterTriggers?.resolve(state, use, {
+      damage, directDamage, useCard, draw: deps.draw,
+      finalizeDamage: damageApi.finalizeDamage, checkDefeat, checkEnd,
+    });
+  }
   function resumeGreenGatling(state, actor, target, card) { const b = state.battle; if (b) b._resumingCardTail = true; try { specials.resumeGreenGatling(state, actor, target, card); checkDefeat(state); checkEnd(state); } finally { if (b) delete b._resumingCardTail; } }
   function resumeComboAttack(state) { const b = state.battle; if (b) b._resumingCardTail = true; try { const ok = specials.resumeComboAttack?.(state); checkDefeat(state); checkEnd(state); return ok; } finally { if (b) delete b._resumingCardTail; } }
   const responses = window.BattleCombatResponses({ allUnits, putCard, afterHandLost, damage, statOf, specials, checkDefeat, checkEnd, continueAfterCounter, deps, attackValues, deferDamageTail: cardResume.deferDamageTail });
@@ -136,5 +143,5 @@ window.BattleCombat = (deps) => {
   function resumeCardTail(state) { return cardResume.resume(state); }
   function recordDeferredHit(state, actor, target, card, result) { cardResume.recordHit(state, actor, target, card, result); }
   function resumeGroupHeal(state) { const b = state.battle; if (b) b._resumingCardTail = true; try { return specials.resumeTeamHeal?.(state); } finally { if (b) delete b._resumingCardTail; } }
-  return { selectCard, selectSkill, selectExtract, selectMimic, selectPrepareSkill, chooseTarget, cancelSelection, playSelectedCard, playActiveCard, canSelectHandCost, canPlay, checkDefeat, checkEnd, useCard, damage, directDamage, resolveThunderHammer, cancelThunderHammer, resolveManualDodge, confirmDeflectResult, resolveManualCounter, resolveDimensionTransfer, resolveHandReveal, resumeGreenGatling, resumeComboAttack, resumeCardTail, recordDeferredHit, resumeGroupHeal, continueAfterCadicisResponsibility, resolveOpheliaGuard, holdVisual, pushFloat, triggerBattleCourage: specials.triggerBattleCourage };
+  return { selectCard, selectSkill, selectExtract, selectMimic, selectPrepareSkill, chooseTarget, cancelSelection, playSelectedCard, playActiveCard, canSelectHandCost, canPlay, checkDefeat, checkEnd, useCard, damage, directDamage, resolveThunderHammer, cancelThunderHammer, resolveManualDodge, confirmDeflectResult, resolveManualCounter, resolveCounterTrigger, resolveDimensionTransfer, resolveHandReveal, resumeGreenGatling, resumeComboAttack, resumeCardTail, recordDeferredHit, resumeGroupHeal, continueAfterCadicisResponsibility, resolveOpheliaGuard, holdVisual, pushFloat, triggerBattleCourage: specials.triggerBattleCourage };
 };

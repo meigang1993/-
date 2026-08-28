@@ -54,6 +54,7 @@ window.BattleDamageLifecycle = ({
 
   function finalizeDamage(state) {
     window.EdisSkills?.flushCopies?.(state);
+    window.BattleCounterTriggers?.activatePending?.(state.battle);
     window.BattleReactionQueue?.flush?.(state, damage);
   }
 

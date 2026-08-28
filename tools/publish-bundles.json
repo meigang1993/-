@@ -167,7 +167,7 @@
     "app-hall-bindings.js",
     "update-notice.js"
   ],
-  "battle": [
+  "battle-rules": [
     "card-art.js",
     "ui-common-card-art.js",
     "ui-common-card-combat.js",
@@ -235,7 +235,9 @@
     "battle-combat-attack.js",
     "battle-combat-resolver.js",
     "battle-combat.js",
-    "battle-victory.js",
+    "battle-victory.js"
+  ],
+  "battle-skills": [
     "battle-line-data.js",
     "new-character-line-data.js",
     "battle-line-intro.js",
@@ -288,7 +290,10 @@
     "witherer-skills.js",
     "guest-ophelia-guard.js",
     "guest-aileng-skills.js",
-    "guest-characters-skills.js",
+    "guest-characters-skills.js"
+  ],
+  "battle-flow": [
+    "battle-counter-triggers.js",
     "battle-outcomes.js",
     "battle-setup.js",
     "battle-turn-state.js",
@@ -314,7 +319,9 @@
     "battle-turn-completion.js",
     "battle-turn-flow.js",
     "battle-resolution-actions.js",
-    "battle.js",
+    "battle.js"
+  ],
+  "battle-ai": [
     "battle-ai-tactics.js",
     "battle-ai-helpers.js",
     "battle-ai-slash-planner.js",
@@ -322,7 +329,9 @@
     "battle-ai-skill-evaluation.js",
     "battle-ai-skill-moves.js",
     "battle-ai-skill-planner.js",
-    "battle-ai.js",
+    "battle-ai.js"
+  ],
+  "battle-presentation": [
     "battle-damage-audio.js",
     "battle-damage-fx.js",
     "battle-audio-samples.js",
@@ -357,7 +366,9 @@
     "battle-effect-event-runner.js",
     "battle-effect-drain-recovery.js",
     "battle-effect-drain.js",
-    "battle-effects.js",
+    "battle-effects.js"
+  ],
+  "battle-ui": [
     "battle-response-ui.js",
     "ui-battle-pickers.js",
     "ui-battle-targeting.js",

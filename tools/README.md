@@ -15,12 +15,26 @@ These tools are for development only. They do not change the static game runtime
   Installs Linux shared-library and font dependencies required by Chromium.
   This changes the development container rather than the repository and is
   needed only when the browser launch check reports a missing system library.
+  Exact Debian package versions and critical loader paths are tracked in
+  `tools/chromium-system-dependencies.json`.
 
 - `npm run qa:install`
   Verifies the original Node, npm package, and Playwright/Chromium components.
   It performs no network installation.
 
 ## Commands
+
+- `npm run impact -- [files...]`
+  Analyzes changed or explicitly named files and reports affected publish
+  bundles, focused logic/browser tests, cache-version requirements, resource
+  checks, and memory documents to review.
+
+- `npm run dev:save -- "message"`
+  Runs the hook check, publish path check, bundle rebuild when runtime files
+  changed, quick QA, and the authenticated Game Studio save endpoint. It uses
+  all three provisioning headers through curl config input so secrets are not
+  exposed in process arguments. After a successful save, refresh the Preview
+  panel.
 
 - `npm run qa`
   Runs the complete automatic QA chain. This is an alias for `qa:full`.
@@ -73,9 +87,11 @@ These tools are for development only. They do not change the static game runtime
   through the Game Studio git endpoint when every stage passes.
 
 - `npm run build:publish`
-  Atomically rebuilds the six runtime bundles from `src/original/`, then
+  Atomically rebuilds the eleven runtime bundles from `src/original/`, then
   verifies that they exactly match source and that no unbundled JavaScript is
-  present under `publish/`. When generated bundle or published CSS bytes differ
+  present under `publish/`. JavaScript is compressed with three Terser passes
+  and identifier mangling; Brotli remains a CDN transport concern rather than
+  a committed `.br` artifact. When generated bundle or published CSS bytes differ
   from `HEAD`, `meta[name="game-build"]` must first be advanced beyond the
   `HEAD` value. Development copies without Git history are rejected.
 
@@ -121,8 +137,8 @@ These tools are for development only. They do not change the static game runtime
   duplicated-line budget.
 
 - `npm run check:playwright`
-  Launches the repository Chromium once and fails when its binary or required
-  libraries are missing.
+  Validates the pinned Debian package versions and critical shared-library
+  paths, then launches the repository Chromium once.
 
 - `npm run check:toolchain`
   Verifies only the original Node, npm package, Playwright browser, and Chromium

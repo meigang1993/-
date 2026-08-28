@@ -109,6 +109,14 @@ window.GuestCharacterSkills = (() => {
   function afterDodge(state, actor, target, card, api) {
     if (target?.ref !== "besta" || !alive(target)) return;
     const count = visible(target).filter(item => black(item) && isSlash(item)).length, foes = state.battle.enemies.filter(alive); if (!count || !foes.length) return;
+    if (window.BattleCounterTriggers?.open(state, {
+      skill: "终焉回旋斩", unitUid: target.uid, sourceUid: actor.uid,
+      targetUid: actor.uid, count,
+    })) return;
+    resolveEndSpin(state, target, actor, api, count);
+  }
+  function resolveEndSpin(state, target, actor, api, count = visible(target).filter(item => black(item) && isSlash(item)).length) {
+    const foes = state.battle.enemies.filter(alive);
     line(state, target, "终焉回旋斩", actor);
     for (let i = 0; i < count; i++) {
       const targets = foes.filter(alive), slash = virtualCard("魔杀", { allTargets: targets.map(enemy => enemy.uid), aoeLineShown: true });
@@ -117,7 +125,7 @@ window.GuestCharacterSkills = (() => {
       window.EnemySkills?.beforeKillUsed?.(state, target, slash);
       targets.forEach(enemy => api.damage(state, enemy, stat(target, "magic"), "终焉回旋斩", target, window.EnemySkills?.prepareGroupKillTarget?.(state, target, enemy, slash) || slash));
     }
-    window.BattleLog.add(state, `${target.name} 触发终焉回旋斩，使用${count}张指定所有敌方角色为目标的虚拟魔杀。`);
+    window.BattleLog.add(state, `${target.name} 发动终焉回旋斩，使用${count}张指定所有敌方角色为目标的虚拟魔杀。`);
   }
   return {
     skills: window.GuestAilengSkills.skills,
@@ -130,7 +138,7 @@ window.GuestCharacterSkills = (() => {
     guardVisible: guard.guardVisible,
     resolveOpheliaGuard: guard.resolveOpheliaGuard,
     afterCardPlayed, afterCardResolved,
-    afterDamage, afterDodge,
+    afterDamage, afterDodge, resolveEndSpin,
     resolveBattleDrill: window.GuestAilengSkills.resolveBattleDrill,
     visibleHandCount, countsForLimit,
   };

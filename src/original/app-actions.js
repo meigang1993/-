@@ -1,4 +1,7 @@
 function closeContextPanel(e) {
+  const codexPanel = e.target.closest(".codex-panel");
+  const closeCardCodex = state.cardCodex && !codexPanel;
+  const closeRelicCodex = state.relicCodex && !codexPanel;
   const closeSaveSlots = SaveSlots.isOpen();
   const closeSettings = settingsOpen && !e.target.closest(".settings-menu") && !e.target.closest("#settings-toggle");
   const closeSpeech = state.battle?.speech?.dismissible && !e.target.closest("[data-dismiss-speech]");
@@ -6,7 +9,7 @@ function closeContextPanel(e) {
     && !state.battle.manualDodge.deflectStarted && !e.target.closest(".manual-dodge-box");
   const cancelManualCounter = !!state.battle?.manualCounter && !e.target.closest(".manual-dodge-box");
   const cancelReckless = !!state.battle?.recklessPrompt && !e.target.closest(".manual-dodge-box");
-  if (!state.hallModal && !state.infoUnit && !state.artZoom && !closeSaveSlots
+  if (!state.hallModal && !state.infoUnit && !state.artZoom && !state.cardCodex && !state.relicCodex && !closeSaveSlots
     && !closeSettings && !closeSpeech && !cancelManualDodge && !cancelManualCounter && !cancelReckless) return;
   e.preventDefault();
   if (cancelManualDodge) {
@@ -35,6 +38,8 @@ function closeContextPanel(e) {
   }
   if (closeSaveSlots) SaveSlots.close();
   if (closeSettings) { settingsOpen = false; SaveSlots.close(); }
+  if (closeCardCodex) state.cardCodex = false;
+  if (closeRelicCodex) state.relicCodex = false;
   if (closeSpeech) BattleLines.dismiss(state);
   if (state.artZoom) state.artZoom = null;
   else if (e.target.closest(".info-close")) {

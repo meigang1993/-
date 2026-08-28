@@ -78,7 +78,9 @@ window.RelicSystem = (() => {
   function skillsForNames(names = []) {
     return normalizeNames(names).map(name => {
       const d = special[name];
-      return { name, type: d.skillType || (d.activeCard ? "active" : "passive"), source: "relic", icon: d.icon, text: d.effect, card: d.activeCard ? { ...d.activeCard, text: d.effect } : null };
+      const type = d.skillType || (d.activeCard ? "active" : "passive");
+      const icon = d.activeCard ? "⚔️" : type === "trigger" ? "🔵" : "⭐";
+      return { name, type, source: "relic", icon, text: d.effect, card: d.activeCard ? { ...d.activeCard, icon, text: d.effect } : null };
     });
   }
   function skills(state, charId) {
@@ -131,5 +133,10 @@ window.RelicSystem = (() => {
   function enemyRelics(enemyId) {
     return eliteRelics.filter(r => special[r].enemy === enemyId);
   }
-  return { data, all, ownedNames, availableCount, statsOf, statsForNames, typeName, isActive, useHint, statText, equippedBy, hasEquipped, skills, skillsForNames, activeSkills, randomElite, enemyRelics, isKnown, isFormalId, normalizeNames, normalizeSlots, normalizeMap, equip, unequip, bind };
+  const skillIcon = name => {
+    const d = data(name);
+    if (!d) return "";
+    return d.activeCard ? "⚔️" : d.skillType === "trigger" ? "🔵" : "⭐";
+  };
+  return { data, all, ownedNames, availableCount, statsOf, statsForNames, typeName, isActive, useHint, skillIcon, statText, equippedBy, hasEquipped, skills, skillsForNames, activeSkills, randomElite, enemyRelics, isKnown, isFormalId, normalizeNames, normalizeSlots, normalizeMap, equip, unequip, bind };
 })();

@@ -1,6 +1,13 @@
 window.UpdateNotice = (() => {
   const updates = [
     {
+      title: "2026年8月28日 · 今日更新",
+      items: [
+        "更新艾尔拉娜等级特殊立绘，使用新的压缩素材，画面加载更轻量。",
+        "清理旧版艾尔拉娜特殊立绘资源，角色皮肤配置与正式装备规则保持不变。",
+      ],
+    },
+    {
       title: "2026年8月17日 · 今日更新",
       items: [
         "优化战斗时序：伤害、响应、连击、群攻与结算会按当前动作顺序完成，旧动画或已经离开的战斗不会继续回写。",
@@ -78,9 +85,9 @@ window.UpdateNotice = (() => {
             <span class="update-notice-kicker">版本更新</span>
             <h2 id="update-notice-title">更新公告</h2>
           </div>
-        <time datetime="2026-08-17">更新至2026年8月17日</time>
+        <time datetime="2026-08-28">更新至2026年8月28日</time>
       </header>
-        <p class="update-notice-summary">本次更新重点修复战斗动作结算顺序、连续攻击帧性能、【神速之袭】击杀奖励与饰品图鉴交互。</p>
+        <p class="update-notice-summary">本次更新包含艾尔拉娜特殊立绘替换、旧资源清理与战斗体验修复。</p>
         <div class="update-notice-list">${sections}</div>
       </section>
     `;

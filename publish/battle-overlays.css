@@ -65,11 +65,13 @@
   box-shadow: 0 0 0 2px rgba(255,216,141,.9), 0 0 26px rgba(255,92,171,.45);
 }
 
-.battle-locked:not(.manual-dodge-active):not(.hand-sharing):not(.reaction-prompt-pending) > :not(.battle-retreat):not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel):not(.defeat-popup):not(.reward-popup):not(.dimension-prompt):not(.manual-dodge-overlay):not(.armory-popup):not(.hand-reveal-overlay):not(.reveal-popup):not(.clash-popup):not(.unit-row) { filter: grayscale(.85) brightness(.55); pointer-events: none; }
-.battle-locked:not(.dimension-transfering):not(.ophelia-guarding):not(.manual-dodge-active):not(.kaiichi-sharing):not(.reaction-prompt-pending) .unit-row { filter: grayscale(.85) brightness(.55); pointer-events: none; }
+.battle-locked:not(.manual-dodge-active):not(.headshot-pending):not(.hand-sharing):not(.reaction-prompt-pending) > :not(.battle-retreat):not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel):not(.defeat-popup):not(.reward-popup):not(.dimension-prompt):not(.manual-dodge-overlay):not(.armory-popup):not(.hand-reveal-overlay):not(.reveal-popup):not(.clash-popup):not(.judgement-popup):not(.unit-row) { filter: grayscale(.85) brightness(.55); pointer-events: none; }
+.battle-locked:not(.dimension-transfering):not(.ophelia-guarding):not(.manual-dodge-active):not(.headshot-pending):not(.kaiichi-sharing):not(.reaction-prompt-pending) .unit-row { filter: grayscale(.85) brightness(.55); pointer-events: none; }
 .battle-locked:not(.manual-dodge-active):not(.hand-sharing):not(.reaction-prompt-pending) > :not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel):not(.defeat-popup):not(.reward-popup):not(.dimension-prompt):not(.manual-dodge-overlay):not(.armory-popup):not(.hand-reveal-overlay):not(.reveal-popup) button:not([data-retreat]):not([data-return-hall]):not([data-reward-confirm]) { opacity: .35; }
 .battle-locked.reaction-prompt-pending > :not(.battle-retreat):not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel) { pointer-events: none; }
 .battle-locked.reaction-prompt-pending .hand-panel.locked { opacity: 1; }
+.battle-locked .counter-trigger-panel { filter: none; opacity: 1; pointer-events: auto; }
+.battle-locked .counter-trigger-panel button { opacity: 1; pointer-events: auto; }
 .hand-panel.locked { opacity: .55; }
 .battle-locked.hand-sharing > .hand-panel,
 .battle-locked.hand-sharing > .dimension-prompt { filter: none; opacity: 1; pointer-events: auto; }
