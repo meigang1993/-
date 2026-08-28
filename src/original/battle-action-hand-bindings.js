@@ -7,6 +7,9 @@ window.BattleActionHandBindings = (() => {
   const responsibilityVisible = battle =>
     !!battle?.cadicisResponsibility
     && (window.WendyCadicisSkills?.responsibilityVisible?.(battle) ?? true);
+  const skillBindings = window.BattleActionSkillBindings({
+    needsHandChoice, confirmMannyArmory, confirmBattleCard, render,
+  });
 
   function expectedHandOwner(battle) {
     const borrowChoice = ["borrowSlashChoice", "borrowGainChoice"]
@@ -157,23 +160,5 @@ window.BattleActionHandBindings = (() => {
       && !skillCard?.demonPoker) quickPlayTargetless(index);
   }
 
-  function bindSkills() {
-    document.querySelectorAll("[data-skill-index]").forEach(skill => {
-      skill.onclick = event => {
-        event.stopPropagation();
-        if (state.battle?.locked || BattleEffects.animating) return;
-        if (!BattleSystem.selectSkill(state, Number(skill.dataset.skillIndex))) {
-          BattleSystem.cancelSelection(state);
-          return render();
-        }
-        if (state.battle?.selectedSkillCard?.mannyArmory) return confirmMannyArmory();
-        if (state.battle?.selectedSkillCard?.targetless && !needsHandChoice(state.battle.selectedSkillCard)) {
-          return confirmBattleCard();
-        }
-        render();
-      };
-    });
-  }
-
-  return { bindCards, bindSkills, kaiichiShareVisible };
+  return { bindCards, bindSkills: skillBindings.bindSkills, kaiichiShareVisible };
 })();
