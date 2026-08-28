@@ -412,7 +412,7 @@ The following table records the current screen families.
   without revealing the source image; after unlock, the art supports zoom and
   formal equipment. Their separate Gun Succubus and Sonic Assassin skins
   retain their own art, purchase rules, and dedicated effects.
-- `publish/assets/generated/elrana-level-10-special.3a5bcd18.webp` is Elrana's
+- `publish/assets/generated/elrana-level-10-special.3154d24b.webp` is Elrana's
   compressed square level-10 special illustration. Before unlock, the
   special-art pane and battle skin switch show the exact level gate; after
   unlock it supports zoom, formal equipment, and battle use. The Fallen

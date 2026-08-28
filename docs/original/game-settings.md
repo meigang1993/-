@@ -756,7 +756,7 @@ gameplay values and behavior remain here rather than being duplicated in
 ### 艾尔拉娜皮肤：堕落医师
 
 - 皮肤 ID：`elrana_fallen_physician`；品质固定为史诗，兑换价格固定为10精华宝珠，仅属于艾尔拉娜；`elrana_default`保留原立绘并允许随时切回。正式素材固定为`publish/assets/generated/elrana-fallen-physician.5fb5e43a.webp`，专属动态特效标识固定为`elrana-fallen-physician`。
-- 艾尔拉娜等级特殊立绘 ID 固定为`elrana_level_10_special`；品质固定为特殊，价格为0，`unlockLevel`固定为10，使用正式压缩素材`publish/assets/generated/elrana-level-10-special.3a5bcd18.webp`。达到Lv.10后自动加入已拥有皮肤并允许装备、放大查看和作为正式战斗立绘；测试战斗不得无视等级和拥有状态试用，未解锁时显示等级锁定占位。该立绘与“堕落医师”的购买、装备和专属特效互相独立。
+- 艾尔拉娜等级特殊立绘 ID 固定为`elrana_level_10_special`；品质固定为特殊，价格为0，`unlockLevel`固定为10，使用正式压缩素材`publish/assets/generated/elrana-level-10-special.3154d24b.webp`。达到Lv.10后自动加入已拥有皮肤并允许装备、放大查看和作为正式战斗立绘；测试战斗不得无视等级和拥有状态试用，未解锁时显示等级锁定占位。该立绘与“堕落医师”的购买、装备和专属特效互相独立。
 - 形象固定为成年艾尔拉娜的原身份延伸：银紫色长发盘成松散发髻、紫色眼睛、紫黑恶魔角、深紫蝠翼与心形尾巴；服装为白色医师短大褂、暗红腰带和黑色内层，手持大型注射器，身后固定有三枚绿色炼金培养罐。不得改成无角无翼、非艾尔拉娜发色、普通现代护士或缺少注射器与培养罐的形象。
 - 出场演出显示培养罐升起、绿色炼金雾气和蛇杖式医疗符文；待机通过有界注射器、数据环与培养罐反馈体现身份，不执行持续逐帧重绘。
 - `回春之手`显示绿色液流、暗红生命核心和目标治疗环；全体治疗时对所有存活友方显示同一套培养罐治疗反馈。`疗后护理`显示绿色十字、病历卡和飞向目标的红绿医疗丝线。
