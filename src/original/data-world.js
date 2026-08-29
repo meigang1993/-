@@ -4,6 +4,9 @@ if (!Array.isArray(window.GameDataMachineFactoryEnemies) || window.GameDataMachi
 if (!Array.isArray(window.GameDataUnderwaterTrainEnemies) || window.GameDataUnderwaterTrainEnemies.length === 0) {
   throw new Error("Missing required enemy data: data-underwater-train-enemies.js");
 }
+if (!Array.isArray(window.GameDataRuinsSandCityEnemies) || window.GameDataRuinsSandCityEnemies.length === 0) {
+  throw new Error("Missing required enemy data: data-ruins-sand-city-enemies.js");
+}
 
 window.GameDataWorld = {
   statDefs: [
@@ -39,6 +42,7 @@ window.GameDataWorld = {
   enemies: {
     machine_factory: window.GameDataMachineFactoryEnemies,
     underwater_train: window.GameDataUnderwaterTrainEnemies,
+    ruins_sand_city: window.GameDataRuinsSandCityEnemies,
     ...(window.GameDataFutureEnemies || {}),
   },
   testEnemies: [],

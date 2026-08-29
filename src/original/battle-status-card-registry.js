@@ -9,6 +9,18 @@ window.BattleStatusCardRegistry = (() => {
         "状态牌，带有虚无属性。判定阶段进行判定；若结果为红色，跳过摸牌阶段，且本回合无法摸牌。回合结束后消耗此牌。",
     },
     slime: { name: "粘液", flag: "slime" },
+    confusion: {
+      name: "混乱", flag: "confusion", text:
+        "状态牌。判定阶段若结果为黑色，随机对己方其他角色视为使用一张虚拟【杀】；没有其他目标时对自己造成攻击力伤害。",
+    },
+    freeze: {
+      name: "冰冻", flag: "freeze", text:
+        "状态牌。判定阶段若结果为红色，本回合不能使用【杀】；回合结束后消耗。",
+    },
+    paralysis: {
+      name: "麻痹", flag: "paralysis", text:
+        "状态牌。判定阶段若结果为红桃或黑桃，本回合无法使用牌；回合结束后消耗。",
+    },
   });
   const fixedLabels = Object.values(definitions).map(item => item.name);
 

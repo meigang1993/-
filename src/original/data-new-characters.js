@@ -60,4 +60,22 @@ window.GameDataNewCharacters = [
       { name: "半魅魔精华", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以指定一名友方女性角色。该角色对你造成等同于其魔力值的魔法伤害，然后其摸X张牌（X为你当前每回合摸牌数）；指定星野依时不造成伤害。指定七位姐姐之一时，其对应儿子若在队伍中则获得1枚“绿帽”；指定娜娜莉或贝丝妲时，罗卡尔获得1枚“绿帽”。每名角色至多拥有5枚“绿帽”，每枚令手牌上限、杀意上限各+1，攻击力+30%。", card: { name: "半魅魔精华", type: "tactic", allyTarget: true, kaiichiMilk: true, icon: "⚔️", text: "指定一名友方女性角色，令其对你造成魔法伤害并摸牌，且按角色关系给予对应角色“绿帽”标记。" } },
     ],
   },
+  {
+    id: "artina", name: "亚缇娜", gender: "female", face: "亚", art: "./assets/new-portraits/artina.webp", avatar: "./assets/new-portraits/artina.webp", role: "魅影突击队狙击手", locked: true, unlockFlag: "ruinsSandCityUnlocked",
+    stats: { attack: 3, magic: 3, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+    evaluation: "花色记录与单体狙击核心。每回合记录首次使用的花色，蓄力子弹强化下一张实体单体【杀】。",
+    skills: [
+      { name: "狙击目标", type: "active", icon: "⚔️", text: "出牌阶段限一次，展示敌方一张手牌；若你手中该花色牌数更多，你对其使用的单体【杀】不可响应。" },
+      { name: "蓄力子弹", type: "passive", icon: "⭐", text: "本回合首次使用每种花色的牌时记录花色。下一张实体单体【杀】伤害翻倍，每记录一种花色额外增加一倍，使用后清除记录。" },
+    ],
+  },
+  {
+    id: "maria", name: "玛利亚", gender: "female", face: "玛", art: "./assets/new-portraits/maria.webp", avatar: "./assets/new-portraits/maria.webp", role: "魅影突击队支援兵", locked: true, unlockFlag: "ruinsSandCityUnlocked",
+    stats: { attack: 2, magic: 3, speed: 4, maxHp: 38, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
+    evaluation: "标记成长与全队祝福支援核心。按出牌数触发神数摸牌，并以不同花色弃牌换取全队属性提升。",
+    skills: [
+      { name: "神数咒语", type: "passive", icon: "⭐", text: "出牌阶段首次使用牌时获得神数标记；使用牌数达到标记数时摸等同于标记数的牌并增加标记。每枚标记使攻击力和魔力各+1，回合结束清除。" },
+      { name: "荣誉祝福", type: "active", icon: "⚔️", text: "出牌阶段限一次，弃置1至4张不同花色的牌，使全体友方按你的攻击力、魔力、速度获得等量提升，持续弃牌数个回合。" },
+    ],
+  },
 ];

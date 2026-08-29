@@ -53,7 +53,8 @@ window.EnemySkills = (() => {
       if (step === 0) window.OrcDungeonSkills?.prepare?.(state, unit);
       if (step === 1) window.WithererSkills?.prepare?.(state, unit, damage);
       if (step === 2) {
-        battle.enemyPrepareHandled = !!(window.UnderwaterTrainSkills?.prepare?.(state, unit, damage)
+        battle.enemyPrepareHandled = !!(window.RuinsEnemySkills?.prepare?.(state, unit, damage)
+          || window.UnderwaterTrainSkills?.prepare?.(state, unit, damage)
           || window.AbeMikeSkills?.prepare?.(state, unit, damage));
       }
       if (step === 3 && !battle.enemyPrepareHandled) {
@@ -100,6 +101,7 @@ window.EnemySkills = (() => {
     window.AbeMikeSkills?.endTurn?.(state, unit, damage);
     window.OrcDungeonSkills?.endTurn?.(state, unit, damage);
     window.WithererSkills?.endTurn?.(state, unit);
+    window.RuinsEnemySkills?.endTurn?.(state, unit);
     window.GuardKellySkills?.endTurn?.(state, unit, draw);
     if (unit.ai === "radar") unit.radarUsed = false;
     if (unit.ai === "krow_doctor") unit.grenadeUsed = false;
@@ -137,8 +139,20 @@ window.EnemySkills = (() => {
     beforeHeal: (state, target, amount, actor, card, damage) =>
       window.EdisSkills?.beforeHeal?.(state, target, amount, actor, card, damage),
     clearHolyScar: status.clearHolyScar, onHeal: status.onHeal, tickPoison: status.tickPoison,
-    beforeKillUsed: hooks.beforeKillUsed, beforeKillTargeted: hooks.beforeKillTargeted,
-    prepareGroupKillTarget: hooks.prepareGroupKillTarget, modifyDamage: hooks.modifyDamage,
-    afterDamage: hooks.afterDamage, endTurn, resolveReactionAction,
+    beforeKillUsed: hooks.beforeKillUsed,
+    beforeKillTargeted: (state, actor, target, card) => {
+      hooks.beforeKillTargeted(state, actor, target, card);
+      window.RuinsEnemySkills?.beforeKillTargeted?.(state, actor, target, card);
+    },
+    prepareGroupKillTarget: hooks.prepareGroupKillTarget,
+    modifyDamage: (state, target, amount, card) => {
+      const base = hooks.modifyDamage(state, target, amount, card);
+      return window.RuinsEnemySkills?.modifyDamage?.(state, target, base, card) ?? base;
+    },
+    afterDamage: (state, actor, target, card, hpLoss, damage) => {
+      hooks.afterDamage(state, actor, target, card, hpLoss, damage);
+      window.RuinsEnemySkills?.afterDamage?.(state, actor, target, card, hpLoss, damage);
+    },
+    endTurn, resolveReactionAction,
   };
 })();
