@@ -103,11 +103,13 @@ function installGlobals() {
 
 function loadRuntime() {
   [
-    "economy-config.js", "data-cards.js", "card-utils.js", "card-art.js", "data-characters-core.js",
+    "economy-config.js", "data-cards.js", "data-ruins-content.js", "card-utils.js", "card-art.js", "data-characters-core.js",
     "data-characters-extra.js", "data-future-characters.js", "data-new-characters.js", "data-characters.js",
-    "data-future-orc-enemies.js", "data-bakar-enemy.js", "data-future-enemies.js",
+    "data-future-orc-enemies.js", "data-bakar-enemy.js", "data-ruins-sand-city-enemies.js",
+    "data-future-enemies.js",
     "data-orc-bondi.js", "data-guard-kelly.js", "data-sakura-risa.js",
     "data-machine-factory-enemies.js", "data-underwater-train-enemies.js",
+    "data-ruins-sand-city.js",
     "data-combat-roles.js", "data-world.js", "data.js", "battle-damage-attributes.js",
     "data-future-relics.js", "data-relics.js", "relics.js", "battle-pile-stats.js",
     "battle-ai-tactics.js", "battle-ai-helpers.js", "battle-ai-slash-planner.js",

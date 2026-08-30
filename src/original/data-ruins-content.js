@@ -1,11 +1,11 @@
 window.GameDataRuinsContent = {
   cards: [
-    { name: "拼杀", price: 1200, type: "slash", scale: "attack", ignoreResponse: true, suits: { "♠": 1, "♥": 1 }, text: "指定一名敌方角色，造成等同于攻击力的伤害；若你的【杀】数量更多则不可响应。" },
-    { name: "魔之连杀", price: 1400, type: "slash", scale: "magic", attackType: "magic", fixedRepeats: 2, suits: { "♣": 1, "♦": 1 }, text: "造成等同于魔力的魔法伤害，并按手牌中的【杀】数量追加目标。" },
+    { name: "拼杀", price: 1200, type: "slash", scale: "attack", ignoreResponse: true, suits: { "♠": 1, "♥": 1 }, text: "指定一名敌方角色，造成等同于攻击力的伤害；此牌不可被响应。" },
+    { name: "魔之连杀", price: 1400, type: "slash", scale: "magic", attackType: "magic", fixedRepeats: 2, suits: { "♣": 1, "♦": 1 }, text: "指定一名敌方角色，对其连续造成2次等同于魔力的魔法伤害。" },
     { name: "魅惑术", price: 1200, type: "obstacle", statusKey: "confusion", suits: { "♥": 1, "♦": 1 }, text: "令一名敌方角色生成一张【混乱】状态牌。" },
-    { name: "魅杀", price: 1400, type: "slash", scale: "magic", attackType: "magic", vulnerable: true, suits: { "♠": 1, "♣": 1 }, text: "造成魔法伤害并施加脆弱标记，带有脆弱的角色受到伤害+50%。" },
+    { name: "魅杀", price: 1400, type: "slash", scale: "magic", attackType: "magic", suits: { "♠": 1, "♣": 1 }, text: "指定一名敌方角色，造成等同于魔力的魔法伤害。" },
     { name: "偷袭", price: 1100, type: "response", ambush: true, suits: { "♠": 1, "♣": 1 }, text: "敌方使用战术牌后，对其造成攻击力物理伤害。" },
-    { name: "冰冻术", price: 1500, type: "obstacle", statusKey: "freeze", suits: { "♥": 1, "♦": 1 }, text: "令一名敌方角色生成【冰冻】状态牌。" },
+    { name: "冰冻术", price: 1500, type: "obstacle", statusKey: "freeze", suits: { "♥": 1, "♦": 1 }, text: "令一名敌方角色生成一张【冰冻】状态牌；当前实现只生成状态牌，未接入独立判定效果。" },
     { name: "流星杀", price: 1200, type: "slash", scale: "magic", attackType: "magic", sweep: true, targetless: true, suits: { "♥": 1, "♦": 1 }, text: "对所有敌方角色造成魔力魔法伤害。" },
     { name: "吸魔杀", price: 1600, type: "slash", scale: "magic", attackType: "magic", stealCard: true, suits: { "♣": 1, "♠": 1 }, text: "造成魔法伤害后获得目标一张牌。" },
     { name: "物资私分", price: 1700, type: "consume", allyTarget: true, drawCards: 3, suits: { "♥": 1, "♣": 1 }, text: "指定其他友方角色，双方各摸3张牌。" },

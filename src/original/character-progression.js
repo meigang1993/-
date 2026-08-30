@@ -1,8 +1,8 @@
 window.CharacterProgression = (() => {
-  const maxLevel = 15;
+  const maxLevel = 20;
   const expToNext = Object.freeze([
     100, 160, 240, 340, 470, 620, 800, 1020,
-    1280, 1580, 1920, 2300, 2720, 3180, 3680,
+    1280, 1580, 1920, 2300, 2720, 3180, 3680, 4100, 4550, 5050, 5600, 6200,
   ]);
   const encounterExp = Object.freeze({ normal: 30, elite: 70, boss: 130 });
   const growth = Object.freeze({
