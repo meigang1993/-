@@ -21,6 +21,8 @@ context.window = context;
   "data-new-characters.js",
   "data-characters.js",
   "character-progression.js",
+  "data-ruins-sand-city-enemies.js",
+  "data-ruins-sand-city.js",
   "data-future-dungeons.js",
   "data-future-orc-enemies.js",
   "data-bakar-enemy.js",

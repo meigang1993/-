@@ -14,7 +14,7 @@ window.GameDataRuinsContent = {
   relics: {
     "推进器": { icon: "推", stats: {}, effect: "根据你使用牌指定的目标数摸等量牌。", lore: "世界贵族军的推进设备。", source: "废墟沙城普通怪物", enemy: "noble_soldier" },
     "智能大脑": { icon: "脑", stats: {}, effect: "战术牌造成的伤害翻倍。", lore: "机械AI龙的战术核心。", source: "废墟沙城机械AI龙", enemy: "mech_ai_dragon" },
-    "魅魔钢叉": { icon: "叉", stats: {}, effect: "出牌阶段限一次，将一张红桃牌当【魅杀】使用且不消耗杀意。", lore: "外神之眼的邪异武器。", source: "废墟沙城XX型凋零者1312号", enemy: "witherer_1312" },
+    "魅魔钢叉": { icon: "叉", skillType: "active", stats: {}, effect: "出牌阶段限一次，将一张红桃牌当【魅杀】使用且不消耗杀意。", lore: "外神之眼的邪异武器。", source: "废墟沙城XX型凋零者1312号", enemy: "witherer_1312", activeCard: { name: "魅魔钢叉", type: "tactic", succubusFork: true } },
     "粉色魅魔装": { icon: "装", stats: {}, effect: "红色牌对你无效；你使用的红色牌不可响应。", lore: "1312号的魅魔血脉。", source: "废墟沙城XX型凋零者1312号", enemy: "witherer_1312" },
     "冰心双刺剑": { icon: "刺", stats: {}, effect: "你获得的单体【杀】转换为不消耗杀意的【刺杀】。", lore: "希尔德的双刃。", source: "废墟沙城内英组杀手希尔德", enemy: "hilde" },
   },

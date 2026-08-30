@@ -65,7 +65,7 @@ window.GameDataNewCharacters = [
     stats: { attack: 3, magic: 3, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
     evaluation: "花色记录与单体狙击核心。每回合记录首次使用的花色，蓄力子弹强化下一张实体单体【杀】。",
     skills: [
-      { name: "狙击目标", type: "active", icon: "⚔️", text: "出牌阶段限一次，展示敌方一张手牌；若你手中该花色牌数更多，你对其使用的单体【杀】不可响应。" },
+      { name: "狙击目标", type: "active", icon: "⚔️", text: "出牌阶段限一次，展示敌方一张手牌；若你手中该花色牌数更多，你对其使用的单体【杀】不可响应。", card: { name: "狙击目标", type: "tactic", enemyTarget: true, artName: "狙击目标", icon: "⚔️", text: "展示敌方一张手牌并记录其花色，满足条件时强化你的单体【杀】。" } },
       { name: "蓄力子弹", type: "passive", icon: "⭐", text: "本回合首次使用每种花色的牌时记录花色。下一张实体单体【杀】伤害翻倍，每记录一种花色额外增加一倍，使用后清除记录。" },
     ],
   },
@@ -75,7 +75,7 @@ window.GameDataNewCharacters = [
     evaluation: "标记成长与全队祝福支援核心。按出牌数触发神数摸牌，并以不同花色弃牌换取全队属性提升。",
     skills: [
       { name: "神数咒语", type: "passive", icon: "⭐", text: "出牌阶段首次使用牌时获得神数标记；使用牌数达到标记数时摸等同于标记数的牌并增加标记。每枚标记使攻击力和魔力各+1，回合结束清除。" },
-      { name: "荣誉祝福", type: "active", icon: "⚔️", text: "出牌阶段限一次，弃置1至4张不同花色的牌，使全体友方按你的攻击力、魔力、速度获得等量提升，持续弃牌数个回合。" },
+      { name: "荣誉祝福", type: "active", icon: "⚔️", text: "出牌阶段限一次，弃置1至4张不同花色的牌，使全体友方按你的攻击力、魔力、速度获得等量提升，持续弃牌数个回合。", card: { name: "荣誉祝福", type: "tactic", mariaHonorBlessing: true, icon: "⚔️", text: "弃置不同花色的牌，为全体友方提供持续属性提升。" } },
     ],
   },
 ];

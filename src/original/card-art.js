@@ -47,6 +47,16 @@ window.CardArt = (() => {
     "眩晕": "./assets/generated/cards/card-art-stun-status-new.58f54da8.webp",
     "封魔": "./assets/generated/cards/card-art-magic-seal-status.222ffb29.webp",
     "粘液": "./assets/generated/cards/card-art-slime-status.7f86dfcc.webp",
+    "拼杀": "./assets/generated/cards/card-art-clash.edb75a11.webp",
+    "魔之连杀": "./assets/generated/cards/card-art-magic-multi-kill.4112441b.webp",
+    "魅惑术": "./assets/generated/cards/card-art-charm.21f8b4cd.webp",
+    "魅杀": "./assets/generated/cards/card-art-succubus-slash.ac0bd910.webp",
+    "偷袭": "./assets/generated/cards/card-art-ambush.5272e61c.webp",
+    "冰冻术": "./assets/generated/cards/card-art-freeze-spell.b95d3886.webp",
+    "流星杀": "./assets/generated/cards/card-art-meteor-slash.fe12b0fe.webp",
+    "吸魔杀": "./assets/generated/cards/card-art-mana-steal.dc54839a.webp",
+    "物资私分": "./assets/generated/cards/card-art-supply-sharing.3aafdb52.webp",
+    "枪林弹雨": "./assets/generated/cards/card-art-bullet-storm.09c53e6c.webp",
   });
   const fallback = Object.freeze({
     slash: "杀（普攻）",
@@ -93,6 +103,19 @@ window.CardArt = (() => {
     "鬼王扑克": "./assets/generated/cards/skill-art-demon-poker.22d93d33.webp",
     "1124号长舌头": "./assets/generated/cards/skill-art-long-tongue-1124.166aa9bd.webp",
     "军令状": "./assets/generated/cards/skill-art-military-order.3c919eca.webp",
+    "放置地雷": "./assets/generated/cards/skill-art-mine-placement.c22c12c6.webp",
+    "狙击目标": "./assets/generated/cards/skill-art-sniper-target.077d96a9.webp",
+    "坦克炮弹": "./assets/generated/cards/skill-art-tank-shell.b7bcc54e.webp",
+    "电钻火花": "./assets/generated/cards/skill-art-drill-spark.236e0585.webp",
+    "机尾机枪": "./assets/generated/cards/skill-art-tail-machinegun.a8d29ad7.webp",
+    "死亡音波": "./assets/generated/cards/skill-art-death-wave.689e0965.webp",
+    "百眼魅魔": "./assets/generated/cards/skill-art-many-eyes.ed9c837d.webp",
+    "潜影背刺": "./assets/generated/cards/skill-art-shadow-backstab.a5f14213.webp",
+    "战场扫射": "./assets/generated/cards/skill-art-battlefield-sweep.dc08c5e1.webp",
+    "增援部队": "./assets/generated/cards/skill-art-reinforcement.7a694f5c.webp",
+    "蓄力子弹": "./assets/generated/cards/skill-art-artina-sniper.d751a4ee.webp",
+    "荣誉祝福": "./assets/generated/cards/skill-art-maria-honor-blessing.14392afa.webp",
+    "魅魔钢叉": "./assets/generated/cards/skill-art-succubus-fork.20768ad5.webp",
   });
   const skillFallback = "./assets/generated/cards/card-art-charge.bfb8fcb9.webp";
   const isSkill = card => !!card && !card.virtual && !card.convertedFrom

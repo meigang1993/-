@@ -1,7 +1,7 @@
 {
   "version": 1,
   "createdAt": "2026-06-23T08:39:45Z",
-  "updatedAt": "2026-08-16T01:38:22Z",
+  "updatedAt": "2026-08-30T01:00:11.496728+00:00",
   "assets": [
     {
       "name": "succubus-card-back",
@@ -2061,6 +2061,190 @@
       "traceId": "trace_msv4vzgd_dj5zvcar",
       "createdAt": "2026-08-16T01:38:22Z",
       "chromaKey": null
+    },
+    {
+      "name": "card-art-ambush",
+      "path": "publish/assets/generated/cards/card-art-ambush.5272e61c.webp",
+      "format": "webp",
+      "bytes": 109658,
+      "contentHash": "5272e61c",
+      "createdAt": "2026-08-30T01:00:11.493500+00:00"
+    },
+    {
+      "name": "card-art-bullet-storm",
+      "path": "publish/assets/generated/cards/card-art-bullet-storm.09c53e6c.webp",
+      "format": "webp",
+      "bytes": 259498,
+      "contentHash": "09c53e6c",
+      "createdAt": "2026-08-30T01:00:11.493718+00:00"
+    },
+    {
+      "name": "card-art-charm",
+      "path": "publish/assets/generated/cards/card-art-charm.21f8b4cd.webp",
+      "format": "webp",
+      "bytes": 209206,
+      "contentHash": "21f8b4cd",
+      "createdAt": "2026-08-30T01:00:11.493799+00:00"
+    },
+    {
+      "name": "card-art-clash",
+      "path": "publish/assets/generated/cards/card-art-clash.edb75a11.webp",
+      "format": "webp",
+      "bytes": 267414,
+      "contentHash": "edb75a11",
+      "createdAt": "2026-08-30T01:00:11.493842+00:00"
+    },
+    {
+      "name": "card-art-freeze-spell",
+      "path": "publish/assets/generated/cards/card-art-freeze-spell.b95d3886.webp",
+      "format": "webp",
+      "bytes": 330976,
+      "contentHash": "b95d3886",
+      "createdAt": "2026-08-30T01:00:11.493882+00:00"
+    },
+    {
+      "name": "card-art-magic-multi-kill",
+      "path": "publish/assets/generated/cards/card-art-magic-multi-kill.4112441b.webp",
+      "format": "webp",
+      "bytes": 239428,
+      "contentHash": "4112441b",
+      "createdAt": "2026-08-30T01:00:11.493918+00:00"
+    },
+    {
+      "name": "card-art-mana-steal",
+      "path": "publish/assets/generated/cards/card-art-mana-steal.dc54839a.webp",
+      "format": "webp",
+      "bytes": 184092,
+      "contentHash": "dc54839a",
+      "createdAt": "2026-08-30T01:00:11.493942+00:00"
+    },
+    {
+      "name": "card-art-meteor-slash",
+      "path": "publish/assets/generated/cards/card-art-meteor-slash.fe12b0fe.webp",
+      "format": "webp",
+      "bytes": 220520,
+      "contentHash": "fe12b0fe",
+      "createdAt": "2026-08-30T01:00:11.493962+00:00"
+    },
+    {
+      "name": "card-art-succubus-slash",
+      "path": "publish/assets/generated/cards/card-art-succubus-slash.ac0bd910.webp",
+      "format": "webp",
+      "bytes": 263340,
+      "contentHash": "ac0bd910",
+      "createdAt": "2026-08-30T01:00:11.493987+00:00"
+    },
+    {
+      "name": "card-art-supply-sharing",
+      "path": "publish/assets/generated/cards/card-art-supply-sharing.3aafdb52.webp",
+      "format": "webp",
+      "bytes": 233582,
+      "contentHash": "3aafdb52",
+      "createdAt": "2026-08-30T01:00:11.494003+00:00"
+    },
+    {
+      "name": "skill-art-artina-sniper",
+      "path": "publish/assets/generated/cards/skill-art-artina-sniper.d751a4ee.webp",
+      "format": "webp",
+      "bytes": 209238,
+      "contentHash": "d751a4ee",
+      "createdAt": "2026-08-30T01:00:11.494027+00:00"
+    },
+    {
+      "name": "skill-art-battlefield-sweep",
+      "path": "publish/assets/generated/cards/skill-art-battlefield-sweep.dc08c5e1.webp",
+      "format": "webp",
+      "bytes": 208968,
+      "contentHash": "dc08c5e1",
+      "createdAt": "2026-08-30T01:00:11.494070+00:00"
+    },
+    {
+      "name": "skill-art-death-wave",
+      "path": "publish/assets/generated/cards/skill-art-death-wave.689e0965.webp",
+      "format": "webp",
+      "bytes": 236076,
+      "contentHash": "689e0965",
+      "createdAt": "2026-08-30T01:00:11.494106+00:00"
+    },
+    {
+      "name": "skill-art-drill-spark",
+      "path": "publish/assets/generated/cards/skill-art-drill-spark.236e0585.webp",
+      "format": "webp",
+      "bytes": 264912,
+      "contentHash": "236e0585",
+      "createdAt": "2026-08-30T01:00:11.494136+00:00"
+    },
+    {
+      "name": "skill-art-many-eyes",
+      "path": "publish/assets/generated/cards/skill-art-many-eyes.ed9c837d.webp",
+      "format": "webp",
+      "bytes": 214258,
+      "contentHash": "ed9c837d",
+      "createdAt": "2026-08-30T01:00:11.494160+00:00"
+    },
+    {
+      "name": "skill-art-maria-honor-blessing",
+      "path": "publish/assets/generated/cards/skill-art-maria-honor-blessing.14392afa.webp",
+      "format": "webp",
+      "bytes": 191260,
+      "contentHash": "14392afa",
+      "createdAt": "2026-08-30T01:00:11.494176+00:00"
+    },
+    {
+      "name": "skill-art-mine-placement",
+      "path": "publish/assets/generated/cards/skill-art-mine-placement.c22c12c6.webp",
+      "format": "webp",
+      "bytes": 213830,
+      "contentHash": "c22c12c6",
+      "createdAt": "2026-08-30T01:00:11.494192+00:00"
+    },
+    {
+      "name": "skill-art-reinforcement",
+      "path": "publish/assets/generated/cards/skill-art-reinforcement.7a694f5c.webp",
+      "format": "webp",
+      "bytes": 268274,
+      "contentHash": "7a694f5c",
+      "createdAt": "2026-08-30T01:00:11.494210+00:00"
+    },
+    {
+      "name": "skill-art-shadow-backstab",
+      "path": "publish/assets/generated/cards/skill-art-shadow-backstab.a5f14213.webp",
+      "format": "webp",
+      "bytes": 98042,
+      "contentHash": "a5f14213",
+      "createdAt": "2026-08-30T01:00:11.494239+00:00"
+    },
+    {
+      "name": "skill-art-sniper-target",
+      "path": "publish/assets/generated/cards/skill-art-sniper-target.077d96a9.webp",
+      "format": "webp",
+      "bytes": 135240,
+      "contentHash": "077d96a9",
+      "createdAt": "2026-08-30T01:00:11.494254+00:00"
+    },
+    {
+      "name": "skill-art-succubus-fork",
+      "path": "publish/assets/generated/cards/skill-art-succubus-fork.20768ad5.webp",
+      "format": "webp",
+      "bytes": 276110,
+      "contentHash": "20768ad5",
+      "createdAt": "2026-08-30T01:00:11.494323+00:00"
+    },
+    {
+      "name": "skill-art-tail-machinegun",
+      "path": "publish/assets/generated/cards/skill-art-tail-machinegun.a8d29ad7.webp",
+      "format": "webp",
+      "bytes": 294318,
+      "contentHash": "a8d29ad7",
+      "createdAt": "2026-08-30T01:00:11.494350+00:00"
+    },
+    {
+      "name": "skill-art-tank-shell",
+      "path": "publish/assets/generated/cards/skill-art-tank-shell.b7bcc54e.webp",
+      "format": "webp",
+      "bytes": 236522,
+      "contentHash": "b7bcc54e",
+      "createdAt": "2026-08-30T01:00:11.494373+00:00"
     }
   ]
 }
