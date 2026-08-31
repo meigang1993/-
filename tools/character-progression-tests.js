@@ -20,6 +20,15 @@ function testGrowthProfiles() {
   const level20 = Progression.statsAt(template, 20);
   assert(level20.magic > level15.magic && level20.maxHp > level15.maxHp,
     "level 16-20 must continue applying character growth");
+  const targets = {
+    artina: { maxHp: 130, attack: 18.5, magic: 12.5, speed: 19.5 },
+    maria: { maxHp: 128, attack: 13.5, magic: 15.5, speed: 17 },
+  };
+  Object.entries(targets).forEach(([id, expected]) => {
+    const current = GameData.characters.find(item => item.id === id);
+    assert(JSON.stringify(Progression.statsAt(current, 20)) === JSON.stringify(expected),
+      `${id} level-20 attributes changed`);
+  });
 }
 
 function testExperienceGrant() {

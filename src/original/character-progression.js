@@ -5,7 +5,7 @@ window.CharacterProgression = (() => {
     1280, 1580, 1920, 2300, 2720, 3180, 3680, 4100, 4550, 5050, 5600, 6200,
   ]);
   const encounterExp = Object.freeze({ normal: 30, elite: 70, boss: 130 });
-  const growth = Object.freeze({
+  const baseGrowth = {
     lokar: { maxHp: 72, attack: 13.5, magic: 4.5, speed: 10 },
     besta_doll: { maxHp: 54, attack: 7.5, magic: 12, speed: 7.5 },
     manny: { maxHp: 72, attack: 12, magic: 7.5, speed: 12.5 },
@@ -32,9 +32,17 @@ window.CharacterProgression = (() => {
     gerda: { maxHp: 114, attack: 6, magic: 10.5, speed: 12.5 },
     hoshino_yi: { maxHp: 78, attack: 10.5, magic: 10.5, speed: 11.25 },
     hoshino_kaiichi: { maxHp: 132, attack: 4.5, magic: 10.5, speed: 7.5 },
-    artina: { maxHp: 84, attack: 10.5, magic: 7.5, speed: 12.5 },
-    maria: { maxHp: 90, attack: 7.5, magic: 10.5, speed: 10 },
-  });
+    artina: { maxHp: 94, attack: 15.5, magic: 9.5, speed: 15.5 },
+    maria: { maxHp: 90, attack: 11.5, magic: 12.5, speed: 13 },
+  };
+  const growth = Object.freeze(Object.fromEntries(Object.entries(baseGrowth).map(([id, values]) => [
+    id,
+    id === "artina" || id === "maria"
+      ? values
+      : Object.fromEntries(Object.entries(values).map(([key, value]) => [
+        key, Math.round(value * 1.3 * 100) / 100,
+      ])),
+  ])));
   const fallbackGrowth = Object.freeze({
     maxHp: 60, attack: 9, magic: 9, speed: 7.5,
   });
