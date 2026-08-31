@@ -25,6 +25,15 @@ window.GameUIInfo = (U) => {
     const mode = u.jokerMode === "red" ? "大鬼牌模式：惩罚红色牌" : "小鬼牌模式：惩罚黑色牌";
     return `<span class="joker-suit-badge ${red ? "red" : "black"}" title="鬼牌狂欢判定：${u.jokerSuit}；${mode}">${u.jokerSuit}</span>`;
   }
+  function artinaSuitMark(u) {
+    if (u?.ref !== "artina") return "";
+    const suits = ["♥", "♦", "♠", "♣"].filter(suit => u.artinaSuits?.[suit]);
+    return suits.length ? `<span class="green-hat-badge" title="蓄力子弹：${suits.join("、")}">蓄力 ${suits.join("")}</span>` : "";
+  }
+  function mariaMark(u) {
+    if (u?.ref !== "maria" || !u.mariaMarks) return "";
+    return `<span class="green-hat-badge" title="神数咒语：${u.mariaMarks}枚">神数×${u.mariaMarks}</span>`;
+  }
   function findInfoUnit(state) {
     const id = state.infoUnit;
     if (!id) return null;
@@ -141,5 +150,5 @@ window.GameUIInfo = (U) => {
     const stats = u?.id && window.RelicSystem ? RelicSystem.statsOf(state, u.id) : null;
     return infoPanel(u, state.infoTab, stats);
   }
-  return { greenHatMark, foodMark, rageMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, findInfoUnit, infoPanel, infoPanelForState };
+  return { greenHatMark, foodMark, rageMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, mariaMark, findInfoUnit, infoPanel, infoPanelForState };
 };

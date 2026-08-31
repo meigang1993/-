@@ -18,6 +18,12 @@ window.BattleCardPlayability = deps => {
       return deps.isKillCard(candidate) || candidate.type === "tactic";
     }
     if (skillCard?.demonPoker) return candidate.type !== "tactic";
+    if (skillCard?.mariaHonorBlessing) {
+      const picked = battle?.selectedBagIndexes || [];
+      if (picked.includes(cardIndex)) return true;
+      if (picked.length >= 4 || !standardSuits.has(candidate.suit)) return false;
+      return !picked.some(index => actor.hand[index]?.suit === candidate.suit);
+    }
     if (!skillCard?.armyOrder) return true;
     const picked = battle?.selectedBagIndexes || [];
     if (picked.includes(cardIndex)) return true;
@@ -77,13 +83,18 @@ window.BattleCardPlayability = deps => {
       || card.withererPeek && actor.usedWithererPeek
       || card.aceContribution && actor.usedAceContribution
       || card.ailengCharge && actor.usedAilengCharge
-      || card.kaiichiMilk && actor.usedKaiichiMilk;
+      || card.kaiichiMilk && actor.usedKaiichiMilk
+      || card.artinaSniper && actor.usedArtinaSniper
+      || card.mariaHonorBlessing && actor.usedMariaHonorBlessing;
   }
 
   function blockedByHand(actor, card, hasHand) {
     if ((card.bloodPact || card.elranaBag || card.ailengBet || card.elranaHeal)
       && !hasHand) return true;
     if (card.aceContribution && !hasHand) return true;
+    if (card.mariaHonorBlessing
+      && !actor.hand.some(item => !item._pendingDraw
+        && ["♥", "♦", "♠", "♣"].includes(item.suit))) return true;
     if (card.demonPoker && !actor.hand.some(item => item.type !== "tactic" && !item._pendingDraw)) return true;
     if (card.crazyShooting && !actor.hand.some(item => ["♥", "♦"].includes(item.suit) && !item._pendingDraw)) return true;
     if (card.armyOrder && !window.BakarSkills?.armyOrderIndexes?.(actor).length) return true;
@@ -109,6 +120,8 @@ window.BattleCardPlayability = deps => {
     if (card.extract && !livingMale()) return true;
     if ((card.speedAssault || card.withererPeek || card.crazySlaughter
       || card.angelicaTaunt || card.bestaEndSlash) && !livingEnemy()) return true;
+    if (card.artinaSniper && !opposingUnits(battle, actor).some(unit =>
+      unit.hp > 0 && hasVisibleHand(unit))) return true;
     if (card.angelicaRage && !(actor.rageMarks > 0)) return true;
     if (card.bertisTakeFood && !(battle.allies || []).some(unit => unit.ref === "bertis" && unit.hp > 0 && (unit.food || 0) > 0)) return true;
     if (card.comboAttack && !canComboAttack(battle, actor, card)) return true;
