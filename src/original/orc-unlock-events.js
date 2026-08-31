@@ -43,10 +43,18 @@ window.OrcUnlockEvents = (() => {
     state.hallModal = "orcDungeonUnlock";
     return true;
   };
+  window.triggerRuinsSandCityUnlockEvent = function triggerRuinsSandCityUnlockEvent(state, run) {
+    state.flags = state.flags || {};
+    if (run?.missionId !== "orc_dungeon" || run?.difficultyId !== "warrior") return false;
+    if (state.flags.ruinsSandCityUnlocked || state.flags.ruinsSandCityUnlockSeen) return false;
+    state.flags.ruinsSandCityUnlockPending = true;
+    state.hallModal = "ruinsSandCityUnlock";
+    return true;
+  };
   function triggerPending(state) {
     if (state.view !== "hall" || state.hallModal || state.battle || state.explore) return false;
-    if (!state.flags?.orcDungeonUnlockPending || state.flags.orcDungeonUnlocked || state.flags.orcDungeonUnlockSeen) return false;
-    state.hallModal = "orcDungeonUnlock";
+    if (!state.flags?.ruinsSandCityUnlockPending || state.flags.ruinsSandCityUnlocked || state.flags.ruinsSandCityUnlockSeen) return false;
+    state.hallModal = "ruinsSandCityUnlock";
     return true;
   }
   return { orcDungeonUnlock, triggerPending };

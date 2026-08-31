@@ -36,7 +36,7 @@ window.GameDataWorld = {
   },
   missions: [
     { id: "machine_factory", name: "魔国机械工厂", kind: "dungeon", reward: { gold: 0, ...window.GameEconomy.missionRewards.machine_factory }, subtitle: "自动化魔械生产线" },
-    { id: "underwater_train", name: "水下列车", kind: "dungeon", requiresFlag: "underwaterTrainUnlocked", lockedHint: "娜娜莉解锁后触发别墅事件开放", reward: { gold: 0, ...window.GameEconomy.missionRewards.underwater_train }, subtitle: "被狂鲨海盗团劫持的人鱼国航线", bgm: "./assets/sounds/underwater-train-battle.ogg", route: { type: "linear", layers: 15, rest: [10], chest: [8], boss: [15], mixedEliteFrom: 11 } },
+    { id: "underwater_train", name: "水下列车", kind: "dungeon", requiresFlag: "underwaterTrainUnlocked", lockedHint: "娜娜莉解锁后触发别墅事件开放", reward: { gold: 0, ...window.GameEconomy.missionRewards.underwater_train }, subtitle: "被狂鲨海盗团劫持的人鱼国航线", bgm: "./assets/sounds/underwater-train-battle.mp3", route: { type: "linear", layers: 15, rest: [10], chest: [8], boss: [15], mixedEliteFrom: 11 } },
     ...(window.GameDataFutureDungeons || []),
   ],
   enemies: {

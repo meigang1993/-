@@ -18,6 +18,7 @@ global.window = global;
   "data-sakura-risa.js",
   "data-machine-factory-enemies.js",
   "data-underwater-train-enemies.js",
+  "data-ruins-sand-city-enemies.js",
   "data-world.js",
 ].forEach(file => require(`../src/original/${file}`));
 

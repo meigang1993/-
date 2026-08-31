@@ -29,6 +29,17 @@ window.NewCharacterUnlockEvents = (() => {
     ];
     return eventView(state, "未完的巨蛋演出", ["hoshino_yi", "hoshino_kaiichi", "aileng"], lines, "事件结束后，星野依与星野海一会同时加入角色栏。", "邀请星野一家入队", "hoshino-family-unlock-complete");
   }
+  function ruinsSandCityUnlock(state) {
+    const lines = [
+      ["反抗军指挥官", "感谢你们击退兽人地下城的魔王军。世界贵族已经把废墟沙城变成了战争机器的前线。"],
+      ["亚缇娜", "我是魅影突击队的亚缇娜。请让我们加入，一起夺回沙城。"],
+      ["玛利亚", "我会为队伍提供支援，直到那些侵略者全部撤退。"],
+      ["罗卡尔", "好，我们现在就出发。"],
+    ];
+    return eventView(state, "废墟沙城的反攻", ["artina", "maria", "lokar"], lines,
+      "事件结束后，副本“废墟沙城”开放，亚缇娜与玛利亚加入角色栏。",
+      "解锁废墟沙城并邀请新角色", "ruins-sand-city-unlock-complete");
+  }
   function recordDungeonClear(state, run) {
     if (run?.missionId !== "orc_dungeon" || run?.difficultyId !== "adventure" || run?.complete !== true) return false;
     if (state.flags?.hoshinoFamilyUnlockSeen || state.flags?.hoshinoFamilyUnlockPending) return false;
@@ -38,6 +49,11 @@ window.NewCharacterUnlockEvents = (() => {
   }
   function triggerPending(state) {
     if (state.view !== "hall" || state.hallModal || state.battle || state.explore) return false;
+    const artina = state.chars.find(character => character.id === "artina");
+    if (artina?.locked && state.flags?.ruinsSandCityUnlockPending && !state.flags.ruinsSandCityUnlockSeen) {
+      state.hallModal = "ruinsSandCityUnlock";
+      return true;
+    }
     const yi = state.chars.find(character => character.id === "hoshino_yi");
     if (yi?.locked && state.flags?.hoshinoFamilyUnlockPending && !state.flags.hoshinoFamilyUnlockSeen) {
       state.hallModal = "hoshinoFamilyUnlock";
@@ -68,5 +84,6 @@ window.NewCharacterUnlockEvents = (() => {
   }
   window.completeGerdaNurseryUnlockEvent = () => complete("gerda_nursery", "格尔达已在孕育殿堂开放兑换。", "gerda");
   window.completeHoshinoFamilyUnlockEvent = () => complete("hoshino_family", "星野依与星野海一加入角色栏。", "hoshino_yi");
-  return { gerdaUnlock, hoshinoUnlock, recordDungeonClear, triggerPending };
+  window.completeRuinsSandCityUnlockEvent = () => complete("ruins_sand_city", "废墟沙城已解锁，亚缇娜与玛利亚加入角色栏。", "artina");
+  return { gerdaUnlock, hoshinoUnlock, ruinsSandCityUnlock, recordDungeonClear, triggerPending };
 })();

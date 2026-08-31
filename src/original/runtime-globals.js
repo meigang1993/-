@@ -23,9 +23,9 @@
     "CharacterProgression", "HoshinoKaiichiShare", "HoshinoKaiichiShareQueue", "HoshinoKaiichiShareResolution", "LocalCoreBountyOps", "StoreCharacterMigrations", "StoreMigrationNormalizers", "StoreRepairs", "StoreRunMigrations", "StoreUnlockMigrations", "GameStoreMainCopyInspection", "GameStoreMainLoad", "GameStoreMainRecovery", "GameStoreMainSave", "GameStoreMainSaveQueue", "GameStoreMainSaveScheduler", "GameStoreMainSaveSupport", "GameStoreMainSaveWriter", "GameStoreMainSnapshot", "GameStoreSlotsData", "SuccubusCodex", "UICommon", "UICommonArt", "UICommonCards", "UICommonRelics", "UICommonSkillModel", "UICommonSkillView", "UICommonSkills", "UnderwaterTrainAttackSkills", "UnderwaterTrainBiteSkills", "UnderwaterTrainCombatSkills", "UnderwaterTrainControlSkills",
     "UnderwaterTrainDamageSkills", "UnderwaterTrainPrepareSkills", "UnderwaterTrainSkills", "UnderwaterTrainTargetActions", "UnderwaterTrainTargetCounters", "UnderwaterTrainTargetSkills", "RuinsEnemySkills", "VillaCollectionUI", "VillaDefeatEvents", "VillaEventRenderer", "VillaEvents", "VillaFamilyEvents", "VillaTeamUI", "VillaTestUI", "VillaUI", "WendyCadicisSkills", "bindBattleActionButtons",
     "bindDungeonActions", "completeAceUnlockEvent", "completeBestaNurseryUnlockEvent",
-    "completeLittleElranaUnlockEvent", "completeOpheliaUnlockEvent", "completeOrcDungeonUnlockEvent", "completeUnderwaterTrainUnlockEvent",
+    "completeLittleElranaUnlockEvent", "completeOpheliaUnlockEvent", "completeOrcDungeonUnlockEvent", "completeUnderwaterTrainUnlockEvent", "completeRuinsSandCityUnlockEvent",
     "preserveNextScroll", "releaseScrollLock", "render", "restoreScrollInstant", "startOpen", "state",
-    "triggerAceUnlockEvent", "triggerOrcDungeonUnlockEvent", "triggerPostUnderwaterTrainClearEvents", "triggerUnderwaterTrainUnlockEvent",
+    "triggerAceUnlockEvent", "triggerOrcDungeonUnlockEvent", "triggerRuinsSandCityUnlockEvent", "triggerPostUnderwaterTrainClearEvents", "triggerUnderwaterTrainUnlockEvent",
     "tryLittleElranaEncounter", "WithererSkills"
   ];
 

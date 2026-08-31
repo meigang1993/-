@@ -9,7 +9,7 @@ window.GameDataFutureEnemies.orc_dungeon.push({
   gender: "female",
   face: "丽",
   art: "./assets/new-portraits/assassin-sakura-risa.webp",
-  bgm: "./assets/new-bgm/assassin-sakura-risa.ogg",
+  bgm: "./assets/new-bgm/assassin-sakura-risa.mp3",
   hp: 190,
   attack: 9,
   magic: 7,

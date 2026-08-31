@@ -15,6 +15,11 @@ function testGrowthProfiles() {
   assert(Object.keys(Progression.growth).sort().join(",")
     === GameData.characters.map(character => character.id).sort().join(","),
   "every playable character needs exactly one dedicated growth profile");
+  const template = GameData.characters.find(item => item.id === "besta_doll");
+  const level15 = Progression.statsAt(template, 15);
+  const level20 = Progression.statsAt(template, 20);
+  assert(level20.magic > level15.magic && level20.maxHp > level15.maxHp,
+    "level 16-20 must continue applying character growth");
 }
 
 function testExperienceGrant() {

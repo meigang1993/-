@@ -26,6 +26,7 @@ window.LocalCoreEventOps = (() => {
       chiyo_recruit: () => flags.chiyoRecruitUnlockSeen && unlocked(core, "chiyo"),
       gerda_nursery: () => flags.gerdaNurseryUnlocked,
       hoshino_family: () => flags.hoshinoFamilyUnlockSeen && unlocked(core, "hoshino_yi") && unlocked(core, "hoshino_kaiichi"),
+      ruins_sand_city: () => flags.ruinsSandCityUnlockSeen && flags.ruinsSandCityUnlocked
     };
     return window.UnlockEventProgress.isCompleted(core, id) || !!checks[id]?.();
   }
@@ -68,6 +69,7 @@ window.LocalCoreEventOps = (() => {
     else if (id === "chiyo_recruit" && core.defeatedElites?.includes("mechanical_bull_king") && character(core, "chiyo")) { setFlag("chiyoRecruitUnlockSeen"); unlock("chiyo"); }
     else if (id === "gerda_nursery" && core.defeatedElites?.includes("demon_king_bakaar") && character(core, "gerda")) { setFlag("gerdaNurseryUnlockSeen"); setFlag("gerdaNurseryUnlocked"); }
     else if (id === "hoshino_family" && core.flags.hoshinoFamilyUnlockPending && character(core, "hoshino_yi") && character(core, "hoshino_kaiichi")) { setFlag("hoshinoFamilyUnlockSeen"); clearFlag("hoshinoFamilyUnlockPending"); unlock("hoshino_yi"); unlock("hoshino_kaiichi"); }
+    else if (id === "ruins_sand_city" && core.flags.ruinsSandCityUnlockPending) { setFlag("ruinsSandCityUnlockSeen"); setFlag("ruinsSandCityUnlocked"); clearFlag("ruinsSandCityUnlockPending"); unlock("artina"); unlock("maria"); }
     else if (!knownEvents.has(id)) throw new Error("未知本地剧情解锁");
     const satisfied = isSatisfied(core, args);
     if (satisfied && window.UnlockEventProgress.complete(core, id)) changed = true;
