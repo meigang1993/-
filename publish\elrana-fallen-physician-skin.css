@@ -1,0 +1,64 @@
+.skin-effect-elrana-fallen-physician { position: relative; isolation: isolate; }
+.skin-effect-elrana-fallen-physician::before { content: ""; position: absolute; inset: 7%; z-index: 2; border: 1px solid rgba(122,255,166,.48); border-radius: 48%; box-shadow: 0 0 14px rgba(65,235,131,.28), inset 0 0 12px rgba(82,255,149,.13); pointer-events: none; }
+.skin-effect-elrana-fallen-physician::after { content: "✚"; position: absolute; right: 10%; top: 9%; z-index: 3; color: rgba(141,255,177,.72); font-size: 14px; text-shadow: 0 0 8px #43db83; pointer-events: none; }
+.elrana-fallen-physician-entering { animation: elranaFallenEntryBody 1s cubic-bezier(.16,.84,.24,1) both !important; }
+.elrana-fallen-physician-fx,.elrana-fallen-physician-line { position: fixed; z-index: 48; pointer-events: none; overflow: visible; transform: translateZ(0); }
+.elrana-fallen-physician-line { height: 4px; transform-origin: 0 50%; transform: rotate(var(--line-angle)); }
+.elrana-fallen-physician-entry b { position: absolute; inset: -4%; border: 5px double rgba(98,239,144,.78); border-radius: 50%; box-shadow: 0 0 22px #35d67b, inset 0 0 18px #0b542c; animation: elranaTankRise .95s ease-out both; }
+.elrana-fallen-physician-entry i { position: absolute; left: 50%; top: 48%; width: 26%; height: 55%; border: 2px solid #6dff9f; border-radius: 12px 12px 18px 18px; background: linear-gradient(180deg, transparent 22%, rgba(46,218,119,.65)); box-shadow: 0 0 12px #3af28c; animation: elranaTankOpen .9s ease-out both; }
+.elrana-fallen-physician-entry i:nth-of-type(2) { margin-left: -33%; animation-delay: .1s; }.elrana-fallen-physician-entry i:nth-of-type(3) { margin-left: 33%; animation-delay: .2s; }
+.elrana-fallen-physician-entry span { position: absolute; inset: 7%; border: 2px solid rgba(198,255,218,.62); clip-path: polygon(50% 0,59% 38%,100% 50%,59% 62%,50% 100%,41% 62%,0 50%,41% 38%); animation: elranaStaffFlash .88s ease-out both; }
+.elrana-fallen-physician-idle b,.elrana-fallen-physician-heal-source b { position: absolute; inset: 12%; border: 2px solid #73f7a1; border-radius: 50%; box-shadow: 0 0 12px #31d879; animation: elranaDataPulse .82s ease-out both; }
+.elrana-fallen-physician-idle i { position: absolute; left: 45%; top: 25%; width: 10%; height: 50%; border-left: 3px solid #7bffad; transform: rotate(calc((var(--i,0) - 1) * 22deg)); animation: elranaNeedle .82s ease-out both; }
+.elrana-fallen-physician-idle i:nth-of-type(1) { --i: 0; }.elrana-fallen-physician-idle i:nth-of-type(2) { --i: 2; }
+.elrana-fallen-physician-idle span { position: absolute; inset: 24%; border: 2px dashed rgba(235,255,234,.7); border-radius: 50%; animation: elranaOrbit .9s ease-out both; }
+.elrana-fallen-physician-heal-source span { position: absolute; left: 41%; top: 12%; width: 18%; height: 72%; border: 2px solid #e96573; border-radius: 5px; box-shadow: 0 0 10px #e23c57; animation: elranaSyringe .78s ease-out both; }
+.elrana-fallen-physician-heal-source i { position: absolute; left: 18%; top: 48%; width: 64%; height: 3px; background: #e74c63; box-shadow: 0 0 9px #ff5067; animation: elranaPulseLine .75s ease-out both; }
+.elrana-fallen-physician-line i,.elrana-fallen-physician-care-line i { position: absolute; left: 0; top: -4px; width: 100%; height: 8px; background: linear-gradient(90deg, transparent, #ee6873 36%, #87ffae 66%, transparent); filter: drop-shadow(0 0 7px #57e68d); animation: elranaBeam .8s ease-out both; }
+.elrana-fallen-physician-line i:nth-child(2),.elrana-fallen-physician-care-line i:nth-child(2) { top: 4px; opacity: .6; animation-delay: .08s; }.elrana-fallen-physician-line i:nth-child(3),.elrana-fallen-physician-care-line i:nth-child(3) { top: -9px; opacity: .42; animation-delay: .15s; }
+.elrana-fallen-physician-heal-target b { position: absolute; inset: 7%; border: 3px solid #7dffad; border-radius: 50%; box-shadow: 0 0 18px #46e889, inset 0 0 18px rgba(98,255,155,.28); animation: elranaHealRing .92s ease-out both; }
+.elrana-fallen-physician-heal-target i { position: absolute; left: 50%; top: 50%; width: 20%; height: 20%; background: #e96170; transform: translate(-50%,-50%) rotate(45deg); box-shadow: 0 0 12px #ff5c70; animation: elranaHeart .86s ease-out both; }
+.elrana-fallen-physician-heal-target span { position: absolute; inset: 22%; background: repeating-conic-gradient(transparent 0 23deg,rgba(142,255,178,.55) 24deg 26deg,transparent 27deg 46deg); animation: elranaNet .9s ease-out both; }
+.elrana-fallen-physician-care b { position: absolute; left: 42%; top: 23%; color: #d9ffe7; font-size: 28px; text-shadow: 0 0 9px #49e58b; animation: elranaCross .8s ease-out both; }.elrana-fallen-physician-care i { position: absolute; left: 37%; top: 58%; width: 26%; height: 18%; border: 2px solid #f2d3a6; background: #fff3d2; transform: rotate(-12deg); animation: elranaChart .82s ease-out both; }.elrana-fallen-physician-care span { position: absolute; inset: 4%; border: 2px solid rgba(117,255,164,.7); border-radius: 50%; animation: elranaHealRing .84s ease-out both; }
+.elrana-fallen-physician-regenerate b,.elrana-fallen-physician-draw-tank b { position: absolute; inset: 5%; border: 3px solid #e95369; border-radius: 48%; box-shadow: 0 0 16px #da3f5f; animation: elranaRegenerate .9s ease-out both; }
+.elrana-fallen-physician-regenerate i,.elrana-fallen-physician-draw-tank i { position: absolute; left: 50%; top: 50%; width: 4px; height: 62%; background: linear-gradient(#ee6877,#75ffa8); transform-origin: 50% 0; transform: rotate(calc((var(--i,0) - 1.5) * 27deg)); box-shadow: 0 0 8px #e2536a; animation: elranaThread .88s ease-out both; }.elrana-fallen-physician-regenerate i:nth-of-type(1),.elrana-fallen-physician-draw-tank i:nth-of-type(1) { --i: 0; }.elrana-fallen-physician-regenerate i:nth-of-type(2),.elrana-fallen-physician-draw-tank i:nth-of-type(2) { --i: 1; }.elrana-fallen-physician-regenerate i:nth-of-type(3),.elrana-fallen-physician-draw-tank i:nth-of-type(3) { --i: 2; }
+.elrana-fallen-physician-regenerate span,.elrana-fallen-physician-draw-tank span { position: absolute; left: 34%; top: 34%; width: 32%; height: 32%; border-radius: 50%; background: radial-gradient(circle,#ff8791,#a52c43 62%,transparent 68%); animation: elranaCore .9s ease-out both; }
+.victory-screen.elrana-fallen-physician-victory { background: radial-gradient(circle at 19% 34%,rgba(61,221,123,.3),transparent 35%),linear-gradient(120deg,#06120d,#162b1e 56%,#32101b); }
+.elrana-fallen-physician-victory-show { position: absolute; inset: 0 auto 0 0; z-index: 1; width: 43%; overflow: hidden; pointer-events: none; }
+.elrana-fallen-physician-victory-art { position: absolute; inset: 0; overflow: hidden; mask-image: linear-gradient(90deg,#000 68%,transparent 100%); }
+.elrana-fallen-physician-victory-art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; animation: elranaVictoryPose 3.6s ease-in-out infinite; }
+.elrana-fallen-physician-victory-show::before { content: ""; position: absolute; left: 35%; top: 14%; width: 40%; height: 28%; border: 3px solid rgba(102,255,160,.72); border-radius: 50%; box-shadow: 0 0 18px #42e88b, inset 0 0 13px rgba(80,255,150,.25); animation: elranaVictoryTank 2.2s ease-in-out infinite; }
+.elrana-fallen-physician-victory-show::after { content: "⚕"; position: absolute; left: 40%; top: 20%; color: #baffd0; font-size: 34px; text-shadow: 0 0 10px #54e994; animation: elranaStaffSpin 3s linear infinite; }
+.elrana-fallen-physician-organs { position: absolute; left: 40%; top: 40%; z-index: 4; width: 34%; height: 22%; animation: elranaOrganHeart 2.4s ease-in-out infinite; }
+.elrana-fallen-physician-organs i { position: absolute; left: 50%; top: 50%; width: 28%; height: 42%; border-radius: 58% 42% 52% 48%; background: radial-gradient(circle at 35% 28%,#ff9b9d,#b92f4e 65%,#4c1020); box-shadow: 0 0 10px #ef526c; transform: translate(-50%,-50%) rotate(calc((var(--i,0) - 1) * 42deg)) translateY(-18%); }
+.elrana-fallen-physician-organs i:nth-child(1) { --i: 0; }.elrana-fallen-physician-organs i:nth-child(2) { --i: 1; }.elrana-fallen-physician-organs i:nth-child(3) { --i: 2; }
+.elrana-fallen-physician-heart { position: absolute; left: 48%; bottom: 18%; z-index: 4; width: 42px; height: 42px; border-radius: 50%; background: #e9576c; box-shadow: 0 0 20px #ff6075; animation: elranaVictoryHeart 1.25s ease-in-out infinite; }
+.elrana-fallen-physician-heart::after { content: "✦"; position: absolute; inset: 6px; color: #ffe7df; font-size: 22px; text-align: center; }
+.elrana-fallen-physician-motto { position: absolute; left: 23%; right: 8%; bottom: 7%; z-index: 5; color: #ffe3d9; font-size: 14px; text-align: center; text-shadow: 0 0 8px #d3485b; animation: elranaMottoReveal 2.4s ease-out both; }
+.victory-screen.elrana-fallen-physician-victory .victory-stats { z-index: 5; width: 64%; margin-left: auto; background: rgba(4,14,9,.78); backdrop-filter: blur(8px); }
+@media (max-height:520px) { .elrana-fallen-physician-victory-show { width: 35%; } .victory-screen.elrana-fallen-physician-victory .victory-stats { width: 70%; } }
+@keyframes elranaFallenEntryBody { from { opacity: .15; transform: translateY(20px) scale(.92); filter: saturate(.5); } 60% { opacity: 1; transform: translateY(-4px) scale(1.02); filter: saturate(1.25); } to { transform: none; filter: none; } }
+@keyframes elranaTankRise { from { opacity: 0; transform: scale(.35) translateY(18%); } 55% { opacity: 1; transform: scale(1.08); } to { transform: scale(1); } }
+@keyframes elranaTankOpen { from { opacity: 0; transform: translateY(16px) scaleY(.4); } to { opacity: 1; transform: none; } }
+@keyframes elranaStaffFlash { from { opacity: 0; transform: scale(.2) rotate(-45deg); } 60% { opacity: 1; transform: scale(1.15) rotate(15deg); } to { transform: scale(1) rotate(0); } }
+@keyframes elranaDataPulse { from { opacity: 0; transform: scale(.4); } 55% { opacity: 1; transform: scale(1.08); } to { transform: scale(1); } }
+@keyframes elranaNeedle { from { opacity: 0; transform: translateY(22%) rotate(32deg); } to { opacity: 1; transform: rotate(calc((var(--i,0) - 1) * 22deg)); } }
+@keyframes elranaOrbit { from { opacity: 0; transform: rotate(-80deg) scale(.55); } to { opacity: 1; transform: rotate(0) scale(1); } }
+@keyframes elranaSyringe { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: scale(1); } }
+@keyframes elranaPulseLine { from { opacity: 0; transform: scaleX(.2); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes elranaBeam { from { opacity: 0; transform: scaleX(.1); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes elranaHealRing { from { opacity: 0; transform: scale(.45) rotate(-35deg); } 65% { opacity: 1; transform: scale(1.08) rotate(8deg); } to { transform: scale(1) rotate(0); } }
+@keyframes elranaHeart { from { opacity: 0; transform: translate(-50%,-50%) scale(.3) rotate(45deg); } to { opacity: 1; transform: translate(-50%,-50%) scale(1) rotate(45deg); } }
+@keyframes elranaNet { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: scale(1); } }
+@keyframes elranaCross { from { opacity: 0; transform: scale(.4) rotate(-20deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+@keyframes elranaChart { from { opacity: 0; transform: translate(20px,18px) rotate(-12deg); } to { opacity: 1; transform: rotate(-12deg); } }
+@keyframes elranaRegenerate { from { opacity: 0; transform: scale(.45) rotate(-20deg); } 65% { opacity: 1; transform: scale(1.1) rotate(8deg); } to { transform: scale(1) rotate(0); } }
+@keyframes elranaThread { from { opacity: 0; height: 0; } to { opacity: 1; height: 62%; } }
+@keyframes elranaCore { from { opacity: 0; transform: scale(.2); } 60% { opacity: 1; transform: scale(1.18); } to { transform: scale(1); } }
+@keyframes elranaVictoryPose { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-5px) scale(1.015); } }
+@keyframes elranaVictoryTank { 0%,100% { opacity: .45; transform: rotate(-3deg) scale(.96); } 50% { opacity: 1; transform: rotate(3deg) scale(1.04); } }
+@keyframes elranaStaffSpin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+@keyframes elranaVictoryHeart { 0%,100% { transform: scale(.9); } 50% { transform: scale(1.12); } }
+@keyframes elranaOrganHeart { 0%,35% { transform: scale(.75) rotate(-8deg); opacity: .25; } 58%,100% { transform: scale(1) rotate(0); opacity: 1; } }
+@keyframes elranaMottoReveal { from { opacity: 0; transform: translateY(8px); } 55% { opacity: 0; } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .skin-effect-elrana-fallen-physician::before,.skin-effect-elrana-fallen-physician::after,.elrana-fallen-physician-victory-art img,.elrana-fallen-physician-victory-show::before,.elrana-fallen-physician-victory-show::after,.elrana-fallen-physician-organs,.elrana-fallen-physician-heart,.elrana-fallen-physician-motto { animation: none !important; } }

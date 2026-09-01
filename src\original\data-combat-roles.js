@@ -1,0 +1,79 @@
+window.GameCombatRoles = (() => {
+  const definitions = Object.freeze({
+    "输出": { className: "output", text: "爆发、高频或持续伤害" },
+    "控制": { className: "control", text: "弃牌、封锁、转移或限制行动" },
+    "辅助/续航": { className: "support", text: "补牌、治疗、护甲或增益队友" },
+    "防御/嘲讽": { className: "defense", text: "承伤、替伤、反制或吸引攻击" },
+    "成长/资源": { className: "growth", text: "积累标记、牌权、杀意或后期资源" },
+  });
+  const byId = Object.freeze({
+    lokar: ["输出"],
+    besta_doll: ["输出"],
+    manny: ["防御/嘲讽"],
+    miller: ["辅助/续航"],
+    nonoka: ["辅助/续航"],
+    loki: ["输出"],
+    flora: ["输出"],
+    wendy: ["辅助/续航"],
+    cadicis: ["辅助/续航"],
+    carlos: ["输出"],
+    bertis: ["成长/资源"],
+    gerlot: ["输出"],
+    angelica: ["防御/嘲讽"],
+    luka: ["输出"],
+    elrana: ["辅助/续航"],
+    little_elrana: ["输出"],
+    ace: ["辅助/续航"],
+    nanali: ["控制"],
+    ophelia: ["防御/嘲讽"],
+    aileng: ["成长/资源"],
+    besta: ["输出"],
+    sonia: ["输出"],
+    chiyo: ["输出"],
+    gerda: ["辅助/续航"],
+    hoshino_yi: ["输出"],
+    hoshino_kaiichi: ["辅助/续航"],
+    mechanical_goblin: ["控制"],
+    machine_succubus: ["输出"],
+    skeleton_patrol: ["控制"],
+    mecha_minotaur: ["防御/嘲讽"],
+    elrana_clone: ["输出"],
+    krow_doctor: ["控制"],
+    invader_chiyo: ["输出"],
+    mechanical_bull_king: ["防御/嘲讽"],
+    pursuer_edis: ["输出"],
+    terror_slime: ["控制"],
+    shark_pirate_crew: ["输出"],
+    shark_pirate_raider: ["控制"],
+    shark_pirate_submarine: ["输出"],
+    raff_assassin: ["控制"],
+    abe_mike: ["输出"],
+    shark_captain_mordio: ["控制"],
+    mona_eagle_captain: ["输出"],
+    suicide_drone: ["输出"],
+    demon_beast_unit: ["输出"],
+    demon_witch: ["输出"],
+    demon_mecha_cerberus: ["输出"],
+    witherer_1124_split: ["成长/资源"],
+    xx_witherer_1124: ["输出"],
+    demon_king_bakaar: ["成长/资源"],
+    orc_king_bondi: ["控制"],
+    guard_kelly: ["防御/嘲讽"],
+    assassin_sakura_risa: ["防御/嘲讽"],
+  });
+  const templates = [
+    ...(window.GameDataCharacters || []),
+    ...(window.GameDataMachineFactoryEnemies || []),
+    ...(window.GameDataUnderwaterTrainEnemies || []),
+    ...Object.values(window.GameDataFutureEnemies || {}).flat(),
+  ];
+  templates.forEach(template => {
+    template.combatRoles = [...(byId[template.id] || [])];
+  });
+  const of = unit => {
+    const canonical = byId[unit?.ref || unit?.id];
+    if (canonical?.length) return canonical;
+    return unit?.combatRoles?.length ? unit.combatRoles.slice(0, 1) : [];
+  };
+  return { definitions, byId, of };
+})();

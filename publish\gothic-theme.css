@@ -1,0 +1,364 @@
+:root {
+  --gothic-crimson: #a8193f;
+  --gothic-bone: #e8dcc8;
+  --gothic-gold: #c9a764;
+}
+
+body {
+  color: var(--gothic-bone);
+  background:
+    linear-gradient(90deg, rgba(80, 100, 127, .08), transparent 24%, transparent 76%, rgba(168, 25, 63, .09)),
+    linear-gradient(145deg, #08070a, #17131a 48%, #260913);
+}
+
+body::before {
+  opacity: .72;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 18px, rgba(201, 167, 100, .025) 18px 19px),
+    radial-gradient(circle at 50% 0, rgba(168, 25, 63, .2), transparent 38%);
+}
+
+button {
+  border: 1px solid rgba(201, 167, 100, .42);
+  border-radius: 6px;
+  color: var(--gothic-bone);
+  background: linear-gradient(180deg, #551329, #250b16);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .035), 0 8px 20px rgba(0, 0, 0, .34);
+}
+
+button:not(:disabled):hover {
+  border-color: rgba(232, 220, 200, .72);
+  box-shadow: inset 0 0 18px rgba(168, 25, 63, .24), 0 10px 24px rgba(0, 0, 0, .44);
+}
+
+button.ghost {
+  color: #d9d1c5;
+  background: linear-gradient(180deg, rgba(49, 47, 55, .95), rgba(18, 17, 21, .96));
+  border-color: rgba(201, 167, 100, .3);
+}
+
+button.danger {
+  background: linear-gradient(180deg, #781b31, #310811);
+}
+
+.topbar,
+.panel,
+.bottom-nav,
+.settings-menu,
+.game-confirm-card,
+.save-panel,
+.modal-card {
+  position: relative;
+  border-color: rgba(201, 167, 100, .28);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(37, 32, 41, .94), rgba(12, 11, 15, .96)),
+    #111014;
+  box-shadow: inset 0 0 24px rgba(168, 25, 63, .07), 0 16px 44px rgba(0, 0, 0, .42);
+}
+
+.settings-menu::before,
+.game-confirm-card::before,
+.save-panel::before,
+.modal-card::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 54px;
+  height: 78px;
+  opacity: .07;
+  border-radius: 4px;
+  background: url("./assets/generated/succubus-card-back.cca22db5.webp") center / cover no-repeat;
+  mix-blend-mode: screen;
+}
+
+.topbar::after {
+  content: "◆";
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 14px;
+  height: 14px;
+  transform: translateX(-50%) rotate(45deg);
+  color: rgba(201, 167, 100, .24);
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+}
+.settings-menu::before,
+.game-confirm-card::before,
+.save-panel::before,
+.modal-card::before { right: 7px; bottom: 7px; }
+
+.title-frame {
+  background: linear-gradient(180deg, rgba(71, 17, 37, .96), rgba(15, 12, 16, .98));
+  border-color: rgba(201, 167, 100, .58);
+  filter: grayscale(.18) contrast(1.14) drop-shadow(0 8px 18px rgba(0, 0, 0, .6));
+}
+
+.title-frame h1,
+.start-card h2 {
+  color: #f4eadc;
+  letter-spacing: 0;
+  text-shadow: 0 0 10px #b4163a, 0 0 24px rgba(168, 25, 63, .68), 0 2px 0 #17060b;
+}
+
+.topbar p,
+.muted {
+  color: #a9a4ad;
+}
+
+.resource {
+  border: 1px solid rgba(201, 167, 100, .2);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(73, 65, 78, .28), rgba(10, 9, 12, .5));
+}
+
+.bottom-nav {
+  border-radius: 8px;
+}
+
+.nav-list button {
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(55, 51, 61, .92), rgba(18, 17, 21, .96));
+}
+
+.nav-list button.active,
+button.active {
+  color: #fff4e4;
+  background: linear-gradient(180deg, #761832, #300b18);
+  border-color: var(--gothic-gold);
+}
+
+.card,
+.bounty-card,
+.codex-char,
+.battle-skin-option,
+.save-slot {
+  border-radius: 6px;
+  border-color: rgba(201, 167, 100, .22);
+  background:
+    linear-gradient(160deg, rgba(67, 60, 72, .28), rgba(14, 12, 17, .72)),
+    #161319;
+  box-shadow: inset 0 0 18px rgba(168, 25, 63, .045);
+}
+
+.villa-actions,
+.party-drop,
+.villa-page-head,
+.hand-panel,
+.active-info,
+.unit,
+.map-scroll-shell,
+.node-panel {
+  border-radius: 6px;
+  border-color: rgba(201, 167, 100, .22);
+  background: linear-gradient(160deg, rgba(43, 39, 47, .86), rgba(10, 9, 12, .88));
+  box-shadow: inset 0 0 20px rgba(168, 25, 63, .055), 0 12px 30px rgba(0, 0, 0, .3);
+}
+
+.villa-main {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.villa-actions button,
+.hall-main-actions button {
+  border-radius: 4px;
+  border-color: rgba(201, 167, 100, .34);
+  background: linear-gradient(180deg, rgba(92, 21, 43, .94), rgba(29, 12, 19, .96));
+}
+
+.hall-main-actions button.primary {
+  color: #fff0d2;
+  background: linear-gradient(180deg, #8c243f, #3d0d1c);
+  box-shadow: 0 12px 28px rgba(70, 6, 24, .46);
+}
+
+.villa-actions button small,
+.villa-actions button::after {
+  color: #d8bd82;
+}
+
+.vn-line,
+.team-drop,
+.test-extra section {
+  border-radius: 6px;
+  border-color: rgba(201, 167, 100, .2);
+  background: rgba(14, 12, 17, .76);
+}
+
+.villa-page .card,
+.modal-card .card {
+  border-radius: 6px;
+  border-color: rgba(201, 167, 100, .22);
+  background: linear-gradient(160deg, rgba(56, 51, 61, .45), rgba(13, 11, 16, .8));
+  box-shadow: inset 0 0 18px rgba(168, 25, 63, .05);
+}
+
+.villa-page .card:hover,
+.modal-card .card:hover {
+  border-color: rgba(201, 167, 100, .48);
+  box-shadow: inset 0 0 18px rgba(168, 25, 63, .1), 0 12px 28px rgba(0, 0, 0, .32);
+}
+
+.skin-preview,
+.portrait,
+.unit-art,
+.active-portrait-shell,
+.active-portrait-shell > .portrait.large {
+  border-radius: 6px;
+  border-color: rgba(201, 167, 100, .32);
+}
+
+.unit.active-unit {
+  outline-color: var(--gothic-crimson);
+  box-shadow: 0 0 18px rgba(168, 25, 63, .62), inset 0 0 12px rgba(168, 25, 63, .15);
+}
+
+.unit.active-unit .unit-art {
+  border-color: var(--gothic-gold);
+  box-shadow: 0 0 16px rgba(168, 25, 63, .62), inset 0 0 12px rgba(201, 167, 100, .12);
+}
+
+.play-card,
+.hand-reveal-card .play-card.back {
+  border-radius: 6px;
+  border-color: #7e6948;
+}
+
+.play-card.red-suit {
+  color: #721529;
+  background: linear-gradient(180deg, #f1e4dc, #d8c0b8);
+}
+
+.play-card.black-suit {
+  color: #17161a;
+  background: linear-gradient(180deg, #e9e2d7, #c9c0b6);
+}
+
+.play-card.selected {
+  box-shadow: 0 0 0 2px #d9bd7c, 0 0 28px rgba(168, 25, 63, .76), 0 14px 24px rgba(0, 0, 0, .4);
+}
+
+.map-node {
+  border-radius: 0;
+  border-color: transparent;
+  background: transparent;
+}
+
+.map-node .node-icon {
+  background: radial-gradient(circle, #7d1d39, #240b15);
+  border: 1px solid rgba(201, 167, 100, .34);
+}
+
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #f0cf8a;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 1px #17060b, 0 0 18px rgba(201, 167, 100, .42);
+}
+
+.nav-list button.active::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 4px;
+  height: 2px;
+  background: #d9bd7c;
+  box-shadow: 0 0 10px rgba(217, 189, 124, .72);
+  pointer-events: none;
+}
+
+.villa-actions button::after {
+  transition: transform .14s ease, color .14s ease;
+}
+
+.villa-actions button:not(:disabled):hover::after,
+.villa-actions button:not(:disabled):focus-visible::after {
+  color: #fff0c9;
+  transform: translate(3px, -50%);
+}
+
+button[data-busy-text][disabled] {
+  opacity: 1;
+  filter: none;
+  color: transparent;
+}
+
+button[data-busy-text][disabled]::after {
+  content: attr(data-busy-text);
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-left: 22px;
+  border-radius: inherit;
+  color: #f4eadc;
+  background: linear-gradient(180deg, #4c1426, #210b13);
+}
+
+button[data-busy-text][disabled]::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  left: 12px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -7px;
+  border: 2px solid rgba(244, 234, 220, .28);
+  border-top-color: #f0cf8a;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+* {
+  scrollbar-color: rgba(201, 167, 100, .56) rgba(10, 9, 12, .52);
+  scrollbar-width: thin;
+}
+
+.art-zoom-close {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  z-index: 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button[data-busy-text][disabled]::before { animation: none; }
+}
+
+.map-node.open .node-icon,
+.map-node.bounty-target .node-icon {
+  border-color: var(--gothic-gold);
+}
+
+.settings-toggle,
+.save-delete,
+.info-close,
+.credits-close {
+  border-radius: 50%;
+}
+
+.tag,
+.build-badge,
+.boot-label {
+  border-radius: 4px;
+  color: #dfc88f;
+  background: rgba(75, 16, 36, .44);
+  border-color: rgba(201, 167, 100, .28);
+}
+
+h2,
+h3,
+.game-confirm-card h2 {
+  color: #dfc88f;
+  letter-spacing: 0;
+}

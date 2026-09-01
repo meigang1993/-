@@ -28,6 +28,8 @@
     "check:resources": "node tools/check-resources.js",
     "check:asset-budget": "node tools/check-asset-budget.js",
     "check:scripts": "node tools/check-script-contracts.js",
+    "check:lines": "node tools/line-count.js",
+    "check:all": "node tools/check-all.js",
     "check:performance": "node tools/check-startup-performance.js",
     "check:duplicates": "jscpd --config .jscpd.json --no-colors --no-tips",
     "impact": "node tools/impact-check.js",

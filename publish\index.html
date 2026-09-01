@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="game-build" content="20260901-09">
+  <title>魅魔杀</title>
+  <link rel="stylesheet" href="base.css?v=20260901-09">
+  <link rel="stylesheet" href="villa.css?v=20260901-09">
+  <meta name="game-style-anchor" content="dungeon" data-game-style-anchor="dungeon">
+  <meta name="game-style-anchor" content="battle" data-game-style-anchor="battle">
+    <link rel="stylesheet" href="info-victory.css?v=20260901-09">
+    <link rel="stylesheet" href="animations.css?v=20260901-09">
+    <link rel="stylesheet" href="save-slots.css?v=20260901-09">
+    <link rel="stylesheet" href="gothic-theme.css?v=20260901-09">
+    <link rel="stylesheet" href="gothic-start.css?v=20260901-09">
+</head>
+<body>
+  <div id="app" class="game-shell">
+    <header class="topbar">
+      <div class="title-brand">
+        <div class="title-frame"><h1>魅魔杀</h1></div>
+        <p>魅魔卡牌战斗 · 据点经营</p>
+      </div>
+      <div id="resources" class="resource-row top-resource-row"></div>
+      <div id="save-status" class="save-status" aria-live="polite"></div>
+      <div class="top-actions">
+        <span class="build-badge" title="build 20260901-09">v26.0901.09</span>
+        <button id="settings-toggle" class="settings-toggle" title="设置" aria-label="设置">⚙</button>
+      </div>
+    </header>
+
+    <main id="main" class="main-grid">
+      <section class="panel content-panel">
+        <div id="view"></div>
+      </section>
+    </main>
+    <nav id="nav" class="nav-list bottom-nav"></nav>
+  </div>
+    <script defer src="bundles/startup.min.js?v=20260901-09"></script>
+  <script defer src="bundles/startup-store.min.js?v=20260901-09"></script>
+  <script defer src="bundles/startup-app.min.js?v=20260901-09"></script>
+</body>
+</html>

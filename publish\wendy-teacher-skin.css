@@ -1,0 +1,60 @@
+.skin-effect-wendy-teacher { position: relative; }
+.skin-effect-wendy-teacher::before { content: ""; position: absolute; inset: 7%; z-index: 2; border: 1px solid rgba(239,197,94,.62); border-radius: 50%; pointer-events: none; }
+.skin-effect-wendy-teacher::after { content: "✦"; position: absolute; right: 10%; top: 10%; z-index: 3; color: #f7d982; font-size: 15px; pointer-events: none; }
+.wendy-teacher-entering { animation: wendyTeacherEnter .98s cubic-bezier(.18,.85,.22,1) both !important; }
+.wendy-teacher-fx { position: fixed; z-index: 48; pointer-events: none; overflow: visible; transform: translateZ(0); }
+.wendy-teacher-line { position: fixed; z-index: 49; height: 5px; transform-origin: 0 50%; transform: rotate(var(--line-angle)); pointer-events: none; background: linear-gradient(90deg,#fff7c2,#dba935 55%,transparent); box-shadow: 0 0 9px #f3cf68; animation: wendyTeacherRibbon .86s ease-out both; }
+.wendy-teacher-line i { position: absolute; left: calc(var(--i,0) * 22%); top: -7px; width: 4px; height: 4px; border: 1px solid #fff1a4; transform: rotate(45deg); box-shadow: 0 0 6px #ffd867; }
+.wendy-teacher-line i:nth-child(2) { --i: 1; }.wendy-teacher-line i:nth-child(3) { --i: 2; }
+.wendy-teacher-line.favored { height: 8px; filter: saturate(1.25) brightness(1.15); }
+.wendy-teacher-entry b { position: absolute; left: -8%; right: -8%; top: 8%; height: 76%; border: 7px solid #6a4526; background: rgba(13,21,24,.86); box-shadow: 0 0 22px #d1a745, inset 0 0 18px #071013; animation: wendyTeacherBoardOpen .9s ease-out both; }
+.wendy-teacher-entry i { position: absolute; left: 17%; top: calc(26% + var(--i,0) * 18%); width: 66%; height: 2px; background: repeating-linear-gradient(90deg,#f4e7c1 0 11px,transparent 12px 19px); filter: drop-shadow(0 0 4px #f7d982); animation: wendyTeacherFormula .74s ease-out both; }
+.wendy-teacher-entry i:nth-of-type(2) { --i: 1; animation-delay: .1s; }.wendy-teacher-entry i:nth-of-type(3) { --i: 2; animation-delay: .2s; }
+.wendy-teacher-entry span { position: absolute; left: 42%; top: 27%; width: 16%; height: 46%; background: linear-gradient(90deg,#704623,#f8d56d,#704623); box-shadow: -22px 6px 0 -3px #54a5d1, 22px 12px 0 -3px #8f54b7; animation: wendyTeacherBookmarks .92s ease-out both; }
+.wendy-teacher-idle b,.wendy-teacher-wisdom b,.wendy-teacher-cover-source b { position: absolute; left: 32%; top: 34%; width: 36%; height: 30%; border: 3px solid #8b5c2f; background: linear-gradient(145deg,#2a180e,#6b4428); box-shadow: 0 0 13px #e4bd57; transform: perspective(80px) rotateX(12deg); animation: wendyTeacherBook .88s ease-out both; }
+.wendy-teacher-idle i,.wendy-teacher-wisdom i,.wendy-teacher-cover-source i { position: absolute; left: 47%; top: 45%; width: 7px; height: 7px; color: #f8df85; border: 1px solid currentColor; transform: rotate(calc(var(--i,0) * 55deg)) translateY(-42px); box-shadow: 0 0 8px #f3cc64; animation: wendyTeacherGlyphRise .88s ease-out both; }
+.wendy-teacher-idle i:nth-of-type(2),.wendy-teacher-wisdom i:nth-of-type(2),.wendy-teacher-cover-source i:nth-of-type(2) { --i: 1; }
+.wendy-teacher-idle i:nth-of-type(3) { --i: 2; }
+.wendy-teacher-idle span { position: absolute; inset: 18%; border-top: 2px dashed rgba(244,218,128,.72); border-radius: 50%; animation: wendyTeacherChalkOrbit .9s ease-out both; }
+.wendy-teacher-idle b { box-shadow: 0 0 7px rgba(228,189,87,.72); animation: wendyTeacherBookPulse .68s ease-out both; }
+.wendy-teacher-wisdom span { position: absolute; left: 43%; top: 25%; width: 14%; height: 22%; border: 2px solid #f6dfa0; background: linear-gradient(135deg,#fff9db,#a87834); box-shadow: 0 0 10px #ffe58d; animation: wendyTeacherCardForm .9s ease-out both; }
+.wendy-teacher-cover-source span { position: absolute; inset: 5%; background: radial-gradient(circle,rgba(252,220,122,.5),transparent 62%); animation: wendyTeacherChalkBurst .88s ease-out both; }
+.wendy-teacher-cover b { position: absolute; left: 16%; right: 16%; top: 29%; height: 52%; border: 3px solid #d9d0b8; border-radius: 8px; background: linear-gradient(145deg,#f0eee6,#99978d 52%,#5e5c57); box-shadow: 0 0 13px rgba(255,231,155,.72); transform: rotate(calc((var(--slab-index,0) - 1) * 3deg)); animation: wendyTeacherSlab .98s ease-out both; }
+.wendy-teacher-cover.reinforced b { left: 8%; right: 8%; top: 21%; height: 64%; border-width: 5px; box-shadow: 0 0 18px #ffe18a, inset 0 0 11px rgba(107,82,37,.6); }
+.wendy-teacher-cover i { position: absolute; left: 34%; top: 45%; width: 32%; height: 3px; background: repeating-linear-gradient(90deg,#6f5b32 0 7px,transparent 8px 12px); animation: wendyTeacherFormula .86s ease-out both; }
+.wendy-teacher-cover span { position: absolute; left: 50%; top: 51%; z-index: 2; transform: translate(-50%,-50%); color: #fff6ce; font-size: 21px; font-weight: 900; text-shadow: 0 0 4px #473311, 0 0 9px #e8c35f; animation: wendyTeacherValue .98s ease-out both; }
+.wendy-teacher-answer b { position: absolute; inset: -8%; border: 4px double #e7bd54; border-radius: 50%; box-shadow: 0 0 18px #d19a32, inset 0 0 22px rgba(91,48,18,.62); animation: wendyTeacherAnswerRing 1.12s ease-out both; }
+.wendy-teacher-answer i { position: absolute; left: 45%; top: 42%; width: 14%; height: 20%; border: 2px solid #ffe8a0; border-radius: 3px; background: linear-gradient(145deg,#fff5c8,#82552d); box-shadow: 0 0 9px #f4cf6d; transform: rotate(calc(var(--i,0) * 72deg)) translateY(-56px); animation: wendyTeacherAnswerCards 1.08s ease-out both; }
+.wendy-teacher-answer i:nth-of-type(2) { --i: 1; }.wendy-teacher-answer i:nth-of-type(3) { --i: 2; }.wendy-teacher-answer i:nth-of-type(4) { --i: 3; }.wendy-teacher-answer i:nth-of-type(5) { --i: 4; }
+.wendy-teacher-answer span { position: absolute; left: 44%; top: 38%; width: 16%; height: 24%; border: 2px solid #fff7c9; background: #d5a746; box-shadow: 0 0 13px #fff0a0; animation: wendyTeacherChosenCard 1.12s ease-out both; }
+.victory-screen.wendy-teacher-victory { background: radial-gradient(circle at 18% 28%,rgba(224,181,76,.34),transparent 35%),linear-gradient(120deg,#0a1111,#2a1b16 58%,#4a3021); }
+.wendy-teacher-victory-show { position: absolute; inset: 0 auto 0 0; z-index: 1; width: 43%; overflow: hidden; pointer-events: none; }
+.wendy-teacher-victory-art { position: absolute; inset: 0; overflow: hidden; mask-image: linear-gradient(90deg,#000 68%,transparent 100%); }
+.wendy-teacher-victory-art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; animation: wendyTeacherVictoryPose 4s ease-in-out infinite; }
+.wendy-teacher-board { position: absolute; left: 8%; top: 10%; z-index: 4; width: 42%; height: 24%; border: 5px solid #76502f; background: rgba(8,20,20,.88); box-shadow: 0 0 15px #d4a847; animation: wendyTeacherVictoryBoard 3.4s ease-in-out infinite; }
+.wendy-teacher-board b { display: block; margin-top: 9%; color: #f4ead0; font-size: 26px; text-align: center; text-shadow: 0 0 8px #f5d37a; }
+.wendy-teacher-board i { position: absolute; left: 14%; right: 14%; bottom: calc(12% + var(--i,0) * 12%); height: 1px; background: rgba(244,234,208,.65); }
+.wendy-teacher-board i:nth-of-type(2) { --i: 1; }.wendy-teacher-board i:nth-of-type(3) { --i: 2; }
+.wendy-teacher-summary { position: absolute; left: 8%; bottom: 7%; z-index: 4; display: grid; gap: 4px; padding: 9px 12px; border: 2px solid #8a6038; background: rgba(37,20,12,.86); box-shadow: 0 0 13px #c99a3e; color: #f4dfad; font-size: 12px; }
+.wendy-teacher-summary span { display: flex; justify-content: space-between; gap: 12px; min-width: 104px; }
+.victory-screen.wendy-teacher-victory .victory-stats { z-index: 5; width: 64%; margin-left: auto; background: rgba(9,12,12,.78); backdrop-filter: blur(8px); }
+@keyframes wendyTeacherEnter { from { opacity: 0; transform: translateY(18px) scale(.76); } 65% { opacity: 1; transform: translateY(-3px) scale(1.06); } to { transform: none; } }
+@keyframes wendyTeacherBoardOpen { from { opacity: 0; transform: scaleX(.08); } 48% { opacity: 1; } to { opacity: 0; transform: scaleX(1.08); } }
+@keyframes wendyTeacherFormula { from { opacity: 0; transform: scaleX(.05); } 40% { opacity: 1; } to { opacity: 0; transform: scaleX(1); } }
+@keyframes wendyTeacherBookmarks { from { opacity: 0; transform: translateY(28px) scale(.3); } 42% { opacity: 1; } to { opacity: 0; transform: translateY(-40px) scale(1.2); } }
+@keyframes wendyTeacherBook { from { opacity: 0; transform: perspective(80px) rotateX(70deg) scale(.4); } 42% { opacity: 1; } to { opacity: 0; transform: perspective(80px) rotateX(0) scale(1.12); } }
+@keyframes wendyTeacherBookPulse { from { opacity: 0; transform: perspective(80px) rotateX(42deg) scale(.72); } 42% { opacity: .92; } to { opacity: 0; transform: perspective(80px) rotateX(8deg) scale(1.04); } }
+@keyframes wendyTeacherGlyphRise { from { opacity: 0; scale: .2; } 40% { opacity: 1; } to { opacity: 0; transform: rotate(calc(var(--i,0) * 55deg + 220deg)) translateY(-58px); scale: 1.25; } }
+@keyframes wendyTeacherChalkOrbit { from { opacity: 0; rotate: -80deg; scale: .35; } 45% { opacity: 1; } to { opacity: 0; rotate: 160deg; scale: 1.1; } }
+@keyframes wendyTeacherCardForm { from { opacity: 0; transform: translateY(30px) rotate(-18deg) scale(.25); } 48% { opacity: 1; } to { opacity: 0; transform: translateY(-30px) rotate(12deg) scale(1.15); } }
+@keyframes wendyTeacherChalkBurst { from { opacity: 0; scale: .2; } 42% { opacity: .8; } to { opacity: 0; scale: 1.3; } }
+@keyframes wendyTeacherSlab { from { opacity: 0; transform: translateY(38px) scale(.3); } 42% { opacity: 1; } to { opacity: 0; transform: translateY(-6px) scale(1.08); } }
+@keyframes wendyTeacherValue { 0%,100% { opacity: 0; } 35%,72% { opacity: 1; } }
+@keyframes wendyTeacherRibbon { from { opacity: 0; transform: rotate(var(--line-angle)) scaleX(.04); } 36% { opacity: 1; } to { opacity: 0; transform: rotate(var(--line-angle)) scaleX(1); } }
+@keyframes wendyTeacherAnswerRing { from { opacity: 0; rotate: -90deg; scale: .2; } 45% { opacity: 1; } to { opacity: 0; rotate: 110deg; scale: 1.18; } }
+@keyframes wendyTeacherAnswerCards { from { opacity: 0; scale: .2; } 38% { opacity: 1; } to { opacity: 0; transform: rotate(calc(var(--i,0) * 72deg + 240deg)) translateY(-74px); scale: 1.15; } }
+@keyframes wendyTeacherChosenCard { from { opacity: 0; transform: translateY(35px) scale(.2); } 48% { opacity: 1; } to { opacity: 0; transform: translateY(-34px) scale(1.22); } }
+@keyframes wendyTeacherVictoryPose { 0%,100% { transform: scale(1.02) translateY(0); } 50% { transform: scale(1.045) translateY(-3px); } }
+@keyframes wendyTeacherVictoryBoard { 0%,100% { transform: rotate(-1deg); } 50% { transform: rotate(1deg) translateY(-2px); } }
+@media (max-height:520px) { .wendy-teacher-victory-show { width: 35%; } .victory-screen.wendy-teacher-victory .victory-stats { width: 70%; } .wendy-teacher-board b { font-size: 18px; } }
+@media (prefers-reduced-motion:reduce) { .wendy-teacher-victory-art img,.wendy-teacher-board { animation: none !important; } }
