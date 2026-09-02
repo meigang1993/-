@@ -85,17 +85,6 @@
 
 ## Development Toolchain
 
-- On August 28, 2026, after this game was transferred into the workspace, the
-  locked development dependencies were restored under
-  `/workspace/node_modules/` with `npm install --include=dev
-  --ignore-scripts`. The verified tool versions are Node.js `20.20.2`,
-  npm `11.10.0`, Terser `5.49.0` at
-  `/workspace/node_modules/terser/bin/terser`, Acorn `8.17.0` at
-  `/workspace/node_modules/acorn/bin/acorn`, Playwright Test `1.61.1`, ESLint
-  `10.6.0`, HTMLHint `1.9.2`, Stylelint `17.14.0`, Sharp `0.35.3`, and jscpd
-  `5.0.12`. These dependencies support bundle generation, static/script
-  contract checks, linting, asset processing, and browser QA; they are
-  development-only and are not part of `publish/`.
 - The QA container is Debian GNU/Linux 12 (`bookworm`).
 - Playwright uses the repository-local Chromium build; on August 17, 2026,
   `npm run check:toolchain` launched Chromium `149.0.7827.55`.

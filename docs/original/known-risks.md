@@ -41,21 +41,6 @@ container.
 
 ## Development Tooling And Save Gates
 
-Risk: new Ruins Sand City content can appear complete in the data tables while
-its portrait mapping, public skill wording, or battle hook is still owned by a
-different enemy/character path.
-
-Required guards:
-
-- verify portrait references by enemy ID, especially when uploaded source art
-  is supplied as a batch;
-- compare every new skill description with the actual battle hook and card
-  fields before publishing; do not describe a status judgement, damage
-  attribute, response rule, or active action that the runtime does not execute;
-- when the level cap changes, update progression clamping, experience costs,
-  interpolation, UI comparison labels, migrations, and canonical settings
-  together.
-
 Risk: development convenience tools can hide an incomplete verification step
 or block a legitimate save because the repository's aggregate QA gate has an
 unrelated baseline failure.

@@ -9,7 +9,7 @@ window.GameDataFutureEnemies.orc_dungeon.push({
   gender: "male",
   face: "邦",
   art: "./assets/new-portraits/orc-king-bondi.webp",
-    bgm: "./assets/new-bgm/orc-king-bondi.mp3",
+  bgm: "./assets/new-bgm/orc-king-bondi.ogg",
   hp: 220,
   attack: 10,
   magic: 5,

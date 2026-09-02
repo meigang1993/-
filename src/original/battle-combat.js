@@ -77,11 +77,13 @@ window.BattleCombat = (deps) => {
       && !window.WithererSkills?.canUseTongueActive?.(state, actor, target, useCard)) return false;
     if (card?.armyOrder
       && !window.BakarSkills?.canUseArmyOrder?.(state, actor, card, useCard)) return false;
-    state.battle.testRecovery = false; if (actor.hand.includes(card)) card._playedFromHand = true; window.WithererSkills?.convertBerserkCard?.(state, actor, card); if (!card._skill) window.AngelicaLukaSkills?.beforeCardPlayed?.(state, actor, card);
-    window.ArtinaMariaSkills?.beforeCardPlayed?.(state, actor, card, deps);
+    state.battle.testRecovery = false; if (actor.hand.includes(card)) card._playedFromHand = true; window.WithererSkills?.convertBerserkCard?.(state, actor, card); if (!card._skill) { window.AngelicaLukaSkills?.beforeCardPlayed?.(state, actor, card); window.ArtinaMariaSkills?.beforeCardPlayed?.(state, actor, card, deps); } window.RuinsEnemySkills?.beforeCardPlayed?.(state, actor, card);
     window.EdisSkills?.rememberPrePlayHand?.(actor, card);
     window.WithererSkills?.prepareSpeedCard?.(state, actor, card);
     if (card.demonPoker) { const done = specials.demonPoker(state, actor, target, card); repeatIfDone(state, actor, target, card, done); return done; }
+    if (card.succubusFork) { const done = specials.succubusFork(state, actor, target, card); repeatIfDone(state, actor, target, card, done); return done; }
+    if (card.assassinLatex) { const done = specials.assassinLatex(state, actor, target, card); repeatIfDone(state, actor, target, card, done); return done; }
+    if (card.arsenal) { const done = specials.arsenal(state, actor, target, card); repeatIfDone(state, actor, target, card, done); return done; }
     if (window.NonokaLokiSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, statOf, pushFloat, damage })) { card._countAsPlayed = true; return; }
     if (window.FloraCarlosSkills?.handleSpecialCard?.(state, actor, target, card, deps, { ...specialCtx, damage })) { card._countAsPlayed = true; return; }
     if (window.BertisGerlotSkills?.handleSpecialCard?.(state, actor, target, card, deps, { ...specialCtx, damage })) { card._countAsPlayed = true; return; }
@@ -89,7 +91,6 @@ window.BattleCombat = (deps) => {
     if (window.LokarSkills?.handleSpecialCard?.(state, actor, target, card, deps, specialCtx)) { card._countAsPlayed = true; return; }
     if (window.MillerSkills?.handleSpecialCard?.(state, actor, target, card, deps)) { card._countAsPlayed = true; return; }
     if (window.AngelicaLukaSkills?.handleSpecialCard?.(state, actor, target, card, deps, specialCtx)) { card._countAsPlayed = true; return; }
-    if (window.ArtinaMariaSkills?.handleSpecialCard?.(state, actor, target, card, deps)) { card._countAsPlayed = true; return; }
     if (window.ElranaAceNanaliSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat }, specialCtx)) { card._countAsPlayed = true; return true; }
     if (window.HoshinoSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat })) { card._countAsPlayed = true; return true; }
     if (card.ailengBet || card.ailengCharge || card.bestaEndSlash) { const ok = window.GuestCharacterSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat, intentMax: deps.intentMax }, specialCtx); if (ok) card._countAsPlayed = true; return !!ok; }

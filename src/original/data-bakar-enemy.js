@@ -7,7 +7,7 @@ window.GameDataBakarEnemy = {
   gender: "male",
   face: "王",
   art: "./assets/new-portraits/demon-king-bakaar.webp",
-  bgm: "./assets/new-bgm/demon-king-bakaar.mp3",
+  bgm: "./assets/new-bgm/demon-king-bakaar.ogg",
   hp: 330,
   attack: 11,
   magic: 7,

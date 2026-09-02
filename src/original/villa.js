@@ -47,7 +47,6 @@ window.VillaUI = (() => {
       chiyoRecruitUnlock: state => window.RecruitUnlockEvents?.chiyoUnlock?.(state) || "",
       gerdaNurseryUnlock: state => window.NewCharacterUnlockEvents?.gerdaUnlock?.(state) || "",
       hoshinoFamilyUnlock: state => window.NewCharacterUnlockEvents?.hoshinoUnlock?.(state) || "",
-      ruinsSandCityUnlock: state => window.NewCharacterUnlockEvents?.ruinsSandCityUnlock?.(state) || "",
     };
     if (!map[state.hallModal]) { state.hallModal = null; return ""; }
     const close = state.hallModal === "teamRoster" ? `data-open-modal="team" title="返回准备启程"` : `data-close-modal="1"`;
@@ -55,7 +54,7 @@ window.VillaUI = (() => {
       "firstDefeat", "secondDefeat", "millerUnlock", "gerlotUnlock", "cadicisUnlock",
       "lukaUnlock", "littleElranaUnlock", "aceUnlock", "underwaterTrainUnlock",
       "opheliaUnlock", "bestaNurseryUnlock", "orcDungeonUnlock", "soniaNurseryUnlock",
-      "chiyoRecruitUnlock", "gerdaNurseryUnlock", "hoshinoFamilyUnlock", "ruinsSandCityUnlock",
+      "chiyoRecruitUnlock", "gerdaNurseryUnlock", "hoshinoFamilyUnlock",
     ]);
     const modalClass = state.hallModal === "updates"
       ? " update-modal"

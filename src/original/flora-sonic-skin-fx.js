@@ -63,6 +63,7 @@ window.FloraSonicSkinFX = (() => {
     return window.BattleEffectAnimation?.scaleMs?.(980) || 980;
   }
   function assaultDefeat(state, actor) {
+    if (!active(actor)) return;
     anchored(state, actor, "flora-sonic-assault-return", 1100,
       "<b></b><i></i><i></i><i></i><span></span>");
     tone(760, .08, "triangle", 0, .03); tone(1080, .1, "sine", 100, .03);

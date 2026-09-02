@@ -23,9 +23,9 @@ const eventIds = [
 function assertRosterPartition() {
   const ids = GameData.characters.map(character => character.id);
   const routes = [...initialIds, ...nurseryIds, ...eventIds];
-  assert(ids.length === 28 && new Set(ids).size === 28,
-    "the playable roster must contain 28 unique characters");
-  assert(routes.length === 28 && new Set(routes).size === 28,
+  assert(ids.length === 26 && new Set(ids).size === 26,
+    "the playable roster must contain 26 unique characters");
+  assert(routes.length === 26 && new Set(routes).size === 26,
     "every playable character must have exactly one unlock route");
   assert([...routes].sort().join(",") === [...ids].sort().join(","),
     "the unlock-route matrix must cover the complete playable roster");

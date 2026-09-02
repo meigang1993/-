@@ -53,8 +53,6 @@ window.BattleCombatAttackValues = api => {
       state, actor, target, amount, card) ?? amount;
     amount = window.AngelicaLukaSkills?.modifyDamage?.(
       state, actor, amount, card) ?? amount;
-    amount = window.ArtinaMariaSkills?.modifySlashDamage?.(
-      state, actor, target, amount, card) ?? amount;
     amount = window.SakuraRisaSkills?.modifyRevengeDamage?.(
       state, actor, amount, card) ?? amount;
     return card.mannyDouble ? amount * 2 : amount;

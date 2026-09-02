@@ -90,6 +90,9 @@ const hooks = [
   ["battle-damage-triggers.js", "CharacterSkinFX?.soulScythe"],
   ["battle-damage-utils.js", "CharacterSkinFX?.attackTrail"],
   ["battle-end-phase.js", "CharacterSkinFX?.endTurn"],
+  ["character-skin-fx.js", '!!unit?.skinBloodPactActive && active(unit, "lokar-motherbound")'],
+  ["character-skin-fx.js", '!!unit?.skinExtractActive && active(unit, "besta-mecha")'],
+  ["app-battle-skin-actions.js", "forEach(fx => fx?.cancel?.())"],
   ["battle.js", "return combat.triggerBattleCourage"],
 ];
 hooks.forEach(([file, token]) => {

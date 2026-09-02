@@ -25,8 +25,6 @@ window.CharacterSkillAccess = (() => {
     { flags: ["mannyBarrett"], name: "巴特雷", target: "self" },
     { flags: ["bertisTakeFood"], name: "取粮", target: "self" },
     { flags: ["ailengCharge"], name: "充能精华", target: "friendlyFemale" },
-    { flags: ["artinaSniper"], name: "狙击目标", target: "enemy" },
-    { flags: ["mariaHonorBlessing"], name: "荣誉祝福", target: "self", cost: "cards" },
   ];
   const matchesOf = card => definitions.filter(def =>
     def.flags.some(flag => card?.[flag]));

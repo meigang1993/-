@@ -25,15 +25,6 @@ window.GameUIInfo = (U) => {
     const mode = u.jokerMode === "red" ? "大鬼牌模式：惩罚红色牌" : "小鬼牌模式：惩罚黑色牌";
     return `<span class="joker-suit-badge ${red ? "red" : "black"}" title="鬼牌狂欢判定：${u.jokerSuit}；${mode}">${u.jokerSuit}</span>`;
   }
-  function artinaSuitMark(u) {
-    if (u?.ref !== "artina") return "";
-    const suits = ["♥", "♦", "♠", "♣"].filter(suit => u.artinaSuits?.[suit]);
-    return suits.length ? `<span class="green-hat-badge" title="蓄力子弹：${suits.join("、")}">蓄力 ${suits.join("")}</span>` : "";
-  }
-  function mariaMark(u) {
-    if (u?.ref !== "maria" || !u.mariaMarks) return "";
-    return `<span class="green-hat-badge" title="神数咒语：${u.mariaMarks}枚">神数×${u.mariaMarks}</span>`;
-  }
   function findInfoUnit(state) {
     const id = state.infoUnit;
     if (!id) return null;
@@ -79,7 +70,7 @@ window.GameUIInfo = (U) => {
     const focus = ["attack", "magic", "speed"].sort((a, b) =>
       profile[b] - profile[a])[0];
     const expText = required ? `${exp} / ${required}` : "已满级";
-    return `<div class="character-growth"><div class="growth-level"><b>Lv.${u.level}</b><span>经验 ${expText}</span></div><div class="exp-track"><i style="width:${percent}%"></i></div><p class="muted">成长倾向：${names[focus]}；四项核心属性每级自动提升。</p><div class="growth-table"><div class="growth-head"><span>属性</span><b>0级</b><i></i><strong>当前</strong><i></i><em>${window.CharacterProgression.maxLevel}级</em></div>${rows}</div></div>`;
+    return `<div class="character-growth"><div class="growth-level"><b>Lv.${u.level}</b><span>经验 ${expText}</span></div><div class="exp-track"><i style="width:${percent}%"></i></div><p class="muted">成长倾向：${names[focus]}；四项核心属性每级自动提升。</p><div class="growth-table"><div class="growth-head"><span>属性</span><b>0级</b><i></i><strong>当前</strong><i></i><em>15级</em></div>${rows}</div></div>`;
   }
   function infoTitle(u) {
     const role = U.combatRoleBadges(u);
@@ -103,19 +94,20 @@ window.GameUIInfo = (U) => {
       ? "data-battle-equip-skin" : "data-equip-skin";
     const items = skins.map(s => {
       const formalOwned = window.SkinSystem.owned(state, s);
-      const trialOnly = trial && !formalOwned && !s.specialIllustration;
+      const trialOnly = trial && !formalOwned;
       const available = formalOwned || trialOnly, equipped = current === s.id;
       const disabled = saving || !available || equipped;
       const action = saving && equipped ? "保存中…" : equipped ? (trialOnly ? "试用中" : "已装备") : trialOnly ? "试用" : formalOwned ? "装备" : s.unlockLevel ? `Lv.${s.unlockLevel}解锁` : "未拥有";
-      const preview = s.unlockLevel && !formalOwned
+      const specialLocked = !trial && s.unlockLevel && !formalOwned;
+      const preview = specialLocked && !s.specialIllustration
         ? `<span class="skin-level-lock">Lv.${s.unlockLevel}</span>`
-        : `<img src="${U.esc(s.art)}" alt="${U.esc(s.name)}" loading="lazy" decoding="async">`;
+        : `<img src="${U.esc(s.art)}" alt="${U.esc(s.name)}" loading="lazy" decoding="async"${specialLocked ? ' class="locked"' : ''}>`;
       return `<button class="battle-skin-option ${equipped ? "selected" : ""}" ${equipAttr}="${U.esc(s.id)}" ${disabled ? "disabled" : ""}>${preview}<b>${U.esc(s.name)}${s.specialEffect ? " · 专属特效" : ""}</b><span>${action}</span></button>`;
     }).join("");
     const warning = status.state === "error" && status.pending
       ? `<div class="save-warning" role="alert"><span>外观选择尚未保存，刷新后可能恢复为上次选择。</span><button data-retry-settings="1">重试保存</button></div>`
       : "";
-    const hint = trial ? "测试战斗中可试用未拥有的普通皮肤；等级特殊立绘需达到等级解锁。"
+    const hint = trial ? "测试战斗中可试用未拥有的皮肤，包含等级特殊立绘。"
       : state?.view === "battle" ? "战斗中可直接切换已拥有皮肤，只改变外观。"
       : "选择已拥有皮肤作为角色外观。";
     return `${infoTitle(u)}<p class="muted">${hint}</p>${warning}<div class="battle-skin-list">${items}</div>`;
@@ -126,10 +118,10 @@ window.GameUIInfo = (U) => {
     return `${infoTitle(u)}<h3>${U.esc(item.name)}</h3><div class="special-art-summary ${unlocked ? "unlocked" : "locked"}"><span class="tag">${status}</span></div>`;
   }
   function specialArtPane(u, item) {
-    if (!window.SkinSystem.owned(window.state, item)) {
-      return `<div class="special-art-lock"><b>Lv.${item.unlockLevel}</b><span>达到等级后自动解锁</span></div>`;
-    }
-    return `<div class="portrait large special-art-portrait" data-art-src="${U.esc(item.art)}" data-art-name="${U.esc(item.name)}"><img src="${U.esc(item.art)}" alt="${U.esc(item.name)}" loading="lazy" decoding="async" draggable="false"></div>`;
+    const unlocked = window.SkinSystem.owned(window.state, item);
+    const lockedClass = unlocked ? "" : " locked";
+    const overlay = unlocked ? "" : `<div class="special-art-lock-overlay"><b>Lv.${item.unlockLevel}</b><span>达到等级后自动解锁</span></div>`;
+    return `<div class="portrait large special-art-portrait${lockedClass}" data-art-src="${U.esc(item.art)}" data-art-name="${U.esc(item.name)}"><img src="${U.esc(item.art)}" alt="${U.esc(item.name)}" loading="lazy" decoding="async" draggable="false">${overlay}</div>`;
   }
   function relicPanel(u) {
     const state = window.state, test = state?.hallModal === "testBattle", map = test ? state.testEquipment || {} : state.equipment || {};
@@ -150,5 +142,5 @@ window.GameUIInfo = (U) => {
     const stats = u?.id && window.RelicSystem ? RelicSystem.statsOf(state, u.id) : null;
     return infoPanel(u, state.infoTab, stats);
   }
-  return { greenHatMark, foodMark, rageMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, mariaMark, findInfoUnit, infoPanel, infoPanelForState };
+  return { greenHatMark, foodMark, rageMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, findInfoUnit, infoPanel, infoPanelForState };
 };

@@ -9,7 +9,6 @@ window.BattleEndPhase = deps => {
     const steps = [
       () => window.NonokaLokiSkills?.endTurn?.(state, unit, { draw }),
       () => window.GuestCharacterSkills?.endTurn?.(state, unit, { draw }),
-      () => window.ArtinaMariaSkills?.endTurn?.(state, unit),
       () => window.HoshinoSkills?.endTurn?.(state, unit),
       () => window.GerdaSkills?.endTurn?.(state, unit),
       () => window.BertisGerlotSkills?.endTurn?.(state, unit),

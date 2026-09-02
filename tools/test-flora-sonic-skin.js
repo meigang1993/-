@@ -51,6 +51,7 @@ delete window.state;
 [
   ["flora-speed-assault.js", "FloraSonicSkinFX?.assault"],
   ["flora-speed-assault.js", "FloraSonicSkinFX?.assaultDefeat"],
+  ["flora-sonic-skin-fx.js", "function assaultDefeat(state, actor) {\n    if (!active(actor)) return;"],
   ["flora-skills.js", "FloraSonicSkinFX?.wing"],
   ["flora-skills.js", "FloraSonicSkinFX?.flyingBlade"],
   ["battle-victory.js", "flora-sonic-victory-show"],

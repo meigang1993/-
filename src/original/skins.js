@@ -11,7 +11,7 @@ window.SkinSystem = (() => {
     const id = unit?.ref || unit?.id;
     if (!state || !id) return null;
     const testSkin = state.battle?.test && byId(state.testSkins?.[id]);
-    const trialSkin = testSkin?.specialIllustration ? null : testSkin;
+    const trialSkin = testSkin;
     const skin = trialSkin?.charId === id ? trialSkin : byId(state.equippedSkins?.[id]);
     return skin?.charId === id
       && (state.battle?.test || skin.initial || owned(state, skin)) ? skin : null;
@@ -74,7 +74,7 @@ window.SkinSystem = (() => {
     ensure(state);
     const id = character.id || character.ref;
     const testSkin = test && byId(state.testSkins?.[id]);
-    const trialSkin = testSkin?.specialIllustration ? null : testSkin;
+    const trialSkin = testSkin;
     const skin = trialSkin?.charId === id ? trialSkin : byId(state.equippedSkins?.[id]);
     return skin && (test || skin.initial || owned(state, skin)) ? {
       ...character,
@@ -138,7 +138,7 @@ window.SkinSystem = (() => {
   }
   function testEquip(state, charId, skinId) {
     const skin = byId(skinId);
-    if (!skin || skin.charId !== charId || skin.specialIllustration) return false;
+    if (!skin || skin.charId !== charId) return false;
     state.testSkins ||= {};
     state.testSkins[charId] = skinId;
     state.skinFlash = skinId;

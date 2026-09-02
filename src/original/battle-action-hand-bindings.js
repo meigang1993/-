@@ -1,45 +1,8 @@
 window.BattleActionHandBindings = (() => {
-  const kaiichiShareVisible = battle =>
-    !!battle?.kaiichiShare && (window.HoshinoSkills?.shareVisible?.(battle) ?? true);
-  const dimensionTransferVisible = battle =>
-    !!battle?.dimensionTransfer
-    && (window.MannySkills?.dimensionTransferVisible?.(battle) ?? true);
-  const responsibilityVisible = battle =>
-    !!battle?.cadicisResponsibility
-    && (window.WendyCadicisSkills?.responsibilityVisible?.(battle) ?? true);
-  const skillBindings = window.BattleActionSkillBindings({
-    needsHandChoice, confirmMannyArmory, confirmBattleCard, render,
-  });
-
-  function expectedHandOwner(battle) {
-    const borrowChoice = ["borrowSlashChoice", "borrowGainChoice"]
-      .includes(battle?.handReveal?.mode);
-    return (borrowChoice ? battle.handReveal.targetUid : null)
-      || (dimensionTransferVisible(battle) ? battle.dimensionTransfer.mannyUid : null)
-      || (kaiichiShareVisible(battle) ? battle.kaiichiShare.unitUid : null)
-      || (responsibilityVisible(battle) ? battle.cadicisResponsibility.cadicisUid : null)
-      || battle?.newMoonShare?.unitUid
-      || battle?.millerShare?.unitUid
-      || BattleSystem.active(battle)?.uid
-      || "";
-  }
-
-  function cardMatchesHandOwner(card, battle) {
-    const renderedUid = card.closest(".active-hand")?.dataset.handOwner || "";
-    return renderedUid && renderedUid === String(expectedHandOwner(battle));
-  }
-
-  function queuePromptCard(label, key, cardNode, task) {
-    const actionState = state;
-    const battle = actionState.battle;
-    const prompt = battle?.[key];
-    if (!prompt) return false;
-    return BattleActionGuard.runWhenIdle(label, task, {
-      control: cardNode,
-      isCurrent: () => window.state === actionState
-        && actionState.battle === battle && battle[key] === prompt,
-    });
-  }
+  const {
+    kaiichiShareVisible, dimensionTransferVisible, responsibilityVisible,
+    cardMatchesHandOwner, queuePromptCard,
+  } = window.BattleActionHandVisibility;
 
   function bindCards() {
     document.querySelectorAll("[data-card-index]").forEach(card => {
@@ -140,7 +103,8 @@ window.BattleActionHandBindings = (() => {
     const skillCard = state.battle.selectedSkillCard;
     const waitsForTarget = skillCard?.elranaBag || skillCard?.armyOrder || skillCard?.elranaHeal
       || skillCard?.idolKiss
-      || skillCard?.crazyShooting || skillCard?.demonPoker;
+      || skillCard?.crazyShooting || skillCard?.demonPoker
+      || skillCard?.succubusFork || skillCard?.assassinLatex;
     if (needsHandChoice(skillCard) && !waitsForTarget && state.battle.selectedCardIndex != null) {
       return playSelectedCard();
     }
@@ -157,8 +121,27 @@ window.BattleActionHandBindings = (() => {
     const skillCard = battle?.selectedSkillCard;
     if (!skillCard?.elranaBag && !skillCard?.armyOrder && !skillCard?.elranaHeal
       && !skillCard?.crazyShooting
-      && !skillCard?.demonPoker) quickPlayTargetless(index);
+      && !skillCard?.demonPoker
+      && !skillCard?.succubusFork && !skillCard?.assassinLatex) quickPlayTargetless(index);
   }
 
-  return { bindCards, bindSkills: skillBindings.bindSkills, kaiichiShareVisible };
+  function bindSkills() {
+    document.querySelectorAll("[data-skill-index]").forEach(skill => {
+      skill.onclick = event => {
+        event.stopPropagation();
+        if (state.battle?.locked || BattleEffects.animating) return;
+        if (!BattleSystem.selectSkill(state, Number(skill.dataset.skillIndex))) {
+          BattleSystem.cancelSelection(state);
+          return render();
+        }
+        if (state.battle?.selectedSkillCard?.mannyArmory) return confirmMannyArmory();
+        if (state.battle?.selectedSkillCard?.targetless && !needsHandChoice(state.battle.selectedSkillCard)) {
+          return confirmBattleCard();
+        }
+        render();
+      };
+    });
+  }
+
+  return { bindCards, bindSkills, kaiichiShareVisible };
 })();

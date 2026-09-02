@@ -16,7 +16,7 @@ window.GameSkinData = (() => {
     { id: "manny_default", charId: "manny", name: "默认", quality: "default", price: 0, art: "./assets/images/manny-portrait.webp", desc: "曼妮的初始外观。", initial: true },
     { id: "manny_gun_succubus", charId: "manny", name: "枪之魅魔", quality: "epic", price: 12, art: "./assets/generated/manny-gun-succubus-weapon-skeleton.3696a917.webp", dynamicEffect: "manny-gun", specialEffect: true, desc: "魅魔右半身化作庞大的枪械骨架，在硝烟与弹链间压向战场。" },
     { id: "manny_level_10_special", charId: "manny", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/manny-level-10-special.a8c2eeed.webp", desc: "曼妮达到10级后自动解锁，可作为正式战斗立绘装备。" },
-    { id: "bertis_default", charId: "bertis", name: "默认", quality: "default", price: 0, art: "./assets/images/bertis-portrait.png", desc: "贝尔蒂丝的初始外观。", initial: true },
+    { id: "bertis_default", charId: "bertis", name: "默认", quality: "default", price: 0, art: "./assets/images/bertis-portrait.webp", desc: "贝尔蒂丝的初始外观。", initial: true },
     { id: "bertis_arrogant_queen", charId: "bertis", name: "傲慢女王", quality: "epic", price: 10, art: "./assets/generated/bertis-arrogant-queen-mist-gothic.cd523966.webp", damagedArt: "./assets/generated/bertis-arrogant-queen-critical-damage.e0a10370.webp", dynamicEffect: "bertis-queen", specialEffect: true, desc: "银白双马尾与黑紫蔷薇长裙簇拥着荆棘皮鞭，她露出小虎牙般的得意笑容，踏着铃铛轻响巡视战场。" },
     { id: "bertis_level_10_special", charId: "bertis", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/bertis-level-10-special.022dd113.webp", desc: "贝尔蒂丝达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "flora_default", charId: "flora", name: "默认", quality: "default", price: 0, art: "./assets/images/flora-portrait.71c5d516.webp", desc: "芙萝娅的初始外观。", initial: true },
@@ -28,6 +28,9 @@ window.GameSkinData = (() => {
     { id: "elrana_default", charId: "elrana", name: "默认", quality: "default", price: 0, art: "./assets/images/elrana-new-portrait.webp", desc: "艾尔拉娜的初始外观。", initial: true },
     { id: "elrana_fallen_physician", charId: "elrana", name: "堕落医师", quality: "epic", price: 10, art: "./assets/generated/elrana-fallen-physician.5fb5e43a.webp", dynamicEffect: "elrana-fallen-physician", specialEffect: true, desc: "培养罐、绿色炼金液与红色再生丝线围绕着堕落医师，她以冷静的医学术式重造生命。" },
     { id: "elrana_level_10_special", charId: "elrana", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/elrana-level-10-special.3154d24b.webp", desc: "艾尔拉娜达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "angelica_default", charId: "angelica", name: "默认", quality: "default", price: 0, art: "./assets/images/angelica-portrait.webp", desc: "安洁莉卡的初始外观。", initial: true },
+    { id: "angelica_berserker", charId: "angelica", name: "狂暴战士", quality: "epic", price: 10, art: "./assets/generated/angelica-berserker.f7d20f40.webp", dynamicEffect: "angelica-berserker", specialEffect: true, desc: "暗红重甲覆左半身，豁口巨剑与明灭战纹宣告她把全部重量压在进攻上。" },
+    { id: "angelica_level_10_special", charId: "angelica", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/angelica-level-10-special.1d7b9a23.webp", desc: "安洁莉卡达到10级后自动解锁，可作为正式战斗立绘装备。" },
   ];
   return { quality, skins };
 })();

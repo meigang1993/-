@@ -30,7 +30,7 @@ window.UICommonSkillView = ({ esc, classToken }, model) => {
     const state = stateInfo || skillState(
       battle ? window.BattleSystem?.active?.(battle) : null, skill, battle);
     const numericIndex = Number(index);
-    const tip = [combatRoleText(unit), skillTip(skill), `状态：${state.reason}`]
+    const tip = [skillTip(skill), `状态：${state.reason}`]
       .filter(Boolean).join("\n");
     const data = clickable && skill?.type === "active" && !disabled
       && Number.isInteger(numericIndex)

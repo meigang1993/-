@@ -16,7 +16,6 @@ load("./src/original/economy-config.js");
 load("./src/original/data-future-dungeons.js");
 window.GameDataMachineFactoryEnemies = [{ id: "machine" }];
 window.GameDataUnderwaterTrainEnemies = [{ id: "train" }];
-window.GameDataRuinsSandCityEnemies = [{ id: "ruins" }];
 window.GameDataFutureEnemies = {};
 load("./src/original/data-world.js");
 

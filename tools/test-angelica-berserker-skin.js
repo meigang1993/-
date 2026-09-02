@@ -6,6 +6,16 @@ require("../src/original/data-skins.js");
 require("../src/original/skins.js");
 require("../src/original/skin-fx-runtime.js");
 require("../src/original/angelica-berserker-skin-fx.js");
+require("../src/original/angelica-luka-skills.js");
+
+const firstCardActor = { ref: "angelica" };
+window.BattleLines = { skill() {} };
+AngelicaLukaSkills.beforeCardPlayed({}, firstCardActor, { type: "tactic", drawCards: 2 });
+assert(!firstCardActor.angelicaFirstCardDone,
+  "non-damaging cards must not consume Angelica's first-damage-card bonus");
+AngelicaLukaSkills.beforeCardPlayed({}, firstCardActor, { type: "slash", power: 1 });
+assert(firstCardActor.angelicaFirstCardDone,
+  "the first damaging card must consume Angelica's first-damage-card bonus");
 
 const base = SkinSystem.byId("angelica_default");
 const berserker = SkinSystem.byId("angelica_berserker");

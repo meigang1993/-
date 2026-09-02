@@ -8,7 +8,7 @@ async function equipBattleSkin(button) {
   const actionUnit = actionBattle.allies?.find(item => item.ref === skin.charId);
   if (!actionUnit) return;
   const formallyOwned = SkinSystem.owned(actionState, skin);
-  const trial = !!actionBattle.test && !formallyOwned && !skin.specialIllustration;
+  const trial = !!actionBattle.test && !formallyOwned;
   if (!trial && !formallyOwned) return;
   const requestId = ++battleSkinChangeId;
   const isCurrent = () => requestId === battleSkinChangeId
@@ -24,6 +24,10 @@ async function equipBattleSkin(button) {
     if (!changed) return;
     if (!trial && actionBattle.test) delete actionState.testSkins?.[skin.charId];
     if (!trial) SkinSystem.markAppearance(actionState);
+    [window.NonokaIdolSkinFX, window.MannyGunSkinFX, window.BertisQueenSkinFX,
+      window.FloraSonicSkinFX, window.WendyTeacherSkinFX,
+      window.ElranaFallenPhysicianSkinFX, window.AngelicaBerserkerSkinFX,
+      window.CharacterSkinFX].forEach(fx => fx?.cancel?.());
     actionUnit.art = skin.art; actionUnit.avatar = skin.art; actionUnit.skinName = skin.name;
     actionUnit.skinDynamicEffect = skin.dynamicEffect || null;
     actionUnit.skinDamagedArt = skin.damagedArt || null;

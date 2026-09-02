@@ -10,14 +10,14 @@ module.exports = ({ assert, unit }) => {
   const skills = templates.flatMap(template => template.skills || []);
   const relics = Object.keys({ ...GameDataRelics, ...GameDataFutureRelics });
 
-  assert(GameData.characters.length === 28,
-    "skill audit must cover all 28 playable characters");
-  assert(enemies.length === 36, "skill audit must cover all 36 enemies");
-  assert(GameData.characters.flatMap(template => template.skills || []).length === 75,
-    "skill audit must cover all 75 playable-character skills");
-  assert(enemies.flatMap(template => template.skills || []).length === 72,
-    "skill audit must cover all 72 enemy skills");
-  assert(relics.length === 35, "relic audit must cover all 35 formal relics");
+  assert(GameData.characters.length === 26,
+    "skill audit must cover all 26 playable characters");
+  assert(enemies.length === 27, "skill audit must cover all 27 enemies");
+  assert(GameData.characters.flatMap(template => template.skills || []).length === 71,
+    "skill audit must cover all 71 playable-character skills");
+  assert(enemies.flatMap(template => template.skills || []).length === 54,
+    "skill audit must cover all 54 enemy skills");
+  assert(relics.length === 30, "relic audit must cover all 30 formal relics");
   const combatRoleNames = new Set([
     "输出", "控制", "辅助/续航", "防御/嘲讽", "成长/资源",
   ]);
@@ -76,8 +76,8 @@ module.exports = ({ assert, unit }) => {
   ];
   const namedActiveSkills = new Map();
   activeSkills.forEach(skill => namedActiveSkills.set(skill.name, skill));
-  assert(namedActiveSkills.size === 48,
-    "skill artwork audit must cover all 48 named active skills");
+  assert(namedActiveSkills.size === 36,
+    "skill artwork audit must cover all 36 named active skills");
   const artOwners = new Map();
   const hashOwners = new Map();
   namedActiveSkills.forEach((skill, name) => {

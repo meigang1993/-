@@ -21,7 +21,7 @@ window.GameDataCharactersCore = [
   },
   {
     id: "manny", name: "曼妮", gender: "female", face: "曼", art: "./assets/images/manny-portrait.webp", avatar: "./assets/images/manny-portrait.webp", role: "异次元公主", locked: true, unlockCost: 10,
-    stats: { attack: 3, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 3 },
+    stats: { attack: 3, magic: 3, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 3 },
     evaluation: "伤害转移与重火器支援角色。次元转移可用黑色手牌改写友方受到的杀牌伤害目标，次元军火库则按战况选择单体、群体或属性火力。",
     skills: [
       { name: "次元转移", type: "trigger", icon: "⭐", text: "当一名友方角色即将受到单体【杀】的伤害时，你可以选择并弃置1张黑色手牌，再指定一名敌方角色，将此次伤害转移给该角色。转移后的伤害不能再次触发此技能。" },
@@ -80,7 +80,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "cadicis", name: "卡迪西斯", gender: "male", face: "卡", art: "./assets/images/cadicis-portrait.png", avatar: "./assets/images/cadicis-portrait.png", role: "教师之子", locked: true,
+    id: "cadicis", name: "卡迪西斯", gender: "male", face: "卡", art: "./assets/images/cadicis-portrait.webp", avatar: "./assets/images/cadicis-portrait.webp", role: "教师之子", locked: true,
     stats: { attack: 3, magic: 3, speed: 3, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "牌名强化与群体火力支援角色。战场指挥官强化友方同名杀牌与战术牌，指挥官责任在队友受击前调配手牌，重火力支援使实体杀牌附带继承其伤害属性的全体直伤。",
     skills: [

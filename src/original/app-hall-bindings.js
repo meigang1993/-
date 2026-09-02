@@ -60,8 +60,7 @@ window.AppHallBindings = (() => {
     bind("[data-sonia-nursery-unlock-complete]", window.completeSoniaNurseryUnlockEvent);
     bind("[data-chiyo-recruit-unlock-complete]", window.completeChiyoRecruitUnlockEvent);
     bind("[data-gerda-nursery-unlock-complete]", window.completeGerdaNurseryUnlockEvent);
-  bind("[data-hoshino-family-unlock-complete]", window.completeHoshinoFamilyUnlockEvent);
-  bind("[data-ruins-sand-city-unlock-complete]", window.completeRuinsSandCityUnlockEvent);
+    bind("[data-hoshino-family-unlock-complete]", window.completeHoshinoFamilyUnlockEvent);
   }
   function bindShopAndBounty({ getState, render, persist, lockControl, preserveInteractionScroll, updateModalState, askGameConfirm, log }) {
     document.querySelectorAll("[data-shop-refresh]").forEach(b => b.onclick = () => preserveInteractionScroll(() => AppActionGuard.run("商店刷新失败", async ({ state, isCurrent }) => { const ok = await ShopSystem.refresh(state); if (!isCurrent()) return false; log(ok ? "商店库存已刷新。" : "商店刷新失败，请稍后重试。"); render(); if (ok) await persist({ flush: true }); return ok; }, { control: b, busyText: "刷新中…", captureRun: false, key: "shop-operation" })));

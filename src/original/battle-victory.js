@@ -19,7 +19,7 @@ window.BattleVictory = (() => {
     const b = state.battle;
     if (!b) return "";
     const ranking = window.BattleStats?.ranking?.(b) || [];
-    const special = unit => window.MannyGunSkinFX?.active?.(unit) || window.NonokaIdolSkinFX?.active?.(unit) || window.BertisQueenSkinFX?.active?.(unit) || window.FloraSonicSkinFX?.active?.(unit) || window.WendyTeacherSkinFX?.active?.(unit) || window.ElranaFallenPhysicianSkinFX?.active?.(unit);
+    const special = unit => window.MannyGunSkinFX?.active?.(unit) || window.NonokaIdolSkinFX?.active?.(unit) || window.BertisQueenSkinFX?.active?.(unit) || window.FloraSonicSkinFX?.active?.(unit) || window.WendyTeacherSkinFX?.active?.(unit) || window.ElranaFallenPhysicianSkinFX?.active?.(unit) || window.AngelicaBerserkerSkinFX?.active?.(unit);
     const featured = ranking.map(entry => entry.unit).find(special) || b.allies.find(special);
     const gunner = window.MannyGunSkinFX?.active?.(featured) ? featured : null;
     const idol = window.NonokaIdolSkinFX?.active?.(featured) ? featured : null;
@@ -27,6 +27,7 @@ window.BattleVictory = (() => {
     const sonic = window.FloraSonicSkinFX?.active?.(featured) ? featured : null;
     const teacher = window.WendyTeacherSkinFX?.active?.(featured) ? featured : null;
     const physician = window.ElranaFallenPhysicianSkinFX?.active?.(featured) ? featured : null;
+    const berserker = window.AngelicaBerserkerSkinFX?.active?.(featured) ? featured : null;
     const sonicVictory = sonic ? { ...sonic, ref: "", id: "" } : null;
     const idolShow = idol ? `<div class="idol-victory-show">${window.UICommon.artBox(idol, "idol-victory-art", idol.art || idol.avatar, idol.face || idol.name?.[0])}<div class="idol-victory-fireworks"><i></i><i></i><i></i></div><span class="idol-victory-kiss">♥</span></div>` : "";
     const gunShow = gunner ? `<div class="manny-gun-victory-show">${window.UICommon.artBox(gunner, "manny-gun-victory-art", gunner.art || gunner.avatar, gunner.face || gunner.name?.[0])}<div class="manny-victory-arsenal">${Array.from({ length: 7 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</div><div class="manny-victory-shells"></div></div>` : "";
@@ -35,6 +36,7 @@ window.BattleVictory = (() => {
     const teacherStats = teacher ? ranking.find(entry => entry.unit === teacher)?.stats : null;
     const teacherShow = teacher ? `<div class="wendy-teacher-victory-show">${window.UICommon.artBox(teacher, "wendy-teacher-victory-art", teacher.art || teacher.avatar, teacher.face || teacher.name?.[0])}<div class="wendy-teacher-board"><b>下课</b><i></i><i></i><i></i></div><div class="wendy-teacher-summary"><span>伤害 <b>${teacherStats?.damage || 0}</b></span><span>护甲 <b>${teacher.skinTeacherArmor || 0}</b></span><span>摸牌 <b>${teacher.skinTeacherDrawn || 0}</b></span></div></div>` : "";
     const physicianShow = physician ? `<div class="elrana-fallen-physician-victory-show">${window.UICommon.artBox(physician, "elrana-fallen-physician-victory-art", physician.art || physician.avatar, physician.face || physician.name?.[0])}<div class="elrana-fallen-physician-organs"><i></i><i></i><i></i></div><span class="elrana-fallen-physician-heart"></span><b class="elrana-fallen-physician-motto">再生的尽头，是永生。</b></div>` : "";
+    const berserkerShow = berserker ? `<div class="angelica-berserker-victory-show">${window.UICommon.artBox(berserker, "angelica-berserker-victory-art", berserker.art || berserker.avatar, berserker.face || berserker.name?.[0])}<span class="angelica-victory-sword"></span><div class="angelica-victory-embers"><i></i><i></i><i></i><i></i><i></i></div><b class="angelica-victory-motto">下一场，快点开始。</b></div>` : "";
     const retrying = !!b.settlementError;
     const experience = experienceReward(state, b);
     const experienceItem = experience

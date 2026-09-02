@@ -1,6 +1,6 @@
 window.GameDataCharactersExtra = [
   {
-    id: "bertis", name: "贝尔蒂丝", gender: "female", face: "贝", art: "./assets/images/bertis-portrait.png", avatar: "./assets/images/bertis-portrait.png", role: "束缚公主", locked: true, unlockCost: 18,
+    id: "bertis", name: "贝尔蒂丝", gender: "female", face: "贝", art: "./assets/images/bertis-portrait.webp", avatar: "./assets/images/bertis-portrait.webp", role: "束缚公主", locked: true, unlockCost: 18,
     stats: { attack: 3, magic: 3, speed: 3, maxHp: 38, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "满生命强化与团队资源核心。傲慢雌小鬼在满生命时强化多项属性，苦肉鞭笞以友方伤害换取手牌和杀意，快速生长持续积累共享“粮食”。",
     skills: [
@@ -10,7 +10,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "gerlot", name: "杰洛特", gender: "male", face: "杰", art: "./assets/images/gerlot-portrait.png", avatar: "./assets/images/gerlot-portrait.png", role: "雌小鬼之子", locked: true,
+    id: "gerlot", name: "杰洛特", gender: "male", face: "杰", art: "./assets/images/gerlot-portrait.webp", avatar: "./assets/images/gerlot-portrait.webp", role: "雌小鬼之子", locked: true,
     stats: { attack: 3, magic: 1, speed: 4, maxHp: 34, bloodlust: 2, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "杀牌反击与判定爆发输出。复仇反击围绕自己和贝尔蒂丝遭受的单体杀牌展开反攻，爆头一击通过同色判定翻倍伤害，疯狂屠戮提供一次群体爆发。",
     skills: [
@@ -20,7 +20,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "angelica", name: "安洁莉卡", gender: "female", face: "安", art: "./assets/images/angelica-portrait.jpg", avatar: "./assets/images/angelica-portrait.jpg", role: "红刃公主", locked: true, unlockCost: 14,
+    id: "angelica", name: "安洁莉卡", gender: "female", face: "安", art: "./assets/images/angelica-portrait.webp", avatar: "./assets/images/angelica-portrait.webp", role: "红刃公主", locked: true, unlockCost: 14,
     stats: { attack: 3, magic: 1, speed: 3, maxHp: 45, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "首牌爆发与承伤蓄力核心。力大无穷强化每回合第一张牌的伤害，造成或受到伤害可积累“狂战”，挑衅则强制敌方攻击或弃牌。",
     skills: [
@@ -30,7 +30,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "luka", name: "鲁卡", gender: "male", face: "鲁", art: "./assets/images/luka-portrait.png", avatar: "./assets/images/luka-portrait.png", role: "军人之子", locked: true,
+    id: "luka", name: "鲁卡", gender: "male", face: "鲁", art: "./assets/images/luka-portrait.webp", avatar: "./assets/images/luka-portrait.webp", role: "军人之子", locked: true,
     stats: { attack: 3, magic: 1, speed: 4, maxHp: 38, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "自愈型杀牌输出。嗜血杀戮将杀牌生命值伤害转为恢复或满血补牌，狼牙回战让专属【狼牙杀】在战斗开始、使用战术牌后和回合开始时持续回到手牌。",
     skills: [
@@ -102,7 +102,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "besta", name: "贝丝妲", gender: "female", face: "贝", art: "./assets/images/besta-portrait.png", avatar: "./assets/images/besta-portrait.png", role: "魅魔国长公主", locked: true, unlockCost: 40,
+    id: "besta", name: "贝丝妲", gender: "female", face: "贝", art: "./assets/images/besta-portrait.webp", avatar: "./assets/images/besta-portrait.webp", role: "魅魔国长公主", locked: true, unlockCost: 40,
     stats: { attack: 2, magic: 4, speed: 2, maxHp: 28, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "黑色手牌驱动的暗属性魔力输出。黑暗之力扩充黑牌容量并转换部分杀牌结算，终焉鬼影斩批量释放黑牌，终焉回旋斩在闪避后按黑色【杀】数量反击。",
     skills: [

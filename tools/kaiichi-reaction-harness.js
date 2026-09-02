@@ -15,7 +15,6 @@ require("../src/original/hoshino-kaiichi-share.js");
 require("../src/original/hoshino-kaiichi-skills.js");
 require("../src/original/hoshino-skills.js");
 require("../src/original/battle-manual-hit-resume.js");
-require("../src/original/battle-manual-resume-actions.js");
 require("../src/original/battle-manual-continuation.js");
 require("../src/original/battle-manual-actions.js");
 require("../src/original/battle-manual-flow.js");

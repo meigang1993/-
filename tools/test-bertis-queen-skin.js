@@ -9,7 +9,7 @@ require("../src/original/bertis-queen-skin-fx.js");
 
 const base = SkinSystem.byId("bertis_default");
 const queen = SkinSystem.byId("bertis_arrogant_queen");
-assert(base?.initial && base.art === "./assets/images/bertis-portrait.png",
+assert(base?.initial && base.art === "./assets/images/bertis-portrait.webp",
   "Bertis must retain a selectable default skin");
 assert(queen?.charId === "bertis" && queen.quality === "epic" && SkinSystem.price(queen) === 10,
   "Arrogant Queen must be Bertis's 10-essence epic skin");

@@ -46,7 +46,7 @@ window.ExtraUnlockEventViews = (() => {
       ["贝丝妲", "我会叫孩子们帮你讨伐海盗，不过还有个要求，把艾伦格留下来照顾我。"],
       ["普雷希", "好的…………"]
     ];
-    const besta = state.chars.find(c => c.id === "besta") || { name: "贝丝妲", avatar: "./assets/images/besta-portrait.png" }, nanali = state.chars.find(c => c.id === "nanali"), aileng = state.chars.find(c => c.id === "aileng");
+    const besta = state.chars.find(c => c.id === "besta") || { name: "贝丝妲", avatar: "./assets/images/besta-portrait.webp" }, nanali = state.chars.find(c => c.id === "nanali"), aileng = state.chars.find(c => c.id === "aileng");
     return `<div class="first-defeat-event"><h2>水下列车求援</h2><div class="vn-stage">${portrait(besta)}${portrait(nanali)}${portrait(aileng)}</div><div class="vn-lines">${lines.map(([n, t]) => `<div class="vn-line"><b>${U().esc(n)}</b><span>${U().esc(t)}</span></div>`).join("")}</div><p class="muted">事件结束后，艾伦格自动加入；副本“水下列车”开放。</p><div class="actions"><button data-underwater-train-unlock-complete="1">接受委托，解锁水下列车</button></div></div>`;
   }
   function opheliaUnlock(state) {
@@ -81,7 +81,7 @@ window.ExtraUnlockEventViews = (() => {
       ["贝丝妲", "那你去帮帮他吧，曼妮会照顾我的。"],
       ["艾伦格", "好吧，我去帮他。"]
     ];
-    const besta = state.chars.find(c => c.id === "besta") || { name: "贝丝妲", avatar: "./assets/images/besta-portrait.png" }, aileng = state.chars.find(c => c.id === "aileng");
+    const besta = state.chars.find(c => c.id === "besta") || { name: "贝丝妲", avatar: "./assets/images/besta-portrait.webp" }, aileng = state.chars.find(c => c.id === "aileng");
     return `<div class="first-defeat-event"><h2>血精与宝珠</h2><div class="vn-stage">${portrait(aileng)}${portrait(besta)}</div><div class="vn-lines">${lines.map(([n, t]) => `<div class="vn-line"><b>${U().esc(n)}</b><span>${U().esc(t)}</span></div>`).join("")}</div><p class="muted">事件结束后，贝丝妲会在孕育殿堂开放兑换，价格40精华宝珠。</p><div class="actions"><button data-besta-nursery-unlock-complete="1">开放贝丝妲兑换</button></div></div>`;
   }
   return { littleElranaUnlock, aceUnlock, underwaterTrainUnlock, opheliaUnlock, bestaNurseryUnlock };

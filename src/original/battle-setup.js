@@ -80,6 +80,7 @@ window.BattleSetup = () => {
     window.BattleStats?.initialize?.(state.battle);
     window.AngelicaLukaSkills?.battleStart?.(state);
     window.OrcDungeonSkills?.battleStart?.(state);
+    window.RuinsEnemySkills?.battleStart?.(state);
     return { allies, enemies };
   }
   async function retryAssets(state, onStep) {

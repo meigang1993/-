@@ -25,7 +25,7 @@ const characters = ["gerda", "hoshino_yi", "hoshino_kaiichi"]
 const relics = Object.keys({ ...GameDataRelics, ...GameDataFutureRelics });
 
 assert(characters.every(Boolean), "all three new characters must exist");
-assert(relics.length === 35, "relic matrix must cover all 35 relics");
+assert(relics.length === 30, "relic matrix must cover all 30 relics");
 
 for (const character of characters) {
   for (const relic of relics) {

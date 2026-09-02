@@ -22,16 +22,7 @@ window.BattleCombatTargeting = (deps, hooks) => {
   };
   function selectCard(state, cardIndex) {
     const b = state.battle, actor = deps.active(b), source = actor?.hand[cardIndex]; if (b?.thunderHammer) return false; if (b.locked || b.phase !== 4 || !actor || actor.side !== "ally" || !source || source._pendingDraw) return false;
-    if (b.selectedSkillCard?.elranaBag || b.selectedSkillCard?.armyOrder
-      || b.selectedSkillCard?.ailengBet || b.selectedSkillCard?.mariaHonorBlessing) {
-      const list = b.selectedBagIndexes || [], i = list.indexOf(cardIndex);
-      if (i >= 0) list.splice(i, 1);
-      else {
-        if (!canSelectHandCost(actor, b.selectedSkillCard, source, b, cardIndex)) return false;
-        b.selectedBagIndexes ||= list; list.push(cardIndex);
-      }
-      b.pendingTargetUid = actor.uid; return true;
-    }
+    if (b.selectedSkillCard?.elranaBag || b.selectedSkillCard?.armyOrder || b.selectedSkillCard?.ailengBet) { const list = b.selectedBagIndexes || [], i = list.indexOf(cardIndex); if (i >= 0) list.splice(i, 1); else { if (!canSelectHandCost(actor, b.selectedSkillCard, source, b, cardIndex)) return false; b.selectedBagIndexes ||= list; list.push(cardIndex); } b.pendingTargetUid = actor.uid; return true; }
     if (b.selectedSkillCard?.elranaHeal) { b.selectedCardIndex = b.selectedCardIndex === cardIndex ? null : cardIndex; return true; }
     if (needsSingleHand(b.selectedSkillCard)) { const selected = b.selectedCardIndex === cardIndex; if (!selected && !canSelectHandCost(actor, b.selectedSkillCard, source, b, cardIndex)) return false; if (b.selectedSkillCard?.crazyShooting && selected) return canSelectHandCost(actor, b.selectedSkillCard, source, b, cardIndex) && playSelectedCard(state); b.selectedCardIndex = selected ? null : cardIndex; b.pendingTargetUid = b.selectedSkillCard?.demonPoker || b.selectedSkillCard?.idolKiss ? b.pendingTargetUid : actor.uid; return true; }
     if (!canPlay(actor, source, b)) return false; const toggled = b.selectedCardIndex === cardIndex; clearSelection(b); b.selectedCardIndex = toggled ? null : cardIndex; return true;
@@ -71,11 +62,7 @@ window.BattleCombatTargeting = (deps, hooks) => {
   function cancelSelection(state) { if (state.battle) clearSelection(state.battle); }
   function playSelectedCard(state) {
     const b = state.battle, actor = deps.active(b), source = b.selectedSkillCard || actor?.hand[b.selectedCardIndex], card = effectiveCard(actor, source);
-    if (b.selectedCardIndex == null && !b.selectedSkillCard) return false;
-    if (needsSingleHand(b.selectedSkillCard) && b.selectedCardIndex == null) return false;
-    if ((card?.elranaBag || card?.ailengBet || card?.mariaHonorBlessing)
-      && !(card._bagIndexes || b.selectedBagIndexes || []).length) return false;
-    if (card?.armyOrder && !window.BakarSkills?.validArmyOrder?.(actor, card._bagIndexes || b.selectedBagIndexes)) return false; if (card?.allyTarget && !card.bertisWhip && !card.aceContribution && onlySelfAlive(b, actor)) b.pendingTargetUid = actor.uid; if (card?.comboAttack && (!b.pendingTargetUid || !comboPartner(b, actor))) return false; if (card?.borrowSlash && !hasVisibleHand(comboPartner(b, actor))) return false; if (card?.magicBullet && !hasMagicBulletCard(opposingUnits(b, actor).find(unit => unit.uid === b.pendingTargetUid))) return false; if (card?.soulChain && (b.pendingTargetUids || []).length < soulChainNeed(b, actor)) return false; if ((!card?.targetless || card?.allyTarget) && !b.pendingTargetUid) return false;
+    if (b.selectedCardIndex == null && !b.selectedSkillCard) return false; if (needsSingleHand(b.selectedSkillCard) && b.selectedCardIndex == null) return false; if ((card?.elranaBag || card?.ailengBet) && !(card._bagIndexes || b.selectedBagIndexes || []).length) return false; if (card?.armyOrder && !window.BakarSkills?.validArmyOrder?.(actor, card._bagIndexes || b.selectedBagIndexes)) return false; if (card?.allyTarget && !card.bertisWhip && !card.aceContribution && onlySelfAlive(b, actor)) b.pendingTargetUid = actor.uid; if (card?.comboAttack && (!b.pendingTargetUid || !comboPartner(b, actor))) return false; if (card?.borrowSlash && !hasVisibleHand(comboPartner(b, actor))) return false; if (card?.magicBullet && !hasMagicBulletCard(opposingUnits(b, actor).find(unit => unit.uid === b.pendingTargetUid))) return false; if (card?.soulChain && (b.pendingTargetUids || []).length < soulChainNeed(b, actor)) return false; if ((!card?.targetless || card?.allyTarget) && !b.pendingTargetUid) return false;
     const targetArg = card?.soulChain ? (b.pendingTargetUids || [b.pendingTargetUid]).filter(Boolean) : b.pendingTargetUid;
     const partnerUid = b.comboPartnerUid;
     const ok = b.selectedSkillCard ? playSkillCard(state, targetArg) : playActiveCard(state, b.selectedCardIndex, targetArg, partnerUid); if (state.battle) cancelSelection(state); return ok;

@@ -19,7 +19,7 @@ window.BattlePrepareSequence = deps => {
   function resolve(state, unit) {
     const battle = state.battle;
     if (!battle || battle.prepareUnitUid !== unit.uid) return true;
-    while (!battle.locked && battle.prepareStep < 8) {
+    while (!battle.locked && battle.prepareStep < 9) {
       const step = battle.prepareStep;
       if (step === 0) {
         battle.prepareStep += 1;
@@ -47,6 +47,9 @@ window.BattlePrepareSequence = deps => {
       } else if (step === 7) {
         battle.prepareStep += 1;
         window.BertisGerlotSkills?.beginTurn?.(state, unit);
+      } else if (step === 8) {
+        battle.prepareStep += 1;
+        window.RuinsEnemySkills?.allyTurnStart?.(state, unit);
       }
       if (unit.hp <= 0 || interrupted(battle)) break;
     }

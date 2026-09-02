@@ -6,13 +6,6 @@ window.BattleDodgeResponse = ({
   const resume = window.BattleDodgeResume({
     hitWithoutDodge, finalizeDamage,
   });
-  const auto = window.BattleDodgeAutoResponse({
-    canDodge, cards, damage, hammer, triggers, settleAssault,
-    responseContext: {
-      ...deps,
-      afterCardResponded: window.NonokaLokiSkills?.afterCardResponded,
-    },
-  });
   function shouldManualDodge(state, actor, target, card, response) {
     if (!state.settings?.manualResponse && !response?.deflect) return false;
     if (card?.forceAutoResponse) return false;
@@ -43,6 +36,13 @@ window.BattleDodgeResponse = ({
     battle.pendingTargetUid = target.uid;
     window.BattleLog.add(state,
       `${target.name} 可以手动选择是否${cards.responseAction(card)}${cards.responseLabel(card)}。`);
+  }
+  function clearManual(battle, keepLocked = false) {
+    battle.manualDodge = null;
+    battle.pendingTargetUid = null;
+    const settling = battle.pendingVictory || battle.pendingDefeat
+      || battle.victoryScreen || battle.defeat || battle.testComplete;
+    if (!keepLocked && !settling) battle.locked = false;
   }
   function resolveManualDodge(state, useDodge, index = 0,
     deflectChoice = null) {
@@ -99,55 +99,12 @@ window.BattleDodgeResponse = ({
     ctx.checkEnd(state);
     return true;
   }
-  function confirmDeflectResult(state) {
-    const battle = state.battle;
-    const pending = battle?.manualDodge;
-    const result = pending?.deflectResult;
-    if (!pending || !result) return false;
-    if (result.outcome === "tie") {
-      pending.deflectResult = null;
-      return true;
-    }
-    const actor = ctx.allUnits(battle)
-      .find(unit => unit.uid === pending.actorUid);
-    const target = ctx.allUnits(battle)
-      .find(unit => unit.uid === pending.targetUid);
-    if (!actor || !target) {
-      clearManual(battle);
-      return false;
-    }
-    const picked = cards.pick(target, pending.card, pending.deflectIndex);
-    if (!picked.length) {
-      clearManual(battle);
-      return false;
-    }
-    cards.play(state, target, actor, picked, actor.uid);
-    clearManual(battle);
-    if (result.outcome === "defender") {
-      damage(state, actor, pending.amount, "弹反", target, {
-        ...pending.card,
-        name: "弹反",
-        type: "skill",
-        ignoreResponse: true,
-        skipDamageModify: true,
-      });
-      triggers.afterDodged(state, actor, target, pending.card);
-      resume.queue(battle, pending);
-    } else resume.hit(state, actor, target, pending);
-    settleAssault(state, pending.card);
-    ctx.checkEnd(state);
-    return true;
-  }
-  function clearManual(battle, keepLocked = false) {
-    battle.manualDodge = null;
-    battle.pendingTargetUid = null;
-    const settling = battle.pendingVictory || battle.pendingDefeat
-      || battle.victoryScreen || battle.defeat || battle.testComplete;
-    if (!keepLocked && !settling) battle.locked = false;
-  }
+  const extended = window.BattleDodgeDeflect({
+    deps, canDodge, cards, ctx, damage, hammer, triggers, resume,
+    settleAssault, clearManual,
+  });
   return {
-    shouldManualDodge, queueManualDodge,
-    autoDodge: auto.autoDodge, resolveManualDodge,
-    confirmDeflectResult,
+    shouldManualDodge, queueManualDodge, autoDodge: extended.autoDodge,
+    resolveManualDodge, confirmDeflectResult: extended.confirmDeflectResult,
   };
 };

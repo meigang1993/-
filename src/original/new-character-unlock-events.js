@@ -40,7 +40,7 @@ window.NewCharacterUnlockEvents = (() => {
       "事件结束后，副本“废墟沙城”开放，亚缇娜与玛利亚加入角色栏。",
       "解锁废墟沙城并邀请新角色", "ruins-sand-city-unlock-complete");
   }
-  function recordDungeonClear(state, run) {
+  function recordDungeonClear(state) {
     if (run?.missionId !== "orc_dungeon" || run?.difficultyId !== "adventure" || run?.complete !== true) return false;
     if (state.flags?.hoshinoFamilyUnlockSeen || state.flags?.hoshinoFamilyUnlockPending) return false;
     state.flags ||= {};

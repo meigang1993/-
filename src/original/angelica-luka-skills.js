@@ -1,13 +1,17 @@
 window.AngelicaLukaSkills = (() => {
   const alive = u => u && u.hp > 0;
   const isKill = c => c?.type === "slash" || /杀(?:（[^）]*）)?$/.test(c?.name || "");
+  const canDealDamage = card => card?.type === "slash"
+    || Number(card?.damage || card?.power || card?.fixedDamage || 0) > 0
+    || card?.assassinate || card?.rageKill || card?.biteKill || card?.holy;
   const line = (state, unit, name, target) => window.BattleLines?.skill(state, unit, name, target);
   const wolfCard = () => ({ name: "狼牙杀", type: "slash", suit: "", power: 0, scale: "attack", noIntentCost: true, lukaWolfFang: true, text: "指定一名敌方角色为目标，对其造成等同于攻击力的伤害；此牌不消耗杀意。" });
   function beforeCardPlayed(state, actor, card) {
-    if (actor?.ref !== "angelica" || actor.angelicaFirstCardDone) return;
+    if (actor?.ref !== "angelica" || actor.angelicaFirstCardDone || !canDealDamage(card)) return;
     actor.angelicaFirstCardDone = true;
     card.angelicaTriple = true;
     line(state, actor, "力大无穷");
+    window.AngelicaBerserkerSkinFX?.might?.(state, actor, card);
   }
   function modifyDamage(state, actor, amount, card) {
     if (!amount || actor?.ref !== "angelica" || !card?.angelicaTriple) return amount;
@@ -29,6 +33,7 @@ window.AngelicaLukaSkills = (() => {
     cards.forEach(c => { if (state.battle.animQueue) c._pendingDraw = true; actor.hand.push(c); });
     state.battle.animQueue?.push({ type: "gainCards", uid: actor.uid, side: actor.side, fromUid: actor.uid, count: cards.length, cards });
     line(state, actor, "狂战意志");
+    window.AngelicaBerserkerSkinFX?.rageSpend?.(state, actor, count);
     window.BattleLog.add(state, `${actor.name} 消耗${count}枚狂战标记，生成${count}张不消耗杀意的虚无杀。`);
     return true;
   }
@@ -36,6 +41,7 @@ window.AngelicaLukaSkills = (() => {
     if (actor.usedAngelicaTaunt) return true;
     actor.usedAngelicaTaunt = true;
     line(state, actor, "挑衅", state.battle.enemies.find(e => e.ai === "pursuer_edis" && alive(e)));
+    window.AngelicaBerserkerSkinFX?.taunt?.(state, actor);
     const enemies = state.battle.enemies.filter(alive);
     const actions = enemies.map(enemy => ({ kind: "angelicaTaunt", actorUid: actor.uid, targetUid: enemy.uid }));
     if (ctx.damage?.useCard && window.BattleReactionQueue?.enqueue?.(state, actions)) {
@@ -73,6 +79,7 @@ window.AngelicaLukaSkills = (() => {
     if (!alive(unit) || unit.ref !== "angelica") return;
     unit.rageMarks = Math.min(99, (unit.rageMarks || 0) + 1);
     line(state, unit, lineName, target);
+    window.AngelicaBerserkerSkinFX?.rageGain?.(state, unit, lineName === "狂战受到伤害");
     window.BattleLog.add(state, `${unit.name} 获得1枚狂战标记（${unit.rageMarks}）。`);
   }
   function bloodSlaughter(state, actor, hpLoss, deps) {
@@ -89,7 +96,10 @@ window.AngelicaLukaSkills = (() => {
     window.BattleLog.add(state, `${actor.name} 触发嗜血杀戮，恢复${healed}点生命。`);
   }
   function battleStart(state) { (state.battle?.allies || []).filter(u => u.ref === "luka").forEach(u => recoverWolf(state, u, false, "all")); }
-  function beginTurn(state, unit) { if (unit?.ref === "luka") recoverWolf(state, unit, true, "all"); }
+  function beginTurn(state, unit) {
+    if (unit?.ref === "luka") recoverWolf(state, unit, true, "all");
+    if (unit?.ref === "angelica") unit.angelicaFirstCardDone = false;
+  }
   function afterCardPlayed(state, actor, card) { if (actor?.ref === "luka" && card?.type === "tactic" && !card._lukaChecked) { card._lukaChecked = true; recoverWolf(state, actor, true, "discard"); } }
   function recoverWolf(state, unit, speak, mode) {
     const inHand = unit.hand.filter(c => c.lukaWolfFang);

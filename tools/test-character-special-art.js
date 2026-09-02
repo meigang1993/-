@@ -11,7 +11,8 @@ const expectedSpecialArt = {
   manny_level_10_special: ["manny", "./assets/generated/manny-level-10-special.a8c2eeed.webp"],
   flora_level_10_special: ["flora", "./assets/generated/flora-level-10-special.075896ea.webp"],
   wendy_level_10_special: ["wendy", "./assets/generated/wendy-level-10-special.8b3d47ab.webp"],
-  elrana_level_10_special: ["elrana", "./assets/generated/elrana-level-10-special.3a5bcd18.webp"],
+  elrana_level_10_special: ["elrana", "./assets/generated/elrana-level-10-special.3154d24b.webp"],
+  angelica_level_10_special: ["angelica", "./assets/generated/angelica-level-10-special.1d7b9a23.webp"],
 };
 
 function verifySpecialArt(charId, skinId, art) {
@@ -40,11 +41,10 @@ function verifySpecialArt(charId, skinId, art) {
     `${skinId} must replace the formal portrait`);
   state.chars[0].level = 0;
   state.battle = { test: true };
-  assert(!SkinSystem.testEquip(state, charId, skin.id),
-    `${skinId} must not be trialable below level 10`);
-  assert(SkinSystem.applyToChar(state, state.chars[0], true).art
-    === SkinSystem.byId(`${charId}_default`).art,
-  `${skinId} must keep the formal fallback portrait in test battle`);
+  assert(SkinSystem.testEquip(state, charId, skin.id),
+    `${skinId} must be trialable in test battles regardless of level`);
+  assert(SkinSystem.applyToChar(state, state.chars[0], true).art === skin.art,
+    `${skinId} trial must replace the portrait in test battle`);
 }
 
 assert.deepStrictEqual(

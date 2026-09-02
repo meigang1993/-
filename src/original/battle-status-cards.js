@@ -64,24 +64,72 @@ window.BattleStatusCards = (() => {
   function judgement(state, unit) {
     visible(unit).filter(isStatus).forEach(status => {
       const key = keyOf(status);
-      if (!["stun", "seal"].includes(key)) return;
-      const { card, success } = drawJudge(
-        state, unit, status.name, key === "stun" ? black : red);
+      if (!["stun", "seal", "paralysis", "confusion", "freeze"].includes(key)) return;
+      const judgeOf = key === "stun" ? black
+        : key === "seal" ? red
+        : key === "paralysis" ? card => card.suit === "♥" || card.suit === "♠"
+        : key === "confusion" ? card => card.suit === "♠" || card.suit === "♥"
+        : card => card.suit === "♦" || card.suit === "♣";
+      const { card, success } = drawJudge(state, unit, status.name, judgeOf);
       if (success && key === "stun") unit.skipPlayPhase = true;
       if (success && key === "seal") {
         unit.skipDrawPhase = true;
         unit.drawLockedThisTurn = true;
       }
-      const result = key === "stun" ? "跳过出牌阶段" : "跳过摸牌阶段且本回合无法摸牌";
+      if (success && key === "paralysis") unit.skipPlayPhase = true;
+      if (success && key === "freeze") unit.frozenSlash = true;
+      if (success && key === "confusion") triggerConfusion(state, unit);
+      const resultMap = {
+        stun: "跳过出牌阶段", seal: "跳过摸牌阶段且本回合无法摸牌",
+        paralysis: "本回合无法使用牌", freeze: "本回合无法使用【杀】牌",
+        confusion: "随机对我方其他角色视为使用虚拟【杀】",
+      };
       window.BattleLog.add(state,
-        `${unit.name} 的${status.name}判定：${card.suit}${card.name}，${success ? result : "未触发"}。`);
+        `${unit.name} 的${status.name}判定：${card.suit}${card.name}，${success ? resultMap[key] : "未触发"}。`);
     });
+  }
+
+  function triggerConfusion(state, unit) {
+    const allies = (unit.side === "ally" ? state.battle?.allies : state.battle?.enemies) || [];
+    const others = allies.filter(target => target !== unit && target.hp > 0);
+    const target = others.length ? window.GameRandom?.sample?.(others, state) || others[0] : unit;
+    if (!target) return;
+    const virtual = window.CardUtils?.copyPlayable?.(
+      { name: "杀（普攻）", type: "slash", power: 0, scale: "attack", suit: "" },
+      { temporary: true, void: true, noIntentCost: true, generatedBySkill: "混乱" });
+    if (!virtual) return;
+    window.BattleLines?.skill?.(state, unit, "混乱");
+    window.BattleLog.add(state, `${unit.name} 的混乱触发，对${target.name}视为使用一张虚拟【杀】。`);
+    window.BattleCombat?.useVirtualKill?.(state, unit, target, virtual);
+  }
+
+  function triggerLandmine(state, holder) {
+    if (!holder) return false;
+    const landmine = (holder.hand || []).find(card => keyOf(card) === "landmine");
+    if (!landmine) return false;
+    const amount = landmine.landmineAttack || 0;
+    const index = holder.hand.indexOf(landmine);
+    if (index >= 0) holder.hand.splice(index, 1);
+    window.BattleCards?.put?.(state.battle, holder, landmine, "consumed");
+    if (amount > 0) {
+      const before = holder.hp;
+      holder.hp = Math.max(0, holder.hp - amount);
+      const loss = before - holder.hp;
+      if (loss > 0) {
+        window.BattleSystem?.pushFloat?.(state.battle, holder.uid, "hp-loss", loss);
+        window.BattleLog.add(state, `${holder.name} 的地雷触发，受到${amount}点伤害。`);
+      }
+    }
+    sync(holder, state.battle);
+    return true;
   }
 
   function endTurn(state, unit) {
     const expired = (unit?.hand || []).filter(card =>
       isStatus(card) && card.statusExpiresEndTurn);
+    const hadFreeze = expired.some(card => keyOf(card) === "freeze");
     expired.forEach(card => consumeRemoved(state, unit, card, false));
+    if (hadFreeze) unit.frozenSlash = false;
     if (expired.length) window.BattleLog.add(state,
       `${unit.name} 回合结束，消耗${expired.map(card => card.name).join("、")}。`);
   }
@@ -114,6 +162,6 @@ window.BattleStatusCards = (() => {
   return {
     ...registry,
     add, apply, consumeByCharm, consumeRemoved, endTurn,
-    judgement, resolveResistance,
+    judgement, resolveResistance, triggerLandmine,
   };
 })();

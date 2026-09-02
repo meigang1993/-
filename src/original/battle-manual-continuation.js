@@ -10,13 +10,13 @@ window.BattleManualContinuation = deps => {
   const hitResume = window.BattleManualHitResume({
     allUnits, combat, waitEffects, actionGuard,
   });
-  const resumeActions = window.BattleManualResumeActions({
-    allUnits, combat, waitEffects, actionGuard, hitResume,
+  const resume = window.BattleManualContinuationResume({
+    allUnits, combat, waitEffects, actionGuard, hitResume, record,
   });
   async function resumeAfterManualResponse(state, onStep, inherited) {
     const current = actionGuard(state, inherited);
     if (!current()) return;
-    if (!await resumeActions.resumeInterruptedActions(state, onStep, current)) return;
+    if (!await resume.resumeInterruptedActions(state, onStep, current)) return;
     await continueAfterInterruptedActions(state, onStep, current);
   }
   async function continueAfterInterruptedActions(state, onStep, inherited) {
@@ -110,7 +110,7 @@ window.BattleManualContinuation = deps => {
   }
   return {
     resumeAfterManualResponse,
-    resumeInterruptedActions: resumeActions.resumeInterruptedActions,
+    resumeInterruptedActions: resume.resumeInterruptedActions,
     continueAfterInterruptedActions,
   };
 };

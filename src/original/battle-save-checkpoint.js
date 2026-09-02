@@ -4,9 +4,6 @@ window.BattleSaveCheckpoint = (() => {
   const {
     record, sidePile, stable, validPile, validUnits,
   } = window.BattleSaveCheckpointValidation;
-  const pileCodec = window.BattleSaveCheckpointPiles({
-    record, sidePile, validPile,
-  });
 
   function savedMarker(battle) {
     const marker = battle?.resumeCheckpoint;
@@ -79,61 +76,14 @@ window.BattleSaveCheckpoint = (() => {
     return marker;
   }
 
-  function snapshot(state, options = {}) {
-    const marker = state?.battle?.resumeCheckpoint;
-    if (!stable(state) || marker?.version !== version
-      || marker.turn !== state.battle.turn
-      || !Number.isSafeInteger(marker.sequence) || marker.sequence < 0) return null;
-    const battle = options.inPlace
-      ? state.battle : JSON.parse(JSON.stringify(state.battle));
-    const checkpointPiles = pileCodec.snapshotPiles(battle);
-    if (!checkpointPiles) return null;
-    battle.checkpointPiles = checkpointPiles;
-    pileCodec.detachPiles(battle.allies);
-    pileCodec.detachPiles(battle.enemies);
-    battle.animQueue = [];
-    battle.shownPlayed = [];
-    delete battle.speech;
-    return battle;
-  }
-
-  function restore(state) {
-    const battle = state?.battle;
-    const marker = battle?.resumeCheckpoint;
-    const saved = savedMarker(battle);
-    if (!saved || saved.turn !== battle.turn
-      || !validUnits(battle.allies, "ally")
-      || !validUnits(battle.enemies, "enemy")
-      || !pileCodec.restorePiles(battle, marker) || !stable(state)) return false;
-    battle.animQueue = [];
-    battle.shownPlayed = [];
-    battle.locked = false;
-    battle.thinkingUid = null;
-    battle.introSfxPending = false;
-    battle.assetRetrying = false;
-    battle.assetRetryProgress = null;
-    return true;
-  }
-
-  function adoptRestored(state, turns) {
-    const battle = state?.battle;
-    const marker = savedMarker(battle);
-    const admitted = marker?.turn === battle?.turn && stable(state);
-    if (admitted) {
-      battle.checkpointRevision = Math.max(
-        Number(battle.checkpointRevision) || 0,
-        marker.sequence,
-      );
-      turns?.set?.(battle, marker);
-    }
-    if (battle && Object.hasOwn(battle, "resumeCheckpoint")) {
-      delete battle.resumeCheckpoint;
-    }
-    return admitted ? marker.turn : -1;
-  }
+  const snapshot = window.BattleSaveCheckpointSnapshot({
+    record, sidePile, stable, validPile, validUnits,
+    savedMarker, normalizeMarker, version,
+  });
 
   return {
-    adoptRestored, baseline, canSave, mark, restore,
-    noteOperation, savedMarker, savedTurn, snapshot, stable, version,
+    adoptRestored: snapshot.adoptRestored, baseline, canSave, mark,
+    restore: snapshot.restore, noteOperation, savedMarker, savedTurn,
+    snapshot: snapshot.snapshot, stable, version,
   };
 })();

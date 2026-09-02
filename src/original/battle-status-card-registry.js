@@ -8,19 +8,23 @@ window.BattleStatusCardRegistry = (() => {
       name: "封魔", flag: "seal", text:
         "状态牌，带有虚无属性。判定阶段进行判定；若结果为红色，跳过摸牌阶段，且本回合无法摸牌。回合结束后消耗此牌。",
     },
-    slime: { name: "粘液", flag: "slime" },
+    paralysis: {
+      name: "麻痹", flag: "paralysis", text:
+        "状态牌，带有虚无属性。判定阶段进行判定；若结果为♥红桃或♠黑桃，本回合无法使用牌。回合结束后消耗此牌。",
+    },
     confusion: {
       name: "混乱", flag: "confusion", text:
-        "状态牌。判定阶段若结果为黑色，随机对己方其他角色视为使用一张虚拟【杀】；没有其他目标时对自己造成攻击力伤害。",
+        "状态牌，带有虚无属性。判定阶段进行判定；若结果为♠黑桃或♥红桃，随机对我方其他一名角色视为使用一张虚拟【杀（普攻）】。回合结束后消耗此牌。",
     },
     freeze: {
       name: "冰冻", flag: "freeze", text:
-        "状态牌。判定阶段若结果为红色，本回合不能使用【杀】；回合结束后消耗。",
+        "状态牌，带有虚无属性。判定阶段进行判定；若结果为♦方块或♣梅花，本回合无法使用【杀】牌。回合结束后消耗此牌。",
     },
-    paralysis: {
-      name: "麻痹", flag: "paralysis", text:
-        "状态牌。判定阶段若结果为红桃或黑桃，本回合无法使用牌；回合结束后消耗。",
+    landmine: {
+      name: "地雷", flag: "landmine", text:
+        "状态牌。在使用或打出响应牌时受到等同于来源攻击力的伤害，随后地雷消耗。",
     },
+    slime: { name: "粘液", flag: "slime" },
   });
   const fixedLabels = Object.values(definitions).map(item => item.name);
 
@@ -82,18 +86,21 @@ window.BattleStatusCardRegistry = (() => {
     return duplicates;
   }
 
-  function create(key) {
+  function create(key, source = null) {
     const definition = definitions[key];
     if (!definition) return null;
+    const isLandmine = key === "landmine";
     return {
       name: definition.name,
-      type: key === "slime" ? "consume" : "status",
+      type: isLandmine ? "status" : (key === "slime" ? "consume" : "status"),
       statusKey: key,
       [definition.flag]: true,
       targetless: true,
       suit: "",
-      void: key !== "slime",
-      statusExpiresEndTurn: key !== "slime",
+      void: !(isLandmine || key === "slime"),
+      statusExpiresEndTurn: !(isLandmine || key === "slime"),
+      landmineSourceUid: isLandmine ? (source?.uid || source?.name || "") : undefined,
+      landmineAttack: isLandmine ? (source?.stats?.attack || source?.tempAttack || 0) : undefined,
       text: definition.text || "",
     };
   }

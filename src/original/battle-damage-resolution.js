@@ -79,6 +79,10 @@ window.BattleDamageResolution = ({
       && actor.side === "enemy" && target.side === "ally"
       ? responseCards.find(candidate => candidate.deflect) || responseCards[0]
       : responseCards[0];
+    if (response
+      && !window.RuinsRelicEffects?.missileLauncherBlock?.(state, actor, target, effectiveCard, responseCards, response)) {
+      response = null;
+    }
     if (response) {
       const api = getResponseApi();
       if (api.shouldManualDodge(
@@ -97,6 +101,10 @@ window.BattleDamageResolution = ({
         state, target, actor, effectiveCard,
         { ...deps, afterCardResponded: window.NonokaLokiSkills?.afterCardResponded },
         [], candidate => canDodge(effectiveCard, candidate));
+    }
+    if (response && response.name !== "闪"
+      && !window.RuinsRelicEffects?.missileLauncherBlock?.(state, actor, target, effectiveCard, responseCards, response)) {
+      response = null;
     }
     if (response && getResponseApi().autoDodge(
       state, actor, target, amount, source, effectiveCard, response

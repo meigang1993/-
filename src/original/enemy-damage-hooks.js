@@ -24,6 +24,7 @@ window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
           `${target.name} 的${target.lockSuit}锁定标记触发，伤害翻倍且不可响应。`);
       }
     }
+    result = window.RuinsEnemySkills?.modifyDamage?.(state, target, result, card) ?? result;
     return result;
   }
 
@@ -47,6 +48,7 @@ window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
     }
     machine.afterDamage(state, actor, target, hpLoss, damage);
     window.UnderwaterTrainSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage);
+    window.RuinsEnemySkills?.afterDamage?.(state, actor, target, card, hpLoss, damage);
     if (!hpLoss || actor.ai !== "goblin" || !card || card.type !== "slash") return;
     const discarded = discardOne(target);
     if (!discarded) return;

@@ -55,6 +55,7 @@ window.BattleDodgeCards = ({ deps, ctx, canDodge }) => {
       window.NonokaLokiSkills?.afterCardResponded?.(
         state, target, actor, played[cardIndex], deps);
     });
+    window.BattleStatusCards?.triggerLandmine?.(state, target);
   }
   function label(unit, cards) {
     const shown = cards.map(card => view(unit, card, "闪"));

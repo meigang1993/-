@@ -18,7 +18,7 @@ window.OrcUnlockEvents = (() => {
       ["贝丝妲", "混沌之子？我知道了，我会告诉孩子们注意凋零者。我这就出发。"]
     ];
     const besta = state.chars.find(c => c.id === "besta") || { name: "贝丝妲", avatar: "./assets/generated/besta-villa-new.webp" };
-    const preshi = { name: "普雷希", avatar: "./assets/images/besta-portrait.png" };
+    const preshi = { name: "普雷希", avatar: "./assets/images/besta-portrait.webp" };
     return `<div class="first-defeat-event"><h2>兽人地下城求援</h2><div class="vn-stage">${portrait(besta)}${portrait(preshi)}</div><div class="vn-lines">${lines.map(([n, t]) => `<div class="vn-line"><b>${U().esc(n)}</b><span>${U().esc(t)}</span></div>`).join("")}</div><p class="muted">事件结束后，副本“兽人地下城”开放；任务接取上限提高至10个。</p><div class="actions"><button data-orc-dungeon-unlock-complete="1">出发前往兽人领地</button></div></div>`;
   }
   async function unlockEvent(state, id) {
@@ -53,8 +53,12 @@ window.OrcUnlockEvents = (() => {
   };
   function triggerPending(state) {
     if (state.view !== "hall" || state.hallModal || state.battle || state.explore) return false;
-    if (!state.flags?.ruinsSandCityUnlockPending || state.flags.ruinsSandCityUnlocked || state.flags.ruinsSandCityUnlockSeen) return false;
-    state.hallModal = "ruinsSandCityUnlock";
+    if (state.flags?.ruinsSandCityUnlockPending && !state.flags.ruinsSandCityUnlocked && !state.flags.ruinsSandCityUnlockSeen) {
+      state.hallModal = "ruinsSandCityUnlock";
+      return true;
+    }
+    if (!state.flags?.orcDungeonUnlockPending || state.flags.orcDungeonUnlocked || state.flags.orcDungeonUnlockSeen) return false;
+    state.hallModal = "orcDungeonUnlock";
     return true;
   }
   return { orcDungeonUnlock, triggerPending };

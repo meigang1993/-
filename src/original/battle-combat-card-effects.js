@@ -14,6 +14,10 @@ window.BattleCombatCardEffects = api => {
       window.BattleStatusCards?.apply?.(state, actor, target, card);
       return true;
     }
+    if (card.ruinsPlaceLandmine || card.ruinsSnipe || card.ruinsBackstab) {
+      return run(() => window.RuinsEnemySkills?.useSkillCard?.(state, actor, target, card, damage),
+        () => specials.repeatTactic?.(state, actor, target, card));
+    }
     if (card.charge) {
       actor.charge = (actor.charge || 0) + card.charge;
       const multiplier = Math.pow(1.5, actor.charge).toFixed(3).replace(/\.0+$/, "").replace(/0+$/, "");

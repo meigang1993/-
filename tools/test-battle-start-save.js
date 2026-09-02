@@ -23,7 +23,6 @@ function loadRuntime(file) {
   "receipt-ledger.js",
   "unlock-event-progress.js", "character-progression.js",
   "battle-save-checkpoint-validation.js",
-  "battle-save-checkpoint-piles.js",
   "battle-save-checkpoint.js",
   "store-save-schema.js", "store-save-validation.js", "store-save-limits.js",
   "store-compact.js", "store-unlock-recovery.js", "store-unlock-migrations.js",

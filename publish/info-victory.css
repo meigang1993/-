@@ -56,8 +56,11 @@
 .special-art-summary.locked { box-shadow: inset 4px 0 #ff5cab; }
 .special-art-lock { width: min(300px, 26vw); aspect-ratio: 1; display: grid; place-content: center; gap: 8px; text-align: center; border: 1px dashed rgba(255,215,166,.42); border-radius: 24px; background: rgba(0,0,0,.22); color: #e1c2ee; cursor: default; }
 .special-art-lock b { color: #ffd88d; font-size: 42px; }
-.info-art .portrait.large.special-art-portrait { height: auto; aspect-ratio: 1; overflow: hidden; border-radius: 24px; background: rgba(0,0,0,.28); }
+.info-art .portrait.large.special-art-portrait { height: auto; aspect-ratio: 1; overflow: hidden; border-radius: 24px; background: rgba(0,0,0,.28); position: relative; }
 .special-art-portrait img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
+.special-art-portrait.locked img { filter: grayscale(1) contrast(.72); opacity: .6; }
+.special-art-lock-overlay { position: absolute; inset: 0; display: grid; place-content: center; gap: 6px; text-align: center; border-radius: 24px; background: rgba(0,0,0,.45); color: #e1c2ee; pointer-events: none; }
+.special-art-lock-overlay b { color: #ffd88d; font-size: 42px; }
 #global-overlay { position: fixed; inset: 0; z-index: 999; pointer-events: none; }
 #global-overlay.active { pointer-events: auto; }
 .art-zoom { position: fixed; inset: 0; z-index: 999; display: grid; grid-template-rows: minmax(0, 1fr) auto; place-items: center; gap: 10px; padding: 20px; background: rgba(4,0,9,.9); cursor: zoom-out; overflow: hidden; overscroll-behavior: contain; text-align: center; pointer-events: auto; }
@@ -68,6 +71,7 @@
 .battle-skin-option { min-height: 236px; display: grid; grid-template-rows: 168px auto auto; align-content: start; gap: 6px; padding: 8px; border-radius: 16px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,215,166,.2); color: #ffe6f7; }
 .battle-skin-option.selected { outline: 2px solid #ffd88d; box-shadow: 0 0 18px rgba(255,216,141,.45); }
 .battle-skin-option img { width: 100%; height: 168px; object-fit: contain; object-position: center bottom; border-radius: 12px; background: rgba(0,0,0,.22); }
+.battle-skin-option img.locked { filter: grayscale(1) contrast(.72); opacity: .6; }
 .skin-level-lock { display: grid; place-items: center; width: 100%; height: 100%; min-height: 120px; border-radius: 12px; background: rgba(0,0,0,.3); color: #ffd88d; font-size: 30px; font-weight: 900; }
 .battle-skin-option .skin-level-lock { height: 168px; }
 .battle-skin-option b, .battle-skin-option span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -91,7 +95,7 @@
   .info-popup section { min-height: 0; max-height: none; align-self: stretch; }
   .info-art { grid-column: 1 / -1; min-height: 0; height: 100%; max-height: none; padding: 8px; }
   .info-art .portrait.large { width: min(220px, 48vw); max-height: 28vh; }
-  .special-art-lock, .info-art .portrait.large.special-art-portrait { width: min(220px, 28vh); height: min(220px, 28vh); }
+  .special-art-lock-overlay, .info-art .portrait.large.special-art-portrait { width: min(220px, 28vh); height: min(220px, 28vh); }
   .info-popup aside { gap: 6px; }
   .info-popup aside button { min-height: 48px; letter-spacing: 3px; }
 }

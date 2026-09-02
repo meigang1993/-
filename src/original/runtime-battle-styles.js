@@ -16,6 +16,7 @@ window.GameBattleStyles = (() => {
     "flora-sonic": "./flora-sonic-skin.css",
     "wendy-teacher": "./wendy-teacher-skin.css",
     "elrana-fallen-physician": "./elrana-fallen-physician-skin.css",
+    "angelica-berserker": "./angelica-berserker-skin.css",
     "lokar-motherbound": "./character-skin-fx.css",
     "besta-mecha": "./character-skin-fx.css",
   };
