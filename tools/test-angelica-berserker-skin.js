@@ -10,12 +10,17 @@ require("../src/original/angelica-luka-skills.js");
 
 const firstCardActor = { ref: "angelica" };
 window.BattleLines = { skill() {} };
-AngelicaLukaSkills.beforeCardPlayed({}, firstCardActor, { type: "tactic", drawCards: 2 });
+const turnState = { battle: { turn: 1 } };
+AngelicaLukaSkills.beforeCardPlayed(turnState, firstCardActor, { type: "tactic", drawCards: 2 });
 assert(!firstCardActor.angelicaFirstCardDone,
   "non-damaging cards must not consume Angelica's first-damage-card bonus");
-AngelicaLukaSkills.beforeCardPlayed({}, firstCardActor, { type: "slash", power: 1 });
+AngelicaLukaSkills.beforeCardPlayed(turnState, firstCardActor, { type: "slash", power: 1 });
 assert(firstCardActor.angelicaFirstCardDone,
   "the first damaging card must consume Angelica's first-damage-card bonus");
+turnState.battle.turn = 2;
+AngelicaLukaSkills.beforeCardPlayed(turnState, firstCardActor, { type: "slash", power: 1 });
+assert(firstCardActor.angelicaFirstCardTurn === 2,
+  "the first damaging card must be available again on the next turn");
 
 const base = SkinSystem.byId("angelica_default");
 const berserker = SkinSystem.byId("angelica_berserker");

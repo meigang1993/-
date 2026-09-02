@@ -7,8 +7,11 @@ window.AngelicaLukaSkills = (() => {
   const line = (state, unit, name, target) => window.BattleLines?.skill(state, unit, name, target);
   const wolfCard = () => ({ name: "狼牙杀", type: "slash", suit: "", power: 0, scale: "attack", noIntentCost: true, lukaWolfFang: true, text: "指定一名敌方角色为目标，对其造成等同于攻击力的伤害；此牌不消耗杀意。" });
   function beforeCardPlayed(state, actor, card) {
-    if (actor?.ref !== "angelica" || actor.angelicaFirstCardDone || !canDealDamage(card)) return;
+    const turn = state?.battle?.turn;
+    if (actor?.ref !== "angelica" || !canDealDamage(card)
+      || actor.angelicaFirstCardTurn === turn) return;
     actor.angelicaFirstCardDone = true;
+    actor.angelicaFirstCardTurn = turn;
     card.angelicaTriple = true;
     line(state, actor, "力大无穷");
     window.AngelicaBerserkerSkinFX?.might?.(state, actor, card);
