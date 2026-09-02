@@ -108,6 +108,7 @@ function loadRuntime() {
     "data-future-orc-enemies.js", "data-bakar-enemy.js", "data-future-enemies.js",
     "data-orc-bondi.js", "data-guard-kelly.js", "data-sakura-risa.js",
     "data-machine-factory-enemies.js", "data-underwater-train-enemies.js",
+    "data-ruins-sand-city-enemies.js",
     "data-combat-roles.js", "data-world.js", "data.js", "battle-damage-attributes.js",
     "data-future-relics.js", "data-relics.js", "relics.js", "battle-pile-stats.js",
     "battle-ai-tactics.js", "battle-ai-helpers.js", "battle-ai-slash-planner.js",
