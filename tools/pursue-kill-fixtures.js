@@ -25,6 +25,7 @@ window.BattleCards = {
   syncStatusCards() {},
 };
 window.RelicSystem = { hasEquipped: () => false };
+window.RuinsRelicEffects = { missileLauncherBlock: () => true };
 
 [
   "economy-config.js", "data-cards.js", "card-utils.js", "witherer-relic-skills.js",
@@ -44,7 +45,8 @@ window.RelicSystem = { hasEquipped: () => false };
   "edis-skills.js", "wendy-skills.js", "cadicis-skills.js",
   "wendy-cadicis-skills.js", "battle-damage-utils.js",
   "battle-damage-triggers.js", "battle-thunder-hammer-response.js",
-  "battle-dodge-cards.js", "battle-dodge-resume.js", "battle-dodge-response.js",
+  "battle-dodge-cards.js", "battle-dodge-resume.js", "battle-dodge-deflect.js",
+  "battle-dodge-auto-response.js", "battle-dodge-response.js",
   "battle-damage-response.js", "battle-damage-relics.js",
   "battle-damage-lifecycle.js", "battle-damage-resolution.js",
   "battle-damage-hit.js", "battle-damage.js",

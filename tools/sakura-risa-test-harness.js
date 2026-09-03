@@ -37,7 +37,8 @@ window.BattleSystem = { pushFloat() {} };
   "battle-dodge-auto-response.js", "battle-dodge-response.js",
   "battle-damage-response.js", "battle-damage-triggers.js",
   "battle-combat-responses.js", "battle-manual-hit-resume.js",
-  "battle-manual-continuation.js", "battle-manual-actions.js",
+  "battle-manual-continuation-resume.js", "battle-manual-continuation.js",
+  "battle-manual-actions.js",
   "battle-manual-flow.js",
   "dungeon-enemies.js",
 ].forEach(load);

@@ -57,6 +57,12 @@ Required guards:
   contract, correct that contract, rerun its focused check, and retry the
   authenticated save endpoint. Confirm the returned commit hash and a clean
   worktree before reporting the change as saved.
+- A failed save may leave files staged or partially synchronized while the
+  endpoint reports no commit. Treat the repository status as authoritative:
+  rerun the hook against the exact staged worktree, inspect any unstaged
+  tracked files that would bypass validation, and retry only after the hook
+  passes. Never report a save as complete without both a successful response
+  containing a commit hash and a clean status check.
 - `npm run dev:save -- "message"` must remain fail-closed. It runs the quick QA
   chain before calling the Game Studio save endpoint and must not save when any
   gate fails.
