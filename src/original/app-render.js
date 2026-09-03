@@ -49,7 +49,12 @@ function renderViewOnly() {
   if (state.view === "hall") { window.HallUnlockEvents?.triggerAll?.(); window.BountySystem?.ensure?.(state); window.GameAssets?.warmHall?.(state); }
   rememberDungeonScroll();
   const map = { hall: () => GameUI.hall(state), livingRoom: () => GameUI.livingRoom(state), nursery: AppRenderPages.nursery, furnace: AppRenderPages.furnace, dungeon: () => DungeonSystem.render(state), dungeonInventory: AppRenderPages.dungeonInventory, battle: () => GameUI.battle(state), battleLoading: AppRenderPages.battleLoading, dungeonConfirm: AppRenderPages.dungeonConfirm };
-  const viewChanged = setHTML($("view"), startOpen ? AppRenderOverlays.startScreen() : (map[state.view] || map.hall)());
+  const viewRoot = $("view");
+  const skipMediaPreservation = state.view === "battle"
+    && state.battle?._skipMediaPreservation;
+  if (skipMediaPreservation) viewRoot.dataset.skipMediaPreservation = "1";
+  const viewChanged = setHTML(viewRoot, startOpen ? AppRenderOverlays.startScreen() : (map[state.view] || map.hall)());
+  if (skipMediaPreservation) delete viewRoot.dataset.skipMediaPreservation;
   const overlayChanged = AppRenderOverlays.globalOverlay(setHTML); if (state.view === "battle") { window.BattleFX?.syncBumps?.(); window.NonokaIdolSkinFX?.sync?.(state); window.MannyGunSkinFX?.sync?.(state); window.BertisQueenSkinFX?.sync?.(state); window.FloraSonicSkinFX?.sync?.(state); window.WendyTeacherSkinFX?.sync?.(state); window.ElranaFallenPhysicianSkinFX?.sync?.(state); window.AngelicaBerserkerSkinFX?.sync?.(state); window.CharacterSkinFX?.sync?.(state); } else window.BattleFX?.clearBumps?.();
   if (viewChanged || overlayChanged || chromeChanged) bindActions();
   else if (state.view === "battle") window.bindBattleActionButtons?.();

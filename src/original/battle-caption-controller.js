@@ -3,7 +3,7 @@ window.BattleCaptionController = ({
 }) => {
   let skillTimer = null;
   let skillCaptionTimer = null;
-  let relicCaptionTimer = null;
+  const relicCaptionTimers = new Map();
   let pendingSkills = [];
   function skillCaptionsOf(battle) {
     return battle?.skillCaptions || (battle?.skillCaption ? [battle.skillCaption] : []);
@@ -13,27 +13,39 @@ window.BattleCaptionController = ({
     battle.skillCaptions = captions;
     battle.skillCaption = captions[captions.length - 1] || null;
   }
+  function relicCaptionsOf(battle) {
+    return battle?.relicCaptions || (battle?.relicCaption ? [battle.relicCaption] : []);
+  }
+  function syncRelicCaption(battle, captions) {
+    if (!battle) return;
+    battle.relicCaptions = captions;
+    battle.relicCaption = captions[captions.length - 1] || null;
+  }
   function showRelicCaption(state, unit, name, timeout = duration,
     renderNow = true) {
     if (!state?.battle || !unit || !name) return;
     const action = window.RelicSystem?.isActive?.(name)
       ? "使用了" : "触发了";
     const text = `${unit.name} ${action} ${name}`;
-    const current = state.battle.relicCaption;
+    const current = relicCaptionsOf(state.battle)
+      .find(item => item.uid === unit.uid && item.name === name && item.text === text);
     if (current?.uid === unit.uid && current.name === name
       && current.text === text) return;
     const id = window.GameRandom.id("rl");
-    state.battle.relicCaption = {
+    const caption = {
       id, side: unit.side, text, uid: unit.uid, name,
     };
+    syncRelicCaption(state.battle, [...relicCaptionsOf(state.battle), caption]);
     if (renderNow) window.render?.();
-    clearTimeout(relicCaptionTimer);
-    relicCaptionTimer = setTimeout(() => {
-      if (state.battle?.relicCaption?.id === id) {
-        state.battle.relicCaption = null;
+    const timer = setTimeout(() => {
+      relicCaptionTimers.delete(id);
+      const currentCaptions = relicCaptionsOf(state.battle);
+      if (currentCaptions.some(item => item.id === id)) {
+        syncRelicCaption(state.battle, currentCaptions.filter(item => item.id !== id));
         window.render?.();
       }
     }, timeout);
+    relicCaptionTimers.set(id, timer);
   }
   function showSkillCaption(state, unit, name, timeout = duration,
     renderNow = true) {
@@ -130,15 +142,16 @@ window.BattleCaptionController = ({
     frame(show);
   }
   function cancel(state) {
-    [skillTimer, skillCaptionTimer, relicCaptionTimer].forEach(clearTimeout);
+    [skillTimer, skillCaptionTimer, ...relicCaptionTimers.values()].forEach(clearTimeout);
     skillTimer = null;
     skillCaptionTimer = null;
-    relicCaptionTimer = null;
+    relicCaptionTimers.clear();
     pendingSkills = [];
     if (state?.battle) {
       state.battle.skillCaptions = [];
       state.battle.skillCaption = null;
       state.battle.relicCaption = null;
+      state.battle.relicCaptions = [];
     }
   }
   return {

@@ -37,7 +37,12 @@ async function equipBattleSkin(button) {
     actionUnit.skinDamagedArt = skin.damagedArt || null;
     actionUnit.skinVictoryArt = skin.victoryArt || null;
     actionState.appearanceSaving = !trial;
-    render();
+    actionBattle._skipMediaPreservation = true;
+    try {
+      render();
+    } finally {
+      delete actionBattle._skipMediaPreservation;
+    }
     if (!trial) await persistAppearanceNow(actionState);
   } catch (err) {
     if (!isCurrent()) return;

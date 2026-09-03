@@ -80,10 +80,10 @@ window.GameUIBattleScene = (U, I) => {
     ).join("");
   }
   function relicCaption(battle) {
-    const caption = battle.relicCaption;
-    return caption
-      ? `<div class="skill-caption relic-caption ${caption.side === "enemy" ? "enemy" : "ally"}">${U.esc(caption.text)}</div>`
-      : "";
+    const captions = battle.relicCaptions || (battle.relicCaption ? [battle.relicCaption] : []);
+    return captions.map((caption, index) =>
+      `<div class="skill-caption relic-caption ${caption.side === "enemy" ? "enemy" : "ally"}" style="--caption-index:${index}" data-caption-id="${U.esc(caption.id || "")}">${U.esc(caption.text)}</div>`
+    ).join("");
   }
   return { render, syncPlayedTrail };
 };
