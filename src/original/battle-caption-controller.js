@@ -5,6 +5,14 @@ window.BattleCaptionController = ({
   let skillCaptionTimer = null;
   let relicCaptionTimer = null;
   let pendingSkills = [];
+  function skillCaptionsOf(battle) {
+    return battle?.skillCaptions || (battle?.skillCaption ? [battle.skillCaption] : []);
+  }
+  function syncSkillCaption(battle, captions) {
+    if (!battle) return;
+    battle.skillCaptions = captions;
+    battle.skillCaption = captions[captions.length - 1] || null;
+  }
   function showRelicCaption(state, unit, name, timeout = duration,
     renderNow = true) {
     if (!state?.battle || !unit || !name) return;
@@ -39,26 +47,31 @@ window.BattleCaptionController = ({
     if (current?.uid === unit.uid && current.name === name
       && current.text === text) return;
     const id = window.GameRandom.id("sk");
-    state.battle.skillCaption = {
+    const caption = {
       id, side: unit.side, text, uid: unit.uid, name,
     };
+    const captions = skillCaptionsOf(state.battle)
+      .filter(item => item.id !== id);
+    captions.push(caption);
+    syncSkillCaption(state.battle, captions);
     if (renderNow) window.render?.();
-    clearTimeout(skillCaptionTimer);
     skillCaptionTimer = setTimeout(() => {
-      if (state.battle?.skillCaption?.id === id) {
-        state.battle.skillCaption = null;
+      const current = skillCaptionsOf(state.battle);
+      if (current.some(item => item.id === id)) {
+        syncSkillCaption(state.battle, current.filter(item => item.id !== id));
         window.render?.();
       }
     }, timeout);
   }
   function clearSkillCaption(state, unit, name, renderNow = true) {
-    const current = state?.battle?.skillCaption;
-    if (!current || current.uid !== unit?.uid || current.name !== name) {
+    const current = skillCaptionsOf(state?.battle);
+    const kept = current.filter(item => item.uid !== unit?.uid || item.name !== name);
+    if (kept.length === current.length) {
       return false;
     }
     clearTimeout(skillCaptionTimer);
     skillCaptionTimer = null;
-    state.battle.skillCaption = null;
+    syncSkillCaption(state.battle, kept);
     if (renderNow) window.render?.();
     return true;
   }
@@ -123,6 +136,7 @@ window.BattleCaptionController = ({
     relicCaptionTimer = null;
     pendingSkills = [];
     if (state?.battle) {
+      state.battle.skillCaptions = [];
       state.battle.skillCaption = null;
       state.battle.relicCaption = null;
     }

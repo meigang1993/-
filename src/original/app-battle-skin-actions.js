@@ -17,6 +17,10 @@ async function equipBattleSkin(button) {
   button.disabled = true;
   try {
     await window.GameBundles?.load?.("battle", { state: actionState, skinIds: [skin.id] });
+    const failed = await window.GameAssets?.preloadAssets?.(
+      [skin.art, skin.damagedArt, skin.victoryArt].filter(Boolean)
+    );
+    if (failed?.length) throw new Error("战斗皮肤素材加载失败");
     if (!isCurrent()) return;
     const changed = trial
       ? SkinSystem.testEquip(actionState, skin.charId, skin.id)
