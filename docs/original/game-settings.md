@@ -792,3 +792,62 @@ When a setting changes:
 4. Follow `docs/original/qa-workflow.md`.
 5. Run the publish path compliance check before saving.
 6. Use the Game Studio git save endpoint after edits.
+
+## Ruins Sand City Dungeon
+
+- `ruins_sand_city` is a completed formal dungeon, defined in
+  `src/original/data-ruins-sand-city.js` and
+  `src/original/data-ruins-sand-city-enemies.js`. Content (cards and relics)
+  lives in `src/original/data-ruins-content.js`.
+- Unlock flag: `ruinsSandCityUnlocked`; unlock condition: first clear of
+  `orc_dungeon` at warrior difficulty triggers the unlock event.
+- Route: fixed-random, 15 layers, rest at 4 and 9, chest at 7, boss at 15.
+- BGM: `./assets/new-bgm/ruins-sand-city-battle.mp3`.
+- Enemy roster: 4 normal (noble_soldier, noble_sniper, merca_tank,
+  attack_drone), 3 elite (hilde, attack_helicopter, armored_carrier),
+  2 boss (mech_ai_dragon, witherer_1312).
+- 10 new cards in `data-ruins-content.js`: 拼杀, 魔之连杀, 魅惑术, 魅杀,
+  偷袭, 冰冻术, 流星杀, 吸魔杀, 物资私分, 枪林弹雨.
+- 10 new relics in `data-ruins-content.js`: 推进器, 智能大脑, 魅魔钢叉,
+  粉色魅魔装, 冰心双刺剑, 刺客胶衣, 螺旋桨, 导弹发射器, 物资货物, 武器库.
+- Enemy art lives in `publish/assets/ruins-enemies/`; note that
+  `noble_sniper.art` points to `attack-drone.webp` and `attack_drone.art`
+  points to `noble-sniper.webp` (cross-referenced).
+- Enemy skills are implemented in `src/original/ruins-enemy-skills.js`,
+  `src/original/ruins-grunt-skills.js`, `src/original/ruins-dragon-skills.js`,
+  `src/original/ruins-witherer-skills.js`, and `src/original/ruins-elite-skills.js`.
+- Relic effects are implemented in `src/original/ruins-relic-effects.js`.
+
+## Incomplete New Characters (Excluded From Formal Scope)
+
+- `artina` (亚缇娜) and `maria` (玛利亚) are defined in
+  `src/original/data-new-characters.js` with `unlockFlag: "ruinsSandCityUnlocked"`.
+- They are incomplete: skill implementations exist in
+  `src/original/artina-maria-skills.js` but their full battle AI, unlock
+  events, and testing paths are not finalized.
+- Artina: ranged sniper with suit-recording and enhanced next slash.
+  Maria: support with divine-count marking and team stat blessing.
+- Their portraits exist at `publish/assets/new-portraits/artina.webp` and
+  `publish/assets/new-portraits/maria.webp`.
+- Their skill art exists in `publish/assets/generated/cards/`.
+- Do not treat them as formal playable characters in content checks or
+  codex requirements. The 26 formal characters do not include them.
+
+## GGGG Folder
+
+- `/workspace/GGGG/` is a persistent folder for development tools,
+  installed packages, and other non-project files that must survive
+  container restarts.
+- It is added to `.gitignore` and must not be tracked in Git.
+- It must not be scanned by container health scans or file watchers.
+- Do not place project source, publish files, or documentation in it.
+- Created on 2026-09-04 for DeepSeek remake handoff document preparation.
+
+## DeepSeek Remake Handoff Documents
+
+- `/workspace/项目文档/` contains 13 plain-text (.txt) documents for
+  DeepSeek remake handoff. These are not part of the game runtime.
+- `/workspace/docs/deepseek-rebuild/` contains the earlier Markdown
+  version of the handoff documents.
+- Both sets document the same project but the `项目文档` set is more
+  comprehensive and uses .txt format for DeepSeek compatibility.

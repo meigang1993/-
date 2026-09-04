@@ -1,0 +1,187 @@
+===============================================================
+  魅魔杀 - 游戏结构与架构
+  交接对象：DeepSeek 重制
+===============================================================
+
+【一、运行环境】
+
+游戏是纯静态前端网站，运行在沙箱 iframe 中。
+- 入口文件：publish/index.html
+- 技术：HTML、CSS、JavaScript、Canvas、Web Audio、静态资源
+- 禁止：Node/Python服务、端口监听、Express/Flask、服务器依赖
+- 所有资源使用相对路径
+- publish/ 下所有路径只能包含 ASCII 字母、数字、_、-、.
+
+沙箱 iframe 限制（生产环境）：
+- 没有 allow-same-origin，origin 为 null
+- window.dzmm 对象在运行前由宿主注入
+- 不访问 parent.document、top.location、window.opener
+- 不依赖 cookie、localStorage、sessionStorage、IndexedDB
+- 不使用 window.open、表单提交
+- 存档使用 dzmm.kv
+
+Workbench 预览环境差异：
+- sandbox 包含 allow-forms allow-popups
+- 数据持久化到 PostgreSQL（开发者自己的数据）
+- 控制台输出转发到工作台 Console 面板
+
+【二、文件组织结构（当前项目）】
+
+源代码目录：
+  src/original/         所有未压缩运行时模块（开发源码，不下发玩家）
+  tools/                构建配置和工具
+  docs/                 项目记忆文档
+
+发布目录：
+  publish/              只有这里的文件会提供给玩家
+  publish/index.html    入口文件
+  publish/base.css      基础样式
+  publish/villa.css     殿堂兼容入口（import 四个 villa CSS）
+  publish/battle*.css   战斗相关样式
+  publish/gothic*.css   哥特主题样式
+  publish/bundles/      生成的压缩 JS bundle 文件
+  publish/assets/       静态资源
+
+资源目录：
+  publish/assets/images/         角色和敌人立绘
+  publish/assets/new-portraits/  新角色和新敌人立绘
+  publish/assets/generated/      生成的皮肤、特殊立绘和卡牌插画
+  publish/assets/generated/cards/ 卡牌和技能插画（79个WebP）
+  publish/assets/sounds/         音效和BGM
+  publish/assets/new-bgm/        新副本BGM
+  publish/assets/ruins-enemies/  废墟沙城敌人立绘
+
+【三、Bundle 系统（当前项目）】
+
+当前项目使用 Terser 压缩的 classic script bundle。
+重制项目可以不使用 bundle，但需要遵守文件大小限制。
+
+当前 bundle 分组（按加载顺序）：
+
+1. startup（启动核心）
+   - 运行时加载器、全局变量、游戏随机数、经济配置
+   - 卡牌数据、角色数据、怪物数据、副本数据
+   - 战斗角色定位、皮肤数据和资产解析
+
+2. startup-store（存储层）
+   - 存档验证、迁移、修复
+   - KV 读写、云端同步
+   - LocalCore（本地核心逻辑）、ServerCore
+   - 存档槽、设置
+
+3. startup-app（应用层）
+   - UI 渲染、存档槽界面
+   - 饰品系统、应用启动
+   - 运行时错误恢复
+
+4. hall（殿堂，延迟加载）
+   - 殿堂事件、别墅事件
+   - 商店、悬赏、队伍管理
+   - 角色图鉴、更新公告
+
+5. battle-rules（战斗规则，延迟加载）
+   - 卡牌系统、状态牌、伤害系统
+   - 角色技能实现
+   - 战斗卡牌交互
+
+6. battle-skills（战斗技能，延迟加载）
+   - 对话数据、语音控制
+   - 各角色和敌人技能模块
+   - 敌人状态效果和战斗钩子
+
+7. battle-flow（战斗流程，延迟加载）
+   - 回合管理、敌人回合
+   - 手动响应、结算
+   - 副本会话
+
+8. battle-ai（战斗AI，延迟加载）
+   - AI 战术、技能评估
+   - 技能规划、目标选择
+
+9. battle-presentation（战斗表现，延迟加载）
+   - 伤害特效、音频
+   - 皮肤特效控制器
+   - 浮动数字、碰撞反馈
+
+10. battle-ui（战斗界面，延迟加载）
+    - 战斗选择器、目标系统
+    - 手牌管理、操作绑定
+
+11. dungeon（副本，延迟加载）
+    - 副本地图、敌人定义
+    - 副本事件、奖励
+    - 副本结算
+
+【四、推荐重制文件结构】
+
+重制项目可以使用更简单的结构：
+
+  publish/
+    index.html          入口文件
+    style.css           全局样式
+    base.css            基础变量和重置
+    components.css      组件样式
+    game.css            游戏特有样式
+    data.js             数据层（角色、卡牌、怪物、副本）
+    battle.js           战斗系统
+    ui.js               UI 渲染
+    storage.js          存档系统
+    audio.js            音频管理
+    assets/
+      images/
+      audio/
+
+如果使用多个 JS 文件，使用全局命名空间模式：
+  window.GameModules = window.GameModules || {};
+  window.GameModules.config = { ... };
+
+在 index.html 中按依赖顺序用 script 标签加载。
+
+【五、数据流】
+
+1. 启动流程：
+   index.html -> 加载 CSS -> 加载 JS (数据层 -> 存储层 -> 应用层)
+   -> 渲染标题页 -> 玩家点击新游戏/读档
+
+2. 新游戏流程：
+   创建初始状态 -> 解锁初始角色(罗卡尔、贝丝妲魔偶) -> 渲染殿堂
+
+3. 战斗流程：
+   选择副本和难度 -> 进入副本地图 -> 选择节点 -> 创建战斗
+   -> 初始化双方牌堆和角色 -> 按速度排序回合 -> 战斗结算
+
+4. 存档流程：
+   游戏状态变化 -> 按里程碑触发存档 -> 序列化状态 -> dzmm.kv.put
+   -> 失败时 fallback 到 localStorage -> 报告真实结果
+
+【六、数据层职责】
+
+数据文件应包含：
+- 角色定义：ID、名称、性别、定位、基础属性、技能列表、解锁条件
+- 卡牌定义：名称、类型、花色分布、效果文本、价格、掉落来源
+- 怪物定义：ID、名称、类型、属性、技能、AI标识、掉落
+- 饰品定义：名称、图标、效果、背景故事、来源
+- 副本定义：ID、名称、路线配置、敌人列表、解锁条件
+- 皮肤定义：ID、角色、名称、品质、价格、素材路径、特效标识
+- 难度定义：倍率、经验、掉落率、层数、解锁条件
+- 经济定义：起始金币、商店配置、副本金币、悬赏金币
+
+【七、模块间通信】
+
+- 使用全局命名空间对象，不使用 ES Module import
+- 战斗渲染只读状态，不拥有持久化真相
+- 全局应用交互助手按职责分离（模态框、滚动、皮肤变更）
+- 每个弹窗层有明确的关闭优先级和焦点恢复
+
+【八、文件大小限制】
+
+- 单个 JS 文件不得超过 200 行
+- 接近 150 行时开始拆分
+- CSS 超过 500 行时按功能拆分
+- 拆分按职责：数据、运行时逻辑、渲染分别可使用不同文件
+
+【九、构建版本管理】
+
+当前项目使用 meta[name="game-build"] 管理缓存版本。
+所有脚本和样式 URL 带版本号参数防止缓存混淆。
+重制项目也应实现类似机制，确保 CSS/JS 变更后浏览器不会使用旧缓存。
