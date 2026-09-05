@@ -41,12 +41,7 @@ async function equipBattleSkin(button) {
     }
     actionBattle._skinSwitching = true;
     actionState.appearanceSaving = !trial;
-    actionBattle._skipMediaPreservation = true;
-    try {
-      render();
-    } finally {
-      delete actionBattle._skipMediaPreservation;
-    }
+    render();
     if (!trial) await persistAppearanceNow(actionState);
   } catch (err) {
     if (!isCurrent()) return;

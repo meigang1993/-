@@ -314,6 +314,10 @@ scroll position, or apply old DOM indices to another character's hand.
 Required guards:
 
 - preserve matching image/video nodes and stable keyed roster cards;
+- battle skin changes must preserve every unchanged unit's media node; disabling
+  media preservation for the whole battle view can force large decoded portraits
+  such as Angelica's Berserker art through a new decode/composition cycle and
+  visibly corrupt or flash her portrait when another character changes skin;
 - derive HP-dependent skill-state portraits and decorators from `visualHp`
   while damage or healing is queued, so group effects cannot expose a later
   target's state change before its own visual hit commits;
