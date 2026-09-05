@@ -39,6 +39,7 @@ async function equipBattleSkin(button) {
     if (skin.dynamicEffect === "angelica-berserker") {
       actionUnit._angelicaBerserkerEntryShown = true;
     }
+    actionBattle._skinSwitching = true;
     actionState.appearanceSaving = !trial;
     actionBattle._skipMediaPreservation = true;
     try {
@@ -55,6 +56,7 @@ async function equipBattleSkin(button) {
     if (isCurrent()) {
       actionState.appearanceSaving = false;
       render();
+      delete actionBattle._skinSwitching;
     }
     if (button.isConnected) button.disabled = false;
   }

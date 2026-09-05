@@ -116,5 +116,18 @@ test("battle skin switch does not corrupt unit artwork", async ({ page }) => {
   expect(after.allUnitImgsLoaded).toBe(true);
   expect(after.entryFxCount).toBe(0);
 
+  for (const skinId of ["angelica_level_10_special", "angelica_default", "angelica_berserker"]) {
+    await page.locator(`[data-battle-equip-skin="${skinId}"]`).click();
+    await page.waitForTimeout(150);
+    const transition = await page.evaluate(() => ({
+      fx: document.querySelectorAll(".angelica-berserker-fx,.angelica-berserker-line").length,
+      entering: document.querySelectorAll(".angelica-berserker-entering").length,
+      images: [...document.querySelectorAll(".unit-art img")].every(img =>
+        img.complete && img.naturalWidth > 0),
+    }));
+    expect(transition).toEqual({ fx: 0, entering: 0, images: true });
+    await page.waitForTimeout(1250);
+  }
+
   expect(relevantErrors(errors)).toEqual([]);
 });

@@ -66,6 +66,7 @@ window.AngelicaBerserkerSkinFX = (() => {
     if (!hasDocument()) return;
     const battle = state?.battle;
     if (!battle) return;
+    if (battle._skinSwitching) return;
     battle.allies?.concat(battle.enemies || []).forEach(unit => {
       if (!active(unit)) {
         delete unit._angelicaBerserkerEntryShown;
