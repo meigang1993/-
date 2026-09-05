@@ -1,4 +1,29 @@
 let battleSkinChangeId = 0;
+function captureBattleSkinArt(unit) {
+  const wrapper = document.querySelector(`[data-target="${unit.uid}"] .unit-art`);
+  return { image: wrapper?.querySelector("img") || null };
+}
+async function revealBattleSkinArt(unit, previous, isCurrent) {
+  const wrapper = document.querySelector(`[data-target="${unit.uid}"] .unit-art`);
+  const nextImage = wrapper?.querySelector("img");
+  if (!wrapper || !nextImage || !previous.image || previous.image === nextImage) return;
+  wrapper.classList.add("skin-switch-layer");
+  previous.image.classList.add("skin-switch-old-art");
+  wrapper.append(previous.image);
+  try {
+    await Promise.race([
+      nextImage.decode?.() || Promise.resolve(),
+      new Promise(resolve => setTimeout(resolve, 800)),
+    ]);
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  } catch (err) {
+    console.warn("battle skin decode failed:", err.message, err.stack);
+  } finally {
+    previous.image.remove();
+    wrapper.classList.remove("skin-switch-layer");
+  }
+  if (!isCurrent()) return;
+}
 async function equipBattleSkin(button) {
   const actionState = state;
   const skinId = button?.dataset?.battleEquipSkin;
@@ -28,6 +53,7 @@ async function equipBattleSkin(button) {
     if (!changed) return;
     if (!trial && actionBattle.test) delete actionState.testSkins?.[skin.charId];
     if (!trial) SkinSystem.markAppearance(actionState);
+    const previousArt = captureBattleSkinArt(actionUnit);
     [window.NonokaIdolSkinFX, window.MannyGunSkinFX, window.BertisQueenSkinFX,
       window.FloraSonicSkinFX, window.WendyTeacherSkinFX,
       window.ElranaFallenPhysicianSkinFX, window.AngelicaBerserkerSkinFX,
@@ -42,6 +68,7 @@ async function equipBattleSkin(button) {
     actionBattle._skinSwitching = true;
     actionState.appearanceSaving = !trial;
     render();
+    await revealBattleSkinArt(actionUnit, previousArt, isCurrent);
     if (!trial) await persistAppearanceNow(actionState);
   } catch (err) {
     if (!isCurrent()) return;

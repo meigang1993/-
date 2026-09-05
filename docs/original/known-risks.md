@@ -318,6 +318,10 @@ Required guards:
   media preservation for the whole battle view can force large decoded portraits
   such as Angelica's Berserker art through a new decode/composition cycle and
   visibly corrupt or flash her portrait when another character changes skin;
+- when the changed unit receives a different image source, keep its previous
+  battle image visibly layered above the replacement until `decode()` completes
+  and the replacement survives two animation frames; preload completion alone
+  does not guarantee that the new DOM image has reached stable composition;
 - derive HP-dependent skill-state portraits and decorators from `visualHp`
   while damage or healing is queued, so group effects cannot expose a later
   target's state change before its own visual hit commits;
