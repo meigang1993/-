@@ -49,7 +49,7 @@ async function equipBattleSkin(button) {
     console.error("battle skin style load failed:", err.code, err.message, err.stack);
     log("皮肤样式加载失败，请检查网络后重试。");
   } finally {
-    if (window.state === actionState) {
+    if (isCurrent()) {
       actionState.appearanceSaving = false;
       render();
     }

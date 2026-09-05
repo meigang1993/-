@@ -90,4 +90,8 @@ const css = fs.readFileSync("./publish/angelica-berserker-skin.css", "utf8");
   "angelica-berserker-victory-show",
 ].forEach(token => assert(css.includes(token), `Berserker CSS is missing ${token}`));
 
+const skinActionSource = fs.readFileSync("./src/original/app-battle-skin-actions.js", "utf8");
+assert(skinActionSource.includes("if (isCurrent()) {\n      actionState.appearanceSaving = false;"),
+  "Stale battle skin requests must not rerender or clear the current appearance save state");
+
 console.log("test-angelica-berserker-skin: all assertions passed");
