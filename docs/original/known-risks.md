@@ -121,11 +121,11 @@ must capture the originating state plus runtime-error generation, reject stale
 work after every asynchronous boundary before adoption, then capture the loaded
 state for settings synchronization and final UI writeback.
 
-Battle skin changes must not be treated as battle entry. Activating Angelica's
-Berserker skin during an existing battle must suppress the one-time fixed
-position Berserker entry effect; otherwise render sync creates visible effect
-nodes outside the skin panel and makes the switch look like portrait
-corruption.
+Angelica's Berserker skin must not create entry effects from render-time
+`sync()`. The former one-time entry path appended fixed-position nodes to the
+document body and animated the portrait whenever its marker was lost, so an
+unrelated or delayed rerender could produce visible corruption outside the skin
+panel. Berserker visuals are now limited to explicit skill events.
 
 Loading a battle snapshot occurs before deferred dungeon modules are guaranteed
 to exist. A legacy start-only or malformed snapshot must therefore clear

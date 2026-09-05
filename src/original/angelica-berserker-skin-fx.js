@@ -26,14 +26,6 @@ window.AngelicaBerserkerSkinFX = (() => {
     mount(state, fx, duration);
     return fx;
   }
-  function entry(state, unit) {
-    const item = anchored(state, unit, "angelica-berserker-entry", 1250,
-      "<b></b><i></i><i></i><i></i><span></span>", "action-first");
-    if (!item) return;
-    item.anchor.element.classList.add("angelica-berserker-entering");
-    later(() => { if (item.alive()) item.anchor.element.classList.remove("angelica-berserker-entering"); }, 1020);
-    tone(150, .2, "sawtooth", 0, .05); tone(430, .14, "triangle", 130, .04);
-  }
   function might(state, actor, card) {
     if (!active(actor) || !card) return;
     anchored(state, actor, "angelica-berserker-might", 980, "<b></b><i></i><i></i><span></span>");
@@ -64,19 +56,9 @@ window.AngelicaBerserkerSkinFX = (() => {
   }
   function sync(state) {
     if (!hasDocument()) return;
-    const battle = state?.battle;
-    if (!battle) return;
-    if (battle._skinSwitching) return;
-    battle.allies?.concat(battle.enemies || []).forEach(unit => {
-      if (!active(unit)) {
-        delete unit._angelicaBerserkerEntryShown;
-        return;
-      }
-      if (!battle.victoryScreen && !unit._angelicaBerserkerEntryShown) {
-        unit._angelicaBerserkerEntryShown = true;
-        entry(state, unit);
-      }
-    });
+    document.querySelectorAll(".angelica-berserker-entry").forEach(node => node.remove());
+    document.querySelectorAll(".angelica-berserker-entering").forEach(node =>
+      node.classList.remove("angelica-berserker-entering"));
   }
   function tone(...args) { window.BattleAudio?.tone?.(...args); }
   function cancel() {
@@ -86,5 +68,5 @@ window.AngelicaBerserkerSkinFX = (() => {
     document.querySelectorAll(".angelica-berserker-entering").forEach(node =>
       node.classList.remove("angelica-berserker-entering"));
   }
-  return { active, entry, might, rageGain, rageSpend, rageTrail, taunt, sync, cancel };
+  return { active, might, rageGain, rageSpend, rageTrail, taunt, sync, cancel };
 })();

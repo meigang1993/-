@@ -62,9 +62,6 @@ async function equipBattleSkin(button) {
     actionUnit.skinDynamicEffect = skin.dynamicEffect || null;
     actionUnit.skinDamagedArt = skin.damagedArt || null;
     actionUnit.skinVictoryArt = skin.victoryArt || null;
-    if (skin.dynamicEffect === "angelica-berserker") {
-      actionUnit._angelicaBerserkerEntryShown = true;
-    }
     actionBattle._skinSwitching = true;
     actionState.appearanceSaving = !trial;
     render();

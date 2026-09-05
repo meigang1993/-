@@ -115,6 +115,13 @@ test("battle skin switch does not corrupt unit artwork", async ({ page }) => {
   // All unit images should be loaded
   expect(after.allUnitImgsLoaded).toBe(true);
   expect(after.entryFxCount).toBe(0);
+  await page.evaluate(() => {
+    const angelicaUnit = window.state.battle.allies.find(u => u.ref === "angelica");
+    delete angelicaUnit._angelicaBerserkerEntryShown;
+    window.render();
+  });
+  expect(await page.locator(".angelica-berserker-entry").count()).toBe(0);
+  expect(await page.locator(".angelica-berserker-entering").count()).toBe(0);
 
   for (const skinId of ["angelica_level_10_special", "angelica_default", "angelica_berserker"]) {
     await page.locator(`[data-battle-equip-skin="${skinId}"]`).click();
