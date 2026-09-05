@@ -696,7 +696,7 @@ gameplay values and behavior remain here rather than being duplicated in
 
 ### 安洁莉卡皮肤：狂暴战士
 
-- 皮肤 ID：`angelica_berserker`；品质固定为史诗，兑换价格固定为10精华宝珠，仅属于安洁莉卡；`angelica_default`保留原立绘并允许随时切回。默认立绘使用正式压缩素材`publish/assets/images/angelica-portrait.7a63db49.webp`；狂暴战士素材固定为`publish/assets/generated/angelica-berserker.f7d20f40.webp`（2048×2048，用户提供设计图转制的 WebP），专属动态特效标识固定为`angelica-berserker`。
+- 皮肤 ID：`angelica_berserker`；品质固定为史诗，兑换价格固定为10精华宝珠，仅属于安洁莉卡；`angelica_default`保留原立绘并允许随时切回。默认立绘使用正式压缩素材`publish/assets/images/angelica-portrait.7a63db49.webp`；狂暴战士素材固定为`publish/assets/generated/angelica-berserker.30dab19b.webp`（1024×1024 WebP，由用户提供设计图优化），专属动态特效标识固定为`angelica-berserker`。
 - 形象固定为抛弃防御的狂战女性：白色长发、红色眼眸、暗红重甲与黑色皮带交叠的战斗装束，肩扛带豁口的暗红色巨剑，剑身透出赤红魔光。不得改成金发蓝瞳、圣骑士铠甲、无剑形象或明亮背景。
 - 专属特效控制器为`src/original/angelica-berserker-skin-fx.js`，注册在 battle-presentation bundle；样式注册于`src/original/runtime-battle-styles.js`的`angelica-berserker`映射，指向`publish/angelica-berserker-skin.css`。
 - 出场演出显示巨剑从天而降插入地面、冲击波与碎石、地面蛛网裂痕，安洁莉卡立绘以`berserkerEnter`入场动画现身。

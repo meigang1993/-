@@ -29,7 +29,7 @@ window.GameSkinData = (() => {
     { id: "elrana_fallen_physician", charId: "elrana", name: "堕落医师", quality: "epic", price: 10, art: "./assets/generated/elrana-fallen-physician.5fb5e43a.webp", dynamicEffect: "elrana-fallen-physician", specialEffect: true, desc: "培养罐、绿色炼金液与红色再生丝线围绕着堕落医师，她以冷静的医学术式重造生命。" },
     { id: "elrana_level_10_special", charId: "elrana", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/elrana-level-10-special.3154d24b.webp", desc: "艾尔拉娜达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "angelica_default", charId: "angelica", name: "默认", quality: "default", price: 0, art: "./assets/images/angelica-portrait.webp", desc: "安洁莉卡的初始外观。", initial: true },
-    { id: "angelica_berserker", charId: "angelica", name: "狂暴战士", quality: "epic", price: 10, art: "./assets/generated/angelica-berserker.f7d20f40.webp", dynamicEffect: "angelica-berserker", specialEffect: true, desc: "暗红重甲覆左半身，豁口巨剑与明灭战纹宣告她把全部重量压在进攻上。" },
+    { id: "angelica_berserker", charId: "angelica", name: "狂暴战士", quality: "epic", price: 10, art: "./assets/generated/angelica-berserker.30dab19b.webp", dynamicEffect: "angelica-berserker", specialEffect: true, desc: "暗红重甲覆左半身，豁口巨剑与明灭战纹宣告她把全部重量压在进攻上。" },
     { id: "angelica_level_10_special", charId: "angelica", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/angelica-level-10-special.1d7b9a23.webp", desc: "安洁莉卡达到10级后自动解锁，可作为正式战斗立绘装备。" },
   ];
   return { quality, skins };
