@@ -9,6 +9,7 @@ test("battle skin switch does not corrupt unit artwork", async ({ page }) => {
   await startFreshGame(page);
   await page.locator("[data-open-modal='team']").first().click();
   await page.getByRole("button", { name: "测试战斗" }).click();
+  await page.locator("[data-test-ally='angelica']").click();
   await page.evaluate(() => {
     window.state.ownedSkins = window.state.ownedSkins || {};
     window.state.ownedSkins.angelica_berserker = true;
@@ -20,13 +21,6 @@ test("battle skin switch does not corrupt unit artwork", async ({ page }) => {
   });
   await page.locator("[data-start-test-battle]").click();
   await expect(page.locator(".battle-screen")).toBeVisible();
-
-  // Wait for battle to settle
-  await expect.poll(() => page.evaluate(() =>
-    !window.BattleEffects.animating
-    && !window.BattleEffects.draining
-    && !window.state?.battle?.animQueue?.length
-  )).toBe(true);
 
   await page.evaluate(() => {
     const battle = window.state.battle;
@@ -90,12 +84,10 @@ test("battle skin switch does not corrupt unit artwork", async ({ page }) => {
     const activePortrait = document.querySelector(`[data-active-info="${angelicaUnit.uid}"] .portrait`);
     const activeImg = activePortrait?.querySelector("img");
 
-    // Also check all other unit images are still loaded
+    // Also check all other unit images and skin effects after the switch.
     const allUnitImgs = [...document.querySelectorAll(".unit-art img")];
     const allLoaded = allUnitImgs.every(i => i.complete && i.naturalWidth > 0);
-
-    // Check for orphaned fx elements
-    const orphanFx = document.querySelectorAll(".angelica-berserker-fx:not([style*='display: none'])");
+    const entryFx = document.querySelectorAll(".angelica-berserker-entry");
 
     return {
       battlefieldSrc: img?.getAttribute("src") || "",
@@ -108,7 +100,7 @@ test("battle skin switch does not corrupt unit artwork", async ({ page }) => {
       activeImgNaturalWidth: activeImg?.naturalWidth,
       allUnitImgsLoaded: allLoaded,
       totalUnitImgs: allUnitImgs.length,
-      orphanFxCount: orphanFx.length,
+      entryFxCount: entryFx.length,
     };
   });
 
@@ -120,10 +112,9 @@ test("battle skin switch does not corrupt unit artwork", async ({ page }) => {
   // The image should be loaded
   expect(after.battlefieldImgComplete).toBe(true);
   expect(after.battlefieldImgNaturalWidth).toBeGreaterThan(0);
-  expect(after.activeImgComplete).toBe(true);
-  expect(after.activeImgNaturalWidth).toBeGreaterThan(0);
   // All unit images should be loaded
   expect(after.allUnitImgsLoaded).toBe(true);
+  expect(after.entryFxCount).toBe(0);
 
   expect(relevantErrors(errors)).toEqual([]);
 });

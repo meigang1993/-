@@ -71,6 +71,13 @@ Required guards:
   JavaScript clone findings and exceeds the configured `0.30%` duplication
   budget; until that baseline is repaired, `dev:save` is expected to stop
   before saving runtime changes.
+- Save incident recorded on September 5, 2026: the first attempted Game
+  Studio save returned `500 Save failed` because `meta[name="game-build"]` had
+  been advanced without advancing the startup bundle, stylesheet import,
+  stylesheet link, and visible build-badge cache versions. The save was not
+  considered successful; the versions were synchronized, the pre-commit gate
+  passed, and the retry returned commit
+  `ffc7bb52d42c5b06c80e6e7f68617c50f35c5a16`.
 - Documentation-only changes still require hooks/path checks and the
   authenticated Game Studio save endpoint. They do not require rebuilding
   runtime bundles unless `src/original/` or `publish/` changes.
@@ -113,6 +120,12 @@ load intentionally replaces the state and resets application action guards. It
 must capture the originating state plus runtime-error generation, reject stale
 work after every asynchronous boundary before adoption, then capture the loaded
 state for settings synchronization and final UI writeback.
+
+Battle skin changes must not be treated as battle entry. Activating Angelica's
+Berserker skin during an existing battle must suppress the one-time fixed
+position Berserker entry effect; otherwise render sync creates visible effect
+nodes outside the skin panel and makes the switch look like portrait
+corruption.
 
 Loading a battle snapshot occurs before deferred dungeon modules are guaranteed
 to exist. A legacy start-only or malformed snapshot must therefore clear

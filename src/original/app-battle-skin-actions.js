@@ -36,6 +36,9 @@ async function equipBattleSkin(button) {
     actionUnit.skinDynamicEffect = skin.dynamicEffect || null;
     actionUnit.skinDamagedArt = skin.damagedArt || null;
     actionUnit.skinVictoryArt = skin.victoryArt || null;
+    if (skin.dynamicEffect === "angelica-berserker") {
+      actionUnit._angelicaBerserkerEntryShown = true;
+    }
     actionState.appearanceSaving = !trial;
     actionBattle._skipMediaPreservation = true;
     try {
