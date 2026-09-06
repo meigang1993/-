@@ -15,8 +15,8 @@ function captureBattleSkinArt(unit) {
 async function revealBattleSkinArt(unit, previous, isCurrent) {
   const current = skinArtWrappers(unit);
   const transitions = current.map((item, index) => ({
-    ...item, oldImage: previous[index]?.image,
-  })).filter(item => item.oldImage && item.oldImage !== item.image);
+    ...item, oldImage: previous[index]?.image?.cloneNode?.(true),
+  })).filter(item => item.oldImage);
   if (!transitions.length) return;
   transitions.forEach(({ wrapper, oldImage }) => {
     wrapper.classList.add("skin-switch-layer");
@@ -33,7 +33,7 @@ async function revealBattleSkinArt(unit, previous, isCurrent) {
     console.warn("battle skin decode failed:", err.message, err.stack);
   } finally {
     transitions.forEach(({ wrapper, oldImage }) => {
-      oldImage.remove();
+      if (oldImage.isConnected) oldImage.remove();
       wrapper.classList.remove("skin-switch-layer");
     });
   }

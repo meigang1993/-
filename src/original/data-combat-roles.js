@@ -19,7 +19,7 @@ window.GameCombatRoles = (() => {
     carlos: ["输出"],
     bertis: ["成长/资源"],
     gerlot: ["输出"],
-    angelica: ["防御/嘲讽"],
+    angelica: ["输出"],
     luka: ["输出"],
     elrana: ["辅助/续航"],
     little_elrana: ["输出"],

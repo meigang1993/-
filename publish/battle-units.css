@@ -26,7 +26,7 @@
 .unit-art[style*="background-image"] { background-size: cover; background-position: top center; }
 .unit-art img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
 .unit-art.skin-switch-layer { position: relative; }
-.unit-art > img.skin-switch-old-art { position: absolute; inset: 0; z-index: 4; display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; pointer-events: none; }
+.unit-art > img.skin-switch-old-art, .portrait > img.skin-switch-old-art { position: absolute; inset: 0; z-index: 4; display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; pointer-events: none; }
 .skin-state-art { position: relative; overflow: hidden; }
 .skin-state-art > img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
 .unit-art.art-lokar, .unit-art.art-lokar img { background-position: center; object-position: center; transform: none; }

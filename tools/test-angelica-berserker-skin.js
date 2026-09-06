@@ -35,6 +35,9 @@ assert(berserker.dynamicEffect === "angelica-berserker" && berserker.specialEffe
 assert(berserker.art === "./assets/generated/angelica-berserker.30dab19b.webp"
   && fs.existsSync(`./publish/${berserker.art.slice(2)}`),
   "Berserker must reference its generated portrait");
+const roles = fs.readFileSync("./src/original/data-combat-roles.js", "utf8");
+assert(roles.includes('angelica: ["输出"]'),
+  "Angelica's combat role must be output");
 
 const applied = SkinSystem.applyToChar({
   chars: [{ id: "angelica", locked: false, level: 10 }],
@@ -95,5 +98,7 @@ assert(!css.includes("angelica-berserker-entering"),
 const skinActionSource = fs.readFileSync("./src/original/app-battle-skin-actions.js", "utf8");
 assert(skinActionSource.includes("if (isCurrent()) {\n      actionState.appearanceSaving = false;"),
   "Stale battle skin requests must not rerender or clear the current appearance save state");
+assert(skinActionSource.includes("previous[index]?.image?.cloneNode?.(true)"),
+  "Skin transitions must clone old portraits before mounting the transition layer");
 
 console.log("test-angelica-berserker-skin: all assertions passed");
