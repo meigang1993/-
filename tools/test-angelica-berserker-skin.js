@@ -32,7 +32,7 @@ assert(berserker?.charId === "angelica" && berserker.quality === "epic"
   "Berserker must be Angelica's separate 10-essence epic skin");
 assert(berserker.dynamicEffect === "angelica-berserker" && berserker.specialEffect === true,
   "Berserker must enable its dedicated battle effects");
-assert(berserker.art === "./assets/generated/angelica-berserker.f7d20f40.webp"
+assert(berserker.art === "./assets/generated/angelica-berserker.30dab19b.webp"
   && fs.existsSync(`./publish/${berserker.art.slice(2)}`),
   "Berserker must reference its generated portrait");
 
@@ -84,11 +84,13 @@ assert(styles.includes('"angelica-berserker": "./angelica-berserker-skin.css"'),
 
 const css = fs.readFileSync("./publish/angelica-berserker-skin.css", "utf8");
 [
-  "angelica-berserker-entering", "angelica-berserker-might",
+  "angelica-berserker-might",
   "angelica-berserker-rage-gain", "angelica-berserker-rage-slam",
   "angelica-berserker-rage-trail", "angelica-berserker-taunt",
   "angelica-berserker-victory-show",
 ].forEach(token => assert(css.includes(token), `Berserker CSS is missing ${token}`));
+assert(!css.includes("angelica-berserker-entering"),
+  "Berserker CSS must not retain automatic entry animation");
 
 const skinActionSource = fs.readFileSync("./src/original/app-battle-skin-actions.js", "utf8");
 assert(skinActionSource.includes("if (isCurrent()) {\n      actionState.appearanceSaving = false;"),

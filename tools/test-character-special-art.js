@@ -12,7 +12,7 @@ const expectedSpecialArt = {
   flora_level_10_special: ["flora", "./assets/generated/flora-level-10-special.075896ea.webp"],
   wendy_level_10_special: ["wendy", "./assets/generated/wendy-level-10-special.8b3d47ab.webp"],
   elrana_level_10_special: ["elrana", "./assets/generated/elrana-level-10-special.3154d24b.webp"],
-  angelica_level_10_special: ["angelica", "./assets/generated/angelica-level-10-special.1d7b9a23.webp"],
+  angelica_level_10_special: ["angelica", "./assets/generated/angelica-level-10-special.9ce0de16.webp"],
 };
 
 function verifySpecialArt(charId, skinId, art) {

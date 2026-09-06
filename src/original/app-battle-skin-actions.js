@@ -1,26 +1,41 @@
 let battleSkinChangeId = 0;
+function skinArtWrappers(unit) {
+  const selectors = [
+    `[data-target="${unit.uid}"] .unit-art`,
+    `[data-active-info="${unit.uid}"] .portrait`,
+  ];
+  if (window.state?.infoUnit === unit.uid) selectors.push(".info-overlay .info-art .portrait");
+  return [...new Set(selectors.flatMap(selector => [...document.querySelectorAll(selector)]))]
+    .map(wrapper => ({ wrapper, image: wrapper.querySelector("img") }))
+    .filter(item => item.image);
+}
 function captureBattleSkinArt(unit) {
-  const wrapper = document.querySelector(`[data-target="${unit.uid}"] .unit-art`);
-  return { image: wrapper?.querySelector("img") || null };
+  return skinArtWrappers(unit);
 }
 async function revealBattleSkinArt(unit, previous, isCurrent) {
-  const wrapper = document.querySelector(`[data-target="${unit.uid}"] .unit-art`);
-  const nextImage = wrapper?.querySelector("img");
-  if (!wrapper || !nextImage || !previous.image || previous.image === nextImage) return;
-  wrapper.classList.add("skin-switch-layer");
-  previous.image.classList.add("skin-switch-old-art");
-  wrapper.append(previous.image);
+  const current = skinArtWrappers(unit);
+  const transitions = current.map((item, index) => ({
+    ...item, oldImage: previous[index]?.image,
+  })).filter(item => item.oldImage && item.oldImage !== item.image);
+  if (!transitions.length) return;
+  transitions.forEach(({ wrapper, oldImage }) => {
+    wrapper.classList.add("skin-switch-layer");
+    oldImage.classList.add("skin-switch-old-art");
+    wrapper.append(oldImage);
+  });
   try {
-    await Promise.race([
-      nextImage.decode?.() || Promise.resolve(),
+    await Promise.all(transitions.map(({ image }) => Promise.race([
+      image.decode?.() || Promise.resolve(),
       new Promise(resolve => setTimeout(resolve, 800)),
-    ]);
+    ])));
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   } catch (err) {
     console.warn("battle skin decode failed:", err.message, err.stack);
   } finally {
-    previous.image.remove();
-    wrapper.classList.remove("skin-switch-layer");
+    transitions.forEach(({ wrapper, oldImage }) => {
+      oldImage.remove();
+      wrapper.classList.remove("skin-switch-layer");
+    });
   }
   if (!isCurrent()) return;
 }

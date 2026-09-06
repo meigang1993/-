@@ -27,7 +27,7 @@ window.BattleCombatAttackValues = api => {
         `${actor.name} 的艾尔拉娜白色丝袜触发，杀牌额外增加${speed}点伤害。`);
     }
     if (deps.isKillCard(card) && actor.charge) {
-      card.chargeMultiplier = Math.pow(1.5, actor.charge);
+      card.chargeMultiplier = Math.pow(2, actor.charge);
       amount *= card.chargeMultiplier;
       actor.charge = 0;
     }

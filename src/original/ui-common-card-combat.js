@@ -38,7 +38,7 @@ window.UICommonCardCombat = ({ statValue }) => {
     if (isSlash) {
       const base = 0;
       const total = statKey === "magic" ? magic : attack;
-      const mult = actor.charge ? Math.pow(1.5, actor.charge) : 1;
+      const mult = actor.charge ? Math.pow(2, actor.charge) : 1;
       amount = card.armoredRam
         ? total + (actor.block || 0)
         : Math.round((base + total) * mult);

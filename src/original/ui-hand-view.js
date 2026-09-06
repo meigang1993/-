@@ -7,7 +7,7 @@ window.GameUIHandView = (() => {
     const handWrap = `<div class="hand-scroll-wrap no-scroll"><button class="hand-scroll-btn left" data-hand-scroll="-1">‹</button><div class="hand active-hand" data-hand-owner="${U.esc(actor.uid)}">${handCards}</div><button class="hand-scroll-btn right" data-hand-scroll="1">›</button></div>`;
     const intentMax = Math.min(99, Math.max(1, (actor.stats.bloodlust || 1) + (actor.intentMaxBonus || 0)));
     const charge = actor.charge
-      ? `<span class="tag">蓄力×${Math.pow(1.5, actor.charge).toFixed(3).replace(/\.0+$/, "").replace(/0+$/, "")}</span>`
+      ? `<span class="tag">蓄力×${Math.pow(2, actor.charge).toFixed(3).replace(/\.0+$/, "").replace(/0+$/, "")}</span>`
       : "";
     return `<div class="hand-panel ${battle.locked && !modes.transferLocked ? "locked" : ""}"><div class="hand-head"><b>${U.esc(actor.name)} 的手牌</b><span class="tag">${phaseLabel(context)}</span><span class="tag">杀意 ${actor.intent || 0}/${intentMax}</span>${charge}${controls}</div><div class="hand-body ${skillLine ? "has-skills" : ""}">${skillLine}${handWrap}</div></div>`;
   }
