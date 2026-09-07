@@ -32,7 +32,7 @@ assert(berserker?.charId === "angelica" && berserker.quality === "epic"
   "Berserker must be Angelica's separate 10-essence epic skin");
 assert(berserker.dynamicEffect === "angelica-berserker" && berserker.specialEffect === true,
   "Berserker must enable its dedicated battle effects");
-assert(berserker.art === "./assets/generated/angelica-berserker.30dab19b.webp"
+assert(berserker.art === "./assets/generated/angelica-berserker.d3bcb944.webp"
   && fs.existsSync(`./publish/${berserker.art.slice(2)}`),
   "Berserker must reference its generated portrait");
 const roles = fs.readFileSync("./src/original/data-combat-roles.js", "utf8");

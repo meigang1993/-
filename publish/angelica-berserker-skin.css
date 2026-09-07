@@ -1,7 +1,7 @@
-.skin-effect-angelica-berserker { position: relative; }
+.skin-effect-angelica-berserker { position: relative; isolation: isolate; }
 .skin-effect-angelica-berserker::before { content: ""; position: absolute; inset: 6%; z-index: 2; border: 1px solid rgba(168,25,63,.55); border-radius: 50%; box-shadow: 0 0 16px rgba(168,25,63,.4), inset 0 0 14px rgba(80,10,20,.5); pointer-events: none; }
 .skin-effect-angelica-berserker::after { content: ""; position: absolute; left: 14%; right: 14%; bottom: 3%; z-index: 2; height: 14%; background: radial-gradient(ellipse,rgba(168,25,63,.44),transparent 70%); opacity: .6; pointer-events: none; }
-.unit:not(.dead) .unit-art.skin-effect-angelica-berserker > img { transform-origin: 50% 70%; }
+.unit:not(.dead) .unit-art.skin-effect-angelica-berserker > img { transform-origin: 50% 70%; backface-visibility: hidden; }
 .angelica-berserker-fx { position: fixed; z-index: 48; pointer-events: none; overflow: visible; transform: translateZ(0); }
 .angelica-berserker-line { position: fixed; z-index: 49; height: 5px; transform-origin: 0 50%; transform: rotate(var(--line-angle)); pointer-events: none; }
 .angelica-berserker-might b { position: absolute; right: 6%; top: 34%; width: 34%; height: 20%; border-bottom: 6px solid #c22740; border-radius: 0 0 60% 40%; filter: drop-shadow(0 0 8px #a8193f); animation: berserkerMightFlare .72s ease-out both; }
