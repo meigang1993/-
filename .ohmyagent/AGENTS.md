@@ -34,6 +34,10 @@
 | `docs/original/art-bible.md` / `game-design.md` / `interaction-visual-reference.md` / `platform-runtime.md` / `r18-art-policy.md` | 视觉/设计/交互/平台/成人内容策略 |
 | `docs/original-runtime-freeze.json` | 机器可读运行时冻结契约(工具链依赖) |
 | `docs/deepseek-rebuild/01~08` | 重构期设计文档(另一视角,改动前可对照) |
+| `docs/08-界面布局.txt` | DeepSeek 重制交接:总体风格、24 屏 UI 说明、战斗六带布局、弹窗层级与关闭顺序 |
+| `docs/09-开发风险.txt` | 交接:18 类开发风险与防御(异步覆盖/rerender/重复结算/存档/音频/确定性随机等) |
+| `docs/10-开发规则与DZMM规则.txt` | 交接:静态规则/沙箱 iframe/DZMM SDK(存档/completions/draw/fn/分享/工坊)/音频/构建版本 |
+| `docs/离线开发与风险.txt` | 交接:离线版定位与策略(纯静态、双模式存档、本地替代、风险与测试清单) |
 
 记忆纪律:改规则时先改实现、再更新对应规范文档;代码与文档冲突视为 bug 并调和,不要静默二选一。
 
