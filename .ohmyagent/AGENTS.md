@@ -64,7 +64,7 @@
 ## 开发日记(每次更新必写)
 
 - 文件:`docs/开发日记.md`。
-- 纪律:每次发生文件**新建/修改/删除**、代码改动、git 提交、环境变更或重要决策,都必须在该文件末尾追加一条:日期 → 变更摘要 → 新建/修改/删除的文件路径清单(仓库相对路径)→ 提交 hash。
+- 纪律:每次发生文件**新建/修改/删除**、代码改动、git 提交或影响项目的决策,都必须在该文件末尾追加一条:日期 → 变更摘要 → 新建/修改/删除的文件路径清单(仓库相对路径)→ 提交 hash。**与游戏项目无关的更新(本机工具/环境安装、系统改动等)一律不写入。**
 - 流水事实进开发日记;本文件与 docs 索引只做路由/规则,不重复记流水。
 
 ## 测试与 QA
@@ -73,7 +73,7 @@
 - 逻辑测试:`node tools/run-qa.js`(聚合器;`list` / `focus` / `logic` / `quick`),scripts 有 `npm run test:*`、`check:*` 一整套。
 - 浏览器测试(Playwright):`tests/*.spec.js` + `*.scenario.js` + `helpers/`;跑 `node tools/run-browser-tests.js`。
 - ⚠️ `scripts/` 目录缺失:原文件本机无出处、属工作室私有胶水,已决策**保留缺口不伪造**;引用 `bash scripts/*.sh` 的命令(`verify`、`qa:full`、`qa:exhaustive`、`save:checkpoint`、`save:studio`、`test:offline` 等)不可用,拿到原文件后入库即可恢复。
-- ⚠️ 环境:Node.js v24.20.0 已安装(`C:\Users\Administrator\AppData\Local\nodejs`,已加用户 PATH);仓库**未 `npm install`**,依赖 devDependencies 的命令(eslint/stylelint/terser/playwright 等)待安装依赖后才可用。
+- ⚠️ 运行依赖:仓库**未 `npm install`**,工具链命令(eslint/stylelint/terser/playwright 及 `npm run check` 等)需先安装依赖后才能运行(Node 等本机环境以实际检测为准,本文件不记录工具安装)。
 - 守则:改动后只跑受影响范围的聚焦测试,未经用户要求不要跑全量。
 
 ## 会话备忘(2026-09-07)
@@ -83,4 +83,4 @@
 - 提交身份(仓库级):`meigang1993` / `322323265+meigang1993@users.noreply.github.com`。
 - `.ohmyagent/settings.json`(工具生成的权限配置)不入库;`.ohmyagent/AGENTS.md` 建议入库随项目走。
 - 未跟踪/被忽略:`GGGG/`(项目 .gitignore 排除)、`.ohmyagent/` 工具产物等。
-- 2026-09-07:安装 Node.js v24.20.0(LTS);决策保留 scripts/ 缺口不伪造;创建 `docs/开发日记.md` 并启用“每次更新必写日记”纪律(本次提交见 git log)。
+- 2026-09-07:决策保留 scripts/ 缺口不伪造;创建 `docs/开发日记.md`,纪律=每次更新必写、且只写与游戏项目相关的内容(提交见 git log)。
