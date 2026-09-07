@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "active": false,
+  "activatedAt": "2026-08-03T00:17:50Z",
+  "unlockedAt": "2026-08-03T08:47:56Z",
+  "unlockReason": "User explicitly authorized restoring original development and selectively synchronizing standalone-applicable changes to the desktop HTML edition.",
+  "unlockDecision": "The user's explicit switch to the Electron desktop path superseded the earlier Godot migration-gate unlock requirements.",
+  "scope": "publish",
+  "reason": "Preserve the accepted formal HTML runtime and its migration evidence until the Godot migration is complete.",
+  "baselineSourceCommit": "b3b2f8c83aa3e06f0e7510fd7444d04a442ccb85",
+  "baselineTree": "2742abb7fc3303a9b66afbe3c0d9eb912c0c03c1",
+  "historicalArtifactsRetained": false,
+  "archiveRemovedAt": "2026-08-08T04:04:24Z",
+  "archiveRemovalReason": "User explicitly requested deletion of old backup packages after the current August 8 formal backup was verified.",
+  "formerArchive": "backups/formal-game-2026-08-01-b3b2f8c.tar.gz",
+  "archiveSha256": "7ad808349ff90ae7d507be1d145dee68cb38b5c220a6c7ad69f863c70ea1a870",
+  "formerFileManifest": "backups/formal-game-2026-08-01-b3b2f8c.files.sha256",
+  "fileManifestSha256": "b2a0861d390b4d9dcd68de0e65a9b59f20d40ff877410fa4ab0cba76d16e118f",
+  "fileCount": 542,
+  "unlockRequirements": [
+    "The Godot migration readiness gate passes with strict standalone UI acceptance complete.",
+    "The migration evidence is refreshed against the frozen original baseline.",
+    "The user explicitly authorizes removal of the freeze."
+  ]
+}
