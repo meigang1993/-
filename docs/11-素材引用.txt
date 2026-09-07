@@ -1,0 +1,364 @@
+===============================================================
+  魅魔杀 - 素材引用清单
+  交接对象：DeepSeek 重制
+  所有素材文件名标注，按类别分组
+===============================================================
+
+【一、角色立绘（publish/assets/images/）】
+
+  文件名                              -> 对应角色/用途
+  lokar-portrait.webp                 -> 罗卡尔 默认立绘
+  besta-doll-portrait.webp            -> 贝丝妲魔偶 默认立绘
+  manny-portrait.webp                 -> 曼妮 默认立绘
+  miller-portrait.webp                -> 米勒 默认立绘
+  nonoka-portrait.webp                -> 诺诺卡 默认立绘
+  loki-portrait.webp                  -> 洛基 默认立绘
+  flora-portrait.71c5d516.webp        -> 芙萝娅 默认立绘
+  wendy-portrait.f262b034.webp        -> 温蒂 默认立绘
+  cadicis-portrait.webp               -> 卡迪西斯 默认立绘
+  carlos-portrait.webp                -> 卡洛斯 默认立绘
+  bertis-portrait.webp                -> 贝尔蒂丝 默认立绘
+  gerlot-portrait.webp                -> 杰洛特 默认立绘
+  angelica-portrait.webp              -> 安洁莉卡 默认立绘
+  luka-portrait.webp                  -> 鲁卡 默认立绘
+  elrana-new-portrait.webp            -> 艾尔拉娜 默认立绘
+  elrana-clone.webp                   -> 小艾尔拉娜/艾尔拉娜克隆体 立绘
+  ace-portrait.webp                   -> 艾斯 默认立绘
+  nanali-portrait.webp                -> 娜娜莉 默认立绘
+  ophelia-portrait.webp               -> 奥菲莉亚 默认立绘
+  aileng-portrait.webp                -> 艾伦格 默认立绘
+  besta-portrait.webp                 -> 贝丝妲 默认立绘
+  invader-chiyo.webp                  -> 橘千樱 立绘（角色和敌人共用）
+
+  battle-start-ui.webp                -> 战斗开始UI素材
+
+【二、新角色立绘（publish/assets/new-portraits/）】
+
+  文件名                              -> 对应角色/用途
+  sonia.webp                           -> 索尼娅 立绘
+  gerda.webp                           -> 格尔达 立绘
+  hoshino-yi.webp                      -> 星野依 立绘
+  hoshino-yi-witherer.webp             -> 星野依 凋零者形态立绘
+  hoshino-kaiichi.webp                 -> 星野海一 立绘
+  artina.webp                          -> 亚缇娜 立绘（未完成新角色）
+  maria.webp                           -> 玛利亚 立绘（未完成新角色）
+  suicide-drone.webp                   -> 魔王军自杀式无人机 立绘
+  demon-beast-unit.webp                -> 魔王军猛兽部队 立绘
+  demon-witch.webp                     -> 魔王军魔女 立绘
+  demon-mecha-cerberus.webp            -> 魔王军机械三头犬 立绘
+  witherer-1124-split.webp             -> 凋零者1124号分裂体 立绘
+  xx-witherer-1124.webp                -> XX型凋零者1124号 立绘
+  demon-king-bakaar.webp               -> 魔王巴卡尔 立绘
+  orc-king-bondi.webp                  -> 兽人王邦迪 立绘
+  guard-kelly.webp                     -> 特坚组护卫凯丽 立绘
+  assassin-sakura-risa.webp            -> 内英组杀手樱羽丽莎 立绘
+
+【三、敌人立绘（publish/assets/images/）】
+
+  文件名                              -> 对应敌人
+  mechanical-goblin.webp               -> 机械哥布林
+  machine-succubus.webp                -> 机器魅魔
+  skeleton-patrol-machine.webp         -> 骷髅巡逻机
+  mecha-minotaur.webp                  -> 机甲牛头怪
+  elrana-clone.webp                    -> 艾尔拉娜克隆体
+  krow-doctor.webp                     -> 克罗博士
+  invader-chiyo.webp                   -> 入侵者橘千樱
+  mechanical-bull-king.webp            -> 机械牛头王
+  pursuer-edis.715fedea.webp           -> 内英组杀手伊迪斯
+  terror-slime.webp                    -> 恐怖史莱姆
+  shark-pirate-crew.webp               -> 狂鲨海盗团船员
+  shark-pirate-raider.webp             -> 狂鲨海盗团掠夺者
+  shark-pirate-submarine.webp          -> 狂鲨海盗团潜水艇
+  raff-portrait.webp                   -> 内英组杀手拉芙
+  abe-mike.webp                        -> 鱼人武士安倍麦克
+  shark-captain-mordio.webp            -> 狂鲨海盗团船长莫迪奥
+  mona-eagle-captain.webp              -> 天鹰突击队队长莫娜
+
+【四、废墟沙城敌人立绘（publish/assets/ruins-enemies/）】
+
+  文件名                              -> 对应敌人
+  noble-soldier.webp                   -> 贵族军士兵
+  noble-sniper.webp                    -> 贵族军狙击手（注：sniper用了attack-drone的图）
+  attack-drone.webp                    -> 攻击型无人机（注：drone用了noble-sniper的图）
+  merca-tank.webp                      -> 梅尔卡坦克
+  attack-helicopter.webp               -> 武装直升机
+  armored-carrier.webp                 -> 装甲运输车
+  hilde.webp                           -> 内英组杀手希尔德
+  mech-ai-dragon.webp                  -> 机械AI龙
+  witherer-1312.webp                   -> XX型凋零者1312号
+
+注意：废墟沙城敌人中 noble_sniper 和 attack_drone 的 art 路径交叉引用，
+这是当前项目的已知状态，重制时应为每个敌人分配独立立绘。
+
+【五、生成皮肤立绘（publish/assets/generated/）】
+
+  文件名                              -> 对应皮肤/用途
+  lokar-motherbound-refined-bg.235e8f11.webp -> 罗卡尔 恋母勇者皮肤
+  besta-doll-fullbody-heels-bg.56c37ce5.webp -> 贝丝妲魔偶 机铠魔偶皮肤
+  besta-doll-critical-damage.99e0ac86.webp   -> 贝丝妲魔偶 机铠魔偶大破立绘
+  nonoka-idol-rising-star-star-eyes.97cc2566.webp -> 诺诺卡 偶像明日星皮肤
+  manny-gun-succubus-weapon-skeleton.3696a917.webp -> 曼妮 枪之魅魔皮肤
+  bertis-arrogant-queen-mist-gothic.cd523966.webp -> 贝尔蒂丝 傲慢女王皮肤
+  bertis-arrogant-queen-critical-damage.e0a10370.webp -> 贝尔蒂丝 傲慢女王大破立绘
+  flora-sonic-assassin.8543df2c.webp   -> 芙萝娅 音速刺客皮肤
+  flora-sonic-assassin-victory.7ab2b6cd.webp -> 芙萝娅 音速刺客胜利素材
+  wendy-benevolent-teacher-desert-school.bcfc0372.webp -> 温蒂 慈爱教师皮肤
+  elrana-fallen-physician.5fb5e43a.webp -> 艾尔拉娜 堕落医师皮肤
+  angelica-berserker.f7d20f40.webp     -> 安洁莉卡 狂暴战士皮肤
+
+【六、等级特殊立绘（publish/assets/generated/）】
+
+  文件名                              -> 对应角色
+  nonoka-level-10-special.ba4c8ff8.webp  -> 诺诺卡 Lv.10特殊立绘
+  manny-level-10-special.a8c2eeed.webp   -> 曼妮 Lv.10特殊立绘
+  bertis-level-10-special.022dd113.webp  -> 贝尔蒂丝 Lv.10特殊立绘
+  flora-level-10-special.075896ea.webp   -> 芙萝娅 Lv.10特殊立绘
+  wendy-level-10-special.8b3d47ab.webp   -> 温蒂 Lv.10特殊立绘
+  elrana-level-10-special.3154d24b.webp  -> 艾尔拉娜 Lv.10特殊立绘
+  angelica-level-10-special.1d7b9a23.webp -> 安洁莉卡 Lv.10特殊立绘
+
+【七、全局美术素材（publish/assets/generated/）】
+
+  文件名                              -> 用途
+  besta-villa-new.webp                  -> 标题页和殿堂女主hero图
+  succubus-card-back.cca22db5.webp      -> 魅魔牌背和水印
+
+【八、卡牌插画（publish/assets/generated/cards/）】
+
+共79个WebP文件，分为两类：
+
+--- 正式/状态卡牌插画（43张）---
+  card-art-basic-slash.9b6ab50a.webp        -> 杀（普攻）
+  card-art-magic-slash.2d2353e6.webp        -> 魔杀
+  card-art-succubus-slash.ac0bd910.webp     -> 魅杀
+  card-art-dodge.d22afef8.webp              -> 闪
+  card-art-charge.bfb8fcb9.webp             -> 蓄力
+  card-art-healing-mana-bottle.218ba846.webp -> 愈魔瓶
+  card-art-poison-slash.cd28909a.webp       -> 毒杀
+  card-art-wound-treatment.8b07a7b.webp     -> 伤口处理
+  card-art-duel.1138c5e7.webp              -> 与我一战
+  card-art-magic-refining.d40d78c6.webp     -> 魔力提炼
+  card-art-dismantle.2996df87.webp          -> 拆解
+  card-art-binding-trap.5bb236e6.webp       -> 束缚陷阱
+  card-art-seal-spell.4639c897.webp         -> 封印术
+  card-art-magic-seal-status.222ffb29.webp  -> 封魔状态牌
+  card-art-thunder-slash.9263b699.webp      -> 雷杀
+  card-art-gatling-slash.295b69b7.webp      -> 机枪扫杀
+  card-art-reckless-punch.04233f97.webp     -> 无谋冲拳
+  card-art-supply-drop.4b31a930.webp        -> 物资补给
+  card-art-assassinate.301115bf.webp        -> 刺杀
+  card-art-see-through.4a55e450.webp        -> 看破
+  card-art-combo-attack.ab59d9c0.webp       -> 组合进攻
+  card-art-fountain-of-life.7458b046.webp   -> 生命之泉
+  card-art-steal.639a0455.webp             -> 偷窃
+  card-art-soul-chain.80890b9b.webp         -> 灵魂锁链
+  card-art-clash.edb75a11.webp             -> 魔法对决
+  card-art-magic-bullet.39bbd19c.webp      -> 魔弹特攻
+  card-art-double-slash.d35ca482.webp      -> 双重打杀
+  card-art-berserk-slash.583b7fb8.webp     -> 暴走杀
+  card-art-bite-slash.dfedb10c.webp        -> 咬杀
+  card-art-bloodletting.f0182817.webp      -> 放血
+  card-art-holy-slash.be1aee92.webp        -> 圣杀
+  card-art-rage-slash.197f7838.webp        -> 怒杀
+  card-art-feint.75a2b623.webp             -> 佯攻
+  card-art-strangle-slash.8eceb00c.webp    -> 勒杀
+  card-art-war-horn.477c9d2.webp           -> 战争号角
+  card-art-pursue-slash.755fc82a.webp      -> 追杀
+  card-art-deflect.0f1ce181.webp           -> 弹反
+  card-art-arm-self.887b5a75.webp          -> 武装
+  card-art-armored-ram.861c5fef.webp       -> 撞杀
+  card-art-backflip.3d28ebcf.webp          -> 后空翻
+  card-art-revenge-slash.1d4ac914.webp     -> 仇杀
+  card-art-fire-slash.ef14e210.webp        -> 火杀
+  card-art-wolf-fang-slash.26e93535.webp   -> 狼牙杀
+  card-art-stun-status-new.58f54da8.webp   -> 眩晕状态牌
+  card-art-slime-status.7f86dfcc.webp      -> 粘液状态牌
+  card-art-bullet-storm.09c53e6c.webp      -> 枪林弹雨
+  card-art-freeze-spell.b95d3886.webp      -> 冰冻术
+  card-art-charm.21f8b4cd.webp             -> 魅惑术
+  card-art-meteor-slash.fe12b0fe.webp      -> 流星杀
+  card-art-mana-steal.dc54839a.webp        -> 吸魔杀
+  card-art-supply-sharing.3aafdb52.webp    -> 物资私分
+  card-art-demon-invasion.82db049e.webp    -> 魔王军入侵
+  card-art-borrowed-blade.de60cf28.webp    -> 借刀杀人
+
+--- 技能插画（36张）---
+  skill-art-answer-confusion.37cdaa5e.webp     -> 解答迷惑
+  skill-art-artina-sniper.d751a4ee.webp        -> 亚缇娜狙击目标（未完成角色）
+  skill-art-barrett.f98fc824.webp              -> 巴特雷
+  skill-art-battlefield-commander.8854b38c.webp -> 战场指挥官
+  skill-art-battlefield-sweep.dc085e1b.webp    -> 战场扫射
+  skill-art-berserker-will.74c92ecb.webp       -> 狂战意志
+  skill-art-berserk-speed-shift.f6e7cca1.webp  -> 暴走与极速
+  skill-art-blood-pact.86515b89.webp           -> 热血契约
+  skill-art-calculated-bet.29ef1ee1.webp       -> 计算下注
+  skill-art-charged-essence.fd83f56b.webp      -> 充能精华
+  skill-art-contribution-plan.5c201347.webp    -> 贡献计划
+  skill-art-control-eye.1291a4db.webp          -> 控神魔眼
+  skill-art-crazy-shooting.735324eb.webp       -> 疯狂射击
+  skill-art-crazy-slaughter.70187f58.webp      -> 疯狂屠戮
+  skill-art-death-wave.689e0965.webp           -> 死亡音波
+  skill-art-demon-poker.22d93d33.webp          -> 鬼王扑克
+  skill-art-dimension-armory.b4b47e50.webp     -> 次元军火库
+  skill-art-dragon-slash.481f3a15.webp         -> 电钻火花
+  skill-art-drill-spark.236e0585.webp          -> (重复/变体)
+  skill-art-drone-extract.7c3a0b92.webp        -> 无人机采精
+  skill-art-essence-extract.b714c8f.webp       -> 榨取精华
+  skill-art-half-succubus-essence.c71c3abc.webp -> 半魅魔精华
+  skill-art-idol-kiss.b87d956c.webp            -> 偶像之吻
+  skill-art-killing-intent-gaze.9eed1604.webp  -> 杀欲窥视
+  skill-art-long-tongue-1124.166aa9bd.webp     -> 1124号长舌头
+  skill-art-magic-cruise-missile.8dd004f3.webp -> 魔法巡飞弹
+  skill-art-many-eyes.ed9c837d.webp            -> 百眼魅魔
+  skill-art-maria-honor-blessing.14392afa.webp -> 玛利亚荣誉祝福（未完成角色）
+  skill-art-military-order.3c919eca.webp       -> 军令状
+  skill-art-mimic-voice.7656694e.webp          -> 模仿之音
+  skill-art-mine-placement.c22c12c6.webp       -> 放置地雷
+  skill-art-phantom-final-slash.a652ca00.webp  -> 终焉鬼影斩
+  skill-art-playful-slot.e25dd2eb.webp         -> 贪玩老虎机
+  skill-art-poison-grenade.fe4bfefd.webp       -> 毒气手雷
+  skill-art-reinforcement.7a694f5c.webp        -> 增援部队
+  skill-art-rejuvenating-hand.53d2b069.webp    -> 回春之手
+  skill-art-self-punishing-whip.316e7796.webp  -> 苦肉鞭笞
+  skill-art-shadow-backstab.a5f14213.webp      -> 潜影背刺
+  skill-art-shadow-dance.4f8cfc79.webp         -> 影舞步
+  skill-art-shock-flashbang.a78b4b66.webp      -> 震感闪光弹
+  skill-art-sniper-target.077d96a9.webp        -> 狙击目标
+  skill-art-speed-assault.94f48bb5.webp        -> 神速之袭
+  skill-art-succubus-fork.20768ad5.webp        -> 魅魔钢叉
+  skill-art-tail-machinegun.a8d29ad7.webp      -> 机尾机枪
+  skill-art-take-rations.74a8e30c.webp         -> 取粮
+  skill-art-tank-shell.b7bcc54e.webp           -> 坦克炮弹
+  skill-art-targeting-radar.6e237707.webp      -> 索敌雷达
+  skill-art-taunt.1b0b575c.webp               -> 挑衅
+  skill-art-terror-hammer.92642403.webp        -> 霹雳之锤
+  skill-art-wind-execution.21c85fb4.webp       -> 狂风绝息斩
+
+【九、音频文件（publish/assets/sounds/）】
+
+  文件名                              -> 用途
+  op.ogg                               -> 标题页BGM
+  villa.ogg                            -> 殿堂BGM
+  dungeon-map.ogg                      -> 副本地图BGM
+  machine-factory-battle.ogg           -> 魔国机械工厂战斗BGM
+  underwater-train-battle.ogg          -> 水下列车战斗BGM
+  elrana-clone.ogg                     -> 艾尔拉娜克隆体BGM
+  krow-doctor.ogg                      -> 克罗博士BGM
+  invader-chiyo.ogg                    -> 入侵者橘千樱BGM
+  mechanical-bull-king.ogg             -> 机械牛头王BGM
+  mechanical-bull-king-annihilation.22a0d6c2.ogg -> 机械牛头王歼灭模式BGM
+  pursuer-edith.ogg                    -> 内英组杀手伊迪斯BGM
+  raff-bgm.ogg                         -> 内英组杀手拉芙BGM
+  abe-mike.ogg                         -> 鱼人武士安倍麦克BGM
+  shark-captain-mordio.ogg             -> 狂鲨海盗团船长莫迪奥BGM
+  mona-eagle-captain.ogg               -> 天鹰突击队队长莫娜BGM
+  guard-kelly.ogg                      -> 特坚组护卫凯丽BGM
+  armor-hit.mp3                        -> 护甲受击音效
+  hp-heal.mp3                          -> HP治疗音效
+  hp-hit.mp3                           -> HP受击音效
+  hp-loss.mp3                          -> HP损失音效
+  magic-hit.mp3                        -> 魔法受击音效
+
+【十、新副本BGM（publish/assets/new-bgm/）】
+
+  文件名                              -> 用途
+  orc-dungeon-battle.ogg               -> 兽人地下城战斗BGM
+  demon-king-bakaar.ogg                -> 魔王巴卡尔BGM
+  witherer-1124-theme.ogg              -> 凋零者1124号主题BGM
+  orc-king-bondi.ogg                   -> 兽人王邦迪BGM
+  assassin-sakura-risa.ogg             -> 内英组杀手樱羽丽莎BGM
+  ruins-sand-city-battle.mp3           -> 废墟沙城战斗BGM
+  mech-ai-dragon.mp3                   -> 机械AI龙BGM
+  witherer-1312.mp3                    -> XX型凋零者1312号BGM
+  hilde.mp3                            -> 内英组杀手希尔德BGM
+  attack-helicopter.mp3                -> 武装直升机BGM
+  armored-carrier.mp3                  -> 装甲运输车BGM
+
+【十一、CSS文件（publish/）】
+
+  文件名                              -> 用途
+  base.css                             -> 基础变量和重置
+  villa.css                            -> 殿堂兼容入口（import四个villa CSS）
+  villa-hall.css                       -> 殿堂大厅样式
+  villa-team.css                       -> 殿堂队伍样式
+  villa-codex.css                      -> 殿堂图鉴样式
+  villa-modal.css                      -> 殿堂模态框样式
+  gothic-theme.css                     -> 哥特主题
+  gothic-start.css                     -> 标题页样式
+  battle-style.css                     -> 战斗主样式
+  battle-cards.css                     -> 战斗卡牌样式
+  battle-card-motion.css               -> 战斗卡牌移动动画
+  battle-damage-fx.css                 -> 战斗伤害特效
+  battle-effects-style.css             -> 战斗效果样式
+  battle-overlays.css                  -> 战斗覆盖层样式
+  battle-units.css                     -> 战斗单位样式
+  battle-victory.css                   -> 战斗胜利样式
+  dungeon.css                          -> 副本样式
+  info-victory.css                     -> 信息和胜利样式
+  animations.css                       -> 通用动画
+  save-slots.css                       -> 存档槽样式
+  character-skin-fx.css                -> 角色皮肤特效
+  angelica-berserker-skin.css          -> 安洁莉卡狂暴战士皮肤样式
+  bertis-queen-skin.css                -> 贝尔蒂丝傲慢女王皮肤样式
+  elrana-fallen-physician-skin.css     -> 艾尔拉娜堕落医师皮肤样式
+  flora-sonic-skin.css                 -> 芙萝娅音速刺客皮肤样式
+  manny-gun-skin.css                   -> 曼妮枪之魅魔皮肤样式
+  nonoka-idol-skin.css                 -> 诺诺卡偶像明日星皮肤样式
+  wendy-teacher-skin.css               -> 温蒂慈爱教师皮肤样式
+
+【十二、Bundle文件（publish/bundles/）】
+
+  文件名                              -> 用途
+  startup.min.js                       -> 启动核心（数据、运行时、资产）
+  startup-store.min.js                 -> 存储层（存档、KV、LocalCore）
+  startup-app.min.js                   -> 应用层（UI、饰品、启动）
+  hall.min.js                          -> 殿堂（延迟加载）
+  battle-rules.min.js                  -> 战斗规则（延迟加载）
+  battle-skills.min.js                 -> 战斗技能（延迟加载）
+  battle-flow.min.js                   -> 战斗流程（延迟加载）
+  battle-ai.min.js                     -> 战斗AI（延迟加载）
+  battle-presentation.min.js           -> 战斗表现（延迟加载）
+  battle-ui.min.js                     -> 战斗界面（延迟加载）
+  dungeon.min.js                       -> 副本（延迟加载）
+
+【十三、皮肤系统素材映射】
+
+  皮肤ID                              -> 素材路径
+  lokar_default                       -> ./assets/images/lokar-portrait.webp
+  lokar_motherbound                   -> ./assets/generated/lokar-motherbound-refined-bg.235e8f11.webp
+  besta_doll_default                  -> ./assets/images/besta-doll-portrait.webp
+  besta_doll_energy_queen             -> ./assets/generated/besta-doll-fullbody-heels-bg.56c37ce5.webp
+  besta_doll_energy_queen(大破)       -> ./assets/generated/besta-doll-critical-damage.99e0ac86.webp
+  nonoka_default                      -> ./assets/images/nonoka-portrait.webp
+  nonoka_idol_rising_star             -> ./assets/generated/nonoka-idol-rising-star-star-eyes.97cc2566.webp
+  nonoka_level_10_special             -> ./assets/generated/nonoka-level-10-special.ba4c8ff8.webp
+  manny_default                       -> ./assets/images/manny-portrait.webp
+  manny_gun_succubus                  -> ./assets/generated/manny-gun-succubus-weapon-skeleton.3696a917.webp
+  manny_level_10_special              -> ./assets/generated/manny-level-10-special.a8c2eeed.webp
+  bertis_default                      -> ./assets/images/bertis-portrait.webp
+  bertis_arrogant_queen               -> ./assets/generated/bertis-arrogant-queen-mist-gothic.cd523966.webp
+  bertis_arrogant_queen(大破)         -> ./assets/generated/bertis-arrogant-queen-critical-damage.e0a10370.webp
+  bertis_level_10_special             -> ./assets/generated/bertis-level-10-special.022dd113.webp
+  flora_default                       -> ./assets/images/flora-portrait.71c5d516.webp
+  flora_sonic_assassin                -> ./assets/generated/flora-sonic-assassin.8543df2c.webp
+  flora_sonic_assassin(胜利)          -> ./assets/generated/flora-sonic-assassin-victory.7ab2b6cd.webp
+  flora_level_10_special              -> ./assets/generated/flora-level-10-special.075896ea.webp
+  wendy_default                       -> ./assets/images/wendy-portrait.f262b034.webp
+  wendy_benevolent_teacher            -> ./assets/generated/wendy-benevolent-teacher-desert-school.bcfc0372.webp
+  wendy_level_10_special              -> ./assets/generated/wendy-level-10-special.8b3d47ab.webp
+  elrana_default                      -> ./assets/images/elrana-new-portrait.webp
+  elrana_fallen_physician             -> ./assets/generated/elrana-fallen-physician.5fb5e43a.webp
+  elrana_level_10_special             -> ./assets/generated/elrana-level-10-special.3154d24b.webp
+  angelica_default                    -> ./assets/images/angelica-portrait.webp
+  angelica_berserker                  -> ./assets/generated/angelica-berserker.f7d20f40.webp
+  angelica_level_10_special           -> ./assets/generated/angelica-level-10-special.1d7b9a23.webp
+
+【十四、素材预算限制】
+
+- 总素材限制：40 MiB
+- 长音频限制：21 MiB
+- 单首BGM限制：1.75 MiB
+- 关键首屏素材必须轻量
+- 只预热当前队伍和遭遇敌人美术
+- 卡牌和技能插画延迟加载
+- 移动端首屏参考图/bgm/cover合计不超过2MB

@@ -22,6 +22,34 @@ The repository contains the original static game and its development memory.
 - Platform: `docs/original/platform-runtime.md`
 - Verification policy: `docs/original/qa-workflow.md`
 
+## Remake Handover Notes
+
+Handover notes written for the "DeepSeek 重制" remake, stored as Chinese `.txt`
+files under `docs/`. Their facts overlap the canonical `docs/original/` and
+`docs/deepseek-rebuild/` documents: treat canonical docs as authoritative and
+reconcile any conflict. `07-UI描述.txt` and the removed `08-界面布局.txt` were
+duplicate copies of the same content. The three files marked 最新 are the latest
+revisions.
+
+| File | Covers |
+| --- | --- |
+| `01-完整项目.txt` | Product positioning (魅魔杀, 18+, 1280x720) |
+| `02-游戏结构.txt` | Runtime environment and architecture |
+| `03-角色与角色技能.txt` | 26 official characters and skills |
+| `04-卡牌.txt` | Card system |
+| `05-怪物与怪物技能与饰品.txt` | 33 monsters and 30 relics |
+| `06-副本.txt` | 4 official dungeons |
+| `07-UI描述.txt` | UI spec (24 screens, battle bands, modal stack) |
+| `09-开发风险.txt` | Development risks and mitigations |
+| `10-开发规则与DZMM规则.txt` | Static rules, sandbox, DZMM SDK |
+| `11-素材引用.txt` | Asset filename reference |
+| `12-新副本素材-废墟沙城.txt` | ruins_sand_city dungeon data |
+| `13-新角色引用-亚缇娜与玛利亚.txt` | Unfinished character reference |
+| `离线开发与风险.txt` | Offline build strategy and risks |
+| `亚缇娜与玛利亚设计最新.txt` | Latest Artina/Maria design |
+| `安洁莉卡技能重制.txt` | Angelica skill rework (latest) |
+| `废墟沙城怪物设计最新版本.txt` | Latest ruins_sand_city design |
+
 ## Selection Rules
 
 - Original gameplay, content, UI, animation, save, browser runtime, or assets:
