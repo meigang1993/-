@@ -12,6 +12,25 @@ function skinArtWrappers(unit) {
 function captureBattleSkinArt(unit) {
   return skinArtWrappers(unit);
 }
+function waitForBattleSkinImage(image, timeout = 1200) {
+  if (!image) return Promise.resolve();
+  if (image.complete && image.naturalWidth > 0) {
+    return image.decode?.().catch?.(() => {}) || Promise.resolve();
+  }
+  return new Promise(resolve => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      image.removeEventListener("load", finish);
+      image.removeEventListener("error", finish);
+      resolve();
+    };
+    image.addEventListener("load", finish, { once: true });
+    image.addEventListener("error", finish, { once: true });
+    setTimeout(finish, timeout);
+  }).then(() => image.decode?.().catch?.(() => {}) || undefined);
+}
 async function revealBattleSkinArt(unit, previous, isCurrent) {
   const current = skinArtWrappers(unit);
   const transitions = current.map((item, index) => ({
@@ -24,10 +43,7 @@ async function revealBattleSkinArt(unit, previous, isCurrent) {
     wrapper.append(oldImage);
   });
   try {
-    await Promise.all(transitions.map(({ image }) => Promise.race([
-      image.decode?.() || Promise.resolve(),
-      new Promise(resolve => setTimeout(resolve, 800)),
-    ])));
+    await Promise.all(transitions.map(({ image }) => waitForBattleSkinImage(image)));
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   } catch (err) {
     console.warn("battle skin decode failed:", err.message, err.stack);
