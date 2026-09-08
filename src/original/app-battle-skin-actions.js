@@ -1,3 +1,4 @@
+const SKIN_SWITCH_FADE_MS = 220;
 let battleSkinChangeId = 0;
 function skinArtWrappers(unit) {
   const selectors = [
@@ -19,6 +20,7 @@ async function revealBattleSkinArt(unit, previous, isCurrent) {
   })).filter(item => item.oldImage);
   if (!transitions.length) return;
   transitions.forEach(({ wrapper, oldImage }) => {
+    wrapper.querySelectorAll("img.skin-switch-old-art").forEach(node => node.remove());
     wrapper.classList.add("skin-switch-layer");
     oldImage.classList.add("skin-switch-old-art");
     wrapper.append(oldImage);
@@ -31,12 +33,13 @@ async function revealBattleSkinArt(unit, previous, isCurrent) {
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   } catch (err) {
     console.warn("battle skin decode failed:", err.message, err.stack);
-  } finally {
-    transitions.forEach(({ wrapper, oldImage }) => {
-      if (oldImage.isConnected) oldImage.remove();
-      wrapper.classList.remove("skin-switch-layer");
-    });
   }
+  transitions.forEach(({ oldImage }) => oldImage.classList.add("skin-switch-fading"));
+  await new Promise(resolve => setTimeout(resolve, SKIN_SWITCH_FADE_MS));
+  transitions.forEach(({ wrapper, oldImage }) => {
+    if (oldImage.isConnected) oldImage.remove();
+    wrapper.classList.remove("skin-switch-layer");
+  });
   if (!isCurrent()) return;
 }
 async function equipBattleSkin(button) {
