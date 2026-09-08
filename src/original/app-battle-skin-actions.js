@@ -1,4 +1,3 @@
-const SKIN_SWITCH_FADE_MS = 220;
 let battleSkinChangeId = 0;
 function skinArtWrappers(unit) {
   const selectors = [
@@ -34,8 +33,6 @@ async function revealBattleSkinArt(unit, previous, isCurrent) {
   } catch (err) {
     console.warn("battle skin decode failed:", err.message, err.stack);
   }
-  transitions.forEach(({ oldImage }) => oldImage.classList.add("skin-switch-fading"));
-  await new Promise(resolve => setTimeout(resolve, SKIN_SWITCH_FADE_MS));
   transitions.forEach(({ wrapper, oldImage }) => {
     if (oldImage.isConnected) oldImage.remove();
     wrapper.classList.remove("skin-switch-layer");
