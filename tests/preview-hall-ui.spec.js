@@ -114,7 +114,7 @@ test("update notice shows the August 28 player-facing fixes", async ({ page }) =
 });
 
 test("announcement and every unlock event keep scrolling inside their content", async ({ page }) => {
-  await page.setViewportSize({ width: 480, height: 270 });
+  await page.setViewportSize({ width: 1280, height: 720 });
   await openGame(page);
   await startFreshGame(page);
   const eventModals = [
