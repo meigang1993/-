@@ -78,13 +78,6 @@ Required guards:
   considered successful; the versions were synchronized, the pre-commit gate
   passed, and the retry returned commit
   `ffc7bb52d42c5b06c80e6e7f68617c50f35c5a16`.
-- Save incident recorded on September 7, 2026: the first save for the Angelica
-  skin-switch fix returned `500 Save failed` because `meta[name="game-build"]`
-  was advanced before the index stylesheet/script cache parameters, villa
-  stylesheet imports, and visible build badge were synchronized. Treat any
-  such response as an unsuccessful save; synchronize every cache-version
-  consumer, rerun the script contract check, then retry and verify the commit
-  hash plus a clean worktree.
 - Documentation-only changes still require hooks/path checks and the
   authenticated Game Studio save endpoint. They do not require rebuilding
   runtime bundles unless `src/original/` or `publish/` changes.

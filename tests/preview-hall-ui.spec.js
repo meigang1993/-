@@ -99,13 +99,13 @@ test("fresh games guide the first expedition and retire the hint after entry", a
   await expect(page.locator("[data-open-modal='team']")).toHaveText("准备启程");
 });
 
-test("update notice shows the August 17 player-facing fixes", async ({ page }) => {
+test("update notice shows the August 28 player-facing fixes", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
-  await expect(page.locator(".hall-update-button small")).toHaveText("2026.08.17");
+  await expect(page.locator(".hall-update-button small")).toHaveText("2026.08.28");
   await page.locator(".hall-update-button").click();
   const notice = page.locator(".update-notice");
-  await expect(notice.locator("time")).toHaveAttribute("datetime", "2026-08-17");
+  await expect(notice.locator("time")).toHaveAttribute("datetime", "2026-08-28");
   await expect(notice).toContainText("战斗时序");
   await expect(notice).toContainText("战斗帧性能");
   await expect(notice).toContainText("神速之袭");
@@ -114,7 +114,7 @@ test("update notice shows the August 17 player-facing fixes", async ({ page }) =
 });
 
 test("announcement and every unlock event keep scrolling inside their content", async ({ page }) => {
-  await page.setViewportSize({ width: 480, height: 270 });
+  await page.setViewportSize({ width: 1280, height: 720 });
   await openGame(page);
   await startFreshGame(page);
   const eventModals = [
@@ -154,7 +154,7 @@ test("relic codex exposes every formal relic and closes without leaving the libr
     window.render();
     return all.map(relic => ({ name: relic.name, effect: relic.effect }));
   });
-  expect(relics).toHaveLength(30);
+  expect(relics).toHaveLength(40);
   await page.locator("[data-open-modal='relics']").click();
   const opener = page.locator("[data-relic-codex='1']");
   await opener.focus();

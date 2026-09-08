@@ -2,7 +2,7 @@ const shoup4Defs = [
   { name: "杀（普攻）", type: "slash", scale: "attack", suits: { "♠": 4, "♥": 4, "♣": 4, "♦": 4 }, text: "指定一名敌方角色为目标，对其造成等同于你的攻击力的物理伤害。使用此牌需消耗1点杀意。" },
   { name: "魔杀", type: "slash", scale: "magic", attackType: "magic", suits: { "♠": 4, "♥": 4, "♣": 4, "♦": 4 }, text: "指定一名敌方角色为目标，对其发动魔法攻击，造成等同于你的魔力的物理伤害。使用此牌需消耗1点杀意。" },
   { name: "闪", type: "response", suits: { "♥": 8, "♦": 8 }, text: "当你成为【杀】的目标时，你可以使用此牌，抵消该【杀】对你造成的此次伤害。" },
-  { name: "蓄力", type: "tactic", charge: 1, targetless: true, suits: { "♠": 3, "♣": 3 }, text: "本回合内，你使用的下一张【杀】造成的伤害×1.5。此效果可叠加。" },
+  { name: "蓄力", type: "tactic", charge: 1, targetless: true, suits: { "♠": 3, "♣": 3 }, text: "本回合内，你使用的下一张【杀】造成的伤害×2。此效果可叠加。" },
   { name: "愈魔瓶", type: "consume", healPct: .3, healScale: "magic", allyTarget: true, suits: { "♥": 3, "♦": 3 }, text: "指定一名友方角色为目标，其恢复（其最大生命值的30%+你的魔力）点生命值。双击或拖出手牌区时，默认对自己使用。" },
 ];
 const initialShopCardNames = ["魔力提炼", "拆解", "束缚陷阱", "封印术", "与我一战", "机枪扫杀", "物资补给", "看破", "生命之泉", "偷窃", "灵魂锁链", "魔弹特攻", "借刀杀人", "魔王军入侵"];

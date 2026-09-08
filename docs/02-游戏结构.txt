@@ -6,11 +6,11 @@
 【一、运行环境】
 
 游戏是纯静态前端网站，运行在沙箱 iframe 中。
-- 入口文件：publish/index.html
+- 入口文件：publishindex.html
 - 技术：HTML、CSS、JavaScript、Canvas、Web Audio、静态资源
-- 禁止：Node/Python服务、端口监听、Express/Flask、服务器依赖
+- 禁止：NodePython服务、端口监听、ExpressFlask、服务器依赖
 - 所有资源使用相对路径
-- publish/ 下所有路径只能包含 ASCII 字母、数字、_、-、.
+- publish 下所有路径只能包含 ASCII 字母、数字、_、-、.
 
 沙箱 iframe 限制（生产环境）：
 - 没有 allow-same-origin，origin 为 null
@@ -28,28 +28,28 @@ Workbench 预览环境差异：
 【二、文件组织结构（当前项目）】
 
 源代码目录：
-  src/original/         所有未压缩运行时模块（开发源码，不下发玩家）
-  tools/                构建配置和工具
-  docs/                 项目记忆文档
+  srcoriginal         所有未压缩运行时模块（开发源码，不下发玩家）
+  tools                构建配置和工具
+  docs                 项目记忆文档
 
 发布目录：
-  publish/              只有这里的文件会提供给玩家
-  publish/index.html    入口文件
-  publish/base.css      基础样式
-  publish/villa.css     殿堂兼容入口（import 四个 villa CSS）
-  publish/battle*.css   战斗相关样式
-  publish/gothic*.css   哥特主题样式
-  publish/bundles/      生成的压缩 JS bundle 文件
-  publish/assets/       静态资源
+  publish              只有这里的文件会提供给玩家
+  publishindex.html    入口文件
+  publishbase.css      基础样式
+  publishvilla.css     殿堂兼容入口（import 四个 villa CSS）
+  publishbattle.css   战斗相关样式
+  publishgothic.css   哥特主题样式
+  publishbundles      生成的压缩 JS bundle 文件
+  publishassets       静态资源
 
 资源目录：
-  publish/assets/images/         角色和敌人立绘
-  publish/assets/new-portraits/  新角色和新敌人立绘
-  publish/assets/generated/      生成的皮肤、特殊立绘和卡牌插画
-  publish/assets/generated/cards/ 卡牌和技能插画（79个WebP）
-  publish/assets/sounds/         音效和BGM
-  publish/assets/new-bgm/        新副本BGM
-  publish/assets/ruins-enemies/  废墟沙城敌人立绘
+  publishassetsimages         角色和敌人立绘
+  publishassetsnew-portraits  新角色和新敌人立绘
+  publishassetsgenerated      生成的皮肤、特殊立绘和卡牌插画
+  publishassetsgeneratedcards 卡牌和技能插画（79个WebP）
+  publishassetssounds         音效和BGM
+  publishassetsnew-bgm        新副本BGM
+  publishassetsruins-enemies  废墟沙城敌人立绘
 
 【三、Bundle 系统（当前项目）】
 
@@ -116,7 +116,7 @@ Workbench 预览环境差异：
 
 重制项目可以使用更简单的结构：
 
-  publish/
+  publish
     index.html          入口文件
     style.css           全局样式
     base.css            基础变量和重置
@@ -127,12 +127,12 @@ Workbench 预览环境差异：
     ui.js               UI 渲染
     storage.js          存档系统
     audio.js            音频管理
-    assets/
-      images/
-      audio/
+    assets
+      images
+      audio
 
 如果使用多个 JS 文件，使用全局命名空间模式：
-  window.GameModules = window.GameModules || {};
+  window.GameModules = window.GameModules  {};
   window.GameModules.config = { ... };
 
 在 index.html 中按依赖顺序用 script 标签加载。
@@ -140,19 +140,19 @@ Workbench 预览环境差异：
 【五、数据流】
 
 1. 启动流程：
-   index.html -> 加载 CSS -> 加载 JS (数据层 -> 存储层 -> 应用层)
-   -> 渲染标题页 -> 玩家点击新游戏/读档
+   index.html - 加载 CSS - 加载 JS (数据层 - 存储层 - 应用层)
+   - 渲染标题页 - 玩家点击新游戏读档
 
 2. 新游戏流程：
-   创建初始状态 -> 解锁初始角色(罗卡尔、贝丝妲魔偶) -> 渲染殿堂
+   创建初始状态 - 解锁初始角色(罗卡尔、贝丝妲魔偶) - 渲染殿堂
 
 3. 战斗流程：
-   选择副本和难度 -> 进入副本地图 -> 选择节点 -> 创建战斗
-   -> 初始化双方牌堆和角色 -> 按速度排序回合 -> 战斗结算
+   选择副本和难度 - 进入副本地图 - 选择节点 - 创建战斗
+   - 初始化双方牌堆和角色 - 按速度排序回合 - 战斗结算
 
 4. 存档流程：
-   游戏状态变化 -> 按里程碑触发存档 -> 序列化状态 -> dzmm.kv.put
-   -> 失败时 fallback 到 localStorage -> 报告真实结果
+   游戏状态变化 - 按里程碑触发存档 - 序列化状态 - dzmm.kv.put
+   - 失败时 fallback 到 localStorage - 报告真实结果
 
 【六、数据层职责】
 
@@ -182,6 +182,6 @@ Workbench 预览环境差异：
 
 【九、构建版本管理】
 
-当前项目使用 meta[name="game-build"] 管理缓存版本。
+当前项目使用 meta[name=game-build] 管理缓存版本。
 所有脚本和样式 URL 带版本号参数防止缓存混淆。
-重制项目也应实现类似机制，确保 CSS/JS 变更后浏览器不会使用旧缓存。
+重制项目也应实现类似机制，确保 CSSJS 变更后浏览器不会使用旧缓存。

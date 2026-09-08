@@ -60,7 +60,7 @@ window.UICommonArt = deps => {
     const artLabel = battleArt
       ? ` aria-label="${esc(unit.name || "角色")}立绘" title="${esc(skillSummary(unit))}"`
       : ` title="${esc(skillTitle(unit))}"`;
-    const priority = battleArt
+    const priority = isBattleUnit
       ? ` loading="eager" fetchpriority="high"` : ` loading="lazy"`;
     const fallbackActive = !src && !!unit._assetFailedUrls?.length;
     const media = `<img src="${esc(src)}" alt="${esc(unit.name || "角色")}"${priority} decoding="async" draggable="false">`;
