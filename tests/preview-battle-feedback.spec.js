@@ -1,6 +1,7 @@
 const { test, expect } = require("@playwright/test");
 const {
   openGame,
+  startFreshGame,
 } = require("./helpers/preview-game");
 
 test("battle audio waits for a delayed AudioContext resume", async ({ page }) => {
@@ -71,6 +72,7 @@ test("battle audio waits for a delayed AudioContext resume", async ({ page }) =>
 
 test("consecutive hit shakes survive damage rerenders", async ({ page }) => {
   await openGame(page);
+  await startFreshGame(page);
   await page.evaluate(() => {
     window.BattleFX.cancel();
     const host = document.createElement("div");
