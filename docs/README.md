@@ -7,6 +7,7 @@ The repository contains the original static game and its development memory.
 | Document | Owns |
 | --- | --- |
 | `project-rules.md` | Repository-wide constraints, precedence, and save workflow |
+| `开发日记.md` | **Change log — append one entry per change; also holds cross-AI collaboration rules (see §17 scripts/ boundary, §16 skin-switch self-correction)** |
 | `README.md` | Routing for original-game memory |
 | `original-runtime-freeze.json` | Machine-readable runtime ownership state required by repository tooling |
 
@@ -62,3 +63,23 @@ revisions.
 1. The user's current explicit instruction.
 2. Original runtime/data and matching `docs/original/` contract.
 3. Current executable repository contracts.
+
+## Cross-AI Collaboration Rules (must read before writing)
+
+Multiple AI agents work on this repo (local container + remote). Before any
+write, read **`docs/开发日记.md` §17**, which defines:
+
+- `scripts/save.sh` / `save-checkpoint.sh` are **container-only**. They require
+  `CONTAINER_SECRET`, `PROVISIONING_GENERATION`, `PROVISIONING_TOKEN` and call
+  `http://localhost:3005/git/save`. **Never fake these variables** and never pass
+  secrets via `-H "...: $SECRET"` (the scripts correctly use `curl -K -`).
+- `scripts/verify.sh`, `verify-exhaustive.sh`, `test-offline.sh` are local-safe.
+- Local verification (`npm run build:bundles` then `npx playwright test`) is a
+  **different stage** from a successful G save. Never report local success as
+  "synced" or "published".
+- After changing `src/original/*.js`, compare **all** bundle blob SHAs before
+  committing (a previous commit missed `startup.min.js`).
+- Deletion requests: verify the path exists in the tree first — deletion is
+  irreversible. (A requested `GGGG/` folder was proven absent: zero matches
+  across 1059 entries.)
+
