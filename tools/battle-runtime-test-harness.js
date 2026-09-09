@@ -49,6 +49,8 @@ load("src/original/battle-cards-system.js");
 load("src/original/battle-draw-feedback.js");
 load("src/original/card-utils.js");
 load("src/original/battle-status-card-registry.js");
+load("src/original/battle-status-card-storage.js");
+load("src/original/battle-status-card-triggers.js");
 load("src/original/battle-status-cards.js");
 load("src/original/battle-card-tactics.js");
 load("src/original/miller-skills.js");

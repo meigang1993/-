@@ -29,7 +29,7 @@ function loadRuntime(file) {
   "store-state-factory.js",
   "store-bounty-repairs.js", "store-repairs.js", "store-migration-characters.js",
   "store-migration-runs.js", "store-migration-normalizers.js",
-  "store-migrations.js", "dungeon-map.js", "dungeon-events.js",
+  "store-migrations-characters.js", "store-migrations-unlocks.js", "store-migrations.js", "dungeon-map.js", "dungeon-events.js",
 ].forEach(loadRuntime);
 
 function resetStorage() {

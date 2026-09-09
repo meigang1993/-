@@ -25,7 +25,7 @@ function assert(condition, message) {
   "store-unlock-recovery.js", "store-unlock-migrations.js",
   "store-state-factory.js", "store-bounty-repairs.js", "store-repairs.js",
   "store-migration-characters.js", "store-migration-runs.js",
-  "store-migration-normalizers.js", "store-migrations.js",
+  "store-migration-normalizers.js", "store-migrations-characters.js", "store-migrations-unlocks.js", "store-migrations.js",
   "local-core-utils.js", "local-core-character.js", "local-core-commerce.js",
   "local-core-bounty.js", "local-core-dungeon.js", "local-core-events.js",
 ].forEach(file => load(`./src/original/${file}`));

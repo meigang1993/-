@@ -8,6 +8,8 @@ installGlobals();
 loadRuntime();
 [
   "battle-status-card-registry.js",
+  "battle-status-card-storage.js",
+  "battle-status-card-triggers.js",
   "battle-status-cards.js",
   "battle-draw-feedback.js",
   "battle-discard-flow.js",

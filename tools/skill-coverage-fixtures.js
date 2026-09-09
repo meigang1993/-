@@ -119,7 +119,7 @@ function loadRuntime() {
     "nonoka-new-moon-skills.js", "nonoka-loki-skills.js",
     "battle-draw-transaction.js", "flora-speed-assault.js", "flora-skills.js",
     "carlos-skills.js", "flora-carlos-skills.js",
-    "wendy-skills.js", "cadicis-skills.js", "wendy-cadicis-skills.js",
+    "wendy-skills.js", "cadicis-skill-utils.js", "cadicis-card-plan.js", "cadicis-heavy-fire.js", "cadicis-responsibility.js", "cadicis-skills.js", "wendy-cadicis-skills.js",
     "lokar-skills.js", "battle-card-tactics.js", "manny-skills.js",
     "miller-skills.js", "bertis-gerlot-skills.js", "angelica-luka-skills.js", "nanali-sealed.js",
     "elrana-healing-skills.js", "ace-skills.js", "nanali-skills.js",

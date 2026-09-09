@@ -25,7 +25,7 @@ window.BattleSystem = { pushFloat() {} };
   "battle-draw-feedback.js", "witherer-relic-skills.js", "bertis-gerlot-skills.js",
   "nonoka-new-moon-skills.js",
   "nonoka-loki-skills.js",
-  "battle-card-tactics.js", "battle-card-active-relics.js",
+  "battle-card-tactics.js", "battle-card-active-relics-core.js", "battle-card-active-relics-demon.js", "battle-card-active-relics-assassin.js", "battle-card-active-relics-arsenal.js", "battle-card-active-relics.js",
   "battle-card-hand-interactions.js", "battle-card-counter-interactions.js",
   "battle-card-interactions.js",
   "battle-card-specials.js",
