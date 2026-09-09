@@ -46,8 +46,8 @@ const applied = SkinSystem.applyToChar({
 }, { id: "angelica" });
 assert(applied.art === berserker.art
   && applied.skinDynamicEffect === "angelica-berserker"
-  && applied.skinName === "狂暴战士",
-  "equipping Berserker must resolve through SkinSystem");
+  && applied.skinName === "帝血弑天",
+  "equipping Imperial Blood Slaying must resolve through SkinSystem");
 
 assert(AngelicaBerserkerSkinFX.active({ skinDynamicEffect: "angelica-berserker" }),
   "Berserker battle units must activate the dedicated controller");
@@ -69,6 +69,7 @@ delete window.state;
 
 [
   ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.might"],
+  ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.queueEntry"],
   ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.rageSpend"],
   ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.taunt"],
   ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.rageGain"],
@@ -87,13 +88,18 @@ assert(styles.includes('"angelica-berserker": "./angelica-berserker-skin.css"'),
 
 const css = fs.readFileSync("./publish/angelica-berserker-skin.css", "utf8");
 [
+  "angelica-berserker-entry", "angelica-berserker-entering",
   "angelica-berserker-might",
   "angelica-berserker-rage-gain", "angelica-berserker-rage-slam",
   "angelica-berserker-rage-trail", "angelica-berserker-taunt",
   "angelica-berserker-victory-show",
 ].forEach(token => assert(css.includes(token), `Berserker CSS is missing ${token}`));
-assert(!css.includes("angelica-berserker-entering"),
-  "Berserker CSS must not retain automatic entry animation");
+assert(css.includes("imperialSwordSummon") && css.includes("imperialTauntBeam")
+  && css.includes("imperialBloodRing"),
+  "Imperial Blood Slaying must retain sword, taunt, and rage visual identities");
+const victorySource = fs.readFileSync("./src/original/battle-victory.js", "utf8");
+assert(victorySource.includes("帝血未冷，下一场继续。"),
+  "Imperial Blood Slaying must use its dedicated victory line");
 
 const skinActionSource = fs.readFileSync("./src/original/app-battle-skin-actions.js", "utf8");
 assert(skinActionSource.includes("if (isCurrent()) {\n      actionState.appearanceSaving = false;"),

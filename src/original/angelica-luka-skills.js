@@ -98,7 +98,11 @@ window.AngelicaLukaSkills = (() => {
     window.BertisGerlotSkills?.refreshArrogance?.(state);
     window.BattleLog.add(state, `${actor.name} 触发嗜血杀戮，恢复${healed}点生命。`);
   }
-  function battleStart(state) { (state.battle?.allies || []).filter(u => u.ref === "luka").forEach(u => recoverWolf(state, u, false, "all")); }
+  function battleStart(state) {
+    (state.battle?.allies || []).filter(u => u.ref === "luka").forEach(u => recoverWolf(state, u, false, "all"));
+    (state.battle?.allies || []).filter(u => u.ref === "angelica")
+      .forEach(u => window.AngelicaBerserkerSkinFX?.queueEntry?.(state, u));
+  }
   function beginTurn(state, unit) {
     if (unit?.ref === "luka") recoverWolf(state, unit, true, "all");
     if (unit?.ref === "angelica") unit.angelicaFirstCardDone = false;

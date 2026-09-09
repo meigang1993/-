@@ -217,7 +217,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 贝尔蒂丝的等级特殊立绘 ID 固定为`bertis_level_10_special`，素材固定为`publish/assets/generated/bertis-level-10-special.022dd113.webp`。角色详情在`Lv.10`前显示锁定条件，达到`Lv.10`后按当前角色等级自动加入已拥有皮肤并允许装备、放大查看和作为正式战斗立绘；不得通过宝珠购买提前解锁。正式副本与据点中未解锁的等级特殊立绘统一显示`Lv.10`锁定占位；测试战斗放开试用（含未拥有的等级特殊立绘，见 2026-09-01 规则），已拥有立绘继续沿用正式装备路径。
 - 诺诺卡的等级特殊立绘 ID 固定为`nonoka_level_10_special`，素材固定为`publish/assets/generated/nonoka-level-10-special.ba4c8ff8.webp`。其等级解锁、正式装备和放大查看规则与贝尔蒂丝等级特殊立绘相同；现有`nonoka_idol_rising_star`仍是独立的史诗皮肤，不被替换或降级。
 - 等级特殊立绘统一使用`specialIllustration: true`、`unlockLevel: 10`和零价格元数据。`src/original/store-migration-normalizers.js`在旧存档归一化时必须调用`SkinSystem.ensure(state)`：已解锁且当前等级达到`Lv.10`的角色，即使旧存档没有对应新立绘 ID，也会自动加入已拥有皮肤；未达到等级的错误拥有标记会被移除，若正装备该立绘则回退角色默认外观。任何拥有或装备修复都必须标记迁移存档重写，不能只在当前内存会话生效。旧`testSkins`中的等级特殊立绘试用记录按测试战斗试用规则保留不清除；正式装备仍按外观设置路径保存。
-- 当前等级特殊立绘为贝尔蒂丝`bertis_level_10_special`、诺诺卡`nonoka_level_10_special`、曼妮`manny_level_10_special`、芙萝娅`flora_level_10_special`、温蒂`wendy_level_10_special`、艾尔拉娜`elrana_level_10_special`和安洁莉卡`angelica_level_10_special`。曼妮“枪之魅魔”、芙萝娅“音速刺客”、温蒂“慈爱教师”、艾尔拉娜“堕落医师”和安洁莉卡“狂暴战士”是彼此独立的史诗宝珠皮肤，不属于等级特殊立绘，也不得被等级归一化清除。
+- 当前等级特殊立绘为贝尔蒂丝`bertis_level_10_special`、诺诺卡`nonoka_level_10_special`、曼妮`manny_level_10_special`、芙萝娅`flora_level_10_special`、温蒂`wendy_level_10_special`、艾尔拉娜`elrana_level_10_special`和安洁莉卡`angelica_level_10_special`。曼妮“枪之魅魔”、芙萝娅“音速刺客”、温蒂“慈爱教师”、艾尔拉娜“堕落医师”和安洁莉卡“帝血弑天”是彼此独立的史诗宝珠皮肤，不属于等级特殊立绘，也不得被等级归一化清除。
 - Cloud KV mutations are serialized per key through the completion of the underlying SDK request. A client-side timeout may report a recoverable failure, but its late completion must never overtake and overwrite a newer save or delete.
 - When `dzmm.kv` is available it is the required durable copy; sandboxed `localStorage` remains a best-effort fallback. A successful cloud slot/main write or delete must not be reported as permanently partial only because the iframe blocks local storage.
 - 生产主档、手动槽1-3和设置都直接使用浏览器 `dzmm.kv` 的现有 key。启动不调用 `dzmm.fn`，函数 bridge、函数发布状态和 Cloudflare challenge 不得阻止标题画面。设置读取失败时可使用有效本地副本或受锁定的默认值继续启动；主档/槽位读取仍必须区分明确空值与失败，失败不得初始化空档或覆盖未知云端数据。
@@ -694,14 +694,14 @@ gameplay values and behavior remain here rather than being duplicated in
 - `解答迷惑`显示高举教案、巨大金色魔法阵与环形战术牌虚影；将临时牌交给其他角色时显示学识符文丝带，交给卡迪西斯或芙萝娅时丝带表现增强。
 - 胜利结算显示温蒂合上教案、黑板浮现“下课”、书签归位，并在教案总结区显示本次实际伤害、由该技能累计授予的护甲和由`读书的智慧`累计摸到的牌数。与其他专属皮肤同队时，仍只展示实际贡献排名最高者的一套专属胜利画面和音效。
 
-### 安洁莉卡皮肤：狂暴战士
+### 安洁莉卡皮肤：帝血弑天
 
-- 皮肤 ID：`angelica_berserker`；品质固定为史诗，兑换价格固定为10精华宝珠，仅属于安洁莉卡；`angelica_default`保留原立绘并允许随时切回。默认立绘使用正式压缩素材`publish/assets/images/angelica-portrait.7a63db49.webp`；狂暴战士素材固定为`publish/assets/generated/angelica-berserker.30dab19b.webp`（1024×1024 WebP，由用户提供设计图优化），专属动态特效标识固定为`angelica-berserker`。
-- 形象固定为抛弃防御的狂战女性：白色长发、红色眼眸、暗红重甲与黑色皮带交叠的战斗装束，肩扛带豁口的暗红色巨剑，剑身透出赤红魔光。不得改成金发蓝瞳、圣骑士铠甲、无剑形象或明亮背景。
+- 皮肤 ID：`angelica_berserker`；品质固定为史诗，兑换价格固定为10精华宝珠，仅属于安洁莉卡；`angelica_default`保留原立绘并允许随时切回。帝血弑天继续使用`publish/assets/generated/angelica-berserker.30dab19b.webp`，专属动态特效标识固定为`angelica-berserker`。
+- 形象固定为暗红血意支配的成年狂战女性：暗红长发遮住半张脸，露出的竖瞳带有灼红能量，脸颊裂痕与脖颈锁骨沿线流动红色光流，半透明鳞片状血甲游动覆盖身体，右手凝成巨剑，左手保留三根红色尖刺，颈后到尾椎悬浮脊椎残影。不得改成明亮圣骑士、金发蓝瞳、普通火焰战士或无暗红能量识别点的形象。
 - 专属特效控制器为`src/original/angelica-berserker-skin-fx.js`，注册在 battle-presentation bundle；样式注册于`src/original/runtime-battle-styles.js`的`angelica-berserker`映射，指向`publish/angelica-berserker-skin.css`。
-- 出场演出显示巨剑从天而降插入地面、冲击波与碎石、地面蛛网裂痕，安洁莉卡立绘以`berserkerEnter`入场动画现身。
-- `力大无穷`（第一张牌）显示右臂战纹爆发、卡牌双倍虚影拖曳暗红尾焰；`狂战意志`受击或造成伤害时获得战意碎片（受击更强），消耗全部狂战标记时巨剑顿地、碎片吸附剑身并化为本回合攻击血色拖尾（`angelica-berserker-rage-trail`连线，由`battle-damage-utils.js`在攻击时触发）；`挑衅`显示脚下红色挑衅波纹、勾手指势与身后战网。
-- 胜利结算显示狂暴战士专属立绘区、CSS 巨剑、余烬粒子与台词"下一场，快点开始。"；与其他专属皮肤同队时，仍只展示实际贡献排名最高者的一套专属胜利画面和音效。
+- 出场演出由战斗开始事件单次排队：中央先显出搏动的暗红巨剑轮廓，随后血意环、红雾粒子与安洁莉卡立绘一同升起，剑光在角色前方凝成。
+- `力大无穷`（第一张伤害牌）显示血甲收紧、巨剑膨胀与粗壮暗红剑柱；`狂战意志`受击或造成伤害时获得血色印记（受击更强），消耗全部狂战标记时显示印记炸裂、血雾回流与能量脉冲，并化为本回合攻击血色拖尾（`angelica-berserker-rage-trail`连线，由`battle-damage-utils.js`在攻击时触发）；`挑衅`显示脚下扩散血环、指尖血光束、敌人身上的短暂侵蚀纹路与身后血色战网。
+- 胜利结算显示帝血弑天专属立绘区、CSS 巨剑、血色碎片粒子与台词"帝血未冷，下一场继续。"；与其他专属皮肤同队时，仍只展示实际贡献排名最高者的一套专属胜利画面和音效。
 - 测试战斗可试用该皮肤（与其他史诗皮肤规则一致）；`tools/test-angelica-berserker-skin.js`注册于 presentation 组。
 
 ### 罗卡尔皮肤：恋母勇者

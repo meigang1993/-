@@ -28,20 +28,37 @@ window.AngelicaBerserkerSkinFX = (() => {
   }
   function might(state, actor, card) {
     if (!active(actor) || !card) return;
-    anchored(state, actor, "angelica-berserker-might", 980, "<b></b><i></i><i></i><span></span>");
+    anchored(state, actor, "angelica-berserker-might", 1120, "<b></b><i></i><i></i><i></i><span></span>");
     tone(300, .14, "sawtooth", 0, .04); tone(620, .1, "triangle", 90, .03);
+  }
+  function entry(state, unit) {
+    if (!active(unit)) return;
+    const item = anchored(state, unit, "angelica-berserker-entry", 1380,
+      "<b></b><i></i><i></i><i></i><span></span>", "battlefield");
+    if (!item) return;
+    item.anchor.element.classList.add("angelica-berserker-entering");
+    later(() => { if (item.alive()) item.anchor.element.classList.remove("angelica-berserker-entering"); }, 1120);
+    tone(120, .2, "sawtooth", 0, .04); tone(480, .12, "triangle", 160, .035);
+    return item;
+  }
+  function queueEntry(state, unit, attempt = 0) {
+    if (!active(unit)) return;
+    later(() => {
+      if (window.state !== state || !state?.battle || state.battle.victoryScreen) return;
+      if (!entry(state, unit) && attempt < 5) queueEntry(state, unit, attempt + 1);
+    }, attempt ? 90 : 50);
   }
   function rageGain(state, unit, strong) {
     if (!active(unit)) return;
-    anchored(state, unit, `angelica-berserker-rage-gain ${strong ? "strong" : ""}`, 880,
-      "<i></i><span></span><span></span><span></span>", strong ? "battlefield" : "action-first");
+    anchored(state, unit, `angelica-berserker-rage-gain ${strong ? "strong" : ""}`, 980,
+      "<b></b><i></i><span></span><span></span><span></span>", strong ? "battlefield" : "action-first");
     tone(strong ? 210 : 520, .12, strong ? "sawtooth" : "sine", 0, .035);
   }
   function rageSpend(state, actor, count) {
     if (!active(actor)) return;
     actor.skinRageTrailTurn = state?.battle?.turn;
-    anchored(state, actor, `angelica-berserker-rage-slam ${(count || 0) >= 4 ? "grand" : ""}`, 1150,
-      "<b></b><i></i><i></i><i></i><span></span><span></span><span></span><span></span>");
+    anchored(state, actor, `angelica-berserker-rage-slam ${(count || 0) >= 4 ? "grand" : ""}`, 1320,
+      "<b></b><i></i><i></i><i></i><span></span><span></span><span></span><span></span><em></em>");
     tone(180, .18, "sawtooth", 0, .05); tone(760, .12, "triangle", 110, .035);
   }
   function rageTrail(state, actor, target) {
@@ -50,15 +67,13 @@ window.AngelicaBerserkerSkinFX = (() => {
   }
   function taunt(state, actor) {
     if (!active(actor)) return;
-    anchored(state, actor, "angelica-berserker-taunt", 1250, "<b></b><span></span><span></span>", "battlefield");
+    anchored(state, actor, "angelica-berserker-taunt", 1450, "<b></b><span></span><span></span><i></i>", "battlefield");
     anchored(state, actor, "angelica-berserker-warweb", 2600, "<i></i><i></i><i></i>", "battlefield");
     tone(240, .16, "square", 0, .03); tone(660, .12, "sine", 100, .025);
   }
   function sync(state) {
     if (!hasDocument()) return;
-    document.querySelectorAll(".angelica-berserker-entry").forEach(node => node.remove());
-    document.querySelectorAll(".angelica-berserker-entering").forEach(node =>
-      node.classList.remove("angelica-berserker-entering"));
+    if (!state?.battle) return;
   }
   function tone(...args) { window.BattleAudio?.tone?.(...args); }
   function cancel() {
@@ -68,5 +83,5 @@ window.AngelicaBerserkerSkinFX = (() => {
     document.querySelectorAll(".angelica-berserker-entering").forEach(node =>
       node.classList.remove("angelica-berserker-entering"));
   }
-  return { active, might, rageGain, rageSpend, rageTrail, taunt, sync, cancel };
+  return { active, entry, queueEntry, might, rageGain, rageSpend, rageTrail, taunt, sync, cancel };
 })();
