@@ -1,7 +1,20 @@
 window.GameBundles = (() => {
   const state = window.GameBundlesState;
-  const { loadStyle, activateStyles } = window.GameBundlesStyles;
-  const { loadScript } = window.GameBundlesScripts;
+  const {
+    load: loadStyle, activate: activateStyles,
+  } = window.RuntimeStyleLoader({
+    versioned: state.versioned,
+    loadedStyles: state.loadedStyles,
+    styleLinks: state.styleLinks,
+    pendingStyles: state.pendingStyles,
+  });
+  const { load: loadScript } = window.RuntimeScriptLoader({
+    versioned: state.versioned,
+    loadedScripts: state.loadedScripts,
+    pendingScripts: state.pendingScripts,
+    scripts: state.scripts,
+    runtimeReady: state.runtimeReady,
+  });
 
   function load(name, context = {}) {
     if (!state.scripts[name]) return Promise.reject(new Error(`Unknown game bundle: ${name}`));

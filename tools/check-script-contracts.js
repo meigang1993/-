@@ -129,7 +129,7 @@ if (!badgeTag || badgeBuild !== buildVersion || badgeLabel !== expectedLabel) {
 }
 
 const loaderFiles = ["runtime-loader.js", "runtime-loader-state.js",
-  "runtime-loader-styles.js", "runtime-loader-scripts.js"];
+  "runtime-script-loader.js", "runtime-style-loader.js"];
 const loader = loaderFiles
   .map(file => fs.readFileSync(path.join(sourceDir, file), "utf8"))
   .join("\n");
