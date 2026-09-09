@@ -37,14 +37,11 @@ window.GameUIInfo = (U) => {
       ?.find(skin => skin.specialIllustration);
     const canUseSpecialArt = !!specialArt;
     const safeTab = tab === "relics" && !canUseRelics ? "stats" : tab === "skins" && !canUseSkins ? "stats" : tab === "specialArt" && !canUseSpecialArt ? "stats" : (["skills", "relics", "skins", "specialArt"].includes(tab) ? tab : "stats");
-    const position = u.evaluation ? `<div class="role-position"><b>角色定位</b><span>${U.esc(u.evaluation)}</span></div>` : "";
     const unlock = unlockLine(u);
     const title = `${infoTitle(u)}${u.role ? `<p class="role-line">${U.esc(u.role)}</p>` : ""}${unlock}`;
     const livingRoom = !u.side && window.state?.view === "livingRoom";
-    const statsPosition = u.side ? "" : position;
-    const skillPosition = livingRoom ? "" : position;
     const growth = livingRoom ? progressionPanel(u) : "";
-    const body = safeTab === "skills" ? `${title}${skillPosition}<h3>技能</h3>${skillList(u)}` : safeTab === "relics" ? relicPanel(u) : safeTab === "skins" ? skinPanel(u, refId) : safeTab === "specialArt" ? specialArtPanel(u, specialArt) : `${title}${growth}${statsPosition}${u.side === "enemy" && u.battleRelics?.length ? relicBattlePanel(u) : ""}<div class="stats">${U.statHtml({ stats: u.stats, relicStats: relicStats || u.relicStats || {} })}</div>`;
+    const body = safeTab === "skills" ? `${title}<h3>技能</h3>${skillList(u)}` : safeTab === "relics" ? relicPanel(u) : safeTab === "skins" ? skinPanel(u, refId) : safeTab === "specialArt" ? specialArtPanel(u, specialArt) : `${title}${growth}${u.side === "enemy" && u.battleRelics?.length ? relicBattlePanel(u) : ""}<div class="stats">${U.statHtml({ stats: u.stats, relicStats: relicStats || u.relicStats || {} })}</div>`;
     const relicButton = canUseRelics ? `<button class="${safeTab === "relics" ? "active" : ""}" data-info-tab="relics">饰品</button>` : "";
     const skinButton = canUseSkins ? `<button class="${safeTab === "skins" ? "active" : ""}" data-info-tab="skins">皮肤</button>` : "";
     const specialArtButton = canUseSpecialArt ? `<button class="${safeTab === "specialArt" ? "active" : ""}" data-info-tab="specialArt">立绘</button>` : "";

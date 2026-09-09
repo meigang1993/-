@@ -34,7 +34,7 @@ window.BattleSystem = { pushFloat() {} };
   "battle-enemy-turn.js", "guest-ophelia-guard.js",
   "battle-thunder-hammer-response.js", "battle-dodge-cards.js",
   "battle-dodge-resume.js", "battle-dodge-deflect.js",
-  "battle-dodge-auto-response.js", "battle-dodge-response.js",
+  "battle-dodge-response.js",
   "battle-damage-response.js", "battle-damage-triggers.js",
   "battle-combat-responses.js", "battle-manual-hit-resume.js",
   "battle-manual-continuation-resume.js", "battle-manual-continuation.js",

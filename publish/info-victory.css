@@ -113,10 +113,7 @@
 .unlock-line { display: inline-block; margin: 6px 0 12px; padding: 6px 10px; border-radius: 999px; font-weight: 900; border: 1px solid rgba(255,215,166,.32); background: rgba(255,215,166,.1); }
 .unlock-line.owned { color: #ffd88d; }
 .unlock-line.locked { color: #ff8aa8; background: rgba(255,92,171,.12); }
-.skill-detail, .role-position { min-width: 0; display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: 12px; background: rgba(255,255,255,.08); color: #e7cfe8; border-left: 4px solid #ffd88d; font-size: 18px; }
+.skill-detail { min-width: 0; display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: 12px; background: rgba(255,255,255,.08); color: #e7cfe8; border-left: 4px solid #ffd88d; font-size: 18px; }
 .skill-detail p { min-width: 0; margin: 0; line-height: 1.65; overflow-wrap: anywhere; }
-.role-position { margin: 10px 0 14px; font-size: 15px; line-height: 1.55; border-left-color: #c9a1ff; }
-.role-position b { flex: 0 0 72px; color: #ffd88d; }
-.role-position span { min-width: 0; }
 .skill-detail.active { border-left-color: #ff5cab; }
 .skill-detail.trigger { border-left-color: #9ff4ff; }

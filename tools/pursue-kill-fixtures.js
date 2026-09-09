@@ -46,7 +46,7 @@ window.RuinsRelicEffects = { missileLauncherBlock: () => true };
   "wendy-cadicis-skills.js", "battle-damage-utils.js",
   "battle-damage-triggers.js", "battle-thunder-hammer-response.js",
   "battle-dodge-cards.js", "battle-dodge-resume.js", "battle-dodge-deflect.js",
-  "battle-dodge-auto-response.js", "battle-dodge-response.js",
+  "battle-dodge-response.js",
   "battle-damage-response.js", "battle-damage-relics.js",
   "battle-damage-lifecycle.js", "battle-damage-resolution.js",
   "battle-damage-hit.js", "battle-damage.js",
