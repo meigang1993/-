@@ -125,7 +125,8 @@ Angelica's Berserker skin must not create entry effects from render-time
 `sync()`. The former one-time entry path appended fixed-position nodes to the
 document body and animated the portrait whenever its marker was lost, so an
 unrelated or delayed rerender could produce visible corruption outside the skin
-panel. Berserker visuals are now limited to explicit skill events.
+panel. Entry is queued only by explicit battle-start or successful skin-switch
+events; the remaining visuals are limited to explicit skill events.
 
 Loading a battle snapshot occurs before deferred dungeon modules are guaranteed
 to exist. A legacy start-only or malformed snapshot must therefore clear

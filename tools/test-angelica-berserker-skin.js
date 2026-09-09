@@ -100,11 +100,42 @@ assert(css.includes("imperialSwordSummon") && css.includes("imperialTauntBeam")
 const victorySource = fs.readFileSync("./src/original/battle-victory.js", "utf8");
 assert(victorySource.includes("帝血未冷，下一场继续。"),
   "Imperial Blood Slaying must use its dedicated victory line");
+window.UICommon = { artBox: () => "<span>ART</span>" };
+window.BattleStats = {
+  ranking: battle => battle.allies.map((unit, index) => ({
+    unit, stats: { damage: 1, healing: 0, kills: 0, cards: 1, responses: 0 },
+    score: 1, rank: index + 1, title: "test", isMvp: index === 0,
+  })),
+};
+["MannyGun", "NonokaIdol", "BertisQueen", "FloraSonic",
+  "WendyTeacher", "ElranaFallenPhysician"].forEach(name => {
+  window[`${name}SkinFX`] = { active: () => false };
+});
+require("../src/original/battle-victory.js");
+window.state = {
+  view: "battle",
+  chars: [{ id: "angelica", locked: false, level: 10 }],
+  equippedSkins: { angelica: "angelica_berserker" },
+  ownedSkins: { angelica_berserker: true },
+  battle: {
+    test: true, turn: 1, enemyCount: 1, enemies: [{}],
+    allies: [{ ref: "angelica", name: "安洁莉卡", art: berserker.art }],
+  },
+};
+const victoryHtml = BattleVictory.render(window.state);
+assert(victoryHtml.includes("angelica-berserker-victory")
+  && victoryHtml.includes("angelica-berserker-victory-show")
+  && victoryHtml.includes("帝血未冷，下一场继续。"),
+  "Imperial Blood Slaying victory markup must be inserted into the rendered screen");
+delete window.state;
 
 const skinActionSource = fs.readFileSync("./src/original/app-battle-skin-actions.js", "utf8");
 assert(skinActionSource.includes("if (isCurrent()) {\n      actionState.appearanceSaving = false;"),
   "Stale battle skin requests must not rerender or clear the current appearance save state");
 assert(skinActionSource.includes("previous[index]?.image?.cloneNode?.(true)"),
   "Skin transitions must clone old portraits before mounting the transition layer");
+assert(skinActionSource.includes('skin.dynamicEffect === "angelica-berserker"')
+  && skinActionSource.includes("AngelicaBerserkerSkinFX?.queueEntry"),
+  "Switching to Imperial Blood Slaying in battle must explicitly queue its entry effect");
 
 console.log("test-angelica-berserker-skin: all assertions passed");

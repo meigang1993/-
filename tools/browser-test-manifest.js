@@ -20,6 +20,7 @@ const groups = Object.freeze({
     ["progression-character", "preview-progression-character.spec.js"],
     ["progression-equipment", "preview-progression-equipment.spec.js"],
     ["progression-skins", "preview-progression-skins.spec.js"],
+    ["ruins-unlock", "preview-ruins-unlock.spec.js"],
     ["unlocks", "preview-unlocks.spec.js"],
   ],
   "battle-core": [
@@ -49,6 +50,7 @@ const groups = Object.freeze({
   ],
   presentation: [
     ["assets", "preview-assets.spec.js"],
+    ["angelica-berserker-skin-effects", "preview-angelica-berserker-skin-effects.spec.js"],
     ["bertis-skin-effects", "preview-bertis-skin-effects.spec.js"],
     ["card-art", "preview-card-art.spec.js"],
     ["flora-sonic-skin-effects", "preview-flora-sonic-skin-effects.spec.js"],
@@ -61,6 +63,7 @@ const groups = Object.freeze({
     ["relic-equipment", "preview-relic-equipment.spec.js"],
     ["render-stability", "preview-render-stability.spec.js"],
     ["skins-effects", "preview-skins-effects.spec.js"],
+    ["skin-switch", "test-skin-switch.spec.js"],
   ],
 });
 
