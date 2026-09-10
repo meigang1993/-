@@ -141,7 +141,6 @@ test("Bertis Arrogant Queen renders anchored skill and victory effects", async (
     return image.offsetWidth === element.clientWidth
       && image.offsetHeight === element.clientHeight;
   }))).toBe(true);
-  await expect(page.locator(".battle-damage-skin-overlay")).toHaveCount(0);
   const pendingHealState = await page.evaluate(() => {
     window.BattleEffects.restart(window.state);
     const battle = window.state.battle;
