@@ -169,7 +169,7 @@ const dependencies = [
     "ui-common-card-combat.js", "ui-common-cards.js"],
   ["ui-battle-pickers.js", "ui-battle-targeting.js", "ui-battle-units.js",
     "ui-battle-trail.js", "ui-battle-overlays.js", "ui-battle-scene.js"],
-  ["game-random.js", "bounty-ledger.js", "receipt-ledger.js", "unlock-event-progress.js", "store-state-factory.js", "store-save-schema.js", "store-bounty-repairs.js", "store-repairs.js", "store-migration-characters.js", "store-migration-runs.js", "store-migration-normalizers.js", "store-migrations.js"],
+  ["game-random.js", "bounty-ledger.js", "receipt-ledger.js", "unlock-event-progress.js", "store-state-factory.js", "store-save-schema.js", "store-bounty-repairs.js", "store-repairs.js", "store-migration-characters.js", "store-migration-runs.js", "store-migration-normalizers.js", "store-migrations-characters.js", "store-migrations-unlocks.js", "store-migrations.js"],
   ["store-save-schema.js", "store-save-validation.js", "store-save-limits.js"],
   ["store-io-local.js", "store-io-selection.js", "store-io-mutations.js", "store-io-recovery.js", "store-io.js"],
   ["store-io-cloud.js", "store-io-selection.js", "store-io-mutations.js", "store-io-recovery.js", "store-io.js"],

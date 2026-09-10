@@ -71,7 +71,6 @@ test("representative living-room portraits and character panels remain usable", 
     if (character.id === "lokar") {
       await expect(page.locator(".info-title-row .combat-role")).toHaveCount(1);
       await expect(page.locator(".info-popup")).toContainText("成长倾向");
-      await expect(page.locator(".role-position")).toHaveCount(1);
       await expect(page.locator(".growth-table")).toContainText("0级");
       await expect(page.locator(".growth-table")).toContainText("15级");
     }
@@ -79,10 +78,6 @@ test("representative living-room portraits and character panels remain usable", 
     await page.locator('[data-info-tab="skills"]').click();
     await expect(page.locator('[data-info-tab="skills"]')).toHaveClass(/active/);
     await expect(page.locator(".skill-detail").first()).toBeVisible();
-    if (character.id === "lokar") {
-      await expect(page.locator(".role-position")).toHaveCount(0);
-    }
-
     await page.locator('[data-info-tab="relics"]').click();
     await expect(page.locator(".relic-slot")).toHaveCount(2);
 

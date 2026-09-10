@@ -128,7 +128,11 @@ if (!badgeTag || badgeBuild !== buildVersion || badgeLabel !== expectedLabel) {
   failures.push("visible build badge must match meta[name=game-build]");
 }
 
-const loader = fs.readFileSync(path.join(sourceDir, "runtime-loader.js"), "utf8");
+const loaderFiles = ["runtime-loader.js", "runtime-loader-state.js",
+  "runtime-script-loader.js", "runtime-style-loader.js"];
+const loader = loaderFiles
+  .map(file => fs.readFileSync(path.join(sourceDir, file), "utf8"))
+  .join("\n");
 const deferredBundleParts = {
   hall: ["hall"],
   battle: ["battle-rules", "battle-skills", "battle-flow", "battle-ai", "battle-presentation", "battle-ui"],

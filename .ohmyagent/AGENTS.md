@@ -35,6 +35,24 @@
 | `docs/original-runtime-freeze.json` | 机器可读运行时冻结契约(工具链依赖) |
 | `docs/deepseek-rebuild/01~08` | 重构期设计文档(另一视角,改动前可对照) |
 | `docs/开发日记.md` | 更新流水日志:每次变更(新建/修改/删除/提交/决策)必追加一条 |
+| `docs/开发日记.md` §17 | **跨 AI 协作硬约束:scripts/ 边界、Git 保存规范、密钥传递方式、bundle 全量比对、删除前先核实** |
+
+## 跨 AI 协作硬约束(写入前必读)
+
+本仓库同时有多个 AI 接手(本地容器 + 远端)。**任何写入前先读
+`docs/开发日记.md` §17**,其中规定:
+
+- `scripts/save.sh` / `save-checkpoint.sh` **仅限容器环境**:需
+  `CONTAINER_SECRET`、`PROVISIONING_GENERATION`、`PROVISIONING_TOKEN` 三个变量,
+  并请求 `http://localhost:3005/git/save`。**禁止伪造变量**,**禁止**用
+  `-H "...: $SECRET"` 传密钥(脚本已用 `curl -K -` 正确实现,不要改坏)。
+- `scripts/verify.sh` / `verify-exhaustive.sh` / `test-offline.sh` 本地可跑。
+- **本地验证 ≠ G 保存成功**。流程:`npm run build:bundles` → `npx playwright test`。
+  保存失败必须如实报失败原因,不得声称"已同步/已发布"。
+- 改 `src/original/*.js` 后必须**全量比对所有 bundle 的 blob sha** 再提交
+  (曾漏提交 `startup.min.js`)。
+- 删除请求:**先查文件树确认路径存在再动手**,删除不可逆。
+  (曾要求删 `GGGG/`,实测 1059 条目零命中,未执行。)
 
 记忆纪律:改规则时先改实现、再更新对应规范文档;代码与文档冲突视为 bug 并调和,不要静默二选一。
 

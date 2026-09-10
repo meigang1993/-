@@ -18,18 +18,18 @@ function loadRuntime(file) {
   "data-bakar-enemy.js", "data-future-enemies.js", "data-orc-bondi.js",
   "data-guard-kelly.js", "data-sakura-risa.js",
   "data-machine-factory-enemies.js", "data-underwater-train-enemies.js",
-  "data-world.js", "data.js", "data-future-relics.js", "data-relics.js",
+  "data-ruins-sand-city-enemies.js", "data-world.js", "data.js", "data-future-relics.js", "data-relics.js",
   "relics.js", "data-skins.js", "skins.js", "bounty-ledger.js",
   "receipt-ledger.js",
   "unlock-event-progress.js", "character-progression.js",
   "battle-save-checkpoint-validation.js",
-  "battle-save-checkpoint.js",
+  "battle-save-checkpoint-snapshot.js", "battle-save-checkpoint.js",
   "store-save-schema.js", "store-save-validation.js", "store-save-limits.js",
   "store-compact.js", "store-unlock-recovery.js", "store-unlock-migrations.js",
   "store-state-factory.js",
   "store-bounty-repairs.js", "store-repairs.js", "store-migration-characters.js",
   "store-migration-runs.js", "store-migration-normalizers.js",
-  "store-migrations.js", "dungeon-map.js", "dungeon-events.js",
+  "store-migrations-characters.js", "store-migrations-unlocks.js", "store-migrations.js", "dungeon-map.js", "dungeon-events.js",
 ].forEach(loadRuntime);
 
 function resetStorage() {
