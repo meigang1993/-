@@ -69,7 +69,6 @@ window.BattleCardPlayability = deps => {
       || card.mannyArmory && actor.usedMannyArmory
       || card.mannyBarrett && actor.usedBarrett
       || card.millerSlot && actor.usedMillerSlot
-      || card.angelicaRage && actor.usedAngelicaRage
       || card.angelicaTaunt && actor.usedAngelicaTaunt
       || card.mimicVoice && actor.usedMimic
       || card.idolKiss && actor.usedIdolKiss
@@ -120,7 +119,6 @@ window.BattleCardPlayability = deps => {
     if (card.extract && !livingMale()) return true;
     if ((card.speedAssault || card.withererPeek || card.crazySlaughter
       || card.angelicaTaunt || card.bestaEndSlash) && !livingEnemy()) return true;
-    if (card.angelicaRage && !(actor.rageMarks > 0)) return true;
     if (card.arsenal && !sameSideUnits(battle, actor).some(unit => unit.uid !== actor.uid && unit.hp > 0)) return true;
     if (card.bertisTakeFood && !(battle.allies || []).some(unit => unit.ref === "bertis" && unit.hp > 0 && (unit.food || 0) > 0)) return true;
     if (card.comboAttack && !canComboAttack(battle, actor, card)) return true;
@@ -148,7 +146,9 @@ window.BattleCardPlayability = deps => {
     if (card.withererTongueActive && (actor.intent || 0) > 0) return false;
     if (card.slime && (actor.intent || 0) <= 0) return false;
     if (actor.frozenSlash && deps.isKillCard(card) && !card?._skill) return false;
-    return !(deps.isKillCard(card) && !card.virtual && !hasNoIntentCost(actor, card) && (actor.intent || 0) <= 0);
+    const intentFree = hasNoIntentCost(actor, card)
+      || window.AngelicaLukaSkills?.canPayIntentWithRage?.(actor, card);
+    return !(deps.isKillCard(card) && !card.virtual && !intentFree && (actor.intent || 0) <= 0);
   }
 
   return {

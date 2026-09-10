@@ -46,7 +46,9 @@ window.BattleCombatAttackFlow = (api, values) => {
 
   function spendIntent(state, actor, card) {
     window.OrcDungeonSkills?.beforeIntentCost?.(state, actor, card);
-    const noCost = hasNoIntentCost(actor, card);
+    const ragePaid = window.AngelicaLukaSkills?.beforeIntentCost?.(
+      state, actor, card);
+    const noCost = hasNoIntentCost(actor, card) || ragePaid;
     const spent = noCost ? 0 : 1;
     actor.intent = Math.max(0, (actor.intent || 0) - spent);
     card.gatlingRepeats = card.gatlingRepeats || card.fixedRepeats || 1;
@@ -54,6 +56,7 @@ window.BattleCombatAttackFlow = (api, values) => {
     if (actor.ai === "abe_mike") {
       actor.entitySlashThisTurn = (actor.entitySlashThisTurn || 0) + 1;
     }
+    if (ragePaid) return;
     window.BattleLog.add(state, noCost
       ? `${card.name}不消耗杀意。`
       : `杀意消耗${spent}点，剩余${actor.intent}。`);

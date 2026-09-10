@@ -22,10 +22,10 @@ window.GameDataCharactersExtra = [
   {
     id: "angelica", name: "安洁莉卡", gender: "female", face: "安", art: "./assets/images/angelica-portrait.webp", avatar: "./assets/images/angelica-portrait.webp", role: "红刃公主", locked: true, unlockCost: 14,
     stats: { attack: 3, magic: 1, speed: 3, maxHp: 45, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
-    evaluation: "首牌爆发与承伤蓄力核心。力大无穷强化每回合第一张牌的伤害，造成或受到伤害可积累“狂战”，挑衅则强制敌方攻击或弃牌。",
+    evaluation: "实体杀牌叠加倍率与承伤蓄力核心。力大无穷让本回合每张实体【杀】的伤害倍率递增，狂战意志在每次伤害事件后积累“狂战”标记并可代替杀意消耗，挑衅则强制敌方攻击或弃牌。",
     skills: [
-      { name: "力大无穷", type: "passive", icon: "⭐", text: "锁定技，每个回合内，你使用的第一张牌造成的伤害为3倍；当你使用任意牌后，本回合此技能失效。" },
-      { name: "狂战意志", type: "active", icon: "⚔️", text: "当你造成伤害或受到伤害后，你获得1枚“狂战”标记；以此技能获得的【杀】造成伤害时不获得标记。出牌阶段限一次，你可以移去所有“狂战”标记并获得等量临时【杀（普攻）】；这些牌不消耗杀意，离开手牌后进入消耗牌堆。", card: { name: "狂战意志", type: "tactic", angelicaRage: true, targetless: true, icon: "⚔️", text: "移去所有“狂战”标记，获得等量不消耗杀意的临时【杀（普攻）】。" } },
+      { name: "力大无穷", type: "passive", icon: "⭐", text: "锁定技，本回合内，根据你使用过的实体【杀】牌数量，你使用的实体【杀】牌造成的伤害加倍。每使用1张实体【杀】牌，伤害额外+1倍。虚拟【杀】牌或转换【杀】牌不触发此技能，也不计入【杀】牌数量。" },
+      { name: "狂战意志", type: "passive", icon: "⭐", text: "锁定技，每当你造成伤害或受到伤害后，你获得1枚“狂战”标记。你使用实体【杀】牌时，若你有“狂战”标记，可用1枚“狂战”标记代替1点杀意消耗。每次伤害事件独立结算，多段伤害或连击攻击按伤害次数依次获得标记。“狂战”标记上限为99枚。" },
       { name: "挑衅", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以令所有存活的敌方角色依次对你使用1张单体【杀】；未如此做的角色弃置1张手牌。", card: { name: "挑衅", type: "tactic", angelicaTaunt: true, targetless: true, icon: "⚔️", text: "令所有敌方角色依次对你使用1张单体【杀】；未如此做的角色弃置1张手牌。" } }
     ]
   },
