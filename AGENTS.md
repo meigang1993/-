@@ -46,6 +46,22 @@ documents and contains only rules that must be visible before every task.
 - After meaningful edits, run the publish path compliance check and save through
   the Game Studio git save endpoint.
 
+## QA Environment (container)
+
+- Rebuild the Playwright/Chromium environment with one command before running any test:
+  `bash /data/workspace/setup-qa-env.sh`
+  It is idempotent: existing packages and the browser are skipped.
+- Chromium and QA dependencies live **outside** the project copy
+  (`/data/workspace/.pw-browsers`, `/data/workspace/qa-deps`); the repository only
+  holds symlinks, so deleting or re-cloning the project copy does not remove them.
+- Always run Playwright with `--workers=1`. The container has ~4.4 GB RAM and
+  concurrent workers produce false failures.
+- Do not delete a test because it fails. Delete it only when the asserted object no
+  longer exists in the product (grep returns zero hits in `src/` and `publish/*.css`).
+  Use `tools/find-stale-tests.js` to scan for such cases.
+- Never move a large binary and delete the source in the same command chain. After
+  moving, verify the byte count with `ls -lh` before removing the original.
+
 ## Memory Discipline
 
 - Exact gameplay values and behavior belong in runtime/data sources and
