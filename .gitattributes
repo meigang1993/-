@@ -1,3 +1,6 @@
 /* export-ignore
 /publish -export-ignore
 /publish/** -export-ignore
+
+# Windows desktop distribution (large binaries via Git LFS)
+Windows版/** filter=lfs diff=lfs merge=lfs -text
