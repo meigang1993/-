@@ -185,6 +185,7 @@ delete window.state;
   ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.rageSpend"],
   ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.rageGain"],
   ["angelica-luka-skills.js", "crimsonRampage"],
+  ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.crimsonRampage"],
   ["angelica-luka-skills.js", "scheduleAfterDamage"],
   ["battle-damage-utils.js", "AngelicaBerserkerSkinFX?.rageTrail"],
   ["battle-victory.js", "angelica-berserker-victory-show"],
@@ -206,10 +207,17 @@ const css = fs.readFileSync("./publish/angelica-berserker-skin.css", "utf8");
   "angelica-berserker-rage-gain", "angelica-berserker-rage-slam",
   "angelica-berserker-rage-trail", "angelica-berserker-taunt",
   "angelica-berserker-victory-show",
+  "angelica-berserker-rampage-armor", "angelica-berserker-rampage-burst",
+  "angelica-berserker-rampage-shock", "angelica-berserker-rampage-giant",
+  "angelica-berserker-rampage-heal", "angelica-berserker-rampage-pulse",
+  "angelica-berserker-rampage-rain", "angelica-berserker-rampage-core",
 ].forEach(token => assert(css.includes(token), `Berserker CSS is missing ${token}`));
 assert(css.includes("imperialSwordSummon") && css.includes("imperialTauntBeam")
   && css.includes("imperialBloodRing"),
   "Imperial Blood Slaying must retain sword, taunt, and rage visual identities");
+assert(css.includes("imperialGiantRise") && css.includes("imperialPulseRing")
+  && css.includes("imperialCoreSink") && css.includes("imperialBloodRain"),
+  "Crimson Rampage must keep giant phantom, pulse rings, chest core and blood rain");
 const victorySource = fs.readFileSync("./src/original/battle-victory.js", "utf8");
 assert(victorySource.includes("帝血未冷，下一场继续。"),
   "Imperial Blood Slaying must use its dedicated victory line");

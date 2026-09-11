@@ -90,3 +90,69 @@ test("Angelica Imperial Blood Slaying renders battle effects and victory scene",
   });
   expect(relevantErrors(errors)).toEqual([]);
 });
+
+test("Angelica Crimson Rampage plays staged effects and pulse rings", async ({ page }) => {
+  const errors = collectErrors(page);
+  await openGame(page);
+  await startFreshGame(page);
+  await openTestBattle(page);
+  await page.locator("[data-test-ally='angelica']").click();
+  await page.evaluate(() => {
+    window.state.ownedSkins.angelica_berserker = true;
+    window.state.testSkins.angelica = "angelica_berserker";
+    window.GameAssets.preloadBattle = async () => {};
+    window.BattleEffects.whenIdle = async () => {};
+    window.BattleFX.playBattleStart = callback => callback?.();
+  });
+  await page.locator("[data-start-test-battle]").click();
+  await expect(page.locator(".battle-screen")).toBeVisible();
+  await page.evaluate(() => {
+    const battle = window.state.battle;
+    battle.animQueue = [];
+    battle.locked = false;
+    battle.phase = 4;
+    battle.activeUid = battle.allies.find(unit => unit.ref === "angelica").uid;
+    window.BattleEffects.recover(window.state);
+    window.render();
+  });
+  await expect(page.locator(".unit-art img").first()).toBeVisible();
+
+  const staged = await page.evaluate(async () => {
+    const state = window.state;
+    const actor = state.battle.allies.find(unit => unit.ref === "angelica");
+    const keys = ["armor", "burst", "shock", "giant", "heal", "pulse", "rain", "core"];
+    const seen = {};
+    const anims = {};
+    const pulseIndexes = new Set();
+    const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+    const snap = () => {
+      keys.forEach(key => {
+        const nodes = document.querySelectorAll(`.angelica-berserker-rampage-${key}`);
+        if (nodes.length) {
+          seen[key] = Math.max(seen[key] || 0, nodes.length);
+          const holder = nodes[0].querySelector("b") || nodes[0];
+          if (holder && !anims[key]) anims[key] = getComputedStyle(holder).animationName;
+        }
+      });
+      document.querySelectorAll(".angelica-berserker-rampage-pulse").forEach(node => {
+        pulseIndexes.add(node.style.getPropertyValue("--pulse-index").trim());
+      });
+    };
+    window.AngelicaBerserkerSkinFX.cancel();
+    window.AngelicaBerserkerSkinFX.crimsonRampage(state, actor, 4);
+    snap();
+    for (let i = 0; i < 16; i += 1) { await wait(220); snap(); }
+    return { seen, anims, pulseIndexes: Array.from(pulseIndexes).sort() };
+  });
+
+  // 血甲收束、冲击波、巨人虚影、脉冲光环、血雨与胸口核心依次出现
+  ["armor", "burst", "shock", "giant", "heal", "pulse", "rain", "core"].forEach(key => {
+    expect(staged.seen[key], `Crimson Rampage must render ${key} stage`).toBeGreaterThan(0);
+  });
+  // 弃置4枚标记 -> 脉冲光环连续触发，每圈携带独立序号
+  expect(staged.pulseIndexes.length).toBeGreaterThanOrEqual(2);
+  // 样式表已生效：关键阶段使用专属关键帧
+  expect(staged.anims.armor).toBe("imperialArmorClench");
+  expect(staged.anims.giant).toBe("imperialGiantRise");
+  expect(relevantErrors(errors)).toEqual([]);
+});

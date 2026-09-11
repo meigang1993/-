@@ -45,7 +45,7 @@ window.AngelicaLukaSkills = (() => {
     const spent = actor.rageMarks;
     actor.rageMarks = 0;
     line(state, actor, "猩红暴走");
-    window.AngelicaBerserkerSkinFX?.rageSpend?.(state, actor, spent);
+    window.AngelicaBerserkerSkinFX?.crimsonRampage?.(state, actor, spent);
     window.BattleLog.add(state, `${actor.name} 发动猩红暴走，弃置${spent}枚狂战标记。`);
     const drawn = deps?.draw?.(actor, spent, state.battle) ?? 0;
     const drawText = window.BattleDrawFeedback?.action?.(actor, spent, drawn)
