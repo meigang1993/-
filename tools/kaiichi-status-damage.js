@@ -98,30 +98,29 @@ async function runKaiichiStatusDamage() {
     "the triggering hit and Spike explosion must each draw two cards");
   assert(!spikeState.battle.locked && !window.BattleReactionQueue.pending(spikeState.battle), "Spike explosion must not recurse or leave stale reaction state");
 
-  const taunter = unit("taunt-angelica", "ally", []);
-  const firstEnemy = unit("taunt-first", "enemy", [card("杀（普攻）")]);
-  const secondEnemy = unit("taunt-second", "enemy", [card("杀（普攻）")]);
-  Object.assign(taunter, { ref: "angelica", name: "安洁莉卡" });
-  const tauntState = scenario([], []).state, tauntUses = [];
-  Object.assign(tauntState.battle, { allies: [taunter], enemies: [firstEnemy, secondEnemy], activeUid: taunter.uid, phase: 4 });
-  window.state = tauntState;
-  const tauntDamage = () => {};
-  tauntDamage.useCard = (state, enemy, target, usedCard) => {
-    tauntUses.push([enemy.uid, target.uid, usedCard.angelicaTauntSlash]);
-    if (enemy.uid === firstEnemy.uid) state.battle.locked = true;
+  const queueActor = unit("queue-actor", "ally", []);
+  const queueFirst = unit("queue-first", "enemy", []);
+  const queueSecond = unit("queue-second", "enemy", []);
+  const queueState = scenario([], []).state, queueHits = [];
+  Object.assign(queueState.battle, { allies: [queueActor], enemies: [queueFirst, queueSecond], activeUid: queueActor.uid, phase: 4, locked: false });
+  window.state = queueState;
+  const queueDamage = () => {};
+  queueDamage.hitWithoutDodge = (state, actor, target) => {
+    queueHits.push(target.uid);
+    if (target.uid === queueFirst.uid) state.battle.locked = true;
+    return { dodged: false, hpLoss: 0 };
   };
-  window.AngelicaLukaSkills.handleSpecialCard(
-    tauntState, taunter, taunter, { angelicaTaunt: true }, {}, { damage: tauntDamage },
-  );
-  assert.deepStrictEqual(tauntUses, [[firstEnemy.uid, taunter.uid, true]], "Taunt must pause after the first forced Slash opens a prompt");
-  assert.strictEqual(tauntState.battle.reactionQueue?.length, 1, "Taunt must retain every later enemy action");
-  tauntState.battle.locked = false;
-  window.BattleReactionQueue.flush(tauntState, tauntDamage);
-  assert.deepStrictEqual(tauntUses, [
-    [firstEnemy.uid, taunter.uid, true],
-    [secondEnemy.uid, taunter.uid, true],
-  ], "Taunt must resume with the next enemy after the prompt");
-  assert(!window.BattleReactionQueue.pending(tauntState.battle), "Taunt must clear its reaction queue after all enemies act");
+  window.BattleReactionQueue.enqueue(queueState, [
+    window.BattleReactionQueue.resolvedHitAction(queueActor, queueFirst, 1, "队列测试", {}),
+    window.BattleReactionQueue.resolvedHitAction(queueActor, queueSecond, 1, "队列测试", {}),
+  ]);
+  window.BattleReactionQueue.flush(queueState, queueDamage);
+  assert.deepStrictEqual(queueHits, [queueFirst.uid], "Reaction queue must pause while the battle stays locked");
+  assert.strictEqual(queueState.battle.reactionQueue?.length, 1, "Reaction queue must retain every later action");
+  queueState.battle.locked = false;
+  window.BattleReactionQueue.flush(queueState, queueDamage);
+  assert.deepStrictEqual(queueHits, [queueFirst.uid, queueSecond.uid], "Reaction queue must resume with the next action after unlock");
+  assert(!window.BattleReactionQueue.pending(queueState.battle), "Reaction queue must clear after all actions run");
 }
 
 module.exports = { runKaiichiStatusDamage };

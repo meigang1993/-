@@ -1,5 +1,6 @@
 window.AngelicaLukaSkills = (() => {
   const alive = u => u && u.hp > 0;
+  const RAGE_MAX = 10;
   const isKill = c => c?.type === "slash" || /杀(?:（[^）]*）)?$/.test(c?.name || "");
   const isEntitySlash = card => window.CardUtils.isKillCard(card)
     && !card.virtual && !card.convertedFrom && !card.withererBerserkKill;
@@ -14,9 +15,9 @@ window.AngelicaLukaSkills = (() => {
     }
     actor.angelicaSlashCount = (actor.angelicaSlashCount || 0) + 1;
     card.angelicaMight = actor.angelicaSlashCount + 1;
-    line(state, actor, "力大无穷");
+    line(state, actor, "力量爆发");
     window.AngelicaBerserkerSkinFX?.might?.(state, actor, card);
-    window.BattleLog.add(state, `${actor.name} 力大无穷：本回合第${actor.angelicaSlashCount}张实体【杀】，伤害×${card.angelicaMight}。`);
+    window.BattleLog.add(state, `${actor.name} 力量爆发：本回合第${actor.angelicaSlashCount}张实体【杀】，伤害×${card.angelicaMight}。`);
   }
   function modifyDamage(state, actor, amount, card) {
     if (!amount || actor?.ref !== "angelica" || !card?.angelicaMight) return amount;
@@ -34,54 +35,62 @@ window.AngelicaLukaSkills = (() => {
     window.BattleLog.add(state, `${actor.name} 消耗1枚狂战标记代替杀意消耗（剩余${actor.rageMarks}枚）。`);
     return true;
   }
+  function canUseCrimsonRampage(actor) {
+    return actor?.ref === "angelica" && !actor.usedCrimsonRampage
+      && (actor.rageMarks || 0) > 0;
+  }
+  function crimsonRampage(state, actor, deps, ctx) {
+    if (actor.usedCrimsonRampage || !(actor.rageMarks || 0)) return true;
+    actor.usedCrimsonRampage = true;
+    const spent = actor.rageMarks;
+    actor.rageMarks = 0;
+    line(state, actor, "猩红暴走");
+    window.AngelicaBerserkerSkinFX?.rageSpend?.(state, actor, spent);
+    window.BattleLog.add(state, `${actor.name} 发动猩红暴走，弃置${spent}枚狂战标记。`);
+    const drawn = deps?.draw?.(actor, spent, state.battle) ?? 0;
+    const drawText = window.BattleDrawFeedback?.action?.(actor, spent, drawn)
+      ?? `摸${drawn}张牌`;
+    window.BattleLog.add(state, `${actor.name} ${drawText}。`);
+    const heal = Math.round(spent * (actor.maxHp || 0) * 0.1);
+    const healed = Math.max(0, Math.min(actor.maxHp - actor.hp, heal));
+    if (healed > 0) {
+      actor.hp += healed;
+      window.BattleStats?.heal?.(state.battle, actor, healed);
+      window.EnemySkills?.clearHolyScar?.(state, actor);
+      ctx?.pushFloat?.(state.battle, actor.uid, "heal", healed);
+      window.EnemySkills?.onHeal?.(state, deps?.draw);
+      window.ElranaAceNanaliSkills?.afterHeal?.(state, actor, deps);
+      window.BertisGerlotSkills?.refreshArrogance?.(state);
+      window.BattleLog.add(state, `${actor.name} 恢复${healed}点生命（${spent}枚×生命上限${actor.maxHp}的10%）。`);
+    } else {
+      window.BattleLog.add(state, `${actor.name} 生命已满，未恢复生命。`);
+    }
+    return true;
+  }
   function handleSpecialCard(state, actor, target, card, deps, ctx) {
-    if (card.angelicaTaunt) return taunt(state, actor, ctx);
+    if (card?.crimsonRampage) return crimsonRampage(state, actor, deps, ctx);
     return false;
-  }
-  function taunt(state, actor, ctx) {
-    if (actor.usedAngelicaTaunt) return true;
-    actor.usedAngelicaTaunt = true;
-    line(state, actor, "挑衅", state.battle.enemies.find(e => e.ai === "pursuer_edis" && alive(e)));
-    window.AngelicaBerserkerSkinFX?.taunt?.(state, actor);
-    const enemies = state.battle.enemies.filter(alive);
-    const actions = enemies.map(enemy => ({ kind: "angelicaTaunt", actorUid: actor.uid, targetUid: enemy.uid }));
-    if (ctx.damage?.useCard && window.BattleReactionQueue?.enqueue?.(state, actions)) {
-      window.BattleReactionQueue.flush(state, ctx.damage);
-    } else enemies.forEach(enemy => resolveTauntTarget(state, actor, enemy, ctx.useCard));
-    return true;
-  }
-  function resolveReactionAction(state, action, damage) {
-    if (action?.kind !== "angelicaTaunt") return false;
-    const units = state.battle?.allies.concat(state.battle.enemies) || [];
-    const actor = units.find(unit => unit.uid === action.actorUid);
-    const enemy = units.find(unit => unit.uid === action.targetUid);
-    if (alive(actor) && alive(enemy)) resolveTauntTarget(state, actor, enemy, damage?.useCard);
-    return true;
-  }
-  function resolveTauntTarget(state, actor, enemy, useCard) {
-    const card = enemy.hand.find(c => window.CardUtils.isSingleKillCard(c));
-    if (card && useCard) { card.angelicaTauntSlash = true; useCard(state, enemy, actor, card); }
-    else discardOne(state, enemy, actor);
-  }
-  function discardOne(state, enemy, actor) {
-    const i = enemy.hand.findIndex(c => !c._pendingDraw);
-    if (i < 0) return window.BattleLog.add(state, `${enemy.name} 没有杀牌，也没有可弃置手牌。`);
-    const card = enemy.hand.splice(i, 1)[0];
-    window.BattleCards?.put(state.battle, enemy, card, "discard", { forcedDiscard: true });
-    window.BattleLog.add(state, `${enemy.name} 没有杀牌，因${actor.name}的挑衅弃置${card.suit || ""}${card.name}。`);
   }
   function afterDamage(state, actor, target, card, hpLoss, deps) {
     if (!hpLoss) return;
-    gainRage(state, actor, "狂战造成伤害", target);
-    gainRage(state, target, "狂战受到伤害", actor);
+    const schedule = deps?.damage?.scheduleAfterDamage;
+    const award = () => {
+      gainRage(state, actor, "狂战造成伤害", target);
+      gainRage(state, target, "狂战受到伤害", actor);
+    };
+    if (typeof schedule === "function") schedule(award);
+    else award();
     if (actor?.ref === "luka" && isKill(card)) bloodSlaughter(state, actor, hpLoss, deps);
   }
   function gainRage(state, unit, lineName, target) {
     if (!alive(unit) || unit.ref !== "angelica") return;
-    unit.rageMarks = Math.min(99, (unit.rageMarks || 0) + 1);
+    const before = unit.rageMarks || 0;
+    unit.rageMarks = Math.min(RAGE_MAX, before + 1);
     line(state, unit, lineName, target);
     window.AngelicaBerserkerSkinFX?.rageGain?.(state, unit, lineName === "狂战受到伤害");
-    window.BattleLog.add(state, `${unit.name} 获得1枚狂战标记（${unit.rageMarks}）。`);
+    window.BattleLog.add(state, unit.rageMarks === before
+      ? `${unit.name} 狂战标记已达上限${RAGE_MAX}枚，不再获得。`
+      : `${unit.name} 获得1枚狂战标记（${unit.rageMarks}）。`);
   }
   function bloodSlaughter(state, actor, hpLoss, deps) {
     line(state, actor, "嗜血杀戮");
@@ -122,5 +131,5 @@ window.AngelicaLukaSkills = (() => {
       if (speak) line(state, unit, "狼牙回战");
     }
   }
-  return { beforeCardPlayed, modifyDamage, canPayIntentWithRage, beforeIntentCost, handleSpecialCard, resolveReactionAction, afterDamage, battleStart, beginTurn, afterCardPlayed };
+  return { beforeCardPlayed, modifyDamage, canPayIntentWithRage, beforeIntentCost, canUseCrimsonRampage, handleSpecialCard, afterDamage, battleStart, beginTurn, afterCardPlayed };
 })();

@@ -4,7 +4,13 @@ window.GameUIInfo = (U) => {
     return count ? `<span class="green-hat-badge" title="绿帽标记：${count}/5">绿帽×${count}</span>` : "";
   }
   function foodMark(u) { return u.food ? `<span class="green-hat-badge" title="快速生长粮食标记：${u.food}">粮食×${u.food}</span>` : ""; }
-  function rageMark(u) { return u.rageMarks ? `<span class="green-hat-badge" title="狂战标记：${u.rageMarks}">狂战×${u.rageMarks}</span>` : ""; }
+  function rageMark(u) {
+    const count = Math.max(0, Math.min(10, u?.rageMarks || 0));
+    if (!count) return "";
+    const pips = Array.from({ length: count },
+      () => '<i class="rage-mark-pip"></i>').join("");
+    return `<span class="rage-marks" title="狂战标记：${count}/10">${pips}</span>`;
+  }
   function missionMark(u) {
     if (u?.ref !== "hoshino_yi" || u.hoshinoMissionResult) return "";
     const count = Math.max(0, Math.min(20, u.hoshinoMissionCards || 0));

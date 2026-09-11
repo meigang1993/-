@@ -90,3 +90,7 @@
 .asset-fallback-art { display: grid; place-items: center; align-content: center; gap: 4px; background: radial-gradient(circle at 50% 36%, rgba(255,214,154,.18), transparent 28%), linear-gradient(160deg, rgba(66,26,67,.96), rgba(20,8,27,.98)); color: #ffe0ad; box-shadow: inset 0 0 0 1px rgba(255,215,166,.28); }
 .asset-fallback-face { font-size: clamp(24px, 5vh, 44px); font-weight: 900; text-shadow: 0 0 16px rgba(255,170,215,.5); }
 .asset-fallback-art small { color: #e5b8ca; font-size: 10px; font-weight: 800; }
+.rage-marks { position: absolute; right: -5px; top: -8px; z-index: 4; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 2px; max-width: 62px; pointer-events: none; }
+.rage-mark-pip { width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffd9d9 0%, #ff4d4d 45%, #8b0000 100%); border: 1px solid rgba(255,255,255,.8); box-shadow: 0 0 7px rgba(255,60,60,.75); }
+.active-portrait-shell .rage-marks { right: 5px; top: 5px; }
+.active-portrait-shell .rage-mark-pip { width: 11px; height: 11px; }

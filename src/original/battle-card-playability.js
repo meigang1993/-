@@ -69,7 +69,7 @@ window.BattleCardPlayability = deps => {
       || card.mannyArmory && actor.usedMannyArmory
       || card.mannyBarrett && actor.usedBarrett
       || card.millerSlot && actor.usedMillerSlot
-      || card.angelicaTaunt && actor.usedAngelicaTaunt
+      || card.crimsonRampage && !window.AngelicaLukaSkills?.canUseCrimsonRampage?.(actor)
       || card.mimicVoice && actor.usedMimic
       || card.idolKiss && actor.usedIdolKiss
       || card.bertisWhip && actor.usedBertisWhip
@@ -118,7 +118,7 @@ window.BattleCardPlayability = deps => {
     if (card.bertisWhip && !livingPartner()) return true;
     if (card.extract && !livingMale()) return true;
     if ((card.speedAssault || card.withererPeek || card.crazySlaughter
-      || card.angelicaTaunt || card.bestaEndSlash) && !livingEnemy()) return true;
+      || card.crimsonRampage || card.bestaEndSlash) && !livingEnemy()) return true;
     if (card.arsenal && !sameSideUnits(battle, actor).some(unit => unit.uid !== actor.uid && unit.hp > 0)) return true;
     if (card.bertisTakeFood && !(battle.allies || []).some(unit => unit.ref === "bertis" && unit.hp > 0 && (unit.food || 0) > 0)) return true;
     if (card.comboAttack && !canComboAttack(battle, actor, card)) return true;
