@@ -73,6 +73,36 @@ documents and contains only rules that must be visible before every task.
   Cross-verify by running the workflow from another repository that has Actions
   enabled.
 
+## Multi-Agent Collaboration
+
+- More than one AI session may edit this repository at the same time. The
+  sandbox keeps several working copies (for example `/data/workspace/rebuild`
+  and `/data/workspace/wk`); each can hold a different snapshot of the same
+  branch.
+- Never push a full-repository bulk sync from a stale local copy. A bulk sync
+  overwrites every file with the local snapshot and silently reverts changes
+  another session already pushed.
+  - Real incident (2026-09-11): a button restored in `src/original/villa-team.js`
+    at `010fae10` was wiped one commit later by `ba55b183`, a bulk sync made
+    from a copy that never pulled the fix. The user saw the button disappear
+    right after being told it was restored.
+  - The stale copy was detected afterwards by comparing
+    `grep -c testBattle src/original/villa-team.js` (0) and
+    `meta[name=game-build]` (20260910-05) against the remote.
+- Before any bulk or many-file sync, check that the local
+  `meta[name=game-build]` matches the remote one. If the local build id is
+  older, pull and reconcile first instead of pushing.
+- Push only the files that genuinely changed, after diffing each candidate
+  against its remote version. Do not re-push bundles that are byte-equivalent
+  but differ only because of a local terser version (for example `??1` versus
+  `??!0`); that reintroduces unrelated churn and can clobber another session's
+  artifacts.
+- After pushing, re-read the remote file to confirm the change survived. A later
+  bulk sync from another copy can still revert it, so re-verify before telling
+  the user a fix is live.
+- This file is not tracked by Git, so a bulk sync cannot overwrite it. Put rules
+  that must survive cross-session conflicts here rather than only in `docs/`.
+
 ## Memory Discipline
 
 - Exact gameplay values and behavior belong in runtime/data sources and
