@@ -37,6 +37,7 @@ const groups = Object.freeze({
     ["dimension-transfer", "preview-dimension-transfer.spec.js"],
     ["edis-chain", "preview-edis-chain.spec.js"],
     ["nanali-battle", "preview-nanali-battle.spec.js"],
+    ["angelica-skills", "preview-angelica-skills-rework.spec.js"],
   ],
   "battle-effects": [
     ["battle-aoe", "preview-battle-aoe.spec.js"],

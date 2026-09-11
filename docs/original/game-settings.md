@@ -696,11 +696,11 @@ gameplay values and behavior remain here rather than being duplicated in
 
 ### 安洁莉卡皮肤：帝血弑天
 
-- 皮肤 ID：`angelica_berserker`；品质固定为史诗，兑换价格固定为10精华宝珠，仅属于安洁莉卡；`angelica_default`保留原立绘并允许随时切回。帝血弑天继续使用`publish/assets/generated/angelica-berserker.30dab19b.webp`，专属动态特效标识固定为`angelica-berserker`。
+- 皮肤 ID：`angelica_berserker`；品质固定为史诗，兑换价格固定为10精华宝珠，仅属于安洁莉卡；`angelica_default`保留原立绘并允许随时切回。帝血弑天继续使用`publish/assets/generated/angelica-berserker.371936f3.webp`，专属动态特效标识固定为`angelica-berserker`。
 - 形象固定为暗红血意支配的成年狂战女性：暗红长发遮住半张脸，露出的竖瞳带有灼红能量，脸颊裂痕与脖颈锁骨沿线流动红色光流，半透明鳞片状血甲游动覆盖身体，右手凝成巨剑，左手保留三根红色尖刺，颈后到尾椎悬浮脊椎残影。不得改成明亮圣骑士、金发蓝瞳、普通火焰战士或无暗红能量识别点的形象。
 - 专属特效控制器为`src/original/angelica-berserker-skin-fx.js`，注册在 battle-presentation bundle；样式注册于`src/original/runtime-battle-styles.js`的`angelica-berserker`映射，指向`publish/angelica-berserker-skin.css`。
 - 出场演出由战斗开始事件单次排队：中央先显出搏动的暗红巨剑轮廓，随后血意环、红雾粒子与安洁莉卡立绘一同升起，剑光在角色前方凝成。
-- `力大无穷`（第一张伤害牌）显示血甲收紧、巨剑膨胀与粗壮暗红剑柱；`狂战意志`受击或造成伤害时获得血色印记（受击更强），消耗全部狂战标记时显示印记炸裂、血雾回流与能量脉冲，并化为本回合攻击血色拖尾（`angelica-berserker-rage-trail`连线，由`battle-damage-utils.js`在攻击时触发）；`挑衅`显示脚下扩散血环、指尖血光束、敌人身上的短暂侵蚀纹路与身后血色战网。
+- `力大无穷`（本回合每张实体【杀】倍率递增）显示血甲收紧、巨剑膨胀与粗壮暗红剑柱；`狂战意志`受击或造成伤害时获得血色印记（受击更强），消耗1枚狂战标记代替1点杀意消耗时显示印记炸裂、血雾回流与能量脉冲，并化为本回合攻击血色拖尾（`angelica-berserker-rage-trail`连线，由`battle-damage-utils.js`在攻击时触发）；`挑衅`显示脚下扩散血环、指尖血光束、敌人身上的短暂侵蚀纹路与身后血色战网。
 - 胜利结算显示帝血弑天专属立绘区、CSS 巨剑、血色碎片粒子与台词"帝血未冷，下一场继续。"；与其他专属皮肤同队时，仍只展示实际贡献排名最高者的一套专属胜利画面和音效。
 - 测试战斗可试用该皮肤（与其他史诗皮肤规则一致）；`tools/test-angelica-berserker-skin.js`注册于 presentation 组。
 

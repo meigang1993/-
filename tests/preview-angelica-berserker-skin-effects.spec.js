@@ -1,14 +1,14 @@
 const { test, expect } = require("@playwright/test");
 const {
   collectErrors, relevantErrors, openGame, startFreshGame,
+  openTestBattle,
 } = require("./helpers/preview-game");
 
 test("Angelica Imperial Blood Slaying renders battle effects and victory scene", async ({ page }) => {
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
-  await page.locator("[data-open-modal='team']").first().click();
-  await page.getByRole("button", { name: "测试战斗" }).click();
+  await openTestBattle(page);
   await page.locator("[data-test-ally='angelica']").click();
   await page.evaluate(() => {
     window.state.ownedSkins.angelica_berserker = true;
@@ -53,8 +53,10 @@ test("Angelica Imperial Blood Slaying renders battle effects and victory scene",
       entering: document.querySelectorAll(".angelica-berserker-entering").length,
     };
   });
+  // might / rageSpend 走 action-first 锚点，会同时在 .portrait 与 .unit-art
+  // 各挂载一份镜像节点（与 manny 皮肤特效测试口径一致），因此计数为 2。
   expect(effectCounts).toMatchObject({
-    entry: 1, might: 1, rageGain: 1, rageSpend: 1, rageTrail: 1, taunt: 1, warweb: 1,
+    entry: 1, might: 2, rageGain: 1, rageSpend: 2, rageTrail: 1, taunt: 1, warweb: 1,
   });
   expect(effectCounts.entering).toBe(1);
 

@@ -1,6 +1,7 @@
 const { test, expect } = require("@playwright/test");
 const {
   collectErrors, relevantErrors, openGame, startFreshGame, expectImagesLoaded,
+  openTestBattle,
 } = require("./helpers/preview-game");
 
 test("Bertis special art unlocks and equips automatically at level 10", async ({ page }) => {
@@ -144,8 +145,7 @@ test("test battle keeps Bertis special art locked before level 10", async ({ pag
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
-  await page.locator("[data-open-modal='team']").first().click();
-  await page.getByRole("button", { name: "测试战斗" }).click();
+  await openTestBattle(page);
   await page.evaluate(() => {
     const bertis = window.state.chars.find(character => character.id === "bertis");
     bertis.locked = false;

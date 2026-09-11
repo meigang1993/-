@@ -2,25 +2,93 @@ const assert = require("assert");
 const fs = require("fs");
 
 global.window = global;
+window.CardUtils = {
+  isKillCard: card => card?.type === "slash" || /杀(?:（[^）]*）)?$/.test(card?.name || ""),
+};
+const battleLogs = [];
+window.BattleLog = { add: (_state, message) => battleLogs.push(message) };
 require("../src/original/data-skins.js");
 require("../src/original/skins.js");
 require("../src/original/skin-fx-runtime.js");
 require("../src/original/angelica-berserker-skin-fx.js");
 require("../src/original/angelica-luka-skills.js");
 
-const firstCardActor = { ref: "angelica" };
 window.BattleLines = { skill() {} };
 const turnState = { battle: { turn: 1 } };
-AngelicaLukaSkills.beforeCardPlayed(turnState, firstCardActor, { type: "tactic", drawCards: 2 });
-assert(!firstCardActor.angelicaFirstCardDone,
-  "non-damaging cards must not consume Angelica's first-damage-card bonus");
-AngelicaLukaSkills.beforeCardPlayed(turnState, firstCardActor, { type: "slash", power: 1 });
-assert(firstCardActor.angelicaFirstCardDone,
-  "the first damaging card must consume Angelica's first-damage-card bonus");
-turnState.battle.turn = 2;
-AngelicaLukaSkills.beforeCardPlayed(turnState, firstCardActor, { type: "slash", power: 1 });
-assert(firstCardActor.angelicaFirstCardTurn === 2,
-  "the first damaging card must be available again on the next turn");
+
+// 力大无穷（重做后）：本回合每张实体【杀】倍率递增，首张 ×2。
+const mightActor = { ref: "angelica", name: "安洁莉卡" };
+const mightRows = [1, 2, 3].map(() => {
+  const card = { name: "杀（普攻）", type: "slash", power: 0 };
+  AngelicaLukaSkills.beforeCardPlayed(turnState, mightActor, card);
+  return {
+    count: mightActor.angelicaSlashCount,
+    might: card.angelicaMight,
+    damage: AngelicaLukaSkills.modifyDamage(turnState, mightActor, 10, card),
+  };
+});
+assert.deepStrictEqual(mightRows, [
+  { count: 1, might: 2, damage: 20 },
+  { count: 2, might: 3, damage: 30 },
+  { count: 3, might: 4, damage: 40 },
+], "力大无穷 must scale damage by the number of entity slashes used this turn");
+
+// 非实体杀（锦囊 / 虚拟杀 / 转换杀）既不触发倍率，也不计入本回合计数。
+const tacticCard = { type: "tactic", drawCards: 2 };
+const virtualCard = { name: "杀（普攻）", type: "slash", virtual: true };
+const convertedCard = {
+  name: "杀（普攻）", type: "slash", convertedFrom: "火杀", withererBerserkKill: true,
+};
+[tacticCard, virtualCard, convertedCard].forEach(card =>
+  AngelicaLukaSkills.beforeCardPlayed(turnState, mightActor, card));
+assert(mightActor.angelicaSlashCount === 3 && !tacticCard.angelicaMight
+  && !virtualCard.angelicaMight && !convertedCard.angelicaMight,
+  "non-entity slashes must neither trigger nor count toward 力大无穷");
+
+// 新回合重置，倍率回到 ×2。
+AngelicaLukaSkills.beginTurn(turnState, mightActor);
+const nextTurnCard = { name: "杀（普攻）", type: "slash" };
+AngelicaLukaSkills.beforeCardPlayed(turnState, mightActor, nextTurnCard);
+assert(nextTurnCard.angelicaMight === 2 && mightActor.angelicaSlashCount === 1,
+  "力大无穷 must restart at x2 on a new turn");
+
+// 狂战意志（重做后）：每次伤害事件独立结算，各获得 1 枚标记。
+const rageState = { battle: { turn: 1 } };
+const rageActor = { ref: "angelica", name: "安洁莉卡", hp: 40, maxHp: 40, rageMarks: 0 };
+const rageTarget = { ref: "guard", name: "目标", hp: 30, maxHp: 30 };
+const noopDeps = { draw: () => [], pushFloat: () => {} };
+const multiHitCard = { name: "双重打杀", type: "slash" };
+AngelicaLukaSkills.afterDamage(rageState, rageActor, rageTarget, multiHitCard, 4, noopDeps);
+const afterFirstHit = rageActor.rageMarks;
+AngelicaLukaSkills.afterDamage(rageState, rageActor, rageTarget, multiHitCard, 4, noopDeps);
+AngelicaLukaSkills.afterDamage(rageState, rageActor, rageTarget, multiHitCard, 4, noopDeps);
+assert(afterFirstHit === 1 && rageActor.rageMarks === 3,
+  "each damage event must grant its own rage mark instead of only the first");
+
+// 受到伤害同样获得标记，且上限为 99。
+AngelicaLukaSkills.afterDamage(rageState, rageTarget, rageActor,
+  { name: "杀（普攻）", type: "slash" }, 3, noopDeps);
+assert(rageActor.rageMarks === 4, "taking damage must also grant a rage mark");
+rageActor.rageMarks = 99;
+AngelicaLukaSkills.afterDamage(rageState, rageTarget, rageActor,
+  { name: "杀（普攻）", type: "slash" }, 3, noopDeps);
+assert(rageActor.rageMarks === 99, "rage marks must cap at 99");
+
+// 实体【杀】可用 1 枚标记代替 1 点杀意；无标记或虚拟杀不适用。
+const intentCard = { name: "杀（普攻）", type: "slash" };
+rageActor.rageMarks = 3;
+assert(AngelicaLukaSkills.canPayIntentWithRage(rageActor, intentCard) === true
+  && AngelicaLukaSkills.beforeIntentCost(rageState, rageActor, intentCard) === true
+  && rageActor.rageMarks === 2,
+  "one rage mark must pay one intent cost for an entity slash");
+rageActor.rageMarks = 0;
+assert(!AngelicaLukaSkills.canPayIntentWithRage(rageActor, intentCard)
+  && AngelicaLukaSkills.beforeIntentCost(rageState, rageActor, intentCard) === false,
+  "without rage marks the intent cost must be paid normally");
+rageActor.rageMarks = 1;
+assert(!AngelicaLukaSkills.canPayIntentWithRage(rageActor,
+  { name: "杀（普攻）", type: "slash", virtual: true }),
+  "virtual slashes must not be payable with rage marks");
 
 const base = SkinSystem.byId("angelica_default");
 const berserker = SkinSystem.byId("angelica_berserker");
@@ -32,7 +100,7 @@ assert(berserker?.charId === "angelica" && berserker.quality === "epic"
   "Berserker must be Angelica's separate 10-essence epic skin");
 assert(berserker.dynamicEffect === "angelica-berserker" && berserker.specialEffect === true,
   "Berserker must enable its dedicated battle effects");
-assert(berserker.art === "./assets/generated/angelica-berserker.30dab19b.webp"
+assert(berserker.art === "./assets/generated/angelica-berserker.371936f3.webp"
   && fs.existsSync(`./publish/${berserker.art.slice(2)}`),
   "Berserker must reference its generated portrait");
 const roles = fs.readFileSync("./src/original/data-combat-roles.js", "utf8");
