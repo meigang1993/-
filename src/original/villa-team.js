@@ -21,7 +21,7 @@ window.VillaTeamUI = (() => {
     }).join("");
     const missions = GameData.missions.filter(m => m.kind === "dungeon");
     const blocks = missions.map(mission => `<section class="team-dungeon"><h3>副本：${U.esc(mission.name)}</h3><p class="muted">${U.esc(mission.subtitle || "通关后依次解锁下一难度；已解锁难度可重复挑战。")}</p><div class="difficulty-row">${Object.entries(GameData.difficulties).map(([id, d]) => difficultyCard(state, mission, id, d)).join("")}</div></section>`).join("");
-    return `<h2>准备启程</h2><p class="muted">选择副本和难度后即可进入；角色编队从当前挑战栏打开，最多4人，至少保留1人。</p><div class="team-layout"><div class="party-drop"><div><b>当前挑战</b><small>出战角色 ${state.party.length}/4</small><div class="party-avatars">${party || "<span class=\"muted\">打开角色列表选择队伍</span>"}</div></div><div class="party-actions"><button data-open-modal="teamRoster">角色列表</button><button data-open-modal="testBattle" ${state.sortieStarting ? "disabled" : ""}>测试战斗</button></div></div>${blocks}</div>`;
+    return `<h2>准备启程</h2><p class="muted">选择副本和难度后即可进入；角色编队从当前挑战栏打开，最多4人，至少保留1人。</p><div class="team-layout"><div class="party-drop"><div><b>当前挑战</b><small>出战角色 ${state.party.length}/4</small><div class="party-avatars">${party || "<span class=\"muted\">打开角色列表选择队伍</span>"}</div></div><div class="party-actions"><button data-open-modal="teamRoster">角色列表</button></div></div>${blocks}</div>`;
   }
   function teamRoster(state) {
     const unlocked = state.chars.filter(c => !c.locked), partyIds = new Set(state.party || []), full = (state.party || []).length >= 4;

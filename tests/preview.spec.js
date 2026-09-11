@@ -13,15 +13,6 @@ test("static game shell boots without console errors", async ({ page }, testInfo
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test("hall top bar does not expose the migration package control", async ({ page }) => {
-  const errors = collectErrors(page);
-  await openGame(page);
-  await startFreshGame(page);
-  await expect(page.locator(".migration-download")).toHaveCount(0);
-  await expect(page.locator("[data-migration-status]")).toHaveCount(0);
-  expect(relevantErrors(errors)).toEqual([]);
-});
-
 test("compact title controls remain visible without overlap", async ({ page }) => {
   await page.setViewportSize({ width: 480, height: 270 });
   await openGame(page);

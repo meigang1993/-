@@ -45,7 +45,7 @@ window.BattleAISkillEvaluation = (() => {
     if (card.allyTarget) return low ? 80 : 0;
     if (card.block || card.charge || card.drawCards || card.targetless
       || card.mannyArmory || card.mannyBarrett || card.millerSlot
-      || card.angelicaRage || card.wendyTutor) return 60;
+      || card.wendyTutor) return 60;
     if (card.angelicaTaunt) return hpPct(actor) > .45 ? 55 : 12;
     if (card.bertisTakeFood) {
       return team.some(unit =>
@@ -65,7 +65,7 @@ window.BattleAISkillEvaluation = (() => {
     }
     if (card.elranaBag || card.armyOrder || card.targetless || card.block
       || card.charge || card.drawCards || card.mannyArmory || card.mannyBarrett
-      || card.millerSlot || card.angelicaRage || card.angelicaTaunt
+      || card.millerSlot || card.angelicaTaunt
       || card.cadicisPlan || card.wendyTutor) return actor;
     return targetByPolicy(foes);
   }

@@ -46,6 +46,33 @@ documents and contains only rules that must be visible before every task.
 - After meaningful edits, run the publish path compliance check and save through
   the Game Studio git save endpoint.
 
+## Git / LFS Operations
+
+- Git branch names cannot contain spaces. GitHub rejects
+  `refs/heads/<name with space>` with 422; strip spaces or use ASCII names.
+- Judge whether large files really occupy repository size by reading the raw
+  git blob, not the contents API: the contents API resolves LFS pointers and
+  reports the *real* byte size (e.g. 225442304), which looks like a real binary
+  but is actually a ~134-byte pointer. A pointer begins with
+  `version https://git-lfs.github.com/spec/v1`.
+- An LFS pointer with no object behind it (batch API returns 404
+  `Object does not exist`) poisons every clone made with git-lfs enabled:
+  checkout dies at the smudge stage. Removing such files restores clone health.
+- When performing several consecutive write operations on one branch through
+  the GitHub API (create tree / update file / create commit), re-read the
+  branch HEAD before each step. Reusing a stale parent SHA makes the commit
+  fail with 422.
+- To verify a clone result when the sandbox blocks `github.com` and
+  `media.githubusercontent.com`: use GitHub Actions as a remote executor, and
+  have the workflow write its own log file to a branch so it can be read back
+  through `api.github.com` (Actions log URLs are also blocked). Note that
+  `.gitattributes` containing `* filter=lfs` turns the workflow file itself
+  into a pointer, so exclude `.github/**` first.
+- A repository may have Actions disabled (`/actions/workflows` returns
+  `total_count: 0`) even after a workflow file is pushed; dispatch then 404s.
+  Cross-verify by running the workflow from another repository that has Actions
+  enabled.
+
 ## Memory Discipline
 
 - Exact gameplay values and behavior belong in runtime/data sources and

@@ -1,44 +1,42 @@
 window.AngelicaLukaSkills = (() => {
   const alive = u => u && u.hp > 0;
   const isKill = c => c?.type === "slash" || /杀(?:（[^）]*）)?$/.test(c?.name || "");
-  const canDealDamage = card => card?.type === "slash"
-    || Number(card?.damage || card?.power || card?.fixedDamage || 0) > 0
-    || card?.assassinate || card?.rageKill || card?.biteKill || card?.holy;
+  const isEntitySlash = card => window.CardUtils.isKillCard(card)
+    && !card.virtual && !card.convertedFrom && !card.withererBerserkKill;
   const line = (state, unit, name, target) => window.BattleLines?.skill(state, unit, name, target);
   const wolfCard = () => ({ name: "狼牙杀", type: "slash", suit: "", power: 0, scale: "attack", noIntentCost: true, lukaWolfFang: true, text: "指定一名敌方角色为目标，对其造成等同于攻击力的伤害；此牌不消耗杀意。" });
   function beforeCardPlayed(state, actor, card) {
+    if (actor?.ref !== "angelica" || !isEntitySlash(card)) return;
     const turn = state?.battle?.turn;
-    if (actor?.ref !== "angelica" || !canDealDamage(card)
-      || actor.angelicaFirstCardTurn === turn) return;
-    actor.angelicaFirstCardDone = true;
-    actor.angelicaFirstCardTurn = turn;
-    card.angelicaTriple = true;
+    if (actor.angelicaMightTurn !== turn) {
+      actor.angelicaMightTurn = turn;
+      actor.angelicaSlashCount = 0;
+    }
+    actor.angelicaSlashCount = (actor.angelicaSlashCount || 0) + 1;
+    card.angelicaMight = actor.angelicaSlashCount + 1;
     line(state, actor, "力大无穷");
     window.AngelicaBerserkerSkinFX?.might?.(state, actor, card);
+    window.BattleLog.add(state, `${actor.name} 力大无穷：本回合第${actor.angelicaSlashCount}张实体【杀】，伤害×${card.angelicaMight}。`);
   }
   function modifyDamage(state, actor, amount, card) {
-    if (!amount || actor?.ref !== "angelica" || !card?.angelicaTriple) return amount;
-    return amount * 3;
+    if (!amount || actor?.ref !== "angelica" || !card?.angelicaMight) return amount;
+    return amount * card.angelicaMight;
+  }
+  function canPayIntentWithRage(actor, card) {
+    return actor?.ref === "angelica" && isEntitySlash(card)
+      && (actor.rageMarks || 0) > 0;
+  }
+  function beforeIntentCost(state, actor, card) {
+    if (!canPayIntentWithRage(actor, card)) return false;
+    actor.rageMarks = Math.max(0, (actor.rageMarks || 0) - 1);
+    line(state, actor, "狂战意志");
+    window.AngelicaBerserkerSkinFX?.rageSpend?.(state, actor, 1);
+    window.BattleLog.add(state, `${actor.name} 消耗1枚狂战标记代替杀意消耗（剩余${actor.rageMarks}枚）。`);
+    return true;
   }
   function handleSpecialCard(state, actor, target, card, deps, ctx) {
-    if (card.angelicaRage) return consumeRage(state, actor);
     if (card.angelicaTaunt) return taunt(state, actor, ctx);
     return false;
-  }
-  function consumeRage(state, actor) {
-    if (actor.usedAngelicaRage) return true;
-    const count = actor.rageMarks || 0;
-    actor.usedAngelicaRage = true;
-    if (!count) return true;
-    actor.rageMarks = 0;
-    const cards = [];
-    for (let i = 0; i < count; i++) cards.push(window.CardUtils.cloneEntity("杀（普攻）", { suit: "虚", void: true, virtual: true, temporary: true, noIntentCost: true, generatedBySkill: "狂战意志", text: "狂战意志效果：此【杀】不消耗杀意；此牌进入弃牌堆时改为置入消耗牌堆。" }));
-    cards.forEach(c => { if (state.battle.animQueue) c._pendingDraw = true; actor.hand.push(c); });
-    state.battle.animQueue?.push({ type: "gainCards", uid: actor.uid, side: actor.side, fromUid: actor.uid, count: cards.length, cards });
-    line(state, actor, "狂战意志");
-    window.AngelicaBerserkerSkinFX?.rageSpend?.(state, actor, count);
-    window.BattleLog.add(state, `${actor.name} 消耗${count}枚狂战标记，生成${count}张不消耗杀意的虚无杀。`);
-    return true;
   }
   function taunt(state, actor, ctx) {
     if (actor.usedAngelicaTaunt) return true;
@@ -74,7 +72,7 @@ window.AngelicaLukaSkills = (() => {
   }
   function afterDamage(state, actor, target, card, hpLoss, deps) {
     if (!hpLoss) return;
-    if (!card?.void) gainRage(state, actor, "狂战造成伤害", target);
+    gainRage(state, actor, "狂战造成伤害", target);
     gainRage(state, target, "狂战受到伤害", actor);
     if (actor?.ref === "luka" && isKill(card)) bloodSlaughter(state, actor, hpLoss, deps);
   }
@@ -105,7 +103,10 @@ window.AngelicaLukaSkills = (() => {
   }
   function beginTurn(state, unit) {
     if (unit?.ref === "luka") recoverWolf(state, unit, true, "all");
-    if (unit?.ref === "angelica") unit.angelicaFirstCardDone = false;
+    if (unit?.ref === "angelica") {
+      unit.angelicaSlashCount = 0;
+      unit.angelicaMightTurn = null;
+    }
   }
   function afterCardPlayed(state, actor, card) { if (actor?.ref === "luka" && card?.type === "tactic" && !card._lukaChecked) { card._lukaChecked = true; recoverWolf(state, actor, true, "discard"); } }
   function recoverWolf(state, unit, speak, mode) {
@@ -121,5 +122,5 @@ window.AngelicaLukaSkills = (() => {
       if (speak) line(state, unit, "狼牙回战");
     }
   }
-  return { beforeCardPlayed, modifyDamage, handleSpecialCard, resolveReactionAction, afterDamage, battleStart, beginTurn, afterCardPlayed };
+  return { beforeCardPlayed, modifyDamage, canPayIntentWithRage, beforeIntentCost, handleSpecialCard, resolveReactionAction, afterDamage, battleStart, beginTurn, afterCardPlayed };
 })();

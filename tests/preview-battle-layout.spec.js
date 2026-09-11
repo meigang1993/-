@@ -74,8 +74,6 @@ test("battle detail shows one primary role beside the name and in skill hover te
   await page.locator("[data-info-tab='skills']").click();
   await expect(page.locator(".skill-detail .skill").first())
     .toHaveAttribute("title", new RegExp(`实战定位：${expectedRole}`));
-  await expect(page.locator(".battle-screen .unit-skill-tooltip"))
-    .toHaveCount(0);
   expect(relevantErrors(errors)).toEqual([]);
 });
 

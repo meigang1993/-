@@ -1,7 +1,6 @@
 window.UICommonSkillView = ({ esc, classToken }, model) => {
   const {
-    skillIcon, skillsOf, skillText, combatRolesOf, combatRoleText,
-    rolePositionText, skillState,
+    skillIcon, skillsOf, skillText, combatRolesOf, combatRoleText, skillState,
   } = model;
   function combatRoleBadges(unit) {
     return combatRolesOf(unit).slice(0, 1).map(role => {
@@ -21,7 +20,7 @@ window.UICommonSkillView = ({ esc, classToken }, model) => {
     const skills = skillsOf(unit)
       .filter(skill => skill.showInSkillInfo !== false)
       .map(skillTip).join("\n\n") || "暂无技能";
-    return [combatRoleText(unit), rolePositionText(unit), skills]
+    return [combatRoleText(unit), skills]
       .filter(Boolean).join("\n\n");
   }
   function skillName(skill, index = 0, clickable = false, selected = false,
