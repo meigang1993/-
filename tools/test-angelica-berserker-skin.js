@@ -205,16 +205,16 @@ const css = fs.readFileSync("./publish/angelica-berserker-skin.css", "utf8");
   "angelica-berserker-entry", "angelica-berserker-entering",
   "angelica-berserker-might",
   "angelica-berserker-rage-gain", "angelica-berserker-rage-slam",
-  "angelica-berserker-rage-trail", "angelica-berserker-taunt",
+  "angelica-berserker-rage-trail",
   "angelica-berserker-victory-show",
   "angelica-berserker-rampage-armor", "angelica-berserker-rampage-burst",
   "angelica-berserker-rampage-shock", "angelica-berserker-rampage-giant",
   "angelica-berserker-rampage-heal", "angelica-berserker-rampage-pulse",
   "angelica-berserker-rampage-rain", "angelica-berserker-rampage-core",
 ].forEach(token => assert(css.includes(token), `Berserker CSS is missing ${token}`));
-assert(css.includes("imperialSwordSummon") && css.includes("imperialTauntBeam")
-  && css.includes("imperialBloodRing"),
-  "Imperial Blood Slaying must retain sword, taunt, and rage visual identities");
+assert(css.includes("imperialSwordSummon") && css.includes("imperialMarkShatter")
+  && css.includes("imperialBloodRing") && css.includes("imperialTrail"),
+  "Imperial Blood Slaying must retain greatsword, rage marks, blood ring and rage trail identities");
 assert(css.includes("imperialGiantRise") && css.includes("imperialPulseRing")
   && css.includes("imperialCoreSink") && css.includes("imperialBloodRain"),
   "Crimson Rampage must keep giant phantom, pulse rings, chest core and blood rain");

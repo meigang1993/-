@@ -41,22 +41,21 @@ test("Angelica Imperial Blood Slaying renders battle effects and victory scene",
     window.AngelicaBerserkerSkinFX.rageGain(state, actor, true);
     window.AngelicaBerserkerSkinFX.rageSpend(state, actor, 4);
     window.AngelicaBerserkerSkinFX.rageTrail(state, actor, target);
-    window.AngelicaBerserkerSkinFX.taunt(state, actor);
+    window.AngelicaBerserkerSkinFX.crimsonRampage(state, actor, 3);
     return {
       entry: document.querySelectorAll(".angelica-berserker-entry").length,
       might: document.querySelectorAll(".angelica-berserker-might").length,
       rageGain: document.querySelectorAll(".angelica-berserker-rage-gain").length,
       rageSpend: document.querySelectorAll(".angelica-berserker-rage-slam").length,
       rageTrail: document.querySelectorAll(".angelica-berserker-rage-trail").length,
-      taunt: document.querySelectorAll(".angelica-berserker-taunt").length,
-      warweb: document.querySelectorAll(".angelica-berserker-warweb").length,
+      crimsonRampage: document.querySelectorAll(".angelica-berserker-rampage-armor").length,
       entering: document.querySelectorAll(".angelica-berserker-entering").length,
     };
   });
   // might / rageSpend 走 action-first 锚点，会同时在 .portrait 与 .unit-art
   // 各挂载一份镜像节点（与 manny 皮肤特效测试口径一致），因此计数为 2。
   expect(effectCounts).toMatchObject({
-    entry: 1, might: 2, rageGain: 1, rageSpend: 2, rageTrail: 1, taunt: 1, warweb: 1,
+    entry: 1, might: 2, rageGain: 1, rageSpend: 2, rageTrail: 1, crimsonRampage: 1,
   });
   expect(effectCounts.entering).toBe(1);
 

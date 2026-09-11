@@ -65,12 +65,6 @@ window.AngelicaBerserkerSkinFX = (() => {
     if (!active(actor) || !target || actor.skinRageTrailTurn !== state?.battle?.turn) return;
     line(state, actor, target, "angelica-berserker-rage-trail", 560);
   }
-  function taunt(state, actor) {
-    if (!active(actor)) return;
-    anchored(state, actor, "angelica-berserker-taunt", 1450, "<b></b><span></span><span></span><i></i>", "battlefield");
-    anchored(state, actor, "angelica-berserker-warweb", 2600, "<i></i><i></i><i></i>", "battlefield");
-    tone(240, .16, "square", 0, .03); tone(660, .12, "sine", 100, .025);
-  }
   function setVars(item, vars) {
     if (!item?.fx) return;
     Object.entries(vars).forEach(([name, value]) => item.fx.style.setProperty(name, value));
@@ -150,5 +144,5 @@ window.AngelicaBerserkerSkinFX = (() => {
     document.querySelectorAll(".angelica-berserker-entering").forEach(node =>
       node.classList.remove("angelica-berserker-entering"));
   }
-  return { active, entry, queueEntry, might, rageGain, rageSpend, rageTrail, crimsonRampage, taunt, sync, cancel };
+  return { active, entry, queueEntry, might, rageGain, rageSpend, rageTrail, crimsonRampage, sync, cancel };
 })();
