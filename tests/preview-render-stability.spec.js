@@ -1,6 +1,7 @@
 const { test, expect } = require("@playwright/test");
 const {
   collectErrors, relevantErrors, openGame, startFreshGame, startRegressionBattle,
+  openTestBattle,
 } = require("./helpers/preview-game");
 const {
   animationNames, sampleSelectionLayout, unlockCharacters,
@@ -125,8 +126,7 @@ test("battle rerenders preserve decoded card artwork nodes", async ({ page }) =>
 test("test battle character and enemy selections keep stable layout", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
-  await page.locator("[data-open-modal='team']").click();
-  await page.getByRole("button", { name: "测试战斗" }).click();
+  await openTestBattle(page);
   await unlockCharacters(page, ["sonia"]);
   for (const selector of ['[data-test-ally="sonia"]', '[data-test-enemy="12"]']) {
     const result = await sampleSelectionLayout(page, selector);
@@ -140,8 +140,7 @@ test("test battle character and enemy selections keep stable layout", async ({ p
 test("battle skill and relic captions keep animation progress across rerenders", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
-  await page.locator("[data-open-modal='team']").first().click();
-  await page.getByRole("button", { name: "测试战斗" }).click();
+  await openTestBattle(page);
   await page.evaluate(() => {
     window.GameAssets.preloadBattle = async () => {};
     window.BattleEffects.whenIdle = async () => {};

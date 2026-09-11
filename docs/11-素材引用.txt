@@ -104,7 +104,7 @@
   flora-sonic-assassin-victory.7ab2b6cd.webp -> 芙萝娅 音速刺客胜利素材
   wendy-benevolent-teacher-desert-school.bcfc0372.webp -> 温蒂 慈爱教师皮肤
   elrana-fallen-physician.5fb5e43a.webp -> 艾尔拉娜 堕落医师皮肤
-  angelica-berserker.f7d20f40.webp     -> 安洁莉卡 狂暴战士皮肤
+  angelica-berserker.371936f3.webp     -> 安洁莉卡 帝血弑天皮肤
 
 【六、等级特殊立绘（publish/assets/generated/）】
 
@@ -115,7 +115,7 @@
   flora-level-10-special.075896ea.webp   -> 芙萝娅 Lv.10特殊立绘
   wendy-level-10-special.8b3d47ab.webp   -> 温蒂 Lv.10特殊立绘
   elrana-level-10-special.3154d24b.webp  -> 艾尔拉娜 Lv.10特殊立绘
-  angelica-level-10-special.1d7b9a23.webp -> 安洁莉卡 Lv.10特殊立绘
+  angelica-level-10-special.9ce0de16.webp -> 安洁莉卡 Lv.10特殊立绘
 
 【七、全局美术素材（publish/assets/generated/）】
 
@@ -351,7 +351,7 @@
   elrana_level_10_special             -> ./assets/generated/elrana-level-10-special.3154d24b.webp
   angelica_default                    -> ./assets/images/angelica-portrait.webp
   angelica_berserker                  -> ./assets/generated/angelica-berserker.f7d20f40.webp
-  angelica_level_10_special           -> ./assets/generated/angelica-level-10-special.1d7b9a23.webp
+  angelica_level_10_special           -> ./assets/generated/angelica-level-10-special.9ce0de16.webp
 
 【十四、素材预算限制】
 

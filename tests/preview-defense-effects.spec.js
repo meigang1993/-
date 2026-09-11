@@ -1,13 +1,13 @@
 const { test, expect } = require("@playwright/test");
 const {
   openGame, startFreshGame,
+  openTestBattle,
 } = require("./helpers/preview-game");
 
 test("mechanical defense keeps elemental metadata without duplicating hit effects", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
-  await page.locator("[data-open-modal='team']").first().click();
-  await page.getByRole("button", { name: "测试战斗" }).click();
+  await openTestBattle(page);
   await page.evaluate(() => {
     window.GameAssets.preloadBattle = async () => {};
     window.BattleEffects.whenIdle = async () => {};

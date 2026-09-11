@@ -108,12 +108,17 @@ module.exports = ({
       allies: [berserker], enemies: [], animQueue: [], locked: false,
     },
   };
-  AngelicaLukaSkills.handleSpecialCard(
-    state, berserker, berserker, { angelicaRage: true }, {},
-  );
-  assert(berserker.hand.length === 2
-    && berserker.hand.every(item => item.generatedBySkill === "狂战意志"),
-  "Berserker Will Slashes must retain their generated skill source");
+  const berserkerSlash = card("杀（普攻）", "slash", { power: 1, scale: "attack" });
+  const berserkerHandBefore = berserker.hand.length;
+  assert(AngelicaLukaSkills.canPayIntentWithRage(berserker, berserkerSlash) === true
+    && AngelicaLukaSkills.beforeIntentCost(state, berserker, berserkerSlash) === true
+    && berserker.rageMarks === 1
+    && berserker.hand.length === berserkerHandBefore,
+  "Berserker Will must spend one rage mark to cover an entity slash intent cost");
+  berserker.rageMarks = 0;
+  assert(!AngelicaLukaSkills.canPayIntentWithRage(berserker, berserkerSlash)
+    && AngelicaLukaSkills.beforeIntentCost(state, berserker, berserkerSlash) === false,
+  "Berserker Will must stop covering intent cost once rage marks are exhausted");
 
   let flamerSweep = null;
   manny.mannyWeapon = "flamer";

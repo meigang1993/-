@@ -17,15 +17,15 @@ const nurseryIds = [
 const eventIds = [
   "miller", "gerlot", "cadicis", "luka", "loki", "carlos",
   "little_elrana", "ace", "aileng", "ophelia", "chiyo",
-  "hoshino_yi", "hoshino_kaiichi",
+  "hoshino_yi", "hoshino_kaiichi", "artina", "maria",
 ];
 
 function assertRosterPartition() {
   const ids = GameData.characters.map(character => character.id);
   const routes = [...initialIds, ...nurseryIds, ...eventIds];
-  assert(ids.length === 26 && new Set(ids).size === 26,
-    "the playable roster must contain 26 unique characters");
-  assert(routes.length === 26 && new Set(routes).size === 26,
+  assert(ids.length === 28 && new Set(ids).size === 28,
+    "the playable roster must contain 28 unique characters");
+  assert(routes.length === 28 && new Set(routes).size === 28,
     "every playable character must have exactly one unlock route");
   assert([...routes].sort().join(",") === [...ids].sort().join(","),
     "the unlock-route matrix must cover the complete playable roster");
@@ -50,6 +50,7 @@ async function testAllCharactersUnlock() {
   state.flags.littleElranaUnlockPending = true;
   state.flags.underwaterTrainFirstClear = true;
   state.flags.hoshinoFamilyUnlockPending = true;
+  state.flags.ruinsSandCityUnlockPending = true;
   state.defeatedElites.push(
     "xx_witherer_1124", "mechanical_bull_king", "demon_king_bakaar",
   );
@@ -64,6 +65,7 @@ async function testAllCharactersUnlock() {
   for (const id of [
     "miller", "gerlot", "cadicis", "luka", "little_elrana", "ace",
     "underwater_train", "ophelia", "chiyo_recruit", "hoshino_family",
+    "ruins_sand_city",
   ]) {
     const result = await ServerCore.call("unlockEvent", { id }, state);
     assert(result.changed, `${id} must complete its character unlock route`);
