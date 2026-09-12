@@ -72,14 +72,6 @@ documents and contains only rules that must be visible before every task.
   `total_count: 0`) even after a workflow file is pushed; dispatch then 404s.
   Cross-verify by running the workflow from another repository that has Actions
   enabled.
-- **2026-09-12: default branch renamed `魅魔杀` -> `main`.** Every API call
-  must use `ref=main`. A local clone still tracking `origin/魅魔杀` is broken:
-  fix with `git fetch --prune origin && git branch -m 魅魔杀 main &&
-  git branch --set-upstream-to=origin/main main`, or re-clone.
-  **Never hand-encode the branch name.** `魅魔杀` is `%E9%AD%85%E9%AD%94%E6%9D%80`;
-  writing `%E9%AD%82` produces 魂 instead of 魔 and yields a silent 404 that
-  masquerades as "the file does not exist". Always use `urllib.parse.quote()`.
-  This bit the sandbox four times in one day.
 
 ## Playwright / Chromium in the Sandbox (2026-09-12)
 
@@ -87,11 +79,23 @@ documents and contains only rules that must be visible before every task.
   `/data/workspace/.pw-browsers/chromium_headless_shell-1228/chrome-headless-shell-linux64/`
   (197 MB). `/data/workspace/rebuild/.playwright-browsers` is only a symlink to
   it, so rebuilding the project copy never loses the browser.
-- **Always export `PLAYWRIGHT_BROWSERS_PATH=/data/workspace/.pw-browsers`**
-  before running any browser test. Without it Playwright looks only in the
-  default cache `~/.cache/ms-playwright` and fails with
-  `Executable doesn't exist at /root/.cache/ms-playwright/...` — the binary is
-  present, merely not on the searched path.
+- **Exporting `PLAYWRIGHT_BROWSERS_PATH` alone is NOT enough.** Every `bash`
+  call starts a fresh shell, so an `export` in one call never reaches the next.
+  Playwright then falls back to the default cache `~/.cache/ms-playwright` and
+  fails with `Executable doesn't exist at /root/.cache/ms-playwright/...` —
+  the binary is present, merely not on the searched path. This is why the
+  environment "broke" repeatedly (4 times) even after being fixed.
+- **The fix that survives shell resets** (both done by
+  `bash /data/workspace/setup-qa-env.sh`, step 4):
+  1. symlink `/root/.cache/ms-playwright/chromium_headless_shell-1228`
+     -> `/data/workspace/.pw-browsers/chromium_headless_shell-1228`
+  2. write `/root/.cache/ms-playwright/settings.json` containing
+     `{"browsersPath":"/data/workspace/.pw-browsers"}`
+  Neither depends on any environment variable, so a brand-new shell finds the
+  browser automatically. Verify with `env -u PLAYWRIGHT_BROWSERS_PATH node <script>`
+  — if it launches, the fix is real; if only `export` was used, it will fail.
+- Note the repo symlink `.playwright-browsers -> .pw-browsers` is **not**
+  sufficient on its own, because Playwright does not look there by default.
 - **Never run `npx playwright install chromium`.** It downloads from
   `cdn.playwright.dev`, which this sandbox blocks with HTTP 403, so it always
   fails with `Download failure, code=1`. That failure does **not** mean the
