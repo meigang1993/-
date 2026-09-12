@@ -230,7 +230,6 @@
   skill-art-take-rations.74a8e30c.webp         -> 取粮
   skill-art-tank-shell.b7bcc54e.webp           -> 坦克炮弹
   skill-art-targeting-radar.6e237707.webp      -> 索敌雷达
-  skill-art-taunt.1b0b575c.webp               -> 挑衅
   skill-art-terror-hammer.92642403.webp        -> 霹雳之锤
   skill-art-wind-execution.21c85fb4.webp       -> 狂风绝息斩
 

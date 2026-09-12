@@ -110,6 +110,7 @@ function runSakuraRisaCoreContracts() {
   ctx: { allUnits: battle => battle.allies.concat(battle.enemies), hasSkill: () => false, checkEnd() {}, clearSelection() {} },
   canDodge: (card, candidate) => candidate?.name === "闪",
   damage() {}, hitWithoutDodge() {}, finalizeDamage() {},
+  scheduleAfterDamage(fn) { fn(); }, flushAfterDamage() {},
   triggers: { afterDodged() {} },
   });
   assert(responses.resolveManualDodge(settleState, true), `Blood Umbrella ${flag} response should resolve`);

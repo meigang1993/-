@@ -38,9 +38,9 @@ gameplay values and behavior remain here rather than being duplicated in
 ## Update Announcement
 
 - The hall must show an `更新公告` button in the upper-right corner. Opening it displays the current player-visible update notes in a scrollable modal; the announcement is informational and must not alter gameplay state.
-- The current announcement shows `2026.09.11` on the hall button, keeps the current dated update plus evergreen player rules, and removes superseded dated entries.
+- The current announcement shows `2026.08.17` on the hall button, keeps the current dated update plus evergreen player rules, and removes superseded dated entries.
 - Update announcements contain only player-visible content: gameplay rules, balance values, controls, presentation, art, and resolved player-facing defects. They must not mention regression tests, QA commands or results, test files, bundles, build verification, commit hashes, internal diagnostics, or development workflow.
-- The 2026年9月11日 notice records the 安洁莉卡 skill rework, her output-role correction, and the replacement of the 【帝血弑天】 portrait with the current vertical high-resolution asset.
+- The 2026年8月17日 notice records ordered battle action settlement, bounded high-frequency float and hit feedback, animation-first 【神速之袭】 kill rewards before victory, and restored relic-codex item selection with stable scrolling and closing.
 
 ## Character Codex
 

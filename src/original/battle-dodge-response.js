@@ -11,7 +11,6 @@ window.BattleDodgeResponse = ({
     if (card?.forceAutoResponse) return false;
     if (actor?.side !== "enemy" || target?.side !== "ally"
       || !deps.isKillCard(card) && !card?.responseKind) return false;
-    if (card?.angelicaTauntSlash) return false;
     if (!card?.responseKind
       && (card?.sweep || card?.allTargets || card?.aoeLineShown)) return false;
     return !(card?.krowFemaleTarget || card?.twoDodgesRequired)

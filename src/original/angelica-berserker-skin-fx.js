@@ -65,11 +65,72 @@ window.AngelicaBerserkerSkinFX = (() => {
     if (!active(actor) || !target || actor.skinRageTrailTurn !== state?.battle?.turn) return;
     line(state, actor, target, "angelica-berserker-rage-trail", 560);
   }
-  function taunt(state, actor) {
+  function setVars(item, vars) {
+    if (!item?.fx) return;
+    Object.entries(vars).forEach(([name, value]) => item.fx.style.setProperty(name, value));
+  }
+  function crimsonRampage(state, actor, count) {
     if (!active(actor)) return;
-    anchored(state, actor, "angelica-berserker-taunt", 1450, "<b></b><span></span><span></span><i></i>", "battlefield");
-    anchored(state, actor, "angelica-berserker-warweb", 2600, "<i></i><i></i><i></i>", "battlefield");
-    tone(240, .16, "square", 0, .03); tone(660, .12, "sine", 100, .025);
+    const marks = Math.max(1, Math.min(10, count || 1));
+    const burstEnd = 200 + marks * 90;
+    const stage = (delay, task) => later(() => {
+      if (window.state !== state || !state?.battle || state.battle.victoryScreen) return;
+      task();
+    }, delay);
+    // 血甲收束：金属摩擦般的尖锐嗡鸣
+    anchored(state, actor, "angelica-berserker-rampage-armor", 980,
+      "<b></b><i></i><i></i><em></em>", "battlefield");
+    tone(132, .3, "sawtooth", 0, .05); tone(1240, .2, "square", 40, .022);
+    // 狂战标记逐枚炸裂，对应部位的血甲剥落
+    for (let i = 0; i < marks; i += 1) {
+      stage(200 + i * 90, () => {
+        const item = anchored(state, actor, "angelica-berserker-rampage-burst", 780,
+          "<b></b><i></i><span></span><span></span>", "battlefield");
+        setVars(item, { "--burst-index": `${i}`, "--burst-total": `${marks}` });
+        tone(460 + i * 36, .08, "square", 0, .028);
+      });
+    }
+    // 最后一枚碎裂：双手握剑插地，血色冲击波自脚下炸开
+    stage(burstEnd + 40, () => {
+      anchored(state, actor, "angelica-berserker-rampage-shock", 1220,
+        "<b></b><b></b><i></i><i></i><i></i><i></i><span></span><span></span><span></span><span></span>",
+        "battlefield");
+      tone(96, .34, "sawtooth", 0, .06); tone(240, .2, "triangle", 60, .035);
+    });
+    // 拔剑而起，血色雾气凝聚成猩红巨人虚影
+    stage(burstEnd + 430, () => {
+      anchored(state, actor, "angelica-berserker-rampage-giant", 1560,
+        "<b></b><i></i><i></i><span></span><span></span><em></em>", "battlefield");
+      tone(180, .28, "sawtooth", 0, .045); tone(540, .16, "triangle", 90, .03);
+    });
+    // 血雾自毛孔渗入，伤口闭合、皮肤泛起暗红光泽
+    stage(burstEnd + 700, () => {
+      anchored(state, actor, "angelica-berserker-rampage-heal", 1240,
+        "<b></b><span></span><span></span><span></span><em></em>", "battlefield");
+      tone(720, .14, "triangle", 0, .03); tone(1080, .18, "sine", 80, .03);
+    });
+    // 每弃置1枚标记触发一次脉冲光环，脚下向上扩散，颜色逐圈加深
+    for (let i = 0; i < marks; i += 1) {
+      stage(burstEnd + 620 + i * 120, () => {
+        const item = anchored(state, actor, "angelica-berserker-rampage-pulse", 780,
+          "<b></b><i></i><i></i><i></i>", "battlefield");
+        setVars(item, { "--pulse-index": `${i}`, "--pulse-total": `${marks}` });
+        tone(300 + i * 26, .09, "sine", 0, .026);
+      });
+    }
+    // 巨人虚影碎裂，碎块化为漫天血色光点洒落
+    stage(burstEnd + 780 + marks * 120, () => {
+      anchored(state, actor, "angelica-berserker-rampage-rain", 1420,
+        "<i></i><i></i><i></i><i></i><i></i><i></i><span></span>", "battlefield");
+      tone(210, .2, "sine", 0, .03);
+    });
+    // 光环于胸口汇聚成猩红核心，稳定后沉入体内消失
+    stage(burstEnd + 920 + marks * 120, () => {
+      const item = anchored(state, actor, "angelica-berserker-rampage-core", 1100,
+        "<b></b><em></em>", "battlefield");
+      setVars(item, { "--pulse-total": `${marks}` });
+      tone(160, .26, "sawtooth", 0, .04); tone(880, .2, "sine", 120, .03);
+    });
   }
   function sync(state) {
     if (!hasDocument()) return;
@@ -83,5 +144,5 @@ window.AngelicaBerserkerSkinFX = (() => {
     document.querySelectorAll(".angelica-berserker-entering").forEach(node =>
       node.classList.remove("angelica-berserker-entering"));
   }
-  return { active, entry, queueEntry, might, rageGain, rageSpend, rageTrail, taunt, sync, cancel };
+  return { active, entry, queueEntry, might, rageGain, rageSpend, rageTrail, crimsonRampage, sync, cancel };
 })();

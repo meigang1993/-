@@ -27,7 +27,7 @@ async function enterBattleWithAngelica(page) {
   });
 }
 
-test("力大无穷：实体杀伤害倍率随本回合使用数递增", async ({ page }) => {
+test("力量爆发：实体杀伤害倍率随本回合使用数递增", async ({ page }) => {
   const errors = collectErrors(page);
   await enterBattleWithAngelica(page);
 
@@ -57,7 +57,7 @@ test("力大无穷：实体杀伤害倍率随本回合使用数递增", async ({
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test("力大无穷：虚拟杀与转换杀不触发且不计入", async ({ page }) => {
+test("力量爆发：虚拟杀与转换杀不触发且不计入", async ({ page }) => {
   const errors = collectErrors(page);
   await enterBattleWithAngelica(page);
 
@@ -88,7 +88,7 @@ test("力大无穷：虚拟杀与转换杀不触发且不计入", async ({ page 
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test("力大无穷：新回合倍率重置", async ({ page }) => {
+test("力量爆发：新回合倍率重置", async ({ page }) => {
   const errors = collectErrors(page);
   await enterBattleWithAngelica(page);
 
@@ -135,7 +135,7 @@ test("狂战意志：每次伤害事件独立获得1枚标记", async ({ page })
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test("狂战意志：受到伤害也获得标记，上限99", async ({ page }) => {
+test("狂战意志：受到伤害也获得标记，上限10", async ({ page }) => {
   const errors = collectErrors(page);
   await enterBattleWithAngelica(page);
 
@@ -148,13 +148,13 @@ test("狂战意志：受到伤害也获得标记，上限99", async ({ page }) =
     window.AngelicaLukaSkills.afterDamage(
       state, enemy, actor, { name: "杀（普攻）", type: "slash" }, 3, deps);
     const afterHurt = actor.rageMarks;
-    actor.rageMarks = 99;
+    actor.rageMarks = 10;
     window.AngelicaLukaSkills.afterDamage(
       state, enemy, actor, { name: "杀（普攻）", type: "slash" }, 3, deps);
     return { afterHurt, capped: actor.rageMarks };
   });
 
-  expect(out).toEqual({ afterHurt: 1, capped: 99 });
+  expect(out).toEqual({ afterHurt: 1, capped: 10 });
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -210,5 +210,65 @@ test("狂战意志：杀意为0时是否可打出取决于标记，虚拟杀不�
   expect(out).toEqual({
     noMark: false, withMark: true, virtualWithMark: false,
   });
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test("猩红暴走：弃置全部标记、摸等量牌并按生命上限10%回复", async ({ page }) => {
+  const errors = collectErrors(page);
+  await enterBattleWithAngelica(page);
+
+  const out = await page.evaluate(() => {
+    const state = window.state;
+    const actor = state.battle.allies.find(u => u.ref === "angelica");
+    actor.maxHp = 40;
+    actor.hp = 20;
+    actor.rageMarks = 4;
+    actor.usedCrimsonRampage = false;
+    let drawnFor = -1;
+    const deps = {
+      draw: (unit, count) => { drawnFor = count; return count; },
+    };
+    const ctx = { pushFloat: () => {} };
+    const card = { name: "猩红暴走", type: "tactic", crimsonRampage: true };
+    window.AngelicaLukaSkills.handleSpecialCard(
+      state, actor, null, card, deps, ctx);
+    const first = { marks: actor.rageMarks, drawnFor, hp: actor.hp };
+    actor.rageMarks = 3;
+    window.AngelicaLukaSkills.handleSpecialCard(
+      state, actor, null, card, deps, ctx);
+    const second = { marks: actor.rageMarks, hp: actor.hp };
+    return { first, second };
+  });
+
+  // 4枚标记 × 生命上限40的10% = 16点，20+16=36
+  expect(out.first).toEqual({ marks: 0, drawnFor: 4, hp: 36 });
+  // 出牌阶段限一次：再次发动不生效，标记与生命均不变
+  expect(out.second).toEqual({ marks: 3, hp: 36 });
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test("狂战意志：标记延后到整段伤害结算完成后发放", async ({ page }) => {
+  const errors = collectErrors(page);
+  await enterBattleWithAngelica(page);
+
+  const out = await page.evaluate(() => {
+    const state = window.state;
+    const actor = state.battle.allies.find(u => u.ref === "angelica");
+    const enemy = state.battle.enemies[0];
+    actor.rageMarks = 0;
+    const pending = [];
+    const deps = {
+      draw: () => [],
+      damage: { scheduleAfterDamage: fn => pending.push(fn) },
+    };
+    window.AngelicaLukaSkills.afterDamage(
+      state, actor, enemy, { name: "杀（普攻）", type: "slash" }, 3, deps);
+    const duringDamage = actor.rageMarks;
+    pending.forEach(fn => fn());
+    const afterPhase = actor.rageMarks;
+    return { duringDamage, afterPhase };
+  });
+
+  expect(out).toEqual({ duringDamage: 0, afterPhase: 1 });
   expect(relevantErrors(errors)).toEqual([]);
 });

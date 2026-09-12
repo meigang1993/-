@@ -72,6 +72,8 @@ function createSpeedAssaultCase(unit, {
   const lifecycle = {
     markDefeated() {},
     finalizeDamage() {},
+    scheduleAfterDamage(fn) { fn(); },
+    flushAfterDamage() {},
   };
   const hit = window.BattleDamageHit({
     deps: { isKillCard: card => card?.type === "slash" },

@@ -51,6 +51,8 @@ function testOpheliaGuardPursuitResume() {
     finalizeDamage: current =>
       window.BattleReactionQueue.flush(current, damage),
     afterDodged() {},
+    scheduleAfterDamage(fn) { fn(); },
+    flushAfterDamage() {},
   };
 
   window.EdisSkills.beforeSlash(state, edis, ophelia, slash);
@@ -135,6 +137,8 @@ function testDeclinedDimensionTransferLifecycle() {
   damage.hitWithoutDodge = hitWithoutDodge;
   damage.finalizeDamage = current =>
     window.BattleReactionQueue.flush(current, damage);
+  damage.scheduleAfterDamage = fn => fn();
+  damage.flushAfterDamage = () => {};
 
   window.EdisSkills.beforeSlash(state, edis, primary, slash);
   state.battle.dimensionTransfer = {

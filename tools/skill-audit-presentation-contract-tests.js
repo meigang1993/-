@@ -76,8 +76,8 @@ module.exports = ({ assert, unit }) => {
   ];
   const namedActiveSkills = new Map();
   activeSkills.forEach(skill => namedActiveSkills.set(skill.name, skill));
-  assert(namedActiveSkills.size === 36,
-    "skill artwork audit must cover all 36 named active skills");
+  assert(namedActiveSkills.size === 46,
+    "skill artwork audit must cover all 46 named active skills");
   const artOwners = new Map();
   const hashOwners = new Map();
   namedActiveSkills.forEach((skill, name) => {

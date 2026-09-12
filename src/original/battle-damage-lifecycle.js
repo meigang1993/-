@@ -1,6 +1,24 @@
 window.BattleDamageLifecycle = ({
   ctx, utils, getTriggers, getResolveDamage,
 }) => {
+  const pendingAfterDamage = [];
+  let flushingAfterDamage = false;
+  function scheduleAfterDamage(fn) {
+    if (typeof fn === "function") pendingAfterDamage.push(fn);
+  }
+  function flushAfterDamage(state) {
+    if (flushingAfterDamage) return;
+    flushingAfterDamage = true;
+    try {
+      let guard = 0;
+      while (pendingAfterDamage.length && guard < 512) {
+        guard += 1;
+        pendingAfterDamage.shift()(state);
+      }
+    } finally {
+      flushingAfterDamage = false;
+    }
+  }
   function directDamage(
     state, target, amount, source, actor, delay = 0, card = null
   ) {
@@ -55,6 +73,7 @@ window.BattleDamageLifecycle = ({
   function finalizeDamage(state) {
     window.EdisSkills?.flushCopies?.(state);
     window.BattleCounterTriggers?.activatePending?.(state.battle);
+    flushAfterDamage(state);
     window.BattleReactionQueue?.flush?.(state, damage);
   }
 
@@ -65,5 +84,5 @@ window.BattleDamageLifecycle = ({
     if (!ids.includes(target.id)) ids.push(target.id);
   }
 
-  return { damage, directDamage, finalizeDamage, markDefeated };
+  return { damage, directDamage, finalizeDamage, markDefeated, scheduleAfterDamage, flushAfterDamage };
 };

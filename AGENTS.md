@@ -73,6 +73,52 @@ documents and contains only rules that must be visible before every task.
   Cross-verify by running the workflow from another repository that has Actions
   enabled.
 
+## Multi-Agent Collaboration
+
+- More than one AI session may edit this repository at the same time. The
+  sandbox keeps several working copies (for example `/data/workspace/rebuild`
+  and `/data/workspace/wk`); each can hold a different snapshot of the same
+  branch.
+- Never push a full-repository bulk sync from a stale local copy. A bulk sync
+  overwrites every file with the local snapshot and silently reverts changes
+  another session already pushed.
+  - Real incident (2026-09-11): a button restored in `src/original/villa-team.js`
+    at `010fae10` was wiped one commit later by `ba55b183`, a bulk sync made
+    from a copy that never pulled the fix. The user saw the button disappear
+    right after being told it was restored.
+  - The stale copy was detected afterwards by comparing
+    `grep -c testBattle src/original/villa-team.js` (0) and
+    `meta[name=game-build]` (20260910-05) against the remote.
+- Before any bulk or many-file sync, check that the local
+  `meta[name=game-build]` matches the remote one. If the local build id is
+  older, pull and reconcile first instead of pushing.
+- Push only the files that genuinely changed, after diffing each candidate
+  against its remote version. Do not re-push bundles that are byte-equivalent
+  but differ only because of a local terser version (for example `??1` versus
+  `??!0`); that reintroduces unrelated churn and can clobber another session's
+  artifacts.
+- After pushing, re-read the remote file to confirm the change survived. A later
+  bulk sync from another copy can still revert it, so re-verify before telling
+  the user a fix is live.
+- Binary assets need the same pre-push diff as source, and are easier to break
+  silently because a diff is not obvious from the file name.
+  - Real incident (2026-09-11/12): the user's own uploaded Lv.10 special art was
+    committed by another session at `c63f48579f`. One day later `13e0b27014`
+    pushed a stale local copy of
+    `publish/assets/generated/angelica-level-10-special.9ce0de16.webp` and
+    reverted it to the 2026-09-06 art. The path never changed, so nothing in the
+    commit message hinted that art had been swapped.
+  - Before pushing any image/audio, compare `git hash-object <file>` with the
+    remote blob sha. If they differ but the intended change does not touch that
+    asset, do not push it — the local copy is stale.
+  - When restoring or replacing an asset, write it under a content-hash file
+    name (`<name>.<sha256[:8]>.webp`) and update the reference. Asset URLs carry
+    no `?v=`, so only a new file name busts the browser cache.
+- This file *is* tracked by Git (it appears in the remote tree), so a bulk sync
+  can overwrite it. Keep rules short and re-verify them after any bulk sync;
+  also prefer keeping durable cross-session rules here because every session is
+  told to read this file first.
+
 ## Memory Discipline
 
 - Exact gameplay values and behavior belong in runtime/data sources and
@@ -85,3 +131,20 @@ documents and contains only rules that must be visible before every task.
 - When a user changes a rule, update the implementation first, then update the
   matching canonical document. If code and memory disagree, treat the conflict
   as a bug and reconcile it instead of silently choosing one copy.
+
+## Test Count Expectations
+
+- Numeric expectations in skill audits (`assert(x.length === N)`) go stale the
+  moment a dungeon or character is added. Updating them is a **test-data
+  update**, not "hiding a failure" — but only after confirming the new count is
+  correct and every entry still resolves its artwork/catalog registration.
+- A thrown assertion **masks every assertion after it**. After fixing the first
+  failure in a suite, always re-run: later expectations are usually stale too.
+  (`skill-audit` hid two more stale counts behind the combat-role assertion.)
+- Adding entries to `data-combat-roles.js` `byId` is **not enough** — the unit's
+  source array must also be present in the `templates` list, or `combatRoles`
+  is never assigned. Ruins Sand City enemies were missing from that list.
+- New playable-character active skills must be registered in
+  `character-skill-access.js`; `definitionOf()` returning null breaks the
+  boundary catalog audit. Unregistered skills still resolve in play because
+  `canActor` defaults to allow, so this failure is invisible in manual testing.

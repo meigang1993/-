@@ -22,11 +22,11 @@ window.GameDataCharactersExtra = [
   {
     id: "angelica", name: "安洁莉卡", gender: "female", face: "安", art: "./assets/images/angelica-portrait.webp", avatar: "./assets/images/angelica-portrait.webp", role: "红刃公主", locked: true, unlockCost: 14,
     stats: { attack: 3, magic: 1, speed: 3, maxHp: 45, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
-    evaluation: "实体杀牌叠加倍率与承伤蓄力核心。力大无穷让本回合每张实体【杀】的伤害倍率递增，狂战意志在每次伤害事件后积累“狂战”标记并可代替杀意消耗，挑衅则强制敌方攻击或弃牌。",
+    evaluation: "实体杀牌叠加倍率与承伤蓄力核心。力量爆发让本回合每张实体【杀】的伤害倍率递增，狂战意志在每次伤害后积累“狂战”标记并可代替杀意消耗，猩红暴走则把标记一次性转化为过牌与回复。",
     skills: [
-      { name: "力大无穷", type: "passive", icon: "⭐", text: "锁定技，本回合内，根据你使用过的实体【杀】牌数量，你使用的实体【杀】牌造成的伤害加倍。每使用1张实体【杀】牌，伤害额外+1倍。虚拟【杀】牌或转换【杀】牌不触发此技能，也不计入【杀】牌数量。" },
-      { name: "狂战意志", type: "passive", icon: "⭐", text: "锁定技，每当你造成伤害或受到伤害后，你获得1枚“狂战”标记。你使用实体【杀】牌时，若你有“狂战”标记，可用1枚“狂战”标记代替1点杀意消耗。每次伤害事件独立结算，多段伤害或连击攻击按伤害次数依次获得标记。“狂战”标记上限为99枚。" },
-      { name: "挑衅", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以令所有存活的敌方角色依次对你使用1张单体【杀】；未如此做的角色弃置1张手牌。", card: { name: "挑衅", type: "tactic", angelicaTaunt: true, targetless: true, icon: "⚔️", text: "令所有敌方角色依次对你使用1张单体【杀】；未如此做的角色弃置1张手牌。" } }
+      { name: "力量爆发", type: "passive", icon: "⭐", text: "锁定技，本回合内，你使用的实体【杀】牌造成的伤害×X，X为你本回合使用过的实体【杀】牌数+1。本回合结束后X重置。虚拟【杀】牌或转换【杀】牌不计入X。" },
+      { name: "狂战意志", type: "passive", icon: "⭐", text: "锁定技，当你造成或受到伤害后，你获得1枚“狂战”标记。你使用实体【杀】牌时，可弃1枚“狂战”标记代替1点杀意消耗。每枚“狂战”标记在头像旁独立显示，上限为10枚。" },
+      { name: "猩红暴走", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以弃置所有“狂战”标记，摸等量的牌，然后回复X点生命值，X为你以此法弃置的“狂战”标记数×你生命值上限的10%。", card: { name: "猩红暴走", type: "tactic", crimsonRampage: true, targetless: true, icon: "⚔️", text: "弃置所有“狂战”标记，摸等量的牌，然后回复X点生命值，X为你以此法弃置的“狂战”标记数×你生命值上限的10%。" } }
     ]
   },
   {
