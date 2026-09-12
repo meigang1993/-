@@ -73,6 +73,27 @@ documents and contains only rules that must be visible before every task.
   Cross-verify by running the workflow from another repository that has Actions
   enabled.
 
+## Playwright / Chromium in the Sandbox (2026-09-12)
+
+- Chromium 152.0.7977.0 lives in the persistent directory
+  `/data/workspace/.pw-browsers/chromium_headless_shell-1228/chrome-headless-shell-linux64/`
+  (197 MB). `/data/workspace/rebuild/.playwright-browsers` is only a symlink to
+  it, so rebuilding the project copy never loses the browser.
+- **Always export `PLAYWRIGHT_BROWSERS_PATH=/data/workspace/.pw-browsers`**
+  before running any browser test. Without it Playwright looks only in the
+  default cache `~/.cache/ms-playwright` and fails with
+  `Executable doesn't exist at /root/.cache/ms-playwright/...` — the binary is
+  present, merely not on the searched path.
+- **Never run `npx playwright install chromium`.** It downloads from
+  `cdn.playwright.dev`, which this sandbox blocks with HTTP 403, so it always
+  fails with `Download failure, code=1`. That failure does **not** mean the
+  browser is missing. Restore it instead with `bash /data/workspace/setup-qa-env.sh`
+  (step 4), which pulls `@sparticuz/chromium` 152 from the reachable npm mirror
+  and brotli-decompresses `bin/chromium.br`.
+- Diagnosis order when browser tests will not start: (1) is the binary at
+  `$REAL` and executable — `$REAL --version`; (2) is `PLAYWRIGHT_BROWSERS_PATH`
+  exported; (3) only then consider re-downloading.
+
 ## Multi-Agent Collaboration
 
 - More than one AI session may edit this repository at the same time. The
