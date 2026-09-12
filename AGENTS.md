@@ -72,6 +72,14 @@ documents and contains only rules that must be visible before every task.
   `total_count: 0`) even after a workflow file is pushed; dispatch then 404s.
   Cross-verify by running the workflow from another repository that has Actions
   enabled.
+- **2026-09-12: default branch renamed `魅魔杀` -> `main`.** Every API call
+  must use `ref=main`. A local clone still tracking `origin/魅魔杀` is broken:
+  fix with `git fetch --prune origin && git branch -m 魅魔杀 main &&
+  git branch --set-upstream-to=origin/main main`, or re-clone.
+  **Never hand-encode the branch name.** `魅魔杀` is `%E9%AD%85%E9%AD%94%E6%9D%80`;
+  writing `%E9%AD%82` produces 魂 instead of 魔 and yields a silent 404 that
+  masquerades as "the file does not exist". Always use `urllib.parse.quote()`.
+  This bit the sandbox four times in one day.
 
 ## Playwright / Chromium in the Sandbox (2026-09-12)
 
