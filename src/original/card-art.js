@@ -111,7 +111,7 @@ window.CardArt = (() => {
     "死亡音波": "./assets/generated/cards/skill-art-death-wave.689e0965.webp",
     "百眼魅魔": "./assets/generated/cards/skill-art-many-eyes.ed9c837d.webp",
     "潜影背刺": "./assets/generated/cards/skill-art-shadow-backstab.a5f14213.webp",
-    "影舞步": "./assets/generated/cards/skill-art-shadow-dance.4f8cfc79.webp",
+    "影舞步": "./assets/generated/cards/skill-art-shadow-dance.eee03e1e.webp",
     "战场扫射": "./assets/generated/cards/skill-art-battlefield-sweep.dc08c5e1.webp",
     "增援部队": "./assets/generated/cards/skill-art-reinforcement.7a694f5c.webp",
     "蓄力子弹": "./assets/generated/cards/skill-art-artina-sniper.d751a4ee.webp",
