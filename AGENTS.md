@@ -100,8 +100,24 @@ documents and contains only rules that must be visible before every task.
 - After pushing, re-read the remote file to confirm the change survived. A later
   bulk sync from another copy can still revert it, so re-verify before telling
   the user a fix is live.
-- This file is not tracked by Git, so a bulk sync cannot overwrite it. Put rules
-  that must survive cross-session conflicts here rather than only in `docs/`.
+- Binary assets need the same pre-push diff as source, and are easier to break
+  silently because a diff is not obvious from the file name.
+  - Real incident (2026-09-11/12): the user's own uploaded Lv.10 special art was
+    committed by another session at `c63f48579f`. One day later `13e0b27014`
+    pushed a stale local copy of
+    `publish/assets/generated/angelica-level-10-special.9ce0de16.webp` and
+    reverted it to the 2026-09-06 art. The path never changed, so nothing in the
+    commit message hinted that art had been swapped.
+  - Before pushing any image/audio, compare `git hash-object <file>` with the
+    remote blob sha. If they differ but the intended change does not touch that
+    asset, do not push it — the local copy is stale.
+  - When restoring or replacing an asset, write it under a content-hash file
+    name (`<name>.<sha256[:8]>.webp`) and update the reference. Asset URLs carry
+    no `?v=`, so only a new file name busts the browser cache.
+- This file *is* tracked by Git (it appears in the remote tree), so a bulk sync
+  can overwrite it. Keep rules short and re-verify them after any bulk sync;
+  also prefer keeping durable cross-session rules here because every session is
+  told to read this file first.
 
 ## Memory Discipline
 
