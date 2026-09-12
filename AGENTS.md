@@ -148,3 +148,12 @@ documents and contains only rules that must be visible before every task.
   `character-skill-access.js`; `definitionOf()` returning null breaks the
   boundary catalog audit. Unregistered skills still resolve in play because
   `canActor` defaults to allow, so this failure is invisible in manual testing.
+
+## Asset "unreferenced" Audits (2026-09-11)
+
+Never conclude an asset is unreferenced from a **stale local copy**:
+- Sync the working copy against the remote tree first (compare blob SHA per path), otherwise deleted / never-pushed files look like "unused assets".
+- On 2026-09-11 a report of "11 unreferenced assets" was entirely bogus: 9 of them (`futuristic-city*`, `mechanical-factory-assembly-line*`, `card-art-guard-break*`) had **0 commits in the remote** — they only ever existed in a stale sandbox copy; the rest had already been deleted.
+- Exclude `deliver/`, `.studio/`, `node_modules/` when grepping for references. A leftover `deliver/` unpack dir once contained old bundles and produced fake "referenced" hits for already-deleted art.
+- Two-file-name trap: `angelica-level-10-special.9ce0de16.webp` and `.1f484c88.webp` had **identical bytes** (sha256 `1f484c88…`). A name-based scan reports the unused twin as garbage — always compare content hashes before deleting art.
+- Correct method: download every non-asset blob, grep basenames, then verify the reverse direction (every code reference resolves to an existing blob). Healthy state is a 1:1 match; on 2026-09-11 it was 223 refs / 223 files / 0 missing / 0 unreferenced.
