@@ -115,3 +115,20 @@ documents and contains only rules that must be visible before every task.
 - When a user changes a rule, update the implementation first, then update the
   matching canonical document. If code and memory disagree, treat the conflict
   as a bug and reconcile it instead of silently choosing one copy.
+
+## Test Count Expectations
+
+- Numeric expectations in skill audits (`assert(x.length === N)`) go stale the
+  moment a dungeon or character is added. Updating them is a **test-data
+  update**, not "hiding a failure" — but only after confirming the new count is
+  correct and every entry still resolves its artwork/catalog registration.
+- A thrown assertion **masks every assertion after it**. After fixing the first
+  failure in a suite, always re-run: later expectations are usually stale too.
+  (`skill-audit` hid two more stale counts behind the combat-role assertion.)
+- Adding entries to `data-combat-roles.js` `byId` is **not enough** — the unit's
+  source array must also be present in the `templates` list, or `combatRoles`
+  is never assigned. Ruins Sand City enemies were missing from that list.
+- New playable-character active skills must be registered in
+  `character-skill-access.js`; `definitionOf()` returning null breaks the
+  boundary catalog audit. Unregistered skills still resolve in play because
+  `canActor` defaults to allow, so this failure is invisible in manual testing.
