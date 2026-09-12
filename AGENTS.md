@@ -170,9 +170,46 @@ documents and contains only rules that must be visible before every task.
   boundary catalog audit. Unregistered skills still resolve in play because
   `canActor` defaults to allow, so this failure is invisible in manual testing.
 
+## Two-State Verification Before Reporting Anomalies (2026-09-12)
+
+**Never report a file as missing, broken, dangling or unreferenced until both
+the remote tree and the local working copy have been checked.** A single-sided
+check has produced two false alarms in two consecutive days.
+
+- Required before reporting any anomaly, for every path involved:
+
+  | local | remote | meaning | action |
+  |---|---|---|---|
+  | has | has | normal | diff them; only report if the diff is the intended change |
+  | missing | has | local copy is stale | pull/re-fetch before concluding anything |
+  | has | missing | never pushed, or deleted remotely | confirm with `commits` API — **0 commits means it never existed remotely**, not "deleted" |
+  | missing | missing | **not an anomaly — it is nothing** | do not report, and do not create the file |
+
+- Existence is only half the check. **Verify the reference direction too**:
+  before calling something a "dangling reference", grep the *referencing* side
+  (bundles, `package.json`, config) and prove at least one hit. A 404 with no
+  referrer is not a broken link — there is no link.
+- **Never fabricate a file to "fix" a dangling reference.** If nothing
+  references it, creating it adds dead weight and hides the real state.
+
+Two real incidents behind this rule:
+- *2026-09-11* — "11 unreferenced assets": reported from a stale local copy.
+  9 had **0 commits in the remote** (existed only in a sandbox copy); the rest
+  were already deleted. A remote check would have killed the report instantly.
+- *2026-09-12* — "`startup-marker.js` and `duplicates-legacy.js` are dangling
+  runtime references": the remote check *was* done, but one-sided. Both files
+  were absent locally **and** remotely, and `startup.min.js`, `package.json`
+  and `.jscpd.json` contained **zero** hits. There was no reference to break.
+  Reporting them as a crash risk nearly led to inventing two dead files.
+
+The common failure is treating "I did not find it" as "it is broken". Absence
+with no referrer is a non-event; say nothing.
+
 ## Asset "unreferenced" Audits (2026-09-11)
 
-Never conclude an asset is unreferenced from a **stale local copy**:
+Never conclude an asset is unreferenced from a **stale local copy**. This is a
+special case of the two-state rule above — check the remote tree *and* the local
+copy before reporting anything:
 - Sync the working copy against the remote tree first (compare blob SHA per path), otherwise deleted / never-pushed files look like "unused assets".
 - On 2026-09-11 a report of "11 unreferenced assets" was entirely bogus: 9 of them (`futuristic-city*`, `mechanical-factory-assembly-line*`, `card-art-guard-break*`) had **0 commits in the remote** — they only ever existed in a stale sandbox copy; the rest had already been deleted.
 - Exclude `deliver/`, `.studio/`, `node_modules/` when grepping for references. A leftover `deliver/` unpack dir once contained old bundles and produced fake "referenced" hits for already-deleted art.
