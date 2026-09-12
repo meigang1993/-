@@ -6,10 +6,9 @@ window.GameUIInfo = (U) => {
   function foodMark(u) { return u.food ? `<span class="green-hat-badge" title="快速生长粮食标记：${u.food}">粮食×${u.food}</span>` : ""; }
   function rageMark(u) {
     const count = Math.max(0, Math.min(10, u?.rageMarks || 0));
-    if (!count) return "";
-    const pips = Array.from({ length: count },
-      () => '<i class="rage-mark-pip"></i>').join("");
-    return `<span class="rage-marks" title="狂战标记：${count}/10">${pips}</span>`;
+    return count
+      ? `<span class="green-hat-badge rage-mark-badge" title="狂战标记：${count}/10">狂战×${count}</span>`
+      : "";
   }
   function missionMark(u) {
     if (u?.ref !== "hoshino_yi" || u.hoshinoMissionResult) return "";

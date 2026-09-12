@@ -54,6 +54,10 @@ window.BattleEffectEventRunner = handlers => {
     await wait(settle);
     if (!active()) return;
     if (!hit || deathHit) fatal = handlers.applyVisual(state, event, renderStep);
+    if (typeof event.onSettled === "function") {
+      try { event.onSettled(); } catch (err) { console.error(err); }
+      renderStep();
+    }
     await wait(fatal ? handlers.DEATH_ANIM_MS : FLOAT_SETTLE_MS);
   }
 
