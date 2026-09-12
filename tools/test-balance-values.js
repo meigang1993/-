@@ -18,6 +18,7 @@ global.window = global;
   "data-sakura-risa.js",
   "data-machine-factory-enemies.js",
   "data-underwater-train-enemies.js",
+  "data-ruins-sand-city-enemies.js",
   "data-world.js",
 ].forEach(file => require(`../src/original/${file}`));
 
@@ -25,7 +26,7 @@ const stats = id => GameDataCharacters.find(character => character.id === id)?.s
 const expectedCharacters = {
   lokar: { attack: 3, magic: 1, speed: 3, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
   besta_doll: { attack: 2, magic: 3, speed: 3, maxHp: 28, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
-  manny: { attack: 3, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 3 },
+  manny: { attack: 3, magic: 3, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 3 },
   miller: { attack: 3, magic: 3, speed: 3, maxHp: 40, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
   nonoka: { attack: 1, magic: 3, speed: 3, maxHp: 34, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
   loki: { attack: 3, magic: 1, speed: 3, maxHp: 42, bloodlust: 2, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
@@ -49,6 +50,8 @@ const expectedCharacters = {
   gerda: { attack: 3, magic: 3, speed: 4, maxHp: 40, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
   hoshino_yi: { attack: 3, magic: 3, speed: 3, maxHp: 34, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
   hoshino_kaiichi: { attack: 1, magic: 3, speed: 2, maxHp: 46, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+  artina: { attack: 3, magic: 3, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+  maria: { attack: 2, magic: 3, speed: 4, maxHp: 38, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
 };
 assert.strictEqual(Object.keys(expectedCharacters).length, GameDataCharacters.length,
   "every character needs a complete initial-stat baseline");
@@ -56,20 +59,20 @@ Object.entries(expectedCharacters).forEach(([id, expected]) => {
   assert.deepStrictEqual(stats(id), expected, `${id} balance stats changed`);
 });
 const expectedGrowth = {
-  lokar: [72, 13.5, 4.5, 10], besta_doll: [54, 7.5, 12, 7.5],
-  manny: [72, 12, 7.5, 12.5], miller: [96, 7.5, 7.5, 10],
-  nonoka: [78, 4.5, 13.5, 10], loki: [108, 12, 3, 7.5],
-  flora: [54, 13.5, 4.5, 18.75], wendy: [72, 3, 12, 12.5],
-  cadicis: [84, 12, 6, 10], carlos: [66, 10.5, 3, 16.25],
-  bertis: [96, 10.5, 10.5, 7.5], gerlot: [78, 12, 3, 13.75],
-  angelica: [120, 12, 4.5, 7.5], luka: [102, 13.5, 3, 12.5],
-  elrana: [96, 4.5, 15, 11.25], little_elrana: [78, 7.5, 12, 10],
-  ace: [84, 7.5, 4.5, 13.75], nanali: [72, 10.5, 4.5, 10],
-  ophelia: [72, 3, 15, 12.5], aileng: [84, 10.5, 9, 15],
-  besta: [60, 4.5, 15, 5], sonia: [90, 10.5, 6, 13.75],
-  chiyo: [66, 10.5, 3, 17.5], gerda: [114, 6, 10.5, 12.5],
-  hoshino_yi: [78, 10.5, 10.5, 11.25],
-  hoshino_kaiichi: [132, 4.5, 10.5, 7.5],
+  lokar: [100.8, 24.57, 8.19, 14], besta_doll: [75.6, 13.65, 21.84, 10.5],
+  manny: [100.8, 21.84, 13.65, 17.5], miller: [134.4, 13.65, 13.65, 14],
+  nonoka: [109.2, 8.19, 24.57, 14], loki: [151.2, 21.84, 5.46, 10.5],
+  flora: [75.6, 24.57, 8.19, 26.25], wendy: [100.8, 5.46, 21.84, 17.5],
+  cadicis: [117.6, 21.84, 10.92, 14], carlos: [92.4, 19.11, 5.46, 22.75],
+  bertis: [134.4, 19.11, 19.11, 10.5], gerlot: [109.2, 21.84, 5.46, 19.25],
+  angelica: [147, 27.3, 5.46, 10.5], luka: [142.8, 24.57, 5.46, 17.5],
+  elrana: [134.4, 8.19, 27.3, 15.75], little_elrana: [109.2, 13.65, 21.84, 14],
+  ace: [117.6, 13.65, 8.19, 19.25], nanali: [100.8, 19.11, 8.19, 14],
+  ophelia: [100.8, 5.46, 27.3, 17.5], aileng: [117.6, 19.11, 16.38, 21],
+  besta: [84, 8.19, 27.3, 7], sonia: [126, 19.11, 10.92, 19.25],
+  chiyo: [92.4, 19.11, 5.46, 24.5], gerda: [159.6, 10.92, 19.11, 17.5],
+  hoshino_yi: [109.2, 19.11, 19.11, 15.75], hoshino_kaiichi: [184.8, 8.19, 19.11, 10.5],
+  artina: [84, 24.57, 8.19, 21], maria: [117.6, 13.65, 16.38, 17.5],
 };
 assert.strictEqual(Object.keys(expectedGrowth).length, GameDataCharacters.length,
   "every character needs a complete growth baseline");
