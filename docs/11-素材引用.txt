@@ -115,7 +115,7 @@
   flora-level-10-special.075896ea.webp   -> 芙萝娅 Lv.10特殊立绘
   wendy-level-10-special.8b3d47ab.webp   -> 温蒂 Lv.10特殊立绘
   elrana-level-10-special.3154d24b.webp  -> 艾尔拉娜 Lv.10特殊立绘
-  angelica-level-10-special.9ce0de16.webp -> 安洁莉卡 Lv.10特殊立绘
+  angelica-level-10-special.1f484c88.webp -> 安洁莉卡 Lv.10特殊立绘
 
 【七、全局美术素材（publish/assets/generated/）】
 
@@ -350,7 +350,7 @@
   elrana_level_10_special             -> ./assets/generated/elrana-level-10-special.3154d24b.webp
   angelica_default                    -> ./assets/images/angelica-portrait.webp
   angelica_berserker                  -> ./assets/generated/angelica-berserker.371936f3.webp
-  angelica_level_10_special           -> ./assets/generated/angelica-level-10-special.9ce0de16.webp
+  angelica_level_10_special           -> ./assets/generated/angelica-level-10-special.1f484c88.webp
 
 【十四、素材预算限制】
 
