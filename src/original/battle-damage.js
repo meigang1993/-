@@ -44,6 +44,7 @@ window.BattleDamage = (deps, ctx) => {
   });
   lifecycle.damage.hitWithoutDodge = hit.hitWithoutDodge;
   lifecycle.damage.scheduleAfterDamage = lifecycle.scheduleAfterDamage;
+  lifecycle.damage.delayUntilHitSettled = lifecycle.delayUntilHitSettled;
   lifecycle.damage.directDamage = lifecycle.directDamage;
   lifecycle.damage.finalizeDamage = lifecycle.finalizeDamage;
   return {

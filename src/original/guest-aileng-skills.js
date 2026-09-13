@@ -86,8 +86,11 @@ window.GuestAilengSkills = (() => {
     battle.ailengDrillPicker = null; battle.locked = false; line(state, actor, "战斗演练", receiver); window.BattleLog.add(state, `${actor.name} 发动战斗演练，将${card.name}交给${receiver.name}。`);
     return true;
   }
-  function afterDamage(state, actor, hpLoss) {
-    if (actor?.ref === "aileng" && hpLoss && hasSkill(actor, "征服欲望")) conquerHit(state, actor);
+  function afterDamage(state, actor, hpLoss, api) {
+    if (!(actor?.ref === "aileng" && hpLoss && hasSkill(actor, "征服欲望"))) return;
+    const award = () => conquerHit(state, actor);
+    if (!(api?.damage?.delayUntilHitSettled?.(state, award)
+      || window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, award))) award();
   }
   function conquerHit(state, actor) {
     actor.ailengDamageHits = (actor.ailengDamageHits || 0) + 1;

@@ -71,24 +71,6 @@ window.AngelicaLukaSkills = (() => {
     if (card?.crimsonRampage) return crimsonRampage(state, actor, deps, ctx);
     return false;
   }
-  // 本次受击的浮字事件：把标记发放挂到该段受击动画播完之后，
-  // 多段/连击时每段各自挂一次，标记才会一段一枚依次出现，而不是一次性跳满。
-  function attachToHitAnimation(state, award) {
-    const queue = state?.battle?.animQueue;
-    const hitFxId = state?.battle?.hitFxId;
-    if (!Array.isArray(queue) || !hitFxId) return false;
-    // 仅在真实伤害结算栈内挂接，避免直接调用 afterDamage 时误挂到历史浮字上。
-    if (!(state.battle._damageDepth > 0)) return false;
-    for (let i = queue.length - 1; i >= 0; i -= 1) {
-      const evt = queue[i];
-      if (!evt || evt.type !== "float" || evt.hitFxId !== hitFxId) continue;
-      if (evt.kind !== "damage" && evt.kind !== "hp-loss") continue;
-      if (evt.onSettled) return false;
-      evt.onSettled = award;
-      return true;
-    }
-    return false;
-  }
   function afterDamage(state, actor, target, card, hpLoss, deps) {
     if (!hpLoss) return;
     const schedule = deps?.damage?.scheduleAfterDamage;
@@ -96,7 +78,8 @@ window.AngelicaLukaSkills = (() => {
       gainRage(state, actor, "狂战造成伤害", target);
       gainRage(state, target, "狂战受到伤害", actor);
     };
-    if (!attachToHitAnimation(state, award)) {
+    if (!(deps?.damage?.delayUntilHitSettled?.(state, award)
+      || window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, award))) {
       if (typeof schedule === "function") schedule(award);
       else award();
     }

@@ -76,8 +76,9 @@ window.RuinsGruntSkills = (() => {
   function afterDamage(state, actor, target, card, hpLoss) {
     if (!hpLoss || !actor) return;
     if (actor.ai === "ruins_drone" && isSlash(card) && !card?._soulChain) {
-      window.BattleStatusCards?.add?.(state, target,
+      const paralyze = () => window.BattleStatusCards?.add?.(state, target,
         window.BattleStatusCardRegistry?.create("paralysis"), actor.name);
+      if (!window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, paralyze)) paralyze();
     }
   }
 

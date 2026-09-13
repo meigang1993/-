@@ -78,7 +78,11 @@ window.WithererRelicSkills = (() => {
   function afterDamage(state, actor, target, card, hpLoss, damage, draw, pushFloat) {
     applyBloodMemory(state, target);
     if (!hpLoss) { afterKillFailed(state, actor, card); return; }
-    if (card?.strangleKill) markChoke(state, actor, target);
+    if (card?.strangleKill) {
+      const choke = () => markChoke(state, actor, target);
+      if (!(damage?.delayUntilHitSettled?.(state, choke)
+        || window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, choke))) choke();
+    }
     if (isSlash(card)) drainHandLimit(state, actor, target);
     healOtherByChest(state, target, damage, draw, pushFloat);
     grantScytheTurn(state, actor, target);
