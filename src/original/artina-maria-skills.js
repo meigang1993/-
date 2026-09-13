@@ -35,16 +35,23 @@ window.ArtinaMariaSkills = (() => {
     actor.tempMagic = actor.mariaMarks;
   }
   function modifySlashDamage(state, actor, target, amount, card) {
-    if (actor?.ref !== "artina" || !isSlash(card) || card.virtual
-      || !actor.artinaChargedTargetUid || target?.uid !== actor.artinaChargedTargetUid) {
-      return amount;
+    if (actor?.ref !== "artina" || !isSlash(card) || card.virtual) return amount;
+    if (window.CardUtils?.isGroupTargetCard?.(card)) return amount;
+    const recorded = Object.keys(actor.artinaSuits || {}).length;
+    const sniped = !!actor.artinaChargedTargetUid
+      && target?.uid === actor.artinaChargedTargetUid;
+    if (!recorded && !sniped) return amount;
+    let result = amount;
+    if (recorded) {
+      result = amount * (2 + recorded);
+      actor.artinaSuits = {};
+      line(state, actor, "蓄力子弹", target);
     }
-    const multiplier = 2 + Object.keys(actor.artinaSuits || {}).length;
-    card.ignoreResponse = true;
-    actor.artinaSuits = {};
-    actor.artinaChargedTargetUid = null;
-    line(state, actor, "蓄力子弹", target);
-    return amount * multiplier;
+    if (sniped) {
+      card.ignoreResponse = true;
+      actor.artinaChargedTargetUid = null;
+    }
+    return result;
   }
   function revealSnipe(state, actor, target) {
     const shown = visible(target)[0];
@@ -70,20 +77,31 @@ window.ArtinaMariaSkills = (() => {
     discarded.forEach(item => window.BattleCards?.put?.(
       state.battle, actor, item, "discard", { showDiscard: true }));
     const turns = discarded.length;
+    const bonus = { attack: actor.stats?.attack || 0,
+      magic: actor.stats?.magic || 0, speed: actor.stats?.speed || 0 };
     (state.battle.allies || []).filter(alive).forEach(unit => {
-      unit.mariaBlessing = { attack: actor.stats?.attack || 0,
-        magic: actor.stats?.magic || 0, speed: actor.stats?.speed || 0, turns };
-      unit.tempAttack = (unit.tempAttack || 0) + unit.mariaBlessing.attack;
-      unit.tempMagic = (unit.tempMagic || 0) + unit.mariaBlessing.magic;
-      unit.tempSpeed = (unit.tempSpeed || 0) + unit.mariaBlessing.speed;
+      const previous = unit.mariaBlessing;
+      if (previous) {
+        unit.stats.attack = (unit.stats.attack || 0) - previous.attack;
+        unit.stats.magic = (unit.stats.magic || 0) - previous.magic;
+        unit.stats.speed = (unit.stats.speed || 0) - previous.speed;
+      }
+      unit.mariaBlessing = { ...bonus, turns };
+      unit.stats.attack = (unit.stats.attack || 0) + bonus.attack;
+      unit.stats.magic = (unit.stats.magic || 0) + bonus.magic;
+      unit.stats.speed = (unit.stats.speed || 0) + bonus.speed;
     });
     actor.usedMariaHonorBlessing = true;
     line(state, actor, "荣誉祝福");
     return true;
   }
   function handleSpecialCard(state, actor, target, card, deps) {
-    if (actor?.ref === "artina" && card?.artinaSniper) return revealSnipe(state, actor, target);
+    if (actor?.ref === "artina" && card?.artinaSniper) {
+      if (actor.usedArtinaSniper) return false;
+      return revealSnipe(state, actor, target);
+    }
     if (actor?.ref === "maria" && card?.mariaHonorBlessing) {
+      if (actor.usedMariaHonorBlessing) return false;
       return honorBlessing(state, actor, { ...card, _bagIndexes: card._bagIndexes
         || state.battle.selectedBagIndexes });
     }
@@ -96,11 +114,16 @@ window.ArtinaMariaSkills = (() => {
     }
     if (unit?.ref === "maria") {
       unit.mariaMarks = 0; unit.mariaUseCount = 0;
-      unit.usedMariaHonorBlessing = false; unit.tempAttack = 0; unit.tempMagic = 0;
+      unit.usedMariaHonorBlessing = false;
     }
     if (unit?.mariaBlessing) {
       unit.mariaBlessing.turns -= 1;
-      if (unit.mariaBlessing.turns <= 0) delete unit.mariaBlessing;
+      if (unit.mariaBlessing.turns <= 0) {
+        unit.stats.attack = (unit.stats.attack || 0) - unit.mariaBlessing.attack;
+        unit.stats.magic = (unit.stats.magic || 0) - unit.mariaBlessing.magic;
+        unit.stats.speed = (unit.stats.speed || 0) - unit.mariaBlessing.speed;
+        delete unit.mariaBlessing;
+      }
     }
   }
   return { beforeCardPlayed, modifySlashDamage, handleSpecialCard, endTurn };
