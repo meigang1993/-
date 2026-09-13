@@ -257,3 +257,44 @@ GET /repos/meigang1993/-/git/trees/main?recursive=1     # 必须带 branch
 本项目同时有 **3 个写入方**：元宝（本 AI）、另一 AI、MonkeyCode（用户侧工具）。
 因此每次推送前必须**逐文件比对本地与远程 blob sha**，只推确认属于本次改动的文件；
 任何"看起来该删/该改"但无法追溯来源的项，一律不动并上报用户。
+
+
+## Bundle 推送：禁止混用 Contents API 与 Git Tree API
+
+**事故**：2026-09-13 推送蓄力子弹描述改动时，先用 `PUT /contents/{path}`
+逐个上传 4 个文件，再试图用 Git Tree API 合成一个原子 commit。结果：
+
+- Contents API **每上传一个文件就自动创建一个 commit**（message 为传入的 message），
+  于是远程出现 4 条碎片 commit；
+- 后续 Tree/Commit 基于已过期的 `base_sha`，`PATCH /git/refs/heads/main` 返回 **422**。
+
+**规则（二选一，禁止混用）**：
+
+- **方式 A（单文件/少量文件）**：只用 Contents API。逐个 `PUT /contents/{path}`，
+  接受每条一个 commit，**message 要写具体**（勿用 "update"）。适合 1~5 个文件。
+- **方式 B（多文件原子提交）**：只用 Git Tree API。先 `POST /git/blobs` 创建 blob，
+  再 `POST /git/trees`（带 base_tree），再 `POST /git/commits`，最后 `PATCH` ref。
+  **全程不要碰 `/contents/`**。
+
+混用的后果不是失败，而是**静默产生碎片历史**，比失败更难发现。
+
+## 构建产物：远程 bundle 格式不统一，勿全量重建覆盖
+
+实测远程 `publish/bundles/*.min.js` **并非同一套构建脚本产出**：
+
+- `battle-rules` / `hall` / `startup-store` 等：带头部注释
+  `/*! generated from tools/publish-bundles.json: X */`
+- `startup` / `startup-app` / `battle-skills`：**无**该头部注释
+
+本地 `node tools/build-publish-bundles.js` 会给**所有** bundle 加头部注释。
+因此全量重建后直接推送，会改变那 3 个 bundle 的格式（体积分别 +1576 / +3909 / +9155 字节），
+虽功能等价，但属于用本机构建产物覆盖他人产物。
+
+**正确做法**：
+
+1. 改动仅涉及**字符串/文案**时，下载远程 bundle，做**精准字符串替换**后回传
+   （本次 startup 仅 +20 字节），不重新构建。
+2. 必须重建时，只推**归属本次改动源文件**的 bundle（查 `tools/publish-bundles.json`
+   确认归属），其余一律不推。
+3. 重建后若发现未归属的 bundle 变 DIFF，**从远程下载覆盖回本地**，保持本地与远程一致，
+   避免下次误推。
