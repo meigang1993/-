@@ -119,6 +119,44 @@ rather than "fixing" a non-problem.** Note that a teammate who later pushes
 their own source edit without rebuilding *will* create real drift, so the rule
 above still stands.
 
+### Diagnosing a single-bundle mismatch: suspect Terser, not a missed rebuild (2026-09-13)
+
+If `--check` flags **one** bundle (e.g. `battle-ui`) while the others match, do
+**not** conclude "source was changed without rebuilding". A missed rebuild
+usually fails loudly across the bundle(s) that own the edited file — and file→
+bundle ownership is declared in `publish-bundles.json`, never inferred.
+
+A single-bundle mismatch is far more often **build-environment drift**. Compare
+these three things first:
+
+1. **Terser actual dependency** — `package.json` may declare a caret range
+   (`"terser": "^5.49.0"`) while `package-lock.json` pins an exact version
+   (`5.49.0`). Any environment that resolves fresh gets a *newer* minor whose
+   compression heuristics differ, producing different bytes for identical
+   input. Verify with:
+   ```
+   node -e "console.log(require('terser/package.json').version)"   # 实际运行版本
+   python3 -c "import json;d=json.load(open('package-lock.json'));\
+     print([v.get('version') for k,v in d['packages'].items() if k.endswith('/terser')])"
+   ```
+2. **Build parameters** — `tools/build-publish-bundles.js` `compile()`:
+   `compress.passes=3`, `keep_classnames`, `keep_fnames`,
+   `mangle.keep_classnames/keep_fnames`, `ecma=2020`,
+   `format.ascii_only=false|beautify=false|comments=false`, plus a
+   `preamble`. A differing preamble alone shifts every byte offset.
+3. **Bundle SHA** — compare the remote blob SHA/byte length against the local
+   rebuild before deciding anything.
+
+Known state at 2026-09-13: sandbox runs terser **5.51.2** while the lockfile
+pins **5.49.0**; the 11 remote bundles still rebuilt byte-identical, so the
+drift had not yet manifested. Treat this as a live risk, not a settled matter.
+
+**Do not advance `game-build` merely to paper over such a mismatch.** A version
+bump does not change bundle bytes (version strings are not injected into
+bundles), so bumping "to fix" a bundle diff ships nothing and pollutes the
+version history. Resolve the dependency/param difference, or report the
+evidence and let a human decide.
+
 ### Rebuild is idempotent when sources are unchanged
 
 If `npm run build:bundles` reproduces all 11 bundles byte-identical to remote,
