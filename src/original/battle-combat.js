@@ -91,6 +91,7 @@ window.BattleCombat = (deps) => {
     if (window.LokarSkills?.handleSpecialCard?.(state, actor, target, card, deps, specialCtx)) { card._countAsPlayed = true; return; }
     if (window.MillerSkills?.handleSpecialCard?.(state, actor, target, card, deps)) { card._countAsPlayed = true; return; }
     if (window.AngelicaLukaSkills?.handleSpecialCard?.(state, actor, target, card, deps, specialCtx)) { card._countAsPlayed = true; return; }
+    if (window.ArtinaMariaSkills?.handleSpecialCard?.(state, actor, target, card, deps)) { card._countAsPlayed = true; return; }
     if (window.ElranaAceNanaliSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat }, specialCtx)) { card._countAsPlayed = true; return true; }
     if (window.HoshinoSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat })) { card._countAsPlayed = true; return true; }
     if (card.ailengBet || card.ailengCharge || card.bestaEndSlash) { const ok = window.GuestCharacterSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat, intentMax: deps.intentMax }, specialCtx); if (ok) card._countAsPlayed = true; return !!ok; }
