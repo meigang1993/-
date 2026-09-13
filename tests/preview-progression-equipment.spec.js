@@ -72,7 +72,7 @@ test("representative living-room portraits and character panels remain usable", 
       await expect(page.locator(".info-title-row .combat-role")).toHaveCount(1);
       await expect(page.locator(".info-popup")).toContainText("成长倾向");
       await expect(page.locator(".growth-table")).toContainText("0级");
-      await expect(page.locator(".growth-table")).toContainText("15级");
+      await expect(page.locator(".growth-table")).toContainText("20级");
     }
 
     await page.locator('[data-info-tab="skills"]').click();
