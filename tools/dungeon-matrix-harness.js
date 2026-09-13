@@ -33,6 +33,7 @@ function seeded(seed) {
   "data-future-enemies.js",
   "data-orc-bondi.js", "data-guard-kelly.js", "data-sakura-risa.js",
   "data-machine-factory-enemies.js", "data-underwater-train-enemies.js",
+  "data-ruins-sand-city-enemies.js",
   "data-world.js", "data.js", "data-future-relics.js", "data-relics.js",
   "relics.js", "bounty-ledger.js", "receipt-ledger.js",
   "unlock-event-progress.js", "store-state-factory.js",

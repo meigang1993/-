@@ -13,7 +13,8 @@ window.BattleVictory = (() => {
     if (battle?.test || !battle?.exploration || !state.explore
       || !["normal", "elite", "boss"].includes(battle.nodeType)) return 0;
     const difficulty = GameData.difficulties[state.explore.difficultyId];
-    return window.CharacterProgression?.rewardFor?.(battle.nodeType, difficulty) || 0;
+    return window.CharacterProgression?.rewardFor?.(
+      battle.nodeType, difficulty, battle.missionId || state.explore?.missionId) || 0;
   }
   function render(state) {
     const b = state.battle;

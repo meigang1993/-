@@ -41,7 +41,7 @@ window.LocalCoreDungeonOps = (() => {
     const enemyIds = (node.enemies || []).map(enemy => enemy.id).filter(Boolean);
     if (["normal", "elite", "boss"].includes(kind) && (!enemyIds.every(id => defeated.includes(id)) || defeated.some(id => !enemyIds.includes(id)))) return outcomes.rejected;
     const gold = rollGold(core, run, kind), essence = ["elite", "boss"].includes(kind) ? 1 : 0;
-    const experience = window.CharacterProgression.rewardFor(kind, diff);
+    const experience = window.CharacterProgression.rewardFor(kind, diff, run.missionId);
     const progression = progressionParty(run).map(id => {
       const character = char(core, id);
       const template = GameData.characters?.find(item => item.id === id);
