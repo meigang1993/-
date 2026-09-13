@@ -115,6 +115,7 @@ test("玛利亚·神数咒语：出牌计数递增并摸牌，回合结束清零
     const state = window.state;
     const actor = state.battle.allies.find(u => u.ref === "maria" || u.id === "maria");
     actor.mariaMarks = 0; actor.mariaUseCount = 0;
+    actor.mariaNext = 1; actor.mariaTier = 1;
     let drawn = 0;
     const deps = { draw: (unit, count) => { drawn += count; return new Array(count).fill({}); } };
     const out = [];
@@ -128,16 +129,16 @@ test("玛利亚·神数咒语：出牌计数递增并摸牌，回合结束清零
     return { out, drawn, afterEndTurn: { marks: actor.mariaMarks, count: actor.mariaUseCount } };
   });
 
-  // 神数 N：起始标记只在出牌阶段首张牌给出；达到标记数时摸标记数张，随后再+1枚并重新计数。
-  // 第1张: marks0→1, useCount1 >= 1 → 摸1张, marks=2
-  // 第2张: useCount1 < 2 → 不摸
-  // 第3张: useCount2 >= 2 → 摸2张, marks=3
-  // 第4张: useCount1 < 3 → 不摸
+  // 神数：头像数字为「使用牌目标数」，回合开始为1，每使用一张牌 +1。
+  // 第1张: marks=2, 累计1 达三角数1 → 摸1张
+  // 第2张: marks=3, 未达下一个三角数3 → 不摸
+  // 第3张: marks=4, 累计3 达三角数3 → 摸2张
+  // 第4张: marks=5, 未达下一个三角数6 → 不摸
   expect(rows.out).toEqual([
     { play: 1, marks: 2, tempAttack: 2, tempMagic: 2 },
-    { play: 2, marks: 2, tempAttack: 2, tempMagic: 2 },
-    { play: 3, marks: 3, tempAttack: 3, tempMagic: 3 },
-    { play: 4, marks: 3, tempAttack: 3, tempMagic: 3 },
+    { play: 2, marks: 3, tempAttack: 3, tempMagic: 3 },
+    { play: 3, marks: 4, tempAttack: 4, tempMagic: 4 },
+    { play: 4, marks: 5, tempAttack: 5, tempMagic: 5 },
   ]);
   expect(rows.drawn).toBe(3);   // 1 + 2
   expect(rows.afterEndTurn).toEqual({ marks: 0, count: 0 });
@@ -237,5 +238,66 @@ test("结束回合：亚缇娜花色与狙击状态全部清空", async ({ page 
   });
 
   expect(result).toEqual({ suits: 0, sniperUid: null, suit: null, charged: null });
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test("玛利亚·头像徽章：神数显示使用牌目标数，祝福显示弃置花色", async ({ page }) => {
+  const errors = collectErrors(page);
+  await enterBattleWithArtinaMaria(page);
+
+  const badges = await page.evaluate(() => {
+    const maria = { ref: "maria", name: "玛利亚", mariaMarks: 0 };
+    const I = window.GameUIInfo(window.UICommon);
+    const start = I.mariaNumberMark(maria);
+    maria.mariaMarks = 2;
+    const afterOne = I.mariaNumberMark(maria);
+    const blessed = { ref: "maria", name: "玛利亚", mariaBlessingSuits: ["♥", "♦"] };
+    const bless = I.mariaBlessingMark(blessed);
+    blessed.mariaBlessingSuits = [];
+    const faded = I.mariaBlessingMark(blessed);
+    return { start, afterOne, bless, faded };
+  });
+
+  expect(badges.start).toContain("神数×1");
+  expect(badges.start).toContain("再使用1张牌");
+  expect(badges.afterOne).toContain("神数×2");
+  expect(badges.bless).toContain("祝福 ♥♦");
+  expect(badges.faded).toBe("");
+  expect(relevantErrors(errors)).toEqual([]);
+});
+
+test("玛利亚·荣誉祝福：弃置花色每回合消失一个，未清空前无法再次发动", async ({ page }) => {
+  const errors = collectErrors(page);
+  await enterBattleWithArtinaMaria(page);
+
+  const result = await page.evaluate(() => {
+    const state = window.state;
+    const maria = state.battle.allies.find(u => u.ref === "maria" || u.id === "maria");
+    const refill = () => { maria.hand = [
+      { name: "甲", type: "tactic", suit: "♥" },
+      { name: "乙", type: "tactic", suit: "♦" }]; };
+    refill();
+    const card = { name: "荣誉祝福", type: "tactic", mariaHonorBlessing: true, _bagIndexes: [0, 1] };
+    const first = window.ArtinaMariaSkills.handleSpecialCard(state, maria, maria, { ...card }, {});
+    const suitsAfterCast = [...(maria.mariaBlessingSuits || [])];
+    window.ArtinaMariaSkills.endTurn(state, maria);
+    const suitsAfterTurn = [...(maria.mariaBlessingSuits || [])];
+    refill();
+    maria.usedMariaHonorBlessing = false;
+    const blocked = window.ArtinaMariaSkills.handleSpecialCard(state, maria, maria, { ...card }, {});
+    window.ArtinaMariaSkills.endTurn(state, maria);
+    const suitsEmpty = (maria.mariaBlessingSuits || []).length === 0;
+    refill();
+    maria.usedMariaHonorBlessing = false;
+    const recast = window.ArtinaMariaSkills.handleSpecialCard(state, maria, maria, { ...card }, {});
+    return { first, suitsAfterCast, suitsAfterTurn, blocked, suitsEmpty, recast };
+  });
+
+  expect(result.first).toBe(true);
+  expect(result.suitsAfterCast.sort()).toEqual(["♥", "♦"]);
+  expect(result.suitsAfterTurn.length).toBe(1);
+  expect(result.blocked).toBe(false);
+  expect(result.suitsEmpty).toBe(true);
+  expect(result.recast).toBe(true);
   expect(relevantErrors(errors)).toEqual([]);
 });

@@ -39,10 +39,22 @@ window.GameUIInfo = (U) => {
   }
   function mariaNumberMark(u) {
     if (u?.ref !== "maria") return "";
-    const count = Math.max(0, u?.mariaMarks || 0);
-    return count
-      ? `<span class="green-hat-badge" title="神数标记：${count}；攻击力与魔力各+${count}">神数×${count}</span>`
-      : "";
+    // 显示「使用牌目标数」：回合开始为 1，每使用一张牌 +1（用 1 张后 2、用 2 张后 3 …）。
+    const used = u?.mariaUseCount || 0;
+    const count = Math.max(1, u?.mariaMarks || used + 1);
+    const bonus = count;
+    const remain = Math.max(0, (u?.mariaNext || 1) - used);
+    const tier = u?.mariaTier || 1;
+    const tip = remain
+      ? `神数咒语：再使用${remain}张牌后摸${tier}张牌`
+      : `神数咒语：下次使用牌时摸${tier}张牌`;
+    return `<span class="green-hat-badge" title="${tip}；当前攻击力与魔力各+${bonus}">神数×${count}</span>`;
+  }
+  function mariaBlessingMark(u) {
+    if (u?.ref !== "maria") return "";
+    const suits = Array.isArray(u.mariaBlessingSuits) ? u.mariaBlessingSuits : [];
+    if (!suits.length) return "";
+    return `<span class="green-hat-badge dome-suit-badge" title="荣誉祝福：已弃置${suits.join("、")}，每回合消失一个，全部消失后才能再次发动">祝福 ${suits.join("")}</span>`;
   }
   function findInfoUnit(state) {
     const id = state.infoUnit;
@@ -158,5 +170,5 @@ window.GameUIInfo = (U) => {
     const stats = u?.id && window.RelicSystem ? RelicSystem.statsOf(state, u.id) : null;
     return infoPanel(u, state.infoTab, stats);
   }
-  return { greenHatMark, foodMark, rageMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, mariaNumberMark, findInfoUnit, infoPanel, infoPanelForState };
+  return { greenHatMark, foodMark, rageMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, mariaNumberMark, mariaBlessingMark, findInfoUnit, infoPanel, infoPanelForState };
 };

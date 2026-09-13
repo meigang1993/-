@@ -93,7 +93,8 @@ window.BattleCardPlayability = deps => {
       || card.ailengCharge && actor.usedAilengCharge
       || card.kaiichiMilk && actor.usedKaiichiMilk
       || card.artinaSniper && actor.usedArtinaSniper
-      || card.mariaHonorBlessing && actor.usedMariaHonorBlessing;
+      || card.mariaHonorBlessing && (actor.usedMariaHonorBlessing
+        || actor.mariaBlessingSuits?.length > 0);
   }
 
   function blockedByHand(actor, card, hasHand) {

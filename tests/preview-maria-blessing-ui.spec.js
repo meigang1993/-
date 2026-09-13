@@ -174,7 +174,7 @@ test("主动技能不记录花色，也不推进神数计数", async ({ page }) 
     window.ArtinaMariaSkills.beforeCardPlayed(window.state, maria,
       { name: "荣誉祝福", type: "tactic", _skill: true }, {});
     out.mariaMarksAfterSkill = maria.mariaMarks;
-    // 实体牌第一张：只给 1 枚起始标记（显示×1）
+    // 实体牌第一张：使用牌目标数由 1 升为 2
     window.ArtinaMariaSkills.beforeCardPlayed(window.state, maria,
       { name: "杀（普攻）", type: "slash", suit: "♥" }, {});
     out.mariaMarksAfterFirstCard = maria.mariaMarks;
@@ -184,7 +184,7 @@ test("主动技能不记录花色，也不推进神数计数", async ({ page }) 
   expect(result.artinaSkillSuits).toBe(0);
   expect(result.artinaRealSuits).toBe(1);
   expect(result.mariaMarksAfterSkill).toBe(0);
-  expect(result.mariaMarksAfterFirstCard).toBe(1);
+  expect(result.mariaMarksAfterFirstCard).toBe(2);
 
   expect(relevantErrors(errors)).toEqual([]);
 });

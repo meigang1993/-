@@ -29,22 +29,20 @@ window.ArtinaMariaSkills = (() => {
     if (actor.ref !== "maria") return;
     actor.mariaMarks ||= 0;
     actor.mariaUseCount ||= 0;
-    // 仅出牌阶段首张牌获得起始标记；后续每轮计数只在触发时 +1，
-    // 否则标记会额外膨胀，攻击/魔力与摸牌量均高于设计。
-    if (!actor.mariaPhaseMarked) {
-      actor.mariaPhaseMarked = true;
-      actor.mariaMarks += 1;
-    } else {
-      actor.mariaUseCount += 1;
-      // 触发计数自取得起始标记之后开始：出第 1 张牌只得到 1 枚标记（显示×1），
-      // 而非当张即凑满标记数再得 1 枚（旧行为会显示×2）。
-      if (actor.mariaUseCount >= actor.mariaMarks) {
-        const amount = actor.mariaMarks;
-        actor.mariaUseCount = 0;
-        actor.mariaMarks += 1;
-        draw(state, actor, amount, deps);
-        line(state, actor, "神数咒语");
-      }
+    // 神数标记 = 「使用牌目标数」：回合开始为 1，每使用一张牌便 +1
+    // （用 1 张后为 2、用 2 张后为 3 …），并同时作为攻击力/魔力加成。
+    // 摸牌节奏与设计一致，按累计使用牌数达到 1、3、6…（三角数）触发，
+    // 分别摸 1、2、3… 张——因此目标数递增，但摸牌不会每回合无节制膨胀。
+    actor.mariaUseCount += 1;
+    actor.mariaMarks = actor.mariaUseCount + 1;
+    actor.mariaNext ||= 1;
+    actor.mariaTier ||= 1;
+    if (actor.mariaUseCount >= actor.mariaNext) {
+      const amount = actor.mariaTier;
+      draw(state, actor, amount, deps);
+      line(state, actor, "神数咒语");
+      actor.mariaTier += 1;
+      actor.mariaNext += actor.mariaTier;
     }
     actor.tempAttack = actor.mariaMarks;
     actor.tempMagic = actor.mariaMarks;
@@ -116,6 +114,9 @@ window.ArtinaMariaSkills = (() => {
       unit.stats.speed = (unit.stats.speed || 0) + bonus.speed;
     });
     actor.usedMariaHonorBlessing = true;
+    // 记录弃置的花色：头像显示，且每回合消失一个；
+    // 仍有花色残留时本技能无法再次发动（跨回合冷却）。
+    actor.mariaBlessingSuits = discarded.map(item => item.suit);
     line(state, actor, "荣誉祝福");
     return true;
   }
@@ -125,7 +126,7 @@ window.ArtinaMariaSkills = (() => {
       return revealSnipe(state, actor, target);
     }
     if (actor?.ref === "maria" && card?.mariaHonorBlessing) {
-      if (actor.usedMariaHonorBlessing) return false;
+      if (actor.usedMariaHonorBlessing || actor.mariaBlessingSuits?.length) return false;
       return honorBlessing(state, actor, { ...card, _bagIndexes: card._bagIndexes
         || state.battle.selectedBagIndexes });
     }
@@ -138,8 +139,11 @@ window.ArtinaMariaSkills = (() => {
     }
     if (unit?.ref === "maria") {
       unit.mariaMarks = 0; unit.mariaUseCount = 0;
+      unit.mariaNext = 1; unit.mariaTier = 1;
       unit.mariaPhaseMarked = false;
       unit.usedMariaHonorBlessing = false;
+      // 每回合消失一个弃置花色；清空后荣誉祝福才可再次发动。
+      if (unit.mariaBlessingSuits?.length) unit.mariaBlessingSuits = unit.mariaBlessingSuits.slice(1);
     }
     if (unit?.mariaBlessing) {
       unit.mariaBlessing.turns -= 1;
