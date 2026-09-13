@@ -14,6 +14,8 @@ window.ArtinaMariaSkills = (() => {
     return cards;
   };
   function beforeCardPlayed(state, actor, card, deps) {
+    // 只有实体手牌参与花色记录与神数计数。技能牌(_skill)、虚拟牌(virtual)一律跳过：
+    // 主动技能（狙击目标 / 荣誉祝福）不记录花色，也不推进神数计数。
     if (!actor || !card || card._skill || card.virtual) return;
     if (actor.ref === "artina") {
       actor.artinaSuits ||= {};
@@ -32,14 +34,17 @@ window.ArtinaMariaSkills = (() => {
     if (!actor.mariaPhaseMarked) {
       actor.mariaPhaseMarked = true;
       actor.mariaMarks += 1;
-    }
-    actor.mariaUseCount += 1;
-    if (actor.mariaUseCount >= actor.mariaMarks) {
-      const amount = actor.mariaMarks;
-      actor.mariaUseCount = 0;
-      actor.mariaMarks += 1;
-      draw(state, actor, amount, deps);
-      line(state, actor, "神数咒语");
+    } else {
+      actor.mariaUseCount += 1;
+      // 触发计数自取得起始标记之后开始：出第 1 张牌只得到 1 枚标记（显示×1），
+      // 而非当张即凑满标记数再得 1 枚（旧行为会显示×2）。
+      if (actor.mariaUseCount >= actor.mariaMarks) {
+        const amount = actor.mariaMarks;
+        actor.mariaUseCount = 0;
+        actor.mariaMarks += 1;
+        draw(state, actor, amount, deps);
+        line(state, actor, "神数咒语");
+      }
     }
     actor.tempAttack = actor.mariaMarks;
     actor.tempMagic = actor.mariaMarks;
@@ -73,6 +78,10 @@ window.ArtinaMariaSkills = (() => {
     actor.artinaSniperSuit = shown.suit;
     actor.artinaChargedTargetUid = own > foe ? target.uid : null;
     actor.usedArtinaSniper = true;
+    state.battle?.animQueue?.push({
+      type: "revealCards", id: window.GameRandom?.id?.("as") || "as",
+      title: "狙击目标", cards: [{ ...shown }],
+    });
     line(state, actor, "狙击目标", target);
     window.BattleLog?.add?.(state,
       `${actor.name} 展示了${target.name}的${shown.suit}${shown.name}，双方该花色手牌为${own}/${foe}。`);

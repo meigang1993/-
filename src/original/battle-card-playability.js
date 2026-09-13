@@ -91,7 +91,9 @@ window.BattleCardPlayability = deps => {
       || card.withererPeek && actor.usedWithererPeek
       || card.aceContribution && actor.usedAceContribution
       || card.ailengCharge && actor.usedAilengCharge
-      || card.kaiichiMilk && actor.usedKaiichiMilk;
+      || card.kaiichiMilk && actor.usedKaiichiMilk
+      || card.artinaSniper && actor.usedArtinaSniper
+      || card.mariaHonorBlessing && actor.usedMariaHonorBlessing;
   }
 
   function blockedByHand(actor, card, hasHand) {
