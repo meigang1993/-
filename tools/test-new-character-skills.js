@@ -267,6 +267,26 @@ assert(chargedDamage === 30, `Charged Bullet must triple damage with one suit re
 assert(!chargedCard.ignoreResponse, "Charged Bullet alone must not block responses");
 assert(Object.keys(artina.artinaSuits).length === 0, "Charged Bullet must clear recorded suits");
 
+// 蓄力子弹是「下一张」杀才加成：本张杀自己记录的花色不给自己加成
+artina.artinaSuits = {};
+const selfSlash = card("杀（普攻）", "slash", { suit: "♥" });
+ArtinaMariaSkills.beforeCardPlayed(artinaState, artina, selfSlash, {});
+assert(artina.artinaSuits["♥"] === true, "A slash must record its own suit");
+assert(ArtinaMariaSkills.modifySlashDamage(artinaState, artina, foe, 10, selfSlash) === 10,
+  "A slash must not benefit from the suit it just recorded itself");
+const nextSlash = card("杀（普攻）", "slash", { suit: "♦" });
+ArtinaMariaSkills.beforeCardPlayed(artinaState, artina, nextSlash, {});
+assert(ArtinaMariaSkills.modifySlashDamage(artinaState, artina, foe, 10, nextSlash) === 30,
+  "The next slash must be tripled with one previously recorded suit");
+// 多种花色必须能累加（否则「每记录一种+1倍」永远只能到 1 种）
+artina.artinaSuits = {};
+ArtinaMariaSkills.beforeCardPlayed(artinaState, artina, card("甲", "tactic", { suit: "♠" }), {});
+ArtinaMariaSkills.beforeCardPlayed(artinaState, artina, card("乙", "tactic", { suit: "♦" }), {});
+const bigSlash = card("杀（普攻）", "slash", { suit: "♣" });
+ArtinaMariaSkills.beforeCardPlayed(artinaState, artina, bigSlash, {});
+assert(ArtinaMariaSkills.modifySlashDamage(artinaState, artina, foe, 10, bigSlash) === 40,
+  "Two recorded suits must quadruple the next slash");
+
 // Sniper Target blocks responses when Artina holds more of the shown suit
 artina.hand = [card("闪", "response", { suit: "♦" }), card("看破", "response", { suit: "♦" })];
 const snipeCard = { name: "狙击目标", type: "tactic", artinaSniper: true, enemyTarget: true };
@@ -292,6 +312,21 @@ assert(maria.tempAttack === 2 && maria.tempMagic === 2, "Each Number mark must g
 ArtinaMariaSkills.beforeCardPlayed(mariaState, maria, card("闪", "response"), mariaDeps);
 assert(drawnCount === 1 && maria.mariaUseCount === 1, "Maria must not draw before reaching the new mark count");
 
+// 神数咒语完整序列：标记只在阶段首张与每次触发时 +1，不得每轮额外膨胀
+const mariaSeq = unitFromCharacter(mariaData, "mariaSeq");
+const seqState = { battle: { allies: [mariaSeq], enemies: [foe], animQueue: [] } };
+const seqDrawn = [];
+const seqDeps = { draw: (unit, count) => { seqDrawn.push(count); return new Array(count).fill(0).map(() => card("临时牌", "tactic")); } };
+const seqTemp = [];
+for (let i = 0; i < 6; i += 1) {
+  ArtinaMariaSkills.beforeCardPlayed(seqState, mariaSeq, card("牌", "tactic", { suit: "♠" }), seqDeps);
+  seqTemp.push(mariaSeq.tempAttack);
+}
+assert(seqTemp.join(",") === "2,2,3,3,3,4",
+  `Number Spell marks must grow 2,2,3,3,3,4 got ${seqTemp.join(",")}`);
+assert(seqDrawn.join(",") === "1,2,3",
+  `Number Spell must draw 1,2,3 got ${seqDrawn.join(",")}`);
+
 // Maria Honor Blessing
 const blessed = unitFromCharacter(character("lokar"), "blessed9");
 maria.hand = [card("甲", "tactic", { suit: "♥" }), card("乙", "tactic", { suit: "♦" })];
@@ -313,6 +348,26 @@ ArtinaMariaSkills.endTurn(blessState, blessed);
 assert(!blessed.mariaBlessing, "Blessing must expire");
 assert(blessed.stats.attack === blessBefore.attack && blessed.stats.magic === blessBefore.magic
   && blessed.stats.speed === blessBefore.speed, "Expired blessing must remove its bonus");
+
+// 荣誉祝福连续两回合施放不得叠加膨胀：加成必须基于玛利亚的基础属性
+const repMaria = unitFromCharacter(mariaData, "mariaRep");
+const repAlly = unitFromCharacter(character("lokar"), "allyRep");
+const repState = { battle: { allies: [repMaria, repAlly], enemies: [foe], animQueue: [] } };
+const repBase = repMaria.stats.attack, repAllyBase = repAlly.stats.attack;
+const refill = () => { repMaria.hand = [card("甲", "tactic", { suit: "♥" }), card("乙", "tactic", { suit: "♦" })]; };
+const castBlessing = () => {
+  refill();
+  return ArtinaMariaSkills.handleSpecialCard(repState, repMaria, repMaria,
+    { name: "荣誉祝福", type: "tactic", mariaHonorBlessing: true, _bagIndexes: [0, 1] }, {});
+};
+assert(castBlessing() === true, "Honor Blessing must resolve");
+const firstSelf = repMaria.stats.attack, firstMate = repAlly.stats.attack;
+assert(firstSelf === repBase * 2 && firstMate === repAllyBase + repBase,
+  "First blessing must grant Maria's base stats");
+repMaria.usedMariaHonorBlessing = false;
+assert(castBlessing() === true, "Honor Blessing must be recastable after rearm");
+assert(repMaria.stats.attack === firstSelf && repAlly.stats.attack === firstMate,
+  `Repeated blessing must not compound, got ${repMaria.stats.attack}/${repAlly.stats.attack} expected ${firstSelf}/${firstMate}`);
 
 // Suit restriction while choosing Honor Blessing costs
 maria.hand = [card("甲", "tactic", { suit: "♥" }), card("丙", "tactic", { suit: "♥" })];
