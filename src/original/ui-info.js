@@ -39,22 +39,22 @@ window.GameUIInfo = (U) => {
   }
   function mariaNumberMark(u) {
     if (u?.ref !== "maria") return "";
-    // 显示「使用牌目标数」：回合开始为 1，每使用一张牌 +1（用 1 张后 2、用 2 张后 3 …）。
+    // 显示「使用牌目标数」：本阶段使用的牌数达到该数字时摸等量牌，
+    // 之后重新计数且目标数 +1（1 → 2 → 3 …）。
     const used = u?.mariaUseCount || 0;
-    const count = Math.max(1, u?.mariaMarks || used + 1);
-    const bonus = count;
-    const remain = Math.max(0, (u?.mariaNext || 1) - used);
-    const tier = u?.mariaTier || 1;
-    const tip = remain
-      ? `神数咒语：再使用${remain}张牌后摸${tier}张牌`
-      : `神数咒语：下次使用牌时摸${tier}张牌`;
-    return `<span class="green-hat-badge" title="${tip}；当前攻击力与魔力各+${bonus}">神数×${count}</span>`;
+    const target = Math.max(1, u?.mariaNext || 1);
+    const bonus = u?.mariaMarks || 0;
+    const remain = Math.max(1, target - used);
+    const tip = `神数咒语：再使用${remain}张牌后摸${target}张牌，之后重新计数、目标数变为${target + 1}`;
+    return `<span class="green-hat-badge" title="${tip}；当前攻击力与魔力各+${bonus}">神数×${target}</span>`;
   }
   function mariaBlessingMark(u) {
-    if (u?.ref !== "maria") return "";
-    const suits = Array.isArray(u.mariaBlessingSuits) ? u.mariaBlessingSuits : [];
+    // 荣誉祝福作用于我方全体，因此每个受益角色都显示剩余花色。
+    const suits = Array.isArray(u?.mariaBlessingSuits) ? u.mariaBlessingSuits : [];
     if (!suits.length) return "";
-    return `<span class="green-hat-badge dome-suit-badge" title="荣誉祝福：已弃置${suits.join("、")}，每回合消失一个，全部消失后才能再次发动">祝福 ${suits.join("")}</span>`;
+    const bonus = u.mariaBlessing || {};
+    const gain = `攻击+${bonus.attack || 0}、魔力+${bonus.magic || 0}、速度+${bonus.speed || 0}`;
+    return `<span class="green-hat-badge dome-suit-badge" title="荣誉祝福：${gain}；剩余花色${suits.join("、")}，每回合消失一个，全部消失后属性提升失效">祝福 ${suits.join("")}</span>`;
   }
   function findInfoUnit(state) {
     const id = state.infoUnit;

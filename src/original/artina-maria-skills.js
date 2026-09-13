@@ -29,20 +29,20 @@ window.ArtinaMariaSkills = (() => {
     if (actor.ref !== "maria") return;
     actor.mariaMarks ||= 0;
     actor.mariaUseCount ||= 0;
-    // 神数标记 = 「使用牌目标数」：回合开始为 1，每使用一张牌便 +1
-    // （用 1 张后为 2、用 2 张后为 3 …），并同时作为攻击力/魔力加成。
-    // 摸牌节奏与设计一致，按累计使用牌数达到 1、3、6…（三角数）触发，
-    // 分别摸 1、2、3… 张——因此目标数递增，但摸牌不会每回合无节制膨胀。
-    actor.mariaUseCount += 1;
-    actor.mariaMarks = actor.mariaUseCount + 1;
     actor.mariaNext ||= 1;
-    actor.mariaTier ||= 1;
+    // 神数标记：每使用一张牌 +1，攻击力与魔力各 +1，回合结束时全部移去。
+    actor.mariaMarks += 1;
+    // 使用牌「目标数」：本阶段使用的牌数达到目标数时，摸「等同于目标数」张牌，
+    // 随后使用的牌数重新计数，并把目标数 +1。
+    // 即：目标 1 → 用 1 张摸 1 张；目标 2 → 用 2 张摸 2 张；
+    //     目标 3 → 用 3 张摸 3 张，以此类推。
+    actor.mariaUseCount += 1;
     if (actor.mariaUseCount >= actor.mariaNext) {
-      const amount = actor.mariaTier;
+      const amount = actor.mariaNext;
       draw(state, actor, amount, deps);
       line(state, actor, "神数咒语");
-      actor.mariaTier += 1;
-      actor.mariaNext += actor.mariaTier;
+      actor.mariaNext += 1;
+      actor.mariaUseCount = 0;
     }
     actor.tempAttack = actor.mariaMarks;
     actor.tempMagic = actor.mariaMarks;
@@ -94,7 +94,7 @@ window.ArtinaMariaSkills = (() => {
     const discarded = indexes.map(index => actor.hand.splice(index, 1)[0]);
     discarded.forEach(item => window.BattleCards?.put?.(
       state.battle, actor, item, "discard", { showDiscard: true }));
-    const turns = discarded.length;
+    const suitList = discarded.map(item => item.suit);
     // 加成必须基于玛利亚的「基础」属性：若沿用已被上一次祝福抬高的
     // stats，连续两回合施放会把加成重复计入，全队属性无限膨胀。
     const self = actor.mariaBlessing;
@@ -108,15 +108,15 @@ window.ArtinaMariaSkills = (() => {
         unit.stats.magic = (unit.stats.magic || 0) - previous.magic;
         unit.stats.speed = (unit.stats.speed || 0) - previous.speed;
       }
-      unit.mariaBlessing = { ...bonus, turns };
+      unit.mariaBlessing = { ...bonus };
+      // 全队（含玛利亚）都显示本次弃置的花色：每回合消失一个，
+      // 花色全部消失时该角色的属性提升同步失效。
+      unit.mariaBlessingSuits = suitList.slice();
       unit.stats.attack = (unit.stats.attack || 0) + bonus.attack;
       unit.stats.magic = (unit.stats.magic || 0) + bonus.magic;
       unit.stats.speed = (unit.stats.speed || 0) + bonus.speed;
     });
     actor.usedMariaHonorBlessing = true;
-    // 记录弃置的花色：头像显示，且每回合消失一个；
-    // 仍有花色残留时本技能无法再次发动（跨回合冷却）。
-    actor.mariaBlessingSuits = discarded.map(item => item.suit);
     line(state, actor, "荣誉祝福");
     return true;
   }
@@ -132,7 +132,21 @@ window.ArtinaMariaSkills = (() => {
     }
     return false;
   }
-  function endTurn(_state, unit) {
+  // 荣誉祝福的持续由「弃置花色」决定：每回合结束全队同步消失一个花色，
+  // 花色全部消失时，该角色的属性提升随之失效。
+  function decayBlessing(unit) {
+    if (!unit?.mariaBlessing) return;
+    const suits = Array.isArray(unit.mariaBlessingSuits) ? unit.mariaBlessingSuits : [];
+    suits.shift();
+    unit.mariaBlessingSuits = suits;
+    if (suits.length) return;
+    unit.stats.attack = (unit.stats.attack || 0) - unit.mariaBlessing.attack;
+    unit.stats.magic = (unit.stats.magic || 0) - unit.mariaBlessing.magic;
+    unit.stats.speed = (unit.stats.speed || 0) - unit.mariaBlessing.speed;
+    delete unit.mariaBlessing;
+    // 保留空数组而非删除：UI 徽章与出牌校验都直接读 length，避免读到 undefined。
+  }
+  function endTurn(state, unit) {
     if (unit?.ref === "artina") {
       unit.artinaSuits = {}; unit.artinaSniperTargetUid = null;
       unit.artinaSniperSuit = null; unit.artinaChargedTargetUid = null;
@@ -142,18 +156,12 @@ window.ArtinaMariaSkills = (() => {
       unit.mariaNext = 1; unit.mariaTier = 1;
       unit.mariaPhaseMarked = false;
       unit.usedMariaHonorBlessing = false;
-      // 每回合消失一个弃置花色；清空后荣誉祝福才可再次发动。
-      if (unit.mariaBlessingSuits?.length) unit.mariaBlessingSuits = unit.mariaBlessingSuits.slice(1);
     }
-    if (unit?.mariaBlessing) {
-      unit.mariaBlessing.turns -= 1;
-      if (unit.mariaBlessing.turns <= 0) {
-        unit.stats.attack = (unit.stats.attack || 0) - unit.mariaBlessing.attack;
-        unit.stats.magic = (unit.stats.magic || 0) - unit.mariaBlessing.magic;
-        unit.stats.speed = (unit.stats.speed || 0) - unit.mariaBlessing.speed;
-        delete unit.mariaBlessing;
-      }
-    }
+    // 花色衰减由玛利亚的回合结束统一驱动，保证全队同步；
+    // 若玛利亚已不在场（阵亡/离场），改由当前单位驱动，避免属性永久残留。
+    const allies = state?.battle?.allies || [];
+    const mariaAlive = allies.some(ally => ally.ref === "maria" && ally.hp > 0);
+    if (!mariaAlive || unit?.ref === "maria") allies.forEach(decayBlessing);
   }
   return { beforeCardPlayed, modifySlashDamage, handleSpecialCard, endTurn };
 })();

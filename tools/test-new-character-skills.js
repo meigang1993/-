@@ -306,16 +306,16 @@ const mariaState = { battle: { allies: [maria], enemies: [foe], animQueue: [] } 
 let drawnCount = 0;
 const mariaDeps = { draw: (unit, count) => { drawnCount += count; return new Array(count).fill(0).map(() => card("临时牌", "tactic")); } };
 ArtinaMariaSkills.beforeCardPlayed(mariaState, maria, card("杀（普攻）", "slash"), mariaDeps);
-// 头像数字为「使用牌目标数」：回合开始为1，首张牌即达成目标摸1张，随后目标升为2
+// 目标数初始为1：首张牌即达成目标，摸1张后重新计数，目标数升为2
 assert(drawnCount === 1, "The first play must reach the target of 1 and draw one card");
-assert(maria.mariaMarks === 2 && maria.mariaUseCount === 1, `Maria mark state mismatch: ${maria.mariaMarks}/${maria.mariaUseCount}`);
-assert(maria.tempAttack === 2 && maria.tempMagic === 2, "Each Number mark must grant +1 attack and +1 magic");
+assert(maria.mariaMarks === 1 && maria.mariaUseCount === 0, `Maria mark state mismatch: ${maria.mariaMarks}/${maria.mariaUseCount}`);
+assert(maria.tempAttack === 1 && maria.tempMagic === 1, "Each Number mark must grant +1 attack and +1 magic");
 ArtinaMariaSkills.beforeCardPlayed(mariaState, maria, card("闪", "response"), mariaDeps);
-assert(drawnCount === 1 && maria.mariaUseCount === 2, "The second play must not reach the next target of 3 yet");
+assert(drawnCount === 1 && maria.mariaUseCount === 1, "The second play must not reach the next target of 2 yet");
 ArtinaMariaSkills.beforeCardPlayed(mariaState, maria, card("闪", "response"), mariaDeps);
-assert(drawnCount === 3 && maria.mariaMarks === 4, "The third play must reach the target of 3 and draw two cards");
+assert(drawnCount === 3 && maria.mariaMarks === 3, "The third play must reach the target of 2 and draw two cards");
 
-// 神数咒语完整序列：目标数每使用一张牌 +1，摸牌仍按累计 1、3、6 张分别摸 1、2、3 张
+// 神数咒语完整序列：每使用一张牌获得1枚标记；达到目标数时摸等量牌、重新计数且目标数+1（1、2、3 张分别摸 1、2、3 张）
 const mariaSeq = unitFromCharacter(mariaData, "mariaSeq");
 const seqState = { battle: { allies: [mariaSeq], enemies: [foe], animQueue: [] } };
 const seqDrawn = [];
@@ -325,8 +325,8 @@ for (let i = 0; i < 6; i += 1) {
   ArtinaMariaSkills.beforeCardPlayed(seqState, mariaSeq, card("牌", "tactic", { suit: "♠" }), seqDeps);
   seqTemp.push(mariaSeq.tempAttack);
 }
-assert(seqTemp.join(",") === "2,3,4,5,6,7",
-  `Number Spell targets must grow 2,3,4,5,6,7 got ${seqTemp.join(",")}`);
+assert(seqTemp.join(",") === "1,2,3,4,5,6",
+  `Number marks must grow 1,2,3,4,5,6 got ${seqTemp.join(",")}`);
 assert(seqDrawn.join(",") === "1,2,3",
   `Number Spell must draw 1,2,3 got ${seqDrawn.join(",")}`);
 
@@ -342,26 +342,27 @@ assert(blessed.stats.attack === blessBefore.attack + mariaBefore.attack
   && blessed.stats.magic === blessBefore.magic + mariaBefore.magic
   && blessed.stats.speed === blessBefore.speed + mariaBefore.speed,
 "Honor Blessing must grant Maria's attack/magic/speed to every ally");
-assert(blessed.mariaBlessing.turns === 2, `Blessing must last as many turns as cards discarded, got ${blessed.mariaBlessing.turns}`);
+const castSuits = [...(maria.mariaBlessingSuits || [])];
+assert(blessed.mariaBlessingSuits.length === 2 && maria.mariaBlessingSuits.length === 2,
+  "Every ally must display the discarded suits");
 assert(maria.hand.length === 0, "Honor Blessing must discard the chosen cards");
 assert(ArtinaMariaSkills.handleSpecialCard(blessState, maria, maria, { ...blessCard, _bagIndexes: [] }, {}) === false, "Honor Blessing must be limited to once per turn");
-ArtinaMariaSkills.endTurn(blessState, blessed);
-assert(blessed.mariaBlessing.turns === 1, "Blessing must count down each turn");
-ArtinaMariaSkills.endTurn(blessState, blessed);
-assert(!blessed.mariaBlessing, "Blessing must expire");
-assert(blessed.stats.attack === blessBefore.attack && blessed.stats.magic === blessBefore.magic
-  && blessed.stats.speed === blessBefore.speed, "Expired blessing must remove its bonus");
-
-// 弃置花色：头像显示，并作为跨回合冷却（每回合消失一个，仍拥有时无法发动）
-assert(maria.mariaBlessingSuits.length === 2
-  && maria.mariaBlessingSuits.includes("♥") && maria.mariaBlessingSuits.includes("♦"),
-`Honor Blessing must record the discarded suits, got ${JSON.stringify(maria.mariaBlessingSuits)}`);
+// 花色衰减由玛利亚的回合结束统一驱动，全队同步消失一个
 ArtinaMariaSkills.endTurn(blessState, maria);
-assert(maria.mariaBlessingSuits.length === 1, "One discarded suit must fade at each turn end");
+assert(blessed.mariaBlessingSuits.length === 1 && maria.mariaBlessingSuits.length === 1,
+  "One discarded suit must fade at each turn end, for the whole team");
 assert(ArtinaMariaSkills.handleSpecialCard(blessState, maria, maria, { ...blessCard, _bagIndexes: [0] }, {}) === false,
   "Honor Blessing must stay locked while suits remain");
 ArtinaMariaSkills.endTurn(blessState, maria);
-assert(maria.mariaBlessingSuits.length === 0, "All suits must fade after enough turns");
+assert(maria.mariaBlessingSuits.length === 0 && blessed.mariaBlessingSuits.length === 0,
+  "All suits must fade after enough turns");
+assert(!blessed.mariaBlessing && !maria.mariaBlessing, "Blessing must expire with the last suit");
+assert(blessed.stats.attack === blessBefore.attack && blessed.stats.magic === blessBefore.magic
+  && blessed.stats.speed === blessBefore.speed, "Expired blessing must remove its bonus");
+
+// 弃置花色：记录本次弃置的花色，并作为跨回合冷却（全部消失后才能再次发动）
+assert(castSuits.length === 2 && castSuits.includes("♥") && castSuits.includes("♦"),
+`Honor Blessing must record the discarded suits, got ${JSON.stringify(castSuits)}`);
 maria.hand = [card("丙", "tactic", { suit: "♠" })];
 assert(ArtinaMariaSkills.handleSpecialCard(blessState, maria, maria, { ...blessCard, _bagIndexes: [0] }, {}) === true,
   "Honor Blessing must be usable again once every suit faded");

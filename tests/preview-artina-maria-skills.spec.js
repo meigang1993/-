@@ -129,23 +129,24 @@ test("玛利亚·神数咒语：出牌计数递增并摸牌，回合结束清零
     return { out, drawn, afterEndTurn: { marks: actor.mariaMarks, count: actor.mariaUseCount } };
   });
 
-  // 神数：头像数字为「使用牌目标数」，回合开始为1，每使用一张牌 +1。
-  // 第1张: marks=2, 累计1 达三角数1 → 摸1张
-  // 第2张: marks=3, 未达下一个三角数3 → 不摸
-  // 第3张: marks=4, 累计3 达三角数3 → 摸2张
-  // 第4张: marks=5, 未达下一个三角数6 → 不摸
+  // 神数：每使用一张牌获得1枚标记；使用牌数达到目标数时摸等量牌，
+  // 随后重新计数、目标数+1（目标 1 → 2 → 3）。
+  // 第1张: marks=1, 使用1张达目标1 → 摸1张，目标升为2、计数归零
+  // 第2张: marks=2, 使用1张未达目标2 → 不摸
+  // 第3张: marks=3, 使用2张达目标2 → 摸2张，目标升为3、计数归零
+  // 第4张: marks=4, 使用1张未达目标3 → 不摸
   expect(rows.out).toEqual([
-    { play: 1, marks: 2, tempAttack: 2, tempMagic: 2 },
-    { play: 2, marks: 3, tempAttack: 3, tempMagic: 3 },
-    { play: 3, marks: 4, tempAttack: 4, tempMagic: 4 },
-    { play: 4, marks: 5, tempAttack: 5, tempMagic: 5 },
+    { play: 1, marks: 1, tempAttack: 1, tempMagic: 1 },
+    { play: 2, marks: 2, tempAttack: 2, tempMagic: 2 },
+    { play: 3, marks: 3, tempAttack: 3, tempMagic: 3 },
+    { play: 4, marks: 4, tempAttack: 4, tempMagic: 4 },
   ]);
   expect(rows.drawn).toBe(3);   // 1 + 2
   expect(rows.afterEndTurn).toEqual({ marks: 0, count: 0 });
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test("玛利亚·荣誉祝福：全队加属性、倒计时到期后精确扣回", async ({ page }) => {
+test("玛利亚·荣誉祝福：全队获得属性与花色，花色每回合消失一个且清空后属性失效", async ({ page }) => {
   const errors = collectErrors(page);
   await enterBattleWithArtinaMaria(page);
 
@@ -165,29 +166,38 @@ test("玛利亚·荣誉祝福：全队加属性、倒计时到期后精确扣回
     const buffed = {
       mateAttack: mate.stats.attack - baseMate.attack,
       selfAttack: actor.stats.attack - baseSelf.attack,
-      turns: mate.mariaBlessing?.turns,
+      mateSuits: [...(mate.mariaBlessingSuits || [])],
+      selfSuits: [...(actor.mariaBlessingSuits || [])],
     };
-    // endTurn 由战斗系统对每个单位各自调用，这里对队友推进 3 个回合
+    // 衰减由玛利亚的回合结束统一驱动，队友自己的回合结束不衰减
     window.ArtinaMariaSkills.endTurn(state, mate);
-    const t1 = mate.mariaBlessing?.turns ?? 0;
-    window.ArtinaMariaSkills.endTurn(state, mate);
-    const t2 = mate.mariaBlessing?.turns ?? 0;
-    window.ArtinaMariaSkills.endTurn(state, mate);
+    const afterMateTurn = (mate.mariaBlessingSuits || []).length;
+    window.ArtinaMariaSkills.endTurn(state, actor);
+    const t1 = (mate.mariaBlessingSuits || []).length;
+    window.ArtinaMariaSkills.endTurn(state, actor);
+    const t2 = (mate.mariaBlessingSuits || []).length;
+    window.ArtinaMariaSkills.endTurn(state, actor);
     const afterExpire = {
       mateAttack: mate.stats.attack - baseMate.attack,
       hasBlessing: !!mate.mariaBlessing,
+      suits: (mate.mariaBlessingSuits || []).length,
     };
-    return { ok, buffed, t1, t2, afterExpire };
+    return { ok, buffed, afterMateTurn, t1, t2, afterExpire };
   });
 
   expect(result.ok).toBe(true);
-  expect(result.buffed.turns).toBe(3);
+  // 我方全体（含玛利亚本人）都显示本次弃置的花色
+  expect(result.buffed.mateSuits.length).toBe(3);
+  expect(result.buffed.selfSuits.length).toBe(3);
   expect(result.buffed.mateAttack).toBeGreaterThan(0);
   expect(result.buffed.selfAttack).toBeGreaterThan(0);
+  expect(result.afterMateTurn).toBe(3);   // 队友回合结束不衰减
   expect(result.t1).toBe(2);
   expect(result.t2).toBe(1);
+  // 花色全部消失后，属性提升精确失效、无残留
   expect(result.afterExpire.hasBlessing).toBe(false);
-  expect(result.afterExpire.mateAttack).toBe(0);   // 精确扣回，无残留
+  expect(result.afterExpire.suits).toBe(0);
+  expect(result.afterExpire.mateAttack).toBe(0);
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -200,7 +210,8 @@ test("UI：头像显示蓄力花色标记与神数计数", async ({ page }) => {
     const artina = state.battle.allies.find(u => u.ref === "artina" || u.id === "artina");
     const maria = state.battle.allies.find(u => u.ref === "maria" || u.id === "maria");
     artina.artinaSuits = { "♥": true, "♦": true };
-    maria.mariaMarks = 2;
+    // 头像神数显示的是当前「使用牌目标数」
+    maria.mariaNext = 2; maria.mariaUseCount = 0; maria.mariaMarks = 2;
     state.infoUnit = null;
     window.render();
     const html = document.body.innerHTML;
@@ -246,22 +257,29 @@ test("玛利亚·头像徽章：神数显示使用牌目标数，祝福显示弃
   await enterBattleWithArtinaMaria(page);
 
   const badges = await page.evaluate(() => {
-    const maria = { ref: "maria", name: "玛利亚", mariaMarks: 0 };
+    const maria = { ref: "maria", name: "玛利亚", mariaMarks: 0, mariaNext: 1, mariaUseCount: 0 };
     const I = window.GameUIInfo(window.UICommon);
     const start = I.mariaNumberMark(maria);
-    maria.mariaMarks = 2;
+    // 达到目标 1 后重新计数，目标数升为 2
+    maria.mariaNext = 2; maria.mariaUseCount = 0; maria.mariaMarks = 2;
     const afterOne = I.mariaNumberMark(maria);
     const blessed = { ref: "maria", name: "玛利亚", mariaBlessingSuits: ["♥", "♦"] };
     const bless = I.mariaBlessingMark(blessed);
+    // 荣誉祝福作用于全体，非玛利亚角色同样显示花色
+    const mate = { ref: "rokar", name: "罗卡尔", mariaBlessingSuits: ["♠"],
+      mariaBlessing: { attack: 1, magic: 1, speed: 1 } };
+    const mateBadge = I.mariaBlessingMark(mate);
     blessed.mariaBlessingSuits = [];
     const faded = I.mariaBlessingMark(blessed);
-    return { start, afterOne, bless, faded };
+    return { start, afterOne, bless, mateBadge, faded };
   });
 
   expect(badges.start).toContain("神数×1");
   expect(badges.start).toContain("再使用1张牌");
   expect(badges.afterOne).toContain("神数×2");
+  expect(badges.afterOne).toContain("再使用2张牌");
   expect(badges.bless).toContain("祝福 ♥♦");
+  expect(badges.mateBadge).toContain("祝福 ♠");
   expect(badges.faded).toBe("");
   expect(relevantErrors(errors)).toEqual([]);
 });
