@@ -104,7 +104,8 @@ window.BattleActionHandBindings = (() => {
     const waitsForTarget = skillCard?.elranaBag || skillCard?.armyOrder || skillCard?.elranaHeal
       || skillCard?.idolKiss
       || skillCard?.crazyShooting || skillCard?.demonPoker
-      || skillCard?.succubusFork || skillCard?.assassinLatex;
+      || skillCard?.succubusFork || skillCard?.assassinLatex
+      || skillCard?.mariaHonorBlessing;
     if (needsHandChoice(skillCard) && !waitsForTarget && state.battle.selectedCardIndex != null) {
       return playSelectedCard();
     }
@@ -122,7 +123,8 @@ window.BattleActionHandBindings = (() => {
     if (!skillCard?.elranaBag && !skillCard?.armyOrder && !skillCard?.elranaHeal
       && !skillCard?.crazyShooting
       && !skillCard?.demonPoker
-      && !skillCard?.succubusFork && !skillCard?.assassinLatex) quickPlayTargetless(index);
+      && !skillCard?.succubusFork && !skillCard?.assassinLatex
+      && !skillCard?.mariaHonorBlessing) quickPlayTargetless(index);
   }
 
   function bindSkills() {
