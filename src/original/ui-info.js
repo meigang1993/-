@@ -72,7 +72,7 @@ window.GameUIInfo = (U) => {
     const focus = ["attack", "magic", "speed"].sort((a, b) =>
       profile[b] - profile[a])[0];
     const expText = required ? `${exp} / ${required}` : "已满级";
-    return `<div class="character-growth"><div class="growth-level"><b>Lv.${u.level}</b><span>经验 ${expText}</span></div><div class="exp-track"><i style="width:${percent}%"></i></div><p class="muted">成长倾向：${names[focus]}；四项核心属性每级自动提升。</p><div class="growth-table"><div class="growth-head"><span>属性</span><b>0级</b><i></i><strong>当前</strong><i></i><em>15级</em></div>${rows}</div></div>`;
+    return `<div class="character-growth"><div class="growth-level"><b>Lv.${u.level}</b><span>经验 ${expText}</span></div><div class="exp-track"><i style="width:${percent}%"></i></div><p class="muted">成长倾向：${names[focus]}；四项核心属性每级自动提升。</p><div class="growth-table"><div class="growth-head"><span>属性</span><b>0级</b><i></i><strong>当前</strong><i></i><em>${window.CharacterProgression?.maxLevel ?? 15}级</em></div>${rows}</div></div>`;
   }
   function infoTitle(u) {
     const role = U.combatRoleBadges(u);
