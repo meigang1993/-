@@ -17,12 +17,22 @@ window.ArtinaMariaSkills = (() => {
     if (!actor || !card || card._skill || card.virtual) return;
     if (actor.ref === "artina") {
       actor.artinaSuits ||= {};
-      if (suits.includes(card.suit)) actor.artinaSuits[card.suit] = true;
+      if (suits.includes(card.suit)) {
+        // 本张牌自己新记录的花色不计入它自身的蓄力加成：
+        // 设计为「下一张」实体单体杀才享受加成。
+        if (!actor.artinaSuits[card.suit]) card._artinaNewSuit = card.suit;
+        actor.artinaSuits[card.suit] = true;
+      }
     }
     if (actor.ref !== "maria") return;
     actor.mariaMarks ||= 0;
     actor.mariaUseCount ||= 0;
-    if (actor.mariaUseCount === 0) actor.mariaMarks += 1;
+    // 仅出牌阶段首张牌获得起始标记；后续每轮计数只在触发时 +1，
+    // 否则标记会额外膨胀，攻击/魔力与摸牌量均高于设计。
+    if (!actor.mariaPhaseMarked) {
+      actor.mariaPhaseMarked = true;
+      actor.mariaMarks += 1;
+    }
     actor.mariaUseCount += 1;
     if (actor.mariaUseCount >= actor.mariaMarks) {
       const amount = actor.mariaMarks;
@@ -37,7 +47,8 @@ window.ArtinaMariaSkills = (() => {
   function modifySlashDamage(state, actor, target, amount, card) {
     if (actor?.ref !== "artina" || !isSlash(card) || card.virtual) return amount;
     if (window.CardUtils?.isGroupTargetCard?.(card)) return amount;
-    const recorded = Object.keys(actor.artinaSuits || {}).length;
+    const recorded = Object.keys(actor.artinaSuits || {})
+      .filter(suit => suit !== card._artinaNewSuit).length;
     const sniped = !!actor.artinaChargedTargetUid
       && target?.uid === actor.artinaChargedTargetUid;
     if (!recorded && !sniped) return amount;
@@ -77,8 +88,12 @@ window.ArtinaMariaSkills = (() => {
     discarded.forEach(item => window.BattleCards?.put?.(
       state.battle, actor, item, "discard", { showDiscard: true }));
     const turns = discarded.length;
-    const bonus = { attack: actor.stats?.attack || 0,
-      magic: actor.stats?.magic || 0, speed: actor.stats?.speed || 0 };
+    // 加成必须基于玛利亚的「基础」属性：若沿用已被上一次祝福抬高的
+    // stats，连续两回合施放会把加成重复计入，全队属性无限膨胀。
+    const self = actor.mariaBlessing;
+    const bonus = { attack: (actor.stats?.attack || 0) - (self?.attack || 0),
+      magic: (actor.stats?.magic || 0) - (self?.magic || 0),
+      speed: (actor.stats?.speed || 0) - (self?.speed || 0) };
     (state.battle.allies || []).filter(alive).forEach(unit => {
       const previous = unit.mariaBlessing;
       if (previous) {
@@ -114,6 +129,7 @@ window.ArtinaMariaSkills = (() => {
     }
     if (unit?.ref === "maria") {
       unit.mariaMarks = 0; unit.mariaUseCount = 0;
+      unit.mariaPhaseMarked = false;
       unit.usedMariaHonorBlessing = false;
     }
     if (unit?.mariaBlessing) {
