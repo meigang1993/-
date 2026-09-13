@@ -9,7 +9,7 @@ window.BattleCardPlayability = deps => {
     || card?.crazyShooting || card?.demonPoker
     || card?.succubusFork || card?.assassinLatex
     || card?.cadicisPlan || card?.elranaHeal);
-  const needsHandChoice = card => needsSingleHand(card) || !!card?.elranaBag || card?.armyOrder || card?.ailengBet;
+  const needsHandChoice = card => needsSingleHand(card) || !!card?.elranaBag || card?.armyOrder || card?.ailengBet || !!card?.mariaHonorBlessing;
   const standardSuits = new Set(["♥", "♦", "♠", "♣"]);
   function canSelectHandCost(actor, skillCard, candidate, battle, cardIndex) {
     if (!candidate || candidate._pendingDraw) return false;
@@ -21,6 +21,12 @@ window.BattleCardPlayability = deps => {
       return deps.isKillCard(candidate) || candidate.type === "tactic";
     }
     if (skillCard?.demonPoker) return candidate.type !== "tactic";
+    if (skillCard?.mariaHonorBlessing) {
+      const picked = battle?.selectedBagIndexes || [];
+      if (picked.includes(cardIndex)) return true;
+      if (!standardSuits.has(candidate.suit) || picked.length >= 4) return false;
+      return !picked.some(index => actor?.hand?.[index]?.suit === candidate.suit);
+    }
     if (!skillCard?.armyOrder) return true;
     const picked = battle?.selectedBagIndexes || [];
     if (picked.includes(cardIndex)) return true;
