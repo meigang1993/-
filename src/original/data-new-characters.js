@@ -66,7 +66,7 @@ window.GameDataNewCharacters = [
     evaluation: "花色记录与单体狙击核心。每回合记录首次使用的花色，蓄力子弹强化下一张实体单体【杀】。",
     skills: [
       { name: "狙击目标", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以指定一名敌方角色，展示其一张手牌。若你手中与展示牌花色相同的牌数大于该角色，你使用单体实体【杀】指定其为目标时，此【杀】不可响应。", card: { name: "狙击目标", type: "tactic", artinaSniper: true, enemyTarget: true, artName: "狙击目标", icon: "⚔️", text: "指定敌方角色并展示其一张手牌。" } },
-      { name: "蓄力子弹", type: "passive", icon: "⭐", text: "本回合首次使用每种花色的牌时记录花色。下一张实体单体【杀】伤害翻倍，每多记录一种花色额外增加一倍，使用后清除记录。" },
+      { name: "蓄力子弹", type: "passive", icon: "⭐", text: "本回合首次使用每种花色的牌时记录花色。下一张实体单体【杀】伤害×（1+记录花色数）：记录1种×2、2种×3、3种×4、4种×5，使用后清除记录。" },
     ],
   },
   {
