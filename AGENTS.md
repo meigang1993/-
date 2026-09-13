@@ -227,3 +227,33 @@ copy before reporting anything:
 - Exclude `deliver/`, `.studio/`, `node_modules/` when grepping for references. A leftover `deliver/` unpack dir once contained old bundles and produced fake "referenced" hits for already-deleted art.
 - Two-file-name trap: `angelica-level-10-special.9ce0de16.webp` and `.1f484c88.webp` had **identical bytes** (sha256 `1f484c88…`). A name-based scan reports the unused twin as garbage — always compare content hashes before deleting art.
 - Correct method: download every non-asset blob, grep basenames, then verify the reverse direction (every code reference resolves to an existing blob). Healthy state is a 1:1 match; on 2026-09-11 it was 223 refs / 223 files / 0 missing / 0 unreferenced.
+
+### 沙盒副本的 git status 不可信（根因）
+
+沙盒副本 `/data/workspace/rebuild` 的 git 历史**只有一个 `baseline` 提交**，
+它不是远程仓库的 clone，因此：
+
+- `git status` 显示的 `D`（删除）**与远程无关**，只表示"工作区文件相对 baseline 快照少了"，
+  通常是因为远程已删除该文件、本地同步时未写入。
+- 据此得出"某某文件被误删 / 被另一 AI 拆分 / 副本陈旧"等结论**全部无效**。
+
+**正确做法：判断文件是否存在，一律直接查远程 tree：**
+
+```
+GET /repos/meigang1993/-/git/trees/main?recursive=1     # 必须带 branch
+```
+
+再判断是否有害，必须查引用（全仓 grep + bundle 内 grep）。
+三者都为 0（远程 404、源码 0 引用、bundle 0 命中）才算**已安全删除**。
+
+**实测案例（4 个文件，勿再复查）**：
+`battle-action-skill-bindings.js` / `battle-dodge-auto-response.js` /
+`battle-manual-resume-actions.js` / `battle-save-checkpoint-piles.js`
+→ 远程 404、全仓 0 引用、bundle 0 命中。**已清理干净，无 BUG，无需任何处理。**
+（来源为用户用 MonkeyCode 上传时带入，后被清理。）
+
+### 三个 AI 共用同一仓库
+
+本项目同时有 **3 个写入方**：元宝（本 AI）、另一 AI、MonkeyCode（用户侧工具）。
+因此每次推送前必须**逐文件比对本地与远程 blob sha**，只推确认属于本次改动的文件；
+任何"看起来该删/该改"但无法追溯来源的项，一律不动并上报用户。
