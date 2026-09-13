@@ -2,7 +2,7 @@ window.MannySkills = (() => {
   const weapons = [
     { id: "ak47", name: "刺刀AK47", type: "trigger", icon: "🔵", text: "当你使用实体单体【杀】指定唯一目标时，此【杀】结算两次。当你受到伤害后，若伤害来源存活，你可以视为对其使用一张虚拟【杀（普攻）】。" },
     { id: "barrett", name: "巴特雷", type: "active", icon: "⚔️", text: "出牌阶段限一次，你进行判定并记录判定牌花色。本回合，你使用与记录花色相同的单体【杀】造成的伤害翻倍，且不可被响应。", card: { name: "巴特雷", type: "tactic", mannyBarrett: true, targetless: true, icon: "⚔️", text: "进行判定并记录判定牌花色；本回合，与记录花色相同的单体【杀】造成的伤害翻倍，且不可被响应。" } },
-    { id: "cannon", name: "反坦克炮", type: "passive", icon: "⭐", text: "锁定技，你使用的单体【杀】无视护甲；此【杀】造成生命伤害后，目标获得“刺弹”标记。拥有“刺弹”标记的角色受到伤害时，移去该标记，然后对其同阵营所有角色造成5+你攻击力点无视护甲伤害。" },
+    { id: "cannon", name: "反坦克炮", type: "passive", icon: "⭐", text: "锁定技，你使用的单体【杀】无视护甲；此【杀】造成生命伤害后，目标获得“刺弹”标记（多段或连击伤害时，每段伤害后各结算一次。）。拥有“刺弹”标记的角色受到伤害时，移去该标记，然后对其同阵营所有角色造成5+你攻击力点无视护甲伤害。" },
     { id: "flamer", name: "聚焦喷火器", type: "passive", icon: "⭐", text: "锁定技，你使用的单体【杀】附加火属性并改为指定所有敌方角色为目标；每名未倒下的目标连续受到2次不可被响应的伤害。" },
   ];
   const black = c => c?.suit === "♠" || c?.suit === "♣";
@@ -111,7 +111,12 @@ window.MannySkills = (() => {
     if (!hpLoss) return;
     if (target?.spikeShell && !card?.spikeExplosion) { explodeSpike(state, target, damage, directDamage); return; }
     if (!alive(target)) return;
-    if (actor?.ref === "manny" && singleSlash(card) && actor.mannyWeapon === "cannon") markSpike(state, actor, target);
+    if (actor?.ref === "manny" && singleSlash(card) && actor.mannyWeapon === "cannon") {
+      // 刺弹标记会立刻显示为状态图标，需等本段受击动画演完再挂上
+      const spike = () => markSpike(state, actor, target);
+      if (!(damage?.delayUntilHitSettled?.(state, spike)
+        || window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, spike))) spike();
+    }
     if (target?.ref === "manny" && target.hp > 0 && target.mannyWeapon === "ak47" && actor?.hp > 0 && !card?.mannyCounter) {
       if (window.BattleCounterTriggers?.open(state, {
         skill: "刺刀AK47", unitUid: target.uid, sourceUid: actor.uid, targetUid: actor.uid,

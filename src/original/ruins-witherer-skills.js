@@ -19,7 +19,10 @@ window.RuinsWithererSkills = (() => {
   function afterDamage(state, actor, target, card, hpLoss, damage) {
     if (!hpLoss) return;
     if (target?.ai === "ruins_witherer") {
-      giveEyeConfusion(state, actor, target);
+      // 混乱状态牌会立刻进入目标手中并显示，等本段受击动画演完再发放
+      const confuse = () => giveEyeConfusion(state, actor, target);
+      if (!(damage?.delayUntilHitSettled?.(state, confuse)
+        || window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, confuse))) confuse();
     }
     if (actor?.ai === "ruins_witherer" && isTactic(card) && !card?._skill) {
       succubusDrain(state, actor, target, damage);

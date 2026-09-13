@@ -28,6 +28,15 @@ window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
     return result;
   }
 
+  // 伤害后获得的状态标记会立刻显示在单位卡的状态图标上，但受击动画此时还没播。
+  // 挂到本段受击浮字动画播完后再发放，多段/连击时每段各挂一次，
+  // 状态才会一段一跳而不是提前跳满。仅用于不参与本次伤害链结算的标记(如毒)。
+  function settleStatus(state, apply) {
+    if (typeof apply !== "function") return;
+    if (window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, apply)) return;
+    apply();
+  }
+
   function afterDamage(state, actor, target, card, hpLoss, damage, cardUser = actor) {
     window.GuardKellySkills?.afterDamage?.(state, actor, target, card, hpLoss, cardUser);
     if (hpLoss && target.shock && !card?.shockBonus) {
@@ -37,14 +46,18 @@ window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
       });
       if (target.hp <= 0) return;
     }
+    // 感电/圣痕会参与同一伤害链内后续段的结算(感电在下次受伤时立刻追加伤害、
+    // 圣痕让后续圣属性伤害翻倍)，延后会改变伤害结果，故保持同步发放。
     if (hpLoss && card?.shock && !card?._soulChain) status.addShock(state, target, 1);
     if (hpLoss && card?.holy && !card?._soulChain) status.addHolyScar(state, target);
     if (hpLoss && card?.poison && !card?.poisonTick && !card?._soulChain) {
-      status.addPoison(state, target, 1, actor);
+      settleStatus(state, () => status.addPoison(state, target, 1, actor));
     }
     if (hpLoss && card?.type === "slash" && hasSkill(actor, "毒针") && !card?.poison) {
-      window.BattleLines?.skill(state, actor, "毒针");
-      status.addPoison(state, target, 1, actor);
+      settleStatus(state, () => {
+        window.BattleLines?.skill(state, actor, "毒针");
+        status.addPoison(state, target, 1, actor);
+      });
     }
     machine.afterDamage(state, actor, target, hpLoss, damage);
     window.UnderwaterTrainSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage);
