@@ -36,7 +36,7 @@ const eliteCardDefs = [
   { name: "圣杀", price: 1300, type: "slash", scale: "attack", holy: true, suits: { "♠": 1, "♦": 1 }, text: "指定一名敌方角色为目标，对其造成等同于你的攻击力的圣属性伤害。若此牌造成生命值伤害，目标获得“圣痕”标记。带有“圣痕”标记的角色受到圣属性伤害时，该伤害×2；其恢复生命值后移去“圣痕”标记。" },
   { name: "怒杀", price: 1200, type: "slash", scale: "attack", rageKill: true, suits: { "♠": 1, "♥": 1 }, text: "指定一名敌方角色为目标，对其造成等同于你的攻击力的物理伤害。若你的生命值未满，使用此牌不消耗杀意。" },
   { name: "佯攻", price: 700, type: "response", feint: true, suits: starterSuits, text: "当一名其他友方角色使用单体【杀】指定有手牌的敌方角色为目标时，你打出此牌，先弃置目标1张手牌。" },
-  { name: "勒杀", price: 1200, type: "slash", scale: "attack", strangleKill: true, suits: starterSuits, text: "指定一名敌方角色为目标，对其造成等同于你的攻击力的物理伤害。若此牌造成生命值伤害，目标获得不可叠加的“勒脖”标记（多段或连击伤害时，每段伤害后各结算一次。）。目标每个准备阶段受到X点物理伤害（X为你施加标记时攻击力的一半，向下取整且至少1点）。" },
+  { name: "勒杀", price: 1200, type: "slash", scale: "attack", strangleKill: true, suits: starterSuits, text: "指定一名敌方角色为目标，对其造成等同于你的攻击力的物理伤害。若此牌造成生命值伤害，目标获得不可叠加的“勒脖”标记（多段或连击伤害时逐段结算）。目标每个准备阶段受到X点物理伤害（X为你施加标记时攻击力的一半，向下取整且至少1点）。" },
   { name: "战争号角", price: 800, type: "tactic", warHorn: true, targetless: true, suits: starterSuits, text: "你的杀意重置至上限，然后所有友方角色各从牌堆随机摸1张【杀】。" },
   { name: "追杀", price: 1100, type: "slash", scale: "attack", pursueKill: true, suits: starterSuits, text: "指定一名敌方角色为目标，对其造成等同于你的攻击力的物理伤害。当你使用的其他实体【杀】未造成生命值伤害时，本回合使用此牌不消耗杀意。" },
   { name: "弹反", price: 1400, type: "response", deflect: true, suits: starterSuits, text: "当你成为单体【杀】的目标时，你可以打出此牌并与伤害来源进行猜拳。平局则重新猜拳，直至分出胜负；若你获胜，将该【杀】的伤害反弹给伤害来源，否则该【杀】正常结算。" },
