@@ -70,9 +70,9 @@ test("亚缇娜·蓄力子弹：记录花色数决定倍率，触发后清空", 
   });
 
   expect(rows).toEqual([
-    { recorded: 1, dmg: 30, left: 0 },   // 10 × (2+1) = 30
+    { recorded: 1, dmg: 20, left: 0 },   // 10 × (1+1) = 20
     { recorded: 0, dmg: 10, left: 0 },   // 无记录且不倍
-    { recorded: 2, dmg: 40, left: 0 },   // 10 × (2+2) = 40
+    { recorded: 2, dmg: 30, left: 0 },   // 10 × (1+2) = 30
   ]);
   expect(relevantErrors(errors)).toEqual([]);
 });
@@ -205,7 +205,7 @@ test("UI：头像显示蓄力花色标记与神数计数", async ({ page }) => {
     const html = document.body.innerHTML;
     return {
       suitBadge: /蓄力\s*♥♦/.test(html),
-      suitTitle: /伤害×4/.test(html),
+      suitTitle: /伤害×3/.test(html),
       mariaBadge: /神数×2/.test(html),
     };
   });
