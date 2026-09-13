@@ -54,7 +54,7 @@ window.ArtinaMariaSkills = (() => {
     if (!recorded && !sniped) return amount;
     let result = amount;
     if (recorded) {
-      result = amount * (2 + recorded);
+      result = amount * (1 + recorded);
       actor.artinaSuits = {};
       line(state, actor, "蓄力子弹", target);
     }

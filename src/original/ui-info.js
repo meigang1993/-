@@ -34,7 +34,7 @@ window.GameUIInfo = (U) => {
     if (u?.ref !== "artina") return "";
     const suits = ["♥", "♦", "♠", "♣"].filter(suit => (u.artinaSuits || {})[suit]);
     return suits.length
-      ? `<span class="green-hat-badge dome-suit-badge" title="蓄力子弹：已记录${suits.join("、")}，下一张实体单体【杀】伤害×${2 + suits.length}">蓄力 ${suits.join("")}</span>`
+      ? `<span class="green-hat-badge dome-suit-badge" title="蓄力子弹：已记录${suits.join("、")}，下一张实体单体【杀】伤害×${1 + suits.length}">蓄力 ${suits.join("")}</span>`
       : "";
   }
   function mariaNumberMark(u) {
