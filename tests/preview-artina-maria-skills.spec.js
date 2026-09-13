@@ -128,18 +128,18 @@ test("玛利亚·神数咒语：出牌计数递增并摸牌，回合结束清零
     return { out, drawn, afterEndTurn: { marks: actor.mariaMarks, count: actor.mariaUseCount } };
   });
 
-  // 神数 N：本回合打出第 N 张牌时摸 N 张，随后 N+1
-  // 第1张: useCount0→marks1, useCount1 >= 1 → 摸1张, marks=2
-  // 第2张: useCount0→marks3, useCount1 < 3 → 不摸
-  // 第3张: useCount2 < 3 → 不摸
-  // 第4张: useCount3 >= 3 → 摸3张, marks=4
+  // 神数 N：起始标记只在出牌阶段首张牌给出；达到标记数时摸标记数张，随后再+1枚并重新计数。
+  // 第1张: marks0→1, useCount1 >= 1 → 摸1张, marks=2
+  // 第2张: useCount1 < 2 → 不摸
+  // 第3张: useCount2 >= 2 → 摸2张, marks=3
+  // 第4张: useCount1 < 3 → 不摸
   expect(rows.out).toEqual([
     { play: 1, marks: 2, tempAttack: 2, tempMagic: 2 },
-    { play: 2, marks: 3, tempAttack: 3, tempMagic: 3 },
+    { play: 2, marks: 2, tempAttack: 2, tempMagic: 2 },
     { play: 3, marks: 3, tempAttack: 3, tempMagic: 3 },
-    { play: 4, marks: 4, tempAttack: 4, tempMagic: 4 },
+    { play: 4, marks: 3, tempAttack: 3, tempMagic: 3 },
   ]);
-  expect(rows.drawn).toBe(4);   // 1 + 3
+  expect(rows.drawn).toBe(3);   // 1 + 2
   expect(rows.afterEndTurn).toEqual({ marks: 0, count: 0 });
   expect(relevantErrors(errors)).toEqual([]);
 });
