@@ -218,7 +218,7 @@ test("UI：头像显示蓄力花色标记与神数计数", async ({ page }) => {
     return {
       suitBadge: /蓄力\s*♥♦/.test(html),
       suitTitle: /伤害×3/.test(html),
-      mariaBadge: /神数×2/.test(html),
+      mariaBadge: /神数\s*2\/2/.test(html),
     };
   });
 
@@ -274,9 +274,9 @@ test("玛利亚·头像徽章：神数显示使用牌目标数，祝福显示弃
     return { start, afterOne, bless, mateBadge, faded };
   });
 
-  expect(badges.start).toContain("神数×1");
+  expect(badges.start).toContain("神数 0/1");
   expect(badges.start).toContain("再使用1张牌");
-  expect(badges.afterOne).toContain("神数×2");
+  expect(badges.afterOne).toContain("神数 2/2");
   expect(badges.afterOne).toContain("再使用2张牌");
   expect(badges.bless).toContain("祝福 ♥♦");
   expect(badges.mateBadge).toContain("祝福 ♠");

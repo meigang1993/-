@@ -62,7 +62,7 @@ window.GameDataNewCharacters = [
   },
   {
     id: "artina", name: "亚缇娜", gender: "female", face: "亚", art: "./assets/new-portraits/artina.webp", avatar: "./assets/new-portraits/artina.webp", role: "魅影突击队狙击手", locked: true, unlockFlag: "ruinsSandCityUnlocked",
-    stats: { attack: 3, magic: 3, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+    stats: { attack: 3, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
     evaluation: "花色记录与单体狙击核心。每回合记录首次使用的花色，蓄力子弹强化下一张实体单体【杀】。",
     skills: [
       { name: "狙击目标", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以指定一名敌方角色，展示其一张手牌。若你手中与展示牌花色相同的牌数大于该角色，你使用单体实体【杀】指定其为目标时，此【杀】不可响应。", card: { name: "狙击目标", type: "tactic", artinaSniper: true, enemyTarget: true, artName: "狙击目标", icon: "⚔️", text: "指定敌方角色并展示其一张手牌。" } },
@@ -71,10 +71,10 @@ window.GameDataNewCharacters = [
   },
   {
     id: "maria", name: "玛利亚", gender: "female", face: "玛", art: "./assets/new-portraits/maria.webp", avatar: "./assets/new-portraits/maria.webp", role: "魅影突击队支援兵", locked: true, unlockFlag: "ruinsSandCityUnlocked",
-    stats: { attack: 2, magic: 3, speed: 4, maxHp: 38, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
+    stats: { attack: 3, magic: 3, speed: 4, maxHp: 38, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
     evaluation: "标记成长与全队祝福支援核心。按出牌数触发神数摸牌，并以不同花色弃牌换取全队属性提升。",
     skills: [
-      { name: "神数咒语", type: "passive", icon: "⭐", text: "锁定技，出牌阶段，你每使用一张牌便获得一枚神数标记；每有一枚神数标记，你的攻击力和魔力各+1。当你本阶段使用的牌数达到目标数时，你摸与目标数等量的牌，然后将使用的牌数重新计数，并使目标数+1（目标数初始为1：使用1张牌后摸1张，随后使用2张牌后摸2张、使用3张牌后摸3张，以此类推）。回合结束时移去所有神数标记。角色头像显示的数字为当前目标数。" },
+      { name: "神数咒语", type: "passive", icon: "⭐", text: "锁定技，出牌阶段，你每使用一张牌便获得一枚神数标记；每有一枚神数标记，你的攻击力和魔力各+1。当你本阶段使用的牌数达到目标数时，你摸与目标数等量的牌，然后将使用的牌数重新计数，并使目标数+1" },
       { name: "荣誉祝福", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以弃置1至4张花色各不相同的牌。我方全体角色根据你的攻击力、魔力、速度分别获得等量属性提升。我方全体角色的头像均显示本次弃置的花色，每回合消失一个花色；某名角色的花色全部消失后，其获得的属性提升随之失效。只要玛利亚仍拥有花色，荣誉祝福就无法再次发动。", card: { name: "荣誉祝福", type: "tactic", mariaHonorBlessing: true, icon: "⚔️", text: "选择1至4张花色各不相同的手牌弃置。" } },
     ],
   },

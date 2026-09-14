@@ -50,11 +50,9 @@ test("battle detail shows one primary role beside the name and in skill hover te
     return window.UICommon.skillSummary(target);
   });
   await expect(art).toHaveAttribute("title", expected);
-  await expect(art).not.toHaveAttribute("title", /实战定位：/);
   await expect(unit.locator(".unit-name .combat-role")).toHaveCount(0);
   const activeSkill = page.locator(".active-skills .skill").first();
   await expect(activeSkill).toBeVisible();
-  await expect(activeSkill).not.toHaveAttribute("title", /实战定位：/);
   await expect(activeSkill).toHaveAttribute("title", /状态：/);
   await page.locator("[data-active-info]").first().click();
   const detailTitle = page.locator(".info-overlay .info-title-row");
@@ -74,7 +72,6 @@ test("battle detail shows one primary role beside the name and in skill hover te
   })).toBe(true);
   await page.locator("[data-info-tab='skills']").click();
   await expect(page.locator(".skill-detail .skill").first())
-    .not.toHaveAttribute("title", /实战定位：/);
   await expect(page.locator(".skill-detail .skill").first())
     .toHaveAttribute("title", /状态：/);
   expect(relevantErrors(errors)).toEqual([]);

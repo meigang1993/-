@@ -37,7 +37,7 @@ window.CharacterProgression = (() => {
     hoshino_yi: { maxHp: 109.2, attack: 19.11, magic: 19.11, speed: 15.75 },
     hoshino_kaiichi: { maxHp: 184.8, attack: 8.19, magic: 19.11, speed: 10.5 },
     artina: { maxHp: 84, attack: 24.57, magic: 8.19, speed: 21 },
-    maria: { maxHp: 117.6, attack: 13.65, magic: 16.38, speed: 17.5 },
+    maria: { maxHp: 117.6, attack: 16.38, magic: 16.38, speed: 17.5 },
   });
   const fallbackGrowth = Object.freeze({
     maxHp: 84, attack: 16.38, magic: 16.38, speed: 10.5,

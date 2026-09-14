@@ -241,8 +241,8 @@ vm.runInThisContext(fs.readFileSync("./src/original/battle-line-data.js", "utf8"
 
 const artinaData = character("artina");
 const mariaData = character("maria");
-assert(JSON.stringify(artinaData.stats) === JSON.stringify({ attack: 3, magic: 3, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 }), "Artina stats mismatch");
-assert(JSON.stringify(mariaData.stats) === JSON.stringify({ attack: 2, magic: 3, speed: 4, maxHp: 38, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 }), "Maria stats mismatch");
+assert(JSON.stringify(artinaData.stats) === JSON.stringify({ attack: 3, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 }), "Artina stats mismatch");
+assert(JSON.stringify(mariaData.stats) === JSON.stringify({ attack: 3, magic: 3, speed: 4, maxHp: 38, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 }), "Maria stats mismatch");
 assert(artinaData.unlockFlag === "ruinsSandCityUnlocked" && mariaData.unlockFlag === "ruinsSandCityUnlocked", "Artina/Maria must unlock with Ruins Sand City");
 assert(artinaData.role === "魅影突击队狙击手" && mariaData.role === "魅影突击队支援兵", "Artina/Maria role mismatch");
 

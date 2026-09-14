@@ -58,10 +58,6 @@ window.UICommonSkillModel = () => {
   const combatRolesOf = unit => (
     window.GameCombatRoles?.of?.(unit) || unit?.combatRoles?.slice(0, 1) || []
   );
-  const combatRoleText = unit => {
-    const roles = combatRolesOf(unit);
-    return roles.length ? `实战定位：${roles.join(" / ")}` : "";
-  };
   const rolePositionText = unit =>
     unit?.evaluation ? `角色定位：${unit.evaluation}` : "";
   const skillCard = skill => skill.card ? { ...skill.card, _skill: true } : null;
@@ -98,6 +94,6 @@ window.UICommonSkillModel = () => {
   }
   return {
     skillIcon, skillsOf, skillText, activeSkillName, combatRolesOf,
-    combatRoleText, rolePositionText, skillState,
+    rolePositionText, skillState,
   };
 };

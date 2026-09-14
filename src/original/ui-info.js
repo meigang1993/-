@@ -39,14 +39,14 @@ window.GameUIInfo = (U) => {
   }
   function mariaNumberMark(u) {
     if (u?.ref !== "maria") return "";
-    // 显示「使用牌目标数」：本阶段使用的牌数达到该数字时摸等量牌，
+    // 显示「标记数/目标数」：本阶段使用的牌数达到目标数时摸等量牌，
     // 之后重新计数且目标数 +1（1 → 2 → 3 …）。
     const used = u?.mariaUseCount || 0;
     const target = Math.max(1, u?.mariaNext || 1);
     const bonus = u?.mariaMarks || 0;
     const remain = Math.max(1, target - used);
-    const tip = `神数咒语：再使用${remain}张牌后摸${target}张牌，之后重新计数、目标数变为${target + 1}`;
-    return `<span class="green-hat-badge" title="${tip}；当前攻击力与魔力各+${bonus}">神数×${target}</span>`;
+    const tip = `神数咒语：再使用${remain}张牌后摸${target}张牌；当前攻击力与魔力各+${bonus}`;
+    return `<span class="green-hat-badge" title="${tip}">神数 ${bonus}/${target}</span>`;
   }
   function mariaBlessingMark(u) {
     // 荣誉祝福作用于我方全体，因此每个受益角色都显示剩余花色。
