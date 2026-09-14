@@ -140,12 +140,39 @@ neither side was "wrong".
 **Why only one bundle.** The divergence needs input whose compressed output
 contains a bare `true` in that exact position; 10 of 11 bundles never hit it.
 
-**Fix applied.** Aligned the lockfile to the version that actually produced
-HEAD — `package-lock.json` terser `5.49.0 → 5.51.2` (version, `resolved`, and
-`integrity`; dependency ranges were identical, so no sub-dependency churn) and
-`package.json` `^5.49.0 → ^5.51.2`. Verified `integrity` by re-hashing the
-real tarball. Post-change: all 11 bundles rebuild byte-identical,
-`--check` reports current.
+**Fix applied (two rounds — the first was incomplete).** Aligned the lockfile to
+the version that actually produced HEAD: `package.json` `^5.49.0 → ^5.51.2`,
+and in `package-lock.json` **both** places terser appears:
+
+1. `packages[""].devDependencies.terser` — the root package's declared range
+2. `packages["node_modules/terser"]` — `version`, `resolved`, `integrity`
+
+Dependency ranges were identical between 5.49.0 and 5.51.2, so no
+sub-dependency churn. `integrity` was verified by re-hashing the real tarball.
+Post-change: all 11 bundles rebuild byte-identical, `--check` reports current.
+
+**Trap: a lockfile carries the dependency twice, and both must be edited.**
+Round one changed only `packages["node_modules/terser"]`. The other environment
+ran `npm ci --include=dev` and still got **5.49.0**, because
+`packages[""].devDependencies` still said `^5.49.0` — npm resolved from the
+root declaration. Symptoms: `npm ci` "succeeds" but installs the old version,
+then `build:bundles` dies with
+`Cache-versioned publish resources changed (bundles/battle-ui.min.js); bump
+meta[name=game-build] above …`.
+
+**Do not bump `game-build` to silence that error.** It fires because the
+freshly-built bundle differs from HEAD's — i.e. the toolchain is wrong, not the
+version stale. A bump changes zero bytes inside bundles and only masks the
+mismatch. Fix the dependency, then rebuild.
+
+**Verify after any dependency realignment:**
+
+```bash
+node -e "const d=require('./package-lock.json');\
+console.log('root decl :',d.packages[''].devDependencies.terser);\
+console.log('locked    :',d.packages['node_modules/terser'].version)"
+grep -c '5\.49\.0' package-lock.json   # expect 0 after migrating to 5.51.2
+```
 
 **Aftermath for other environments.** Anyone who previously ran `npm ci` on the
 old lock has 5.49.0 installed and must reinstall:
