@@ -71,6 +71,9 @@ window.UICommonSkillModel = () => {
     }
     if (battle?.locked) return { usable: false, reason: "战斗结算中，暂不可发动" };
     if (!card) return { usable: false, reason: "该技能缺少可使用的技能牌" };
+    if (battle?.activeUid && battle.activeUid !== actor.uid) {
+      return { usable: false, reason: "不是当前行动角色，无法发动" };
+    }
     const prepareKey = card.speedAssault ? "awaitingSpeedAssaultUid"
       : card.extract ? "awaitingExtractUid"
         : card.mimicVoice ? "awaitingMimicUid" : null;
