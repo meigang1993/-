@@ -127,6 +127,53 @@ Lesson: a Contents API push returns 200 per file, so a partial batch *looks*
 completely successful. Success must be proven by a whole-tree blob SHA diff
 afterwards, never by the per-file status codes.
 
+### Push transport: `urllib` `method=` is not trustworthy (2026-09-14)
+
+**Never use `urllib.request.Request(..., method='PUT')` to push.** On several
+call paths the `method=` kwarg does not take effect and the request goes out as
+`GET`. A GET on an existing file returns **200**, so the push looks successful
+while nothing changed. This is the root cause of the "version 29 pushed but
+never arrived" incident: the write silently no-op'd, and the follow-up read hit
+a cache and confirmed the false success.
+
+Use one of these instead:
+
+```
+http.client.HTTPSConnection('api.github.com').request('PUT', path, body, headers)
+curl -X PUT ... -d @payload.json        # large files: body from file, not argv
+```
+
+`curl -d @payload.json` matters for big files (`docs/开发日记.md` is ~110 KB;
+base64 in an argv exceeds the limit and fails with `Argument list too long`).
+
+### Push verification: three channels (2026-09-14)
+
+The user requires verification after **every** push. Per-file status codes are
+not verification. Run all three:
+
+| # | channel | proves |
+|---|---|---|
+| 1 | whole-tree blob SHA diff (`/git/trees/main?recursive=1`) | every path matches byte-for-byte; catches partial batches |
+| 2 | contents API read-back, compare returned `sha` | the server really stored the bytes |
+| 3 | `codeload` tarball + `cmp` | independent of the write path entirely |
+
+Channel 1 is the authoritative one — git blob SHAs are content-addressed, so
+`1048/1048 identical` is a byte-level proof across the whole repo.
+
+**Do not trust `raw.githubusercontent.com` as the sole check.** In this session
+it returned **0 bytes** for `publish/index.html` (the same URL that had worked
+earlier), and it can serve stale content for source paths behind CDN cache. It
+is fine as a supporting signal, never as the verdict.
+
+Two mechanics that cost time and are worth remembering:
+
+- The tarball's top-level directory is **`--main`** (repo name is `-`), which
+  every shell parses as an option. Always prefix `./` — `./--main/publish/...`
+  — or `cmp`/`ls` fail with `unrecognized option`.
+- The tarball only contains **263 `publish/` files**: `.gitattributes` marks
+  `src/`, `tools/`, `tests/`, `docs/` `export-ignore`. It can verify bundles and
+  version files but **cannot verify source**, so channel 1 remains mandatory.
+
 ### Settled design: 神数咒语 marks clear when the target is reached (2026-09-14)
 
 The mark semantics were changed **three times**; the user rejected both
