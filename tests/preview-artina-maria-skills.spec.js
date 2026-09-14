@@ -130,16 +130,16 @@ test("玛利亚·神数咒语：出牌计数递增并摸牌，回合结束清零
   });
 
   // 神数：每使用一张牌获得1枚标记；使用牌数达到目标数时摸等量牌，
-  // 随后重新计数、目标数+1（目标 1 → 2 → 3）。
-  // 第1张: marks=1, 使用1张达目标1 → 摸1张，目标升为2、计数归零
-  // 第2张: marks=2, 使用1张未达目标2 → 不摸
-  // 第3张: marks=3, 使用2张达目标2 → 摸2张，目标升为3、计数归零
-  // 第4张: marks=4, 使用1张未达目标3 → 不摸
+  // 随后重新计数、标记清零、目标数+1（目标 1 → 2 → 3）。
+  // 第1张: 使用1张达目标1 → 摸1张，目标升为2、标记与计数归零（marks=0）
+  // 第2张: marks=1, 使用1张未达目标2 → 不摸
+  // 第3张: 使用2张达目标2 → 摸2张，目标升为3、标记与计数归零（marks=0）
+  // 第4张: marks=1, 使用1张未达目标3 → 不摸
   expect(rows.out).toEqual([
-    { play: 1, marks: 1, tempAttack: 1, tempMagic: 1 },
-    { play: 2, marks: 2, tempAttack: 2, tempMagic: 2 },
-    { play: 3, marks: 3, tempAttack: 3, tempMagic: 3 },
-    { play: 4, marks: 4, tempAttack: 4, tempMagic: 4 },
+    { play: 1, marks: 0, tempAttack: 0, tempMagic: 0 },
+    { play: 2, marks: 1, tempAttack: 1, tempMagic: 1 },
+    { play: 3, marks: 0, tempAttack: 0, tempMagic: 0 },
+    { play: 4, marks: 1, tempAttack: 1, tempMagic: 1 },
   ]);
   expect(rows.drawn).toBe(3);   // 1 + 2
   expect(rows.afterEndTurn).toEqual({ marks: 0, count: 0 });
@@ -211,14 +211,14 @@ test("UI：头像显示蓄力花色标记与神数计数", async ({ page }) => {
     const maria = state.battle.allies.find(u => u.ref === "maria" || u.id === "maria");
     artina.artinaSuits = { "♥": true, "♦": true };
     // 头像神数显示的是当前「使用牌目标数」
-    maria.mariaNext = 2; maria.mariaUseCount = 0; maria.mariaMarks = 2;
+    maria.mariaNext = 2; maria.mariaUseCount = 0; maria.mariaMarks = 1;
     state.infoUnit = null;
     window.render();
     const html = document.body.innerHTML;
     return {
       suitBadge: /蓄力\s*♥♦/.test(html),
       suitTitle: /伤害×3/.test(html),
-      mariaBadge: /神数\s*2\/2/.test(html),
+      mariaBadge: /神数\s*1\/2/.test(html),
     };
   });
 
@@ -260,8 +260,8 @@ test("玛利亚·头像徽章：神数显示使用牌目标数，祝福显示弃
     const maria = { ref: "maria", name: "玛利亚", mariaMarks: 0, mariaNext: 1, mariaUseCount: 0 };
     const I = window.GameUIInfo(window.UICommon);
     const start = I.mariaNumberMark(maria);
-    // 达到目标 1 后重新计数，目标数升为 2
-    maria.mariaNext = 2; maria.mariaUseCount = 0; maria.mariaMarks = 2;
+    // 达到目标 1 后重新计数、标记清零，目标数升为 2
+    maria.mariaNext = 2; maria.mariaUseCount = 0; maria.mariaMarks = 0;
     const afterOne = I.mariaNumberMark(maria);
     const blessed = { ref: "maria", name: "玛利亚", mariaBlessingSuits: ["♥", "♦"] };
     const bless = I.mariaBlessingMark(blessed);
@@ -276,7 +276,7 @@ test("玛利亚·头像徽章：神数显示使用牌目标数，祝福显示弃
 
   expect(badges.start).toContain("神数 0/1");
   expect(badges.start).toContain("再使用1张牌");
-  expect(badges.afterOne).toContain("神数 2/2");
+  expect(badges.afterOne).toContain("神数 0/2");
   expect(badges.afterOne).toContain("再使用2张牌");
   expect(badges.bless).toContain("祝福 ♥♦");
   expect(badges.mateBadge).toContain("祝福 ♠");
