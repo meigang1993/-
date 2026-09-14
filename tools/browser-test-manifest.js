@@ -38,6 +38,8 @@ const groups = Object.freeze({
     ["edis-chain", "preview-edis-chain.spec.js"],
     ["nanali-battle", "preview-nanali-battle.spec.js"],
     ["angelica-skills", "preview-angelica-skills-rework.spec.js"],
+    ["artina-maria-skills", "preview-artina-maria-skills.spec.js"],
+    ["maria-blessing-ui", "preview-maria-blessing-ui.spec.js"],
   ],
   "battle-effects": [
     ["battle-aoe", "preview-battle-aoe.spec.js"],
