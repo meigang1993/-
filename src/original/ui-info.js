@@ -43,7 +43,7 @@ window.GameUIInfo = (U) => {
     // 之后重新计数且目标数 +1（1 → 2 → 3 …）。
     const used = u?.mariaUseCount || 0;
     const target = Math.max(1, u?.mariaNext || 1);
-    const bonus = u?.mariaMarks || 0;
+    const bonus = Math.min(u?.mariaMarks || 0, target);
     const remain = Math.max(1, target - used);
     const tip = `神数咒语：再使用${remain}张牌后摸${target}张牌；当前攻击力与魔力各+${bonus}`;
     return `<span class="green-hat-badge" title="${tip}">神数 ${bonus}/${target}</span>`;
