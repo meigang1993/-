@@ -319,3 +319,35 @@ test("玛利亚·荣誉祝福：弃置花色每回合消失一个，未清空前
   expect(result.recast).toBe(true);
   expect(relevantErrors(errors)).toEqual([]);
 });
+
+test("属性面板：神数标记与祝福的临时/持久加成均显示", async ({ page }) => {
+  const errors = collectErrors(page);
+  await enterBattleWithArtinaMaria(page);
+
+  const read = async () => page.evaluate(() => {
+    const b = window.state.battle;
+    const maria = b.allies.find(u => u.ref === "maria" || u.id === "maria");
+    window.state.infoUnit = maria.uid;
+    window.state.infoTab = "stats";
+    const html = window.GameUI.infoPanel(window.state);
+    return { attack: maria.stats.attack, tempAttack: maria.tempAttack || 0, html };
+  });
+
+  // 先给玛利亚 3 枚神数标记（模拟已使用三张牌）
+  await page.evaluate(() => {
+    const b = window.state.battle;
+    const maria = b.allies.find(u => u.ref === "maria" || u.id === "maria");
+    maria.mariaMarks = 3;
+    if (window.ArtinaMariaSkills?.onCardPlayed) window.ArtinaMariaSkills.onCardPlayed(maria, { name: "杀", type: "slash" });
+    else { maria.tempAttack = 3; maria.tempMagic = 3; }
+    window.render();
+  });
+
+  const marked = await read();
+  expect(marked.tempAttack).toBe(3);
+  // 面板需显示基础攻击力 + 神数临时加成
+  expect(marked.html).toContain(String(marked.attack + 3));
+  expect(marked.html).toContain("+3");
+
+  expect(relevantErrors(errors)).toEqual([]);
+});
