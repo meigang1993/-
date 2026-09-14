@@ -174,6 +174,14 @@ That ref no longer exists upstream, so `git pull` fetches nothing new and
 merges a **stale** remote-tracking ref — it reports "Already up to date" while
 sitting N commits behind.
 
+**Check `remote.origin.url` FIRST — it outranks the refspec hypothesis.**
+In the actual resolution of this case the agent reported "已将 origin 更新为
+`https://github.com/meigang1993/-.git`" — its configured origin had pointed
+somewhere else. `git pull` then ran against a *different* remote that legitimately
+had nothing new, so "Already up to date" was truthful about the wrong repo.
+A stale refspec and a wrong URL produce identical symptoms; confirm the URL
+before touching `remote.origin.fetch`.
+
 **Tell-tale sign:** a build error quoting a version you already advanced, e.g.
 
 ```
@@ -188,9 +196,10 @@ is stale. Check the remote before believing your own `git pull`.
 **Confirm which side is wrong (never assume — check the remote directly):**
 
 ```bash
+git remote -v                            # FIRST: must be meigang1993/-.git
 git rev-parse --abbrev-ref HEAD          # expect: main
 git rev-parse HEAD                       # compare with the remote tip
-git config --get remote.origin.fetch     # single-branch refspec is the culprit
+git config --get remote.origin.fetch     # single-branch refspec is the other cause
 git branch -vv                           # upstream shown here
 grep -o 'name="game-build"[^>]*' publish/index.html
 ```
@@ -205,6 +214,12 @@ git reset --hard origin/main                    # ONLY on a clean tree
 ```
 
 `git reset --hard` discards uncommitted work — run `git status` first.
+
+**Resolved (2026-09-14).** All three working copies now report `terser 5.51.2`,
+`build:bundles` succeeds, and `--check` reports **11/11 current**. No
+`game-build` bump was used at any point — the mismatch was toolchain-only, so
+bumping would have changed zero bytes and only masked it. Root cause was the
+agent's origin pointing at a different remote, not a stale refspec.
 
 **Verify after any dependency realignment:**
 
