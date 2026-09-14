@@ -119,6 +119,51 @@ rather than "fixing" a non-problem.** Note that a teammate who later pushes
 their own source edit without rebuilding *will* create real drift, so the rule
 above still stands.
 
+### Resolved case: `battle-ui` `!0` vs `1` (2026-09-13, closed)
+
+**Symptom.** `--check` flagged only `battle-ui` as stale; the other 10 bundles
+matched. Local rebuild produced 78,903 bytes vs HEAD's 78,905.
+
+**Root cause (two Terser versions, not a missed rebuild).** At offset 7581:
+
+```
+HEAD (terser 5.51.2):  …attle)??!0)&&awa…
+local (terser 5.49.0): …attle)??1)&&awa…
+```
+
+`!0` and `1` are both `true` — **semantically identical**, different literal
+spelling across Terser minors. `preamble` was byte-identical, ruling out a
+build-script difference. The sandbox runs **5.51.2**; the lockfile pinned
+**5.49.0**; each environment was internally consistent with its own lock, so
+neither side was "wrong".
+
+**Why only one bundle.** The divergence needs input whose compressed output
+contains a bare `true` in that exact position; 10 of 11 bundles never hit it.
+
+**Fix applied.** Aligned the lockfile to the version that actually produced
+HEAD — `package-lock.json` terser `5.49.0 → 5.51.2` (version, `resolved`, and
+`integrity`; dependency ranges were identical, so no sub-dependency churn) and
+`package.json` `^5.49.0 → ^5.51.2`. Verified `integrity` by re-hashing the
+real tarball. Post-change: all 11 bundles rebuild byte-identical,
+`--check` reports current.
+
+**Aftermath for other environments.** Anyone who previously ran `npm ci` on the
+old lock has 5.49.0 installed and must reinstall:
+
+```bash
+npm ci --include=dev          # plain `npm ci` may skip devDeps if omit=dev is set
+node -e "console.log(require('terser/package.json').version)"   # expect 5.51.2
+npm run build:bundles
+node tools/build-publish-bundles.js --check
+```
+
+**Do not** "fix" this class of diff by rebuilding-and-pushing from a
+mismatched environment: that flips the bytes back and starts a ping-pong
+between environments. Align the dependency first, then rebuild.
+
+**Do not** advance `game-build` for it — version strings are not injected into
+bundles, so a bump changes zero bytes and only pollutes version history.
+
 ### Diagnosing a single-bundle mismatch: suspect Terser, not a missed rebuild (2026-09-13)
 
 If `--check` flags **one** bundle (e.g. `battle-ui`) while the others match, do
