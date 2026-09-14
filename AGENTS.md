@@ -73,6 +73,103 @@ documents and contains only rules that must be visible before every task.
   Cross-verify by running the workflow from another repository that has Actions
   enabled.
 
+## Push Policy — Stage Locally, Push Only On Request (2026-09-14)
+
+**Default is: do not push.** After finishing an update, keep everything in the
+permanent working copy `/data/workspace/repo`, print the list of changed files,
+and wait for an explicit "推送" instruction from the user. Verification is still
+required — only the push itself is gated.
+
+- Finish the edit → rebuild bundles → run the test suites → **verify** → report.
+- Report must end with a "待推送清单" listing every changed file, so the user can
+  decide when (or whether) they go remote.
+- Stage the same set as an overlay package under `/data/workspace/` so the push,
+  when requested, is a one-step apply.
+
+### Atomic version + content pushes
+
+A version bump (`publish/index.html`, `publish/villa.css`) **must never be pushed
+without the content it advertises**. Shipping the bump alone produces the worst
+possible state: the UI reports version N while the bundles still run version N-1,
+so the tester believes a fix is live when it is not.
+
+Before any push, confirm the batch is complete:
+
+```
+version files  +  every modified src/original/*.js  +  every affected bundle
+```
+
+Then re-run the full-file git-blob SHA comparison (not a sample) to prove the
+remote matches. See "Resolved case: version 34 shipped without its content".
+
+### Resolved case: version 34 shipped without its content (2026-09-14)
+
+Reported symptom: "神数标记增加的属性有效，但面板没有变化". Root cause was **not** a
+logic bug — the 33 fix (marks accumulate, capped by target, instead of resetting
+to zero) was never pushed. Only 3 files reached the remote
+(`villa.css`, `index.html`, one bundle), leaving the remote on the old
+reset-to-zero code while `index.html` already advertised version 34.
+
+Eight files were out of sync when the full comparison finally ran:
+
+```
+src/original/artina-maria-skills.js      marks accumulate + temp clear at turn end
+src/original/data-new-characters.js      skill text (三国杀式 + cap wording)
+src/original/ui-info.js                  bonus = Math.min(marks, target)
+publish/bundles/startup.min.js           skill text
+publish/bundles/startup-app.min.js       bonus cap
+publish/bundles/battle-skills.min.js     early-return refactor
+tools/test-new-character-skills.js       assertions
+tests/preview-artina-maria-skills.spec.js
+```
+
+Lesson: a Contents API push returns 200 per file, so a partial batch *looks*
+completely successful. Success must be proven by a whole-tree blob SHA diff
+afterwards, never by the per-file status codes.
+
+### Settled design: 神数咒语 marks clear when the target is reached (2026-09-14)
+
+The mark semantics were changed **three times**; the user rejected both
+alternatives, so treat this as settled and do not "improve" it again.
+
+```
+31  clear on reach          user: 面板看不到变化（加成瞬间归零）
+33  accumulate, cap=target  user: 标记达到目标没有清空  ← rejected
+34  clear on reach          ← current, do not change
+```
+
+The user's two explicit requirements, in their own words, are both satisfied by
+clearing: *"把标记清0，不然角色输出很强，数字也乱"* (output control + clean
+numbers). The 33 "panel does not change" complaint was a **separate** display
+issue; the fix is to make the attribute panel reflect temp bonuses, **not** to
+keep marks alive. Never trade a stated game-balance requirement away to make a
+UI symptom disappear.
+
+With clearing, the bonus sequence is a sawtooth `0,1,0,1,2,0` and the badge reads
+`mark/target` where the mark is always below the target — that is intended, not a
+bug.
+
+### Whole-tree comparison (zero-download)
+
+`api.github.com` cannot be reached for browsing but the tree endpoint works, and
+git blob SHAs can be computed locally, so the entire repository can be compared
+without downloading a single file body:
+
+```
+GET /repos/{owner}/{repo}/git/trees/main?recursive=1     # 1 API call
+local_sha = sha1("blob <len>\0" + file_bytes)            # compare to tree sha
+```
+
+This finds three classes: missing locally, extra locally, content-divergent.
+Run it before reporting any "in sync" claim.
+
+### Note on `codeload` tarballs
+
+The `codeload` archive of this repo contains **only 263 files** (the `publish/`
+tree) because `.gitattributes` marks `src/`, `tools/`, `tests/` and `docs/` with
+`export-ignore`. It is fine for verifying `publish/`, useless for verifying
+source or docs. Use the tree endpoint for those.
+
 ## Bundle Rebuild Discipline — Never Ship Source Without Rebuilding (2026-09-13)
 
 Any edit to `src/original/*.js` **must** be followed by a bundle rebuild before
