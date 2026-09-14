@@ -165,6 +165,47 @@ freshly-built bundle differs from HEAD's — i.e. the toolchain is wrong, not th
 version stale. A bump changes zero bytes inside bundles and only masks the
 mismatch. Fix the dependency, then rebuild.
 
+### Symptom: `git pull` says "Already up to date" but the working copy is behind
+
+Seen after the `魅魔杀 → main` rename. A clone made while the branch had its
+old name keeps a **single-branch refspec**
+(`remote.origin.fetch = +refs/heads/魅魔杀:refs/remotes/origin/魅魔杀`).
+That ref no longer exists upstream, so `git pull` fetches nothing new and
+merges a **stale** remote-tracking ref — it reports "Already up to date" while
+sitting N commits behind.
+
+**Tell-tale sign:** a build error quoting a version you already advanced, e.g.
+
+```
+Cache-versioned publish resources changed (bundles/battle-ui.min.js);
+bump meta[name=game-build] above 20260911-26 before rebuilding
+```
+
+`20260911-26` is read from **`HEAD:publish/index.html`**. If you already pushed
+27, that message proves the local HEAD predates your push — not that the remote
+is stale. Check the remote before believing your own `git pull`.
+
+**Confirm which side is wrong (never assume — check the remote directly):**
+
+```bash
+git rev-parse --abbrev-ref HEAD          # expect: main
+git rev-parse HEAD                       # compare with the remote tip
+git config --get remote.origin.fetch     # single-branch refspec is the culprit
+git branch -vv                           # upstream shown here
+grep -o 'name="game-build"[^>]*' publish/index.html
+```
+
+**Fix:**
+
+```bash
+git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+git fetch --prune origin
+git branch --set-upstream-to=origin/main main   # or: git checkout -B main origin/main
+git reset --hard origin/main                    # ONLY on a clean tree
+```
+
+`git reset --hard` discards uncommitted work — run `git status` first.
+
 **Verify after any dependency realignment:**
 
 ```bash
