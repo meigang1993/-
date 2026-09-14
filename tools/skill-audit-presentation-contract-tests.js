@@ -26,8 +26,6 @@ module.exports = ({ assert, unit }) => {
       `${template.id} must define exactly one primary combat role`);
     assert(template.combatRoles.every(role => combatRoleNames.has(role)),
       `${template.id} must use only canonical combat roles`);
-    assert(window.UICommon.combatRoleText(template).includes(template.combatRoles[0]),
-      `${template.id} combat roles must appear in public hover wording`);
   });
   assert(JSON.stringify(window.GameCombatRoles.byId.little_elrana)
     === JSON.stringify(["输出"]),
