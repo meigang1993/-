@@ -308,12 +308,14 @@ const mariaDeps = { draw: (unit, count) => { drawnCount += count; return new Arr
 ArtinaMariaSkills.beforeCardPlayed(mariaState, maria, card("杀（普攻）", "slash"), mariaDeps);
 // 目标数初始为1：首张牌即达成目标，摸1张后重新计数，目标数升为2
 assert(drawnCount === 1, "The first play must reach the target of 1 and draw one card");
-assert(maria.mariaMarks === 1 && maria.mariaUseCount === 0, `Maria mark state mismatch: ${maria.mariaMarks}/${maria.mariaUseCount}`);
-assert(maria.tempAttack === 1 && maria.tempMagic === 1, "Each Number mark must grant +1 attack and +1 magic");
+// 达成目标数后神数标记清零（标记同时是攻魔加成与计数来源）
+assert(maria.mariaMarks === 0 && maria.mariaUseCount === 0, `Maria mark state mismatch: ${maria.mariaMarks}/${maria.mariaUseCount}`);
+assert(maria.tempAttack === 0 && maria.tempMagic === 0, "Marks must be cleared after reaching the target");
 ArtinaMariaSkills.beforeCardPlayed(mariaState, maria, card("闪", "response"), mariaDeps);
 assert(drawnCount === 1 && maria.mariaUseCount === 1, "The second play must not reach the next target of 2 yet");
+assert(maria.mariaMarks === 1 && maria.tempAttack === 1 && maria.tempMagic === 1, "Each Number mark must grant +1 attack and +1 magic");
 ArtinaMariaSkills.beforeCardPlayed(mariaState, maria, card("闪", "response"), mariaDeps);
-assert(drawnCount === 3 && maria.mariaMarks === 3, "The third play must reach the target of 2 and draw two cards");
+assert(drawnCount === 3 && maria.mariaMarks === 0, "The third play must reach the target of 2 and draw two cards");
 
 // 神数咒语完整序列：每使用一张牌获得1枚标记；达到目标数时摸等量牌、重新计数且目标数+1（1、2、3 张分别摸 1、2、3 张）
 const mariaSeq = unitFromCharacter(mariaData, "mariaSeq");
@@ -325,8 +327,9 @@ for (let i = 0; i < 6; i += 1) {
   ArtinaMariaSkills.beforeCardPlayed(seqState, mariaSeq, card("牌", "tactic", { suit: "♠" }), seqDeps);
   seqTemp.push(mariaSeq.tempAttack);
 }
-assert(seqTemp.join(",") === "1,2,3,4,5,6",
-  `Number marks must grow 1,2,3,4,5,6 got ${seqTemp.join(",")}`);
+// 标记在每次达成目标数后清零，故攻魔加成呈「累积→清零」锯齿：0,1,0,1,2,0
+assert(seqTemp.join(",") === "0,1,0,1,2,0",
+  `Number marks must reset at each target: 0,1,0,1,2,0 got ${seqTemp.join(",")}`);
 assert(seqDrawn.join(",") === "1,2,3",
   `Number Spell must draw 1,2,3 got ${seqDrawn.join(",")}`);
 
