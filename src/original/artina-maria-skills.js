@@ -43,8 +43,8 @@ window.ArtinaMariaSkills = (() => {
       line(state, actor, "神数咒语");
       actor.mariaNext += 1;
       actor.mariaUseCount = 0;
-      // 达成目标数后神数标记清零：标记同时是攻魔加成与计数来源，
-      // 若保留则标记数会持续超过目标数（显示混乱）且攻魔无限叠加。
+      // 达成目标数后神数标记清零：标记同时是攻魔加成与「使用的牌数」的来源，
+      // 若保留则加成会随出牌无限累积（输出过强），且标记数会超过目标数（显示混乱）。
       actor.mariaMarks = 0;
     }
     actor.tempAttack = actor.mariaMarks;
@@ -157,6 +157,7 @@ window.ArtinaMariaSkills = (() => {
     if (unit?.ref === "maria") {
       unit.mariaMarks = 0; unit.mariaUseCount = 0;
       unit.mariaNext = 1; unit.mariaTier = 1;
+      unit.tempAttack = 0; unit.tempMagic = 0;
       unit.mariaPhaseMarked = false;
       unit.usedMariaHonorBlessing = false;
     }
