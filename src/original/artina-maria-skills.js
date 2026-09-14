@@ -43,6 +43,9 @@ window.ArtinaMariaSkills = (() => {
       line(state, actor, "神数咒语");
       actor.mariaNext += 1;
       actor.mariaUseCount = 0;
+      // 达成目标数后神数标记清零：标记同时是攻魔加成与计数来源，
+      // 若保留则标记数会持续超过目标数（显示混乱）且攻魔无限叠加。
+      actor.mariaMarks = 0;
     }
     actor.tempAttack = actor.mariaMarks;
     actor.tempMagic = actor.mariaMarks;
