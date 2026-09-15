@@ -157,7 +157,7 @@ test("purchased skins can switch to default and back", async ({ page }) => {
     equipped: window.state.equippedSkins.lokar,
     art: window.SkinSystem.applyToChar(
       window.state, window.state.chars.find(character => character.id === "lokar")).art,
-  }))).toEqual({ equipped: "lokar_default", art: "./assets/images/lokar-portrait.webp" });
+  }))).toEqual({ equipped: "lokar_default", art: "./assets/images/lokar-portrait.914de079.webp" });
 
   await page.locator('[data-equip-skin="lokar_motherbound"]').click();
   await expect.poll(() => page.evaluate(() => ({
