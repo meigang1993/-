@@ -10,7 +10,7 @@ require("../src/original/wendy-teacher-skin-actions.js");
 
 const base = SkinSystem.byId("wendy_default");
 const skin = SkinSystem.byId("wendy_benevolent_teacher");
-assert(base?.initial && base.art === "./assets/images/wendy-portrait.f262b034.webp"
+assert(base?.initial && base.art === "./assets/images/wendy-portrait.f262b034.f262b034.webp"
   && fs.existsSync(`./publish/${base.art.slice(2)}`),
   "Wendy must retain a selectable default skin");
 assert(skin?.charId === "wendy" && skin.quality === "epic"
