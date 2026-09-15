@@ -9,7 +9,7 @@ require("../src/original/elrana-fallen-physician-skin-fx.js");
 
 const base = SkinSystem.byId("elrana_default");
 const skin = SkinSystem.byId("elrana_fallen_physician");
-assert(base?.initial && base.art === "./assets/images/elrana-new-portrait.webp"
+assert(base?.initial && base.art === "./assets/images/elrana-new-portrait.22a8fa3b.webp"
   && fs.existsSync(`./publish/${base.art.slice(2)}`),
   "Elrana must retain a selectable default skin");
 assert(skin?.charId === "elrana" && skin.quality === "epic"
