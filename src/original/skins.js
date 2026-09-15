@@ -139,8 +139,8 @@ window.SkinSystem = (() => {
   function testEquip(state, charId, skinId) {
     const skin = byId(skinId);
     if (!skin || skin.charId !== charId) return false;
-    // 等级立绘必须达到等级解锁，测试战斗的"试用"不适用于它，避免绕过按钮直接写入。
-    if (skin.unlockLevel && !owned(state, skin)) return false;
+    // 测试战斗可试用全部皮肤（含等级特殊立绘）。试用只写入 testSkins，
+    // 不会授予 ownedSkins / equippedSkins，正式战斗中未达等级的立绘仍然锁定。
     state.testSkins ||= {};
     state.testSkins[charId] = skinId;
     state.skinFlash = skinId;
