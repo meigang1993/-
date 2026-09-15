@@ -8,7 +8,7 @@ window.GameDataFutureEnemies.orc_dungeon.push({
   evaluation: "响应补牌、摸牌转移与待复活精英。每次使用或打出响应牌后摸1张牌，响应牌数量高于目标时其【杀】不可响应；吸魔邪眼可通过猜拳夺取目标本次出牌阶段实际摸到的牌。生命值降至0且仍有手牌时进入“待复活”，于其下个回合开始时恢复全部生命值。",
   gender: "female",
   face: "丽",
-  art: "./assets/new-portraits/assassin-sakura-risa.97a2f02f.webp",
+  art: "./assets/new-portraits/assassin-sakura-risa.aaf7a555.webp",
   bgm: "./assets/new-bgm/assassin-sakura-risa.ogg",
   hp: 190,
   attack: 9,
