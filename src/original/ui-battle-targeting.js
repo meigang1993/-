@@ -5,7 +5,7 @@ window.GameUIBattleTargeting = (() => {
 
   function targetAllowed(unitData, battle, actor, card) {
     const handChoice = card?.bloodPact || card?.elranaBag
-      || card?.elranaHeal || card?.idolKiss;
+      || card?.elranaHeal || card?.idolKiss || card?.mariaHonorBlessing;
     const partnerCard = card?.comboAttack || card?.borrowSlash;
     const handInteraction = card?.discardTarget || card?.stealCard;
     const allyTarget = card?.ailengCharge || card?.kaiichiMilk

@@ -12,6 +12,7 @@ function load(file) {
 
 function loadCheckpointCore() {
   load("battle-save-checkpoint-validation.js");
+  load("battle-save-checkpoint-snapshot.js");
   load("battle-save-checkpoint.js");
 }
 
@@ -21,7 +22,7 @@ function loadTurnRuntime() {
     "battle-turn-input.js",
     "battle-turn-state.js",
     "battle-manual-hit-resume.js",
-    "battle-manual-continuation.js",
+    "battle-manual-continuation-resume.js", "battle-manual-continuation.js",
     "battle-manual-actions.js",
     "battle-manual-flow.js",
     "battle-discard-overflow.js",

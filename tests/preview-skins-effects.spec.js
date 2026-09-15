@@ -1,6 +1,7 @@
 const { test, expect } = require("@playwright/test");
 const {
   collectErrors, relevantErrors, openGame, startFreshGame,
+  openTestBattle,
 } = require("./helpers/preview-game");
 
 test("judgement reveal and clash overlays keep card artwork on short screens", async ({ page }) => {
@@ -8,8 +9,7 @@ test("judgement reveal and clash overlays keep card artwork on short screens", a
   await page.setViewportSize({ width: 800, height: 420 });
   await openGame(page);
   await startFreshGame(page);
-  await page.locator("[data-open-modal='team']").first().click();
-  await page.getByRole("button", { name: "测试战斗" }).click();
+  await openTestBattle(page);
   await page.evaluate(() => {
     window.GameAssets.preloadBattle = async () => {};
     window.BattleEffects.whenIdle = async () => {};
@@ -100,8 +100,7 @@ test("battle skin loading ignores superseded and stale scene requests", async ({
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
-  await page.locator("[data-open-modal='team']").first().click();
-  await page.getByRole("button", { name: "测试战斗" }).click();
+  await openTestBattle(page);
   await page.evaluate(() => {
     window.state.ownedSkins.lokar_motherbound = true;
     window.state.equippedSkins.lokar = "lokar_default";
@@ -176,8 +175,7 @@ test("battle skin selection waits for settings persistence and restores over an 
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
-  await page.locator("[data-open-modal='team']").first().click();
-  await page.getByRole("button", { name: "测试战斗" }).click();
+  await openTestBattle(page);
   await page.evaluate(() => {
     window.state.ownedSkins.lokar_motherbound = true;
     window.state.equippedSkins.lokar = "lokar_default";

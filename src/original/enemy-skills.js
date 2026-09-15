@@ -50,7 +50,7 @@ window.EnemySkills = (() => {
     }
     while (!battle.locked && battle.enemyPrepareStep < 4) {
       const step = battle.enemyPrepareStep++;
-      if (step === 0) window.OrcDungeonSkills?.prepare?.(state, unit);
+      if (step === 0) { window.RuinsEnemySkills?.prepare?.(state, unit, damage); window.OrcDungeonSkills?.prepare?.(state, unit); }
       if (step === 1) window.WithererSkills?.prepare?.(state, unit, damage);
       if (step === 2) {
         battle.enemyPrepareHandled = !!(window.UnderwaterTrainSkills?.prepare?.(state, unit, damage)
@@ -58,7 +58,7 @@ window.EnemySkills = (() => {
       }
       if (step === 3 && !battle.enemyPrepareHandled) {
         if (unit.ai === "succubus") succubusPrepare(state, unit, damage);
-        else machine.prepare(state, unit, damage, nextAnim);
+        else if (!String(unit.ai || "").startsWith("ruins_")) machine.prepare(state, unit, damage, nextAnim);
       }
       if (battle.locked
         || window.BattleCounterTriggers?.pending?.(battle)
@@ -100,6 +100,7 @@ window.EnemySkills = (() => {
     window.AbeMikeSkills?.endTurn?.(state, unit, damage);
     window.OrcDungeonSkills?.endTurn?.(state, unit, damage);
     window.WithererSkills?.endTurn?.(state, unit);
+    window.RuinsEnemySkills?.endTurn?.(state, unit);
     window.GuardKellySkills?.endTurn?.(state, unit, draw);
     if (unit.ai === "radar") unit.radarUsed = false;
     if (unit.ai === "krow_doctor") unit.grenadeUsed = false;

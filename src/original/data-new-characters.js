@@ -60,4 +60,22 @@ window.GameDataNewCharacters = [
       { name: "半魅魔精华", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以指定一名友方女性角色。该角色对你造成等同于其魔力值的魔法伤害，然后其摸X张牌（X为你当前每回合摸牌数）；指定星野依时不造成伤害。指定七位姐姐之一时，其对应儿子若在队伍中则获得1枚“绿帽”；指定娜娜莉或贝丝妲时，罗卡尔获得1枚“绿帽”。每名角色至多拥有5枚“绿帽”，每枚令手牌上限、杀意上限各+1，攻击力+30%。", card: { name: "半魅魔精华", type: "tactic", allyTarget: true, kaiichiMilk: true, icon: "⚔️", text: "指定一名友方女性角色，令其对你造成魔法伤害并摸牌，且按角色关系给予对应角色“绿帽”标记。" } },
     ],
   },
+  {
+    id: "artina", name: "亚缇娜", gender: "female", face: "亚", art: "./assets/new-portraits/artina.webp", avatar: "./assets/new-portraits/artina.webp", role: "魅影突击队狙击手", locked: true, unlockFlag: "ruinsSandCityUnlocked",
+    stats: { attack: 3, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+    evaluation: "花色记录与单体狙击核心。每回合记录首次使用的花色，蓄力子弹强化下一张实体单体【杀】。",
+    skills: [
+      { name: "狙击目标", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以选择一名敌方角色，展示其一张手牌。若你手牌中与此牌花色相同的牌数多于该角色，则你对其使用的下一张实体单体【杀】不可被响应。", card: { name: "狙击目标", type: "tactic", artinaSniper: true, enemyTarget: true, artName: "狙击目标", icon: "⚔️", text: "选择一名敌方角色，展示其一张手牌。" } },
+      { name: "蓄力子弹", type: "passive", icon: "⭐", text: "锁定技，每回合你首次使用一种花色的牌时，你记录该花色；你使用的下一张实体单体【杀】伤害×（1+你已记录的花色数）（记录1种为×2，2种为×3，3种为×4，4种为×5），然后你清除所有记录。" },
+    ],
+  },
+  {
+    id: "maria", name: "玛利亚", gender: "female", face: "玛", art: "./assets/new-portraits/maria.webp", avatar: "./assets/new-portraits/maria.webp", role: "魅影突击队支援兵", locked: true, unlockFlag: "ruinsSandCityUnlocked",
+    stats: { attack: 3, magic: 3, speed: 4, maxHp: 38, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
+    evaluation: "标记成长与全队祝福支援核心。按出牌数触发神数摸牌，并以不同花色弃牌换取全队属性提升。",
+    skills: [
+      { name: "神数咒语", type: "passive", icon: "⭐", text: "锁定技，出牌阶段，你每使用一张牌，便获得1枚“神数”标记，且你的攻击力与魔力各+X（X为你“神数”标记的数量）。当你本阶段使用的牌数达到目标数时，你摸与目标数等量的牌，然后将已使用的牌数清零、弃去所有“神数”标记，并令目标数+1。目标数初始为1。回合结束时，你弃去所有“神数”标记。" },
+      { name: "荣誉祝福", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以弃置1至4张花色各不相同的手牌，令我方全体角色的攻击力、魔力、速度各+你的攻击力、魔力、速度，并记录这些花色。每回合结束时，我方每名角色弃去其中一种花色；当一名角色的花色全部弃去后，其因此获得的属性提升失效。只要你的花色未全部弃去，你便不能再次发动荣誉祝福。", card: { name: "荣誉祝福", type: "tactic", mariaHonorBlessing: true, icon: "⚔️", text: "弃置1至4张花色各不相同的手牌。" } },
+    ],
+  },
 ];

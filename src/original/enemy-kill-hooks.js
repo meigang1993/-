@@ -21,6 +21,7 @@ window.EnemyKillHooks = ({ black, hasSkill, drawJudge }) => {
   function beforeKillUsed(state, actor, card) {
     if (!actor || !card) return;
     window.BakarSkills?.beforeKillTargeted?.(state, actor, card);
+    window.RuinsEnemySkills?.beforeKillUsed?.(state, actor, card);
     if (window.RelicSystem?.hasEquipped?.(state, actor, "圣鹰剑")
       && actor.hand.some(item => item.name === "闪" && !item._pendingDraw)) {
       if (!card.ignoreResponse) card._tempIgnoreResponse = true;
@@ -45,6 +46,7 @@ window.EnemyKillHooks = ({ black, hasSkill, drawJudge }) => {
       window.EdisSkills?.beforeSlash?.(state, actor, target, card);
     }
     window.OrcDungeonSkills?.beforeKillTargeted?.(state, actor, target, card);
+    window.RuinsEnemySkills?.beforeKillTargeted?.(state, actor, target, card);
     monaSlash(state, actor, target, card);
     minotaurDefense(state, target, card);
     minotaurRage(state, actor, card);

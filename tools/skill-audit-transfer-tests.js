@@ -63,16 +63,22 @@ module.exports = ({
     ), `Dimension Transfer must reject ${marker} group Slashes`);
   });
 
-  const taunter = unit("taunter", "ally", { ref: "angelica" });
-  const taunted = unit("taunted", "enemy", { hand: [{ ...incoming }] });
-  let tauntCard = null;
-  state = { battle: { allies: [taunter], enemies: [taunted], animQueue: [], locked: false } };
-  AngelicaLukaSkills.handleSpecialCard(
-    state, taunter, taunter, { angelicaTaunt: true }, {},
-    { useCard(_state, _actor, _target, used) { tauntCard = used; } },
-  );
-  assert(tauntCard?.virtual,
-    "Taunt must force a virtual single Slash when one is in hand");
+  const rampager = unit("rampager", "ally", { ref: "angelica" });
+  Object.assign(rampager, { hp: 20, maxHp: 40, rageMarks: 3 });
+  const rampageDraws = [];
+  state = { battle: { allies: [rampager], enemies: [], animQueue: [], locked: false } };
+  AngelicaLukaSkills.handleSpecialCard(state, rampager, rampager,
+    { crimsonRampage: true },
+    { draw(unit_, count) { rampageDraws.push(count); return count; } },
+    {});
+  assert(rampager.rageMarks === 0,
+    "Crimson Rampage must spend every rage mark");
+  assert(rampageDraws.length === 1 && rampageDraws[0] === 3,
+    "Crimson Rampage must draw one card per spent mark");
+  assert(rampager.hp === 20 + Math.round(3 * 40 * 0.1),
+    "Crimson Rampage must heal marks x 10% of maxHp");
+  assert(AngelicaLukaSkills.canUseCrimsonRampage(rampager) === false,
+    "Crimson Rampage must be limited to once per turn");
 
   const raider = unit("raider", "enemy", { ai: "shark_pirate_raider" });
   const lootTarget = unit("loot", "ally", { hand: [card("Loot")] });
@@ -108,12 +114,17 @@ module.exports = ({
       allies: [berserker], enemies: [], animQueue: [], locked: false,
     },
   };
-  AngelicaLukaSkills.handleSpecialCard(
-    state, berserker, berserker, { angelicaRage: true }, {},
-  );
-  assert(berserker.hand.length === 2
-    && berserker.hand.every(item => item.generatedBySkill === "狂战意志"),
-  "Berserker Will Slashes must retain their generated skill source");
+  const berserkerSlash = card("杀（普攻）", "slash", { power: 1, scale: "attack" });
+  const berserkerHandBefore = berserker.hand.length;
+  assert(AngelicaLukaSkills.canPayIntentWithRage(berserker, berserkerSlash) === true
+    && AngelicaLukaSkills.beforeIntentCost(state, berserker, berserkerSlash) === true
+    && berserker.rageMarks === 1
+    && berserker.hand.length === berserkerHandBefore,
+  "Berserker Will must spend one rage mark to cover an entity slash intent cost");
+  berserker.rageMarks = 0;
+  assert(!AngelicaLukaSkills.canPayIntentWithRage(berserker, berserkerSlash)
+    && AngelicaLukaSkills.beforeIntentCost(state, berserker, berserkerSlash) === false,
+  "Berserker Will must stop covering intent cost once rage marks are exhausted");
 
   let flamerSweep = null;
   manny.mannyWeapon = "flamer";

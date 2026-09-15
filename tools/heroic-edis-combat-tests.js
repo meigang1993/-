@@ -30,7 +30,8 @@ function testAiSequenceAndPursuits() {
     .filter(target => target.uid !== primaryTarget.uid);
   combat.useCard(state, edis, slashMove.target, slashMove.card);
   const baseSlashDamage = edis.stats.attack;
-  const chargedSlashDamage = Math.ceil(baseSlashDamage * 1.5);
+  // 蓄力按卡面描述为伤害×2（battle-combat-attack-values.js 用 Math.pow(2, charge)）。
+  const chargedSlashDamage = Math.ceil(baseSlashDamage * 2);
   const extraResolutions = Math.max(0, 7 - edis.stats.handLimit);
   assert.strictEqual(primaryTarget.maxHp - primaryTarget.hp,
     chargedSlashDamage * 2 + baseSlashDamage * 2 * extraResolutions,

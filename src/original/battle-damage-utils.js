@@ -51,6 +51,7 @@ window.BattleAttackAnimations = (() => {
     }
     markInitial(card, target);
     window.CharacterSkinFX?.attackTrail?.(state, actor, target);
+    window.AngelicaBerserkerSkinFX?.rageTrail?.(state, actor, target);
     return true;
   }
   return {
@@ -86,6 +87,7 @@ window.BattleDamageUtils = (deps, ctx) => {
     card._attackAnimQueued = true;
     state.battle.animQueue.push({ type: "virtualPlay", id: `vp${deps.nextAnim()}`, trailId: card._cardResolutionId, uid: actor.uid, side: actor.side, targetUid: target.uid, card, enemyLine: actor.side === "enemy", show: !!card.virtual, slashText: !shown });
     window.CharacterSkinFX?.attackTrail?.(state, actor, target);
+    window.AngelicaBerserkerSkinFX?.rageTrail?.(state, actor, target);
   }
   function directDamage(state, target, amount, source, actor, delay = 0, card = null) {
     if (!amount || state.battle?.locked || !target || target.hp <= 0) return { dodged: false, hpLoss: 0, blockLoss: 0 };

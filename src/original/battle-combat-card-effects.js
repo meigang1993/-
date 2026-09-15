@@ -14,9 +14,13 @@ window.BattleCombatCardEffects = api => {
       window.BattleStatusCards?.apply?.(state, actor, target, card);
       return true;
     }
+    if (card.ruinsPlaceLandmine || card.ruinsSnipe || card.ruinsBackstab) {
+      return run(() => window.RuinsEnemySkills?.useSkillCard?.(state, actor, target, card, damage),
+        () => specials.repeatTactic?.(state, actor, target, card));
+    }
     if (card.charge) {
       actor.charge = (actor.charge || 0) + card.charge;
-      const multiplier = Math.pow(1.5, actor.charge).toFixed(3).replace(/\.0+$/, "").replace(/0+$/, "");
+      const multiplier = Math.pow(2, actor.charge).toFixed(3).replace(/\.0+$/, "").replace(/0+$/, "");
       window.BattleLog.add(state, `${actor.name} 蓄力${actor.charge}层，下一张杀牌伤害×${multiplier}。`);
       specials.repeatTactic(state, actor, target, card);
       return true;

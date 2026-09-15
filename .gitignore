@@ -37,3 +37,7 @@ id_ed25519*
 secrets.*
 credentials.*
 cookies.*
+GGGG/
+
+# Local OhMyAgent tool state (agent permission config, machine-local)
+.ohmyagent/settings.json

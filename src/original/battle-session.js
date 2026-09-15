@@ -42,6 +42,9 @@ window.BattleSession = ({
       window.SakuraRisaSkills?.onDrawRedirected?.(
         battle, unit, recipient, batch.length);
     });
+    window.RuinsRelicEffects?.afterDraw?.(
+      window.state?.battle === battle ? window.state : { battle },
+      unit, cards, draw, { getCombat });
     return cards;
   }
 

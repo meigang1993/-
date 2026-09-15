@@ -7,6 +7,7 @@ window.BattleDamageTriggers = (api) => {
     window.ElranaAceNanaliSkills?.afterResponse?.(state, target, actor, { damage });
     window.BertisGerlotSkills?.afterDodge?.(state, actor, target, card, { damage });
     window.GuestCharacterSkills?.afterDodge?.(state, actor, target, card, { damage });
+    window.RuinsEnemySkills?.afterDodged?.(state, actor, target, card);
     if (!deps.isKillCard(card)) return;
     if (ctx.hasSkill(actor, "剪切邪斩")) {
       window.BattleLines?.skill(state, actor, "剪切邪斩", target);

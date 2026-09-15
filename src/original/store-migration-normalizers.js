@@ -132,8 +132,7 @@ window.StoreMigrationNormalizers = (() => {
       .map(([id, relics]) => [id, window.RelicSystem.normalizeSlots(relics)]));
     state.testSkins = Object.fromEntries(Object.entries(state.testSkins)
       .filter(([id, skinId]) => validCharacters.has(id)
-        && window.SkinSystem?.byId?.(skinId)?.charId === id
-        && !window.SkinSystem?.byId?.(skinId)?.specialIllustration));
+        && window.SkinSystem?.byId?.(skinId)?.charId === id));
     if (before !== JSON.stringify({
       testAllies: state.testAllies, testEnemies: state.testEnemies,
       testCards: state.testCards, testRelics: state.testRelics,

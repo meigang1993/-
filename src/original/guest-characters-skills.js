@@ -65,7 +65,7 @@ window.GuestCharacterSkills = (() => {
     return amount;
   }
   function afterDamage(state, actor, target, card, hpLoss, api) {
-    window.GuestAilengSkills.afterDamage(state, actor, hpLoss);
+    window.GuestAilengSkills.afterDamage(state, actor, hpLoss, api);
     if (target?.hp <= 0 && !window.SakuraRisaSkills?.pendingRevival?.(target)) onDeath(state, target, actor, api);
   }
   function afterCardPlayed(state, actor, target, card, deps) {

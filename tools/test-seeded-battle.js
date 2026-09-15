@@ -31,6 +31,7 @@ function assert(condition, message) {
   "./src/original/data-sakura-risa.js",
   "./src/original/data-machine-factory-enemies.js",
   "./src/original/data-underwater-train-enemies.js",
+  "./src/original/data-ruins-sand-city-enemies.js",
   "./src/original/data-world.js",
   "./src/original/data.js",
   "./src/original/bounty-ledger.js",

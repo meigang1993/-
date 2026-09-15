@@ -234,4 +234,177 @@ require("./new-character-kaiichi-ui-tests")({
   assert, card, character, draw, unitFromCharacter, yiData, kaiichiData,
 });
 
+
+// ---------- Artina & Maria ----------
+vm.runInThisContext(fs.readFileSync("./src/original/artina-maria-skills.js", "utf8"), { filename: "artina-maria-skills.js" });
+vm.runInThisContext(fs.readFileSync("./src/original/battle-line-data.js", "utf8"), { filename: "battle-line-data.js" });
+
+const artinaData = character("artina");
+const mariaData = character("maria");
+assert(JSON.stringify(artinaData.stats) === JSON.stringify({ attack: 3, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 }), "Artina stats mismatch");
+assert(JSON.stringify(mariaData.stats) === JSON.stringify({ attack: 3, magic: 3, speed: 4, maxHp: 38, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 }), "Maria stats mismatch");
+assert(artinaData.unlockFlag === "ruinsSandCityUnlocked" && mariaData.unlockFlag === "ruinsSandCityUnlocked", "Artina/Maria must unlock with Ruins Sand City");
+assert(artinaData.role === "魅影突击队狙击手" && mariaData.role === "魅影突击队支援兵", "Artina/Maria role mismatch");
+
+const artinaLines = window.BattleLineData.skillLines.artina;
+const mariaLines = window.BattleLineData.skillLines.maria;
+assert(artinaLines["狙击目标"] === "让我看看敌人在哪。", "Artina Sniper Target line missing");
+assert(artinaLines["蓄力子弹"] === "耶，打中了要害。", "Artina Charged Bullet line missing");
+assert(mariaLines["神数咒语"] === "盖亚妮丝女神请你祝福我。", "Maria Number Spell line missing");
+assert(mariaLines["荣誉祝福"] === "神圣的祝福增强我们斗志。", "Maria Honor Blessing line missing");
+
+const foe = { uid: "e9", side: "enemy", name: "靶机", hp: 60, maxHp: 60, block: 0, hand: [card("闪", "response", { suit: "♦" })], discard: [], consumed: [], stats: { attack: 5, magic: 5, speed: 5, maxHp: 60 } };
+const artina = unitFromCharacter(artinaData, "artina9");
+const artinaState = { battle: { allies: [artina], enemies: [foe], animQueue: [] } };
+
+// Charged Bullet is independent of Sniper Target
+artina.artinaSuits = {};
+ArtinaMariaSkills.beforeCardPlayed(artinaState, artina, card("杀（普攻）", "slash", { suit: "♥" }), {});
+assert(artina.artinaSuits["♥"] === true, "Artina must record the first suit used each turn");
+const chargedCard = card("杀（普攻）", "slash", { suit: "♠" });
+const chargedDamage = ArtinaMariaSkills.modifySlashDamage(artinaState, artina, foe, 10, chargedCard);
+assert(chargedDamage === 20, `Charged Bullet must double damage with one suit recorded, got ${chargedDamage}`);
+assert(!chargedCard.ignoreResponse, "Charged Bullet alone must not block responses");
+assert(Object.keys(artina.artinaSuits).length === 0, "Charged Bullet must clear recorded suits");
+
+// 蓄力子弹是「下一张」杀才加成：本张杀自己记录的花色不给自己加成
+artina.artinaSuits = {};
+const selfSlash = card("杀（普攻）", "slash", { suit: "♥" });
+ArtinaMariaSkills.beforeCardPlayed(artinaState, artina, selfSlash, {});
+assert(artina.artinaSuits["♥"] === true, "A slash must record its own suit");
+assert(ArtinaMariaSkills.modifySlashDamage(artinaState, artina, foe, 10, selfSlash) === 10,
+  "A slash must not benefit from the suit it just recorded itself");
+const nextSlash = card("杀（普攻）", "slash", { suit: "♦" });
+ArtinaMariaSkills.beforeCardPlayed(artinaState, artina, nextSlash, {});
+assert(ArtinaMariaSkills.modifySlashDamage(artinaState, artina, foe, 10, nextSlash) === 20,
+  "The next slash must be doubled with one previously recorded suit");
+// 多种花色必须能累加（否则「每记录一种+1倍」永远只能到 1 种）
+artina.artinaSuits = {};
+ArtinaMariaSkills.beforeCardPlayed(artinaState, artina, card("甲", "tactic", { suit: "♠" }), {});
+ArtinaMariaSkills.beforeCardPlayed(artinaState, artina, card("乙", "tactic", { suit: "♦" }), {});
+const bigSlash = card("杀（普攻）", "slash", { suit: "♣" });
+ArtinaMariaSkills.beforeCardPlayed(artinaState, artina, bigSlash, {});
+assert(ArtinaMariaSkills.modifySlashDamage(artinaState, artina, foe, 10, bigSlash) === 30,
+  "Two recorded suits must triple the next slash");
+
+// Sniper Target blocks responses when Artina holds more of the shown suit
+artina.hand = [card("闪", "response", { suit: "♦" }), card("看破", "response", { suit: "♦" })];
+const snipeCard = { name: "狙击目标", type: "tactic", artinaSniper: true, enemyTarget: true };
+assert(ArtinaMariaSkills.handleSpecialCard(artinaState, artina, foe, snipeCard, {}) === true, "Sniper Target must resolve");
+assert(artina.artinaChargedTargetUid === foe.uid, "Sniper Target must mark the target when Artina holds more of the suit");
+assert(artina.usedArtinaSniper === true, "Sniper Target must be once per turn");
+const snipedSlash = card("杀（普攻）", "slash", { suit: "♣" });
+ArtinaMariaSkills.modifySlashDamage(artinaState, artina, foe, 10, snipedSlash);
+assert(snipedSlash.ignoreResponse === true, "A sniped target must not respond to the kill");
+assert(ArtinaMariaSkills.handleSpecialCard(artinaState, artina, foe, { ...snipeCard }, {}) === false, "Sniper Target must be limited to once per turn");
+ArtinaMariaSkills.endTurn(artinaState, artina);
+assert(artina.artinaChargedTargetUid === null && Object.keys(artina.artinaSuits).length === 0, "Artina must clear marks at turn end");
+
+// Maria Number Spell
+const maria = unitFromCharacter(mariaData, "maria9");
+const mariaState = { battle: { allies: [maria], enemies: [foe], animQueue: [] } };
+let drawnCount = 0;
+const mariaDeps = { draw: (unit, count) => { drawnCount += count; return new Array(count).fill(0).map(() => card("临时牌", "tactic")); } };
+ArtinaMariaSkills.beforeCardPlayed(mariaState, maria, card("杀（普攻）", "slash"), mariaDeps);
+// 目标数初始为1：首张牌即达成目标，摸1张后重新计数，目标数升为2
+assert(drawnCount === 1, "The first play must reach the target of 1 and draw one card");
+// 达成目标数后神数标记清零（标记同时是攻魔加成与计数来源）
+assert(maria.mariaMarks === 0 && maria.mariaUseCount === 0, `Maria mark state mismatch: ${maria.mariaMarks}/${maria.mariaUseCount}`);
+assert(maria.tempAttack === 0 && maria.tempMagic === 0, "Marks must be cleared after reaching the target");
+ArtinaMariaSkills.beforeCardPlayed(mariaState, maria, card("闪", "response"), mariaDeps);
+assert(drawnCount === 1 && maria.mariaUseCount === 1, "The second play must not reach the next target of 2 yet");
+assert(maria.mariaMarks === 1 && maria.tempAttack === 1 && maria.tempMagic === 1, "Each Number mark must grant +1 attack and +1 magic");
+ArtinaMariaSkills.beforeCardPlayed(mariaState, maria, card("闪", "response"), mariaDeps);
+assert(drawnCount === 3 && maria.mariaMarks === 0, "The third play must reach the target of 2 and draw two cards");
+
+// 神数咒语完整序列：每使用一张牌获得1枚标记；达到目标数时摸等量牌、重新计数且目标数+1（1、2、3 张分别摸 1、2、3 张）
+const mariaSeq = unitFromCharacter(mariaData, "mariaSeq");
+const seqState = { battle: { allies: [mariaSeq], enemies: [foe], animQueue: [] } };
+const seqDrawn = [];
+const seqDeps = { draw: (unit, count) => { seqDrawn.push(count); return new Array(count).fill(0).map(() => card("临时牌", "tactic")); } };
+const seqTemp = [];
+for (let i = 0; i < 6; i += 1) {
+  ArtinaMariaSkills.beforeCardPlayed(seqState, mariaSeq, card("牌", "tactic", { suit: "♠" }), seqDeps);
+  seqTemp.push(mariaSeq.tempAttack);
+}
+// 标记在每次达成目标数后清零，故攻魔加成呈「累积→清零」锯齿：0,1,0,1,2,0
+assert(seqTemp.join(",") === "0,1,0,1,2,0",
+  `Number marks must reset at each target: 0,1,0,1,2,0 got ${seqTemp.join(",")}`);
+assert(seqDrawn.join(",") === "1,2,3",
+  `Number Spell must draw 1,2,3 got ${seqDrawn.join(",")}`);
+
+// Maria Honor Blessing
+const blessed = unitFromCharacter(character("lokar"), "blessed9");
+maria.hand = [card("甲", "tactic", { suit: "♥" }), card("乙", "tactic", { suit: "♦" })];
+const blessState = { battle: { allies: [maria, blessed], enemies: [foe], animQueue: [] } };
+const blessCard = { name: "荣誉祝福", type: "tactic", mariaHonorBlessing: true, _bagIndexes: [0, 1] };
+const blessBefore = { attack: blessed.stats.attack, magic: blessed.stats.magic, speed: blessed.stats.speed };
+const mariaBefore = { attack: maria.stats.attack, magic: maria.stats.magic, speed: maria.stats.speed };
+assert(ArtinaMariaSkills.handleSpecialCard(blessState, maria, maria, blessCard, {}) === true, "Honor Blessing must resolve");
+assert(blessed.stats.attack === blessBefore.attack + mariaBefore.attack
+  && blessed.stats.magic === blessBefore.magic + mariaBefore.magic
+  && blessed.stats.speed === blessBefore.speed + mariaBefore.speed,
+"Honor Blessing must grant Maria's attack/magic/speed to every ally");
+const castSuits = [...(maria.mariaBlessingSuits || [])];
+assert(blessed.mariaBlessingSuits.length === 2 && maria.mariaBlessingSuits.length === 2,
+  "Every ally must display the discarded suits");
+assert(maria.hand.length === 0, "Honor Blessing must discard the chosen cards");
+assert(ArtinaMariaSkills.handleSpecialCard(blessState, maria, maria, { ...blessCard, _bagIndexes: [] }, {}) === false, "Honor Blessing must be limited to once per turn");
+// 花色衰减由玛利亚的回合结束统一驱动，全队同步消失一个
+ArtinaMariaSkills.endTurn(blessState, maria);
+assert(blessed.mariaBlessingSuits.length === 1 && maria.mariaBlessingSuits.length === 1,
+  "One discarded suit must fade at each turn end, for the whole team");
+assert(ArtinaMariaSkills.handleSpecialCard(blessState, maria, maria, { ...blessCard, _bagIndexes: [0] }, {}) === false,
+  "Honor Blessing must stay locked while suits remain");
+ArtinaMariaSkills.endTurn(blessState, maria);
+assert(maria.mariaBlessingSuits.length === 0 && blessed.mariaBlessingSuits.length === 0,
+  "All suits must fade after enough turns");
+assert(!blessed.mariaBlessing && !maria.mariaBlessing, "Blessing must expire with the last suit");
+assert(blessed.stats.attack === blessBefore.attack && blessed.stats.magic === blessBefore.magic
+  && blessed.stats.speed === blessBefore.speed, "Expired blessing must remove its bonus");
+
+// 弃置花色：记录本次弃置的花色，并作为跨回合冷却（全部消失后才能再次发动）
+assert(castSuits.length === 2 && castSuits.includes("♥") && castSuits.includes("♦"),
+`Honor Blessing must record the discarded suits, got ${JSON.stringify(castSuits)}`);
+maria.hand = [card("丙", "tactic", { suit: "♠" })];
+assert(ArtinaMariaSkills.handleSpecialCard(blessState, maria, maria, { ...blessCard, _bagIndexes: [0] }, {}) === true,
+  "Honor Blessing must be usable again once every suit faded");
+
+// 荣誉祝福连续两回合施放不得叠加膨胀：加成必须基于玛利亚的基础属性
+const repMaria = unitFromCharacter(mariaData, "mariaRep");
+const repAlly = unitFromCharacter(character("lokar"), "allyRep");
+const repState = { battle: { allies: [repMaria, repAlly], enemies: [foe], animQueue: [] } };
+const repBase = repMaria.stats.attack, repAllyBase = repAlly.stats.attack;
+const refill = () => { repMaria.hand = [card("甲", "tactic", { suit: "♥" }), card("乙", "tactic", { suit: "♦" })]; };
+const castBlessing = () => {
+  refill();
+  return ArtinaMariaSkills.handleSpecialCard(repState, repMaria, repMaria,
+    { name: "荣誉祝福", type: "tactic", mariaHonorBlessing: true, _bagIndexes: [0, 1] }, {});
+};
+assert(castBlessing() === true, "Honor Blessing must resolve");
+const firstSelf = repMaria.stats.attack, firstMate = repAlly.stats.attack;
+assert(firstSelf === repBase * 2 && firstMate === repAllyBase + repBase,
+  "First blessing must grant Maria's base stats");
+// 荣誉祝福的再施放门槛已由「每回合限一次」改为「弃置花色全部消失」
+repMaria.usedMariaHonorBlessing = false;
+repMaria.mariaBlessingSuits = [];
+assert(castBlessing() === true, "Honor Blessing must be recastable once every suit faded");
+assert(repMaria.stats.attack === firstSelf && repAlly.stats.attack === firstMate,
+  `Repeated blessing must not compound, got ${repMaria.stats.attack}/${repAlly.stats.attack} expected ${firstSelf}/${firstMate}`);
+
+// Suit restriction while choosing Honor Blessing costs
+maria.hand = [card("甲", "tactic", { suit: "♥" }), card("丙", "tactic", { suit: "♥" })];
+const playability = window.BattleCardPlayability({
+  isKillCard: testCard => window.CardUtils.isKillCard(testCard),
+});
+assert(playability.needsHandChoice({ mariaHonorBlessing: true }) === true, "Honor Blessing must require a hand choice");
+assert(playability.canSelectHandCost(maria, { mariaHonorBlessing: true }, maria.hand[0], { selectedBagIndexes: [] }, 0) === true, "First suit must be selectable");
+assert(playability.canSelectHandCost(maria, { mariaHonorBlessing: true }, maria.hand[1], { selectedBagIndexes: [0] }, 1) === false, "A second card of the same suit must be locked");
+assert(playability.canSelectHandCost(maria, { mariaHonorBlessing: true }, maria.hand[1], { selectedBagIndexes: [0, 1] }, 1) === true, "A picked card must stay deselectable");
+
+ArtinaMariaSkills.endTurn(mariaState, maria);
+assert(maria.mariaMarks === 0 && maria.mariaUseCount === 0, "Maria must clear marks at turn end");
+BattleTurnState.resetBeginTurn(maria, mariaState.battle, 2);
+assert(maria.usedMariaHonorBlessing === false, "Honor Blessing must be rearmed next turn");
+
 console.log("New character skill and unlock tests passed");

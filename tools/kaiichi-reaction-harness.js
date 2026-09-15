@@ -1,6 +1,8 @@
 const assert = require("assert");
 const { combat, card, unit, scenario } = require("./pursue-kill-fixtures");
 
+window.RuinsRelicEffects = { missileLauncherBlock: () => true };
+
 require("../src/original/green-hat.js");
 require("../src/original/nanali-sealed.js");
 require("../src/original/elrana-healing-skills.js");
@@ -15,6 +17,7 @@ require("../src/original/hoshino-kaiichi-share.js");
 require("../src/original/hoshino-kaiichi-skills.js");
 require("../src/original/hoshino-skills.js");
 require("../src/original/battle-manual-hit-resume.js");
+require("../src/original/battle-manual-continuation-resume.js");
 require("../src/original/battle-manual-continuation.js");
 require("../src/original/battle-manual-actions.js");
 require("../src/original/battle-manual-flow.js");

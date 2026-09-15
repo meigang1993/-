@@ -64,6 +64,8 @@ window.BattleAI = (() => {
     const relicSkill = skillMove(actor, team, foes, canPlay, true);
     if (relicSkill) return relicSkill;
     const characterMoves = [
+      () => window.RuinsEnemySkills?.aiMove?.(
+        window.state, actor, team, foes, rawHand, canPlay, context),
       () => window.SakuraRisaSkills?.aiMove?.(
         window.state, actor, team, foes, rawHand, canPlay, context),
       () => window.GuardKellySkills?.aiMove?.(

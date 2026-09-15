@@ -93,7 +93,9 @@ function setHTML(el, html) {
   if (!el || el.innerHTML === html) return false;
   const repeated = repeatedAnimations(el);
   const restoreCaptions = preserveCaptionProgress(el);
-  const restoreMedia = preserveMedia(el);
+  const restoreMedia = el.dataset?.skipMediaPreservation === "1"
+    ? () => {}
+    : preserveMedia(el);
   const restoreHandSelection = preserveHandSelection(el);
   const restoreFocus = preserveControlFocus(el);
   const restoreModalFocus = preserveModalFocus(el);

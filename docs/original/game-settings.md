@@ -85,7 +85,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - The Little Elrana pre-battle encounter ends the run only after its settlement succeeds. While it is checking or settling, dungeon retreat controls are unavailable. A blocked, failed, or stale settlement restores the selected node when still owned and never continues into battle or writes event state after that node/run has been replaced.
 - Gameplay randomness: `src/original/game-random.js` owns the persistent seeded stream, uniform integer/sample helpers, Fisher-Yates shuffle, and durable run/task IDs derived from the current seed/cursor without advancing it. New games store `random.version/seed/cursor`; legacy saves receive the same structure during migration. Visual IDs, dialogue variants, and synthesized audio noise use the module's separate transient stream.
 - 2026年7月28日米勒【贪玩老虎机】概率调整为：3格均相同8%、恰有2格相同32%、3格均不同60%；对应仍摸8/4/1张牌，单次发动期望摸牌量为2.52张。
-- Battle flow and turn rules: `src/original/battle.js` is the public `BattleSystem` facade. Battle entry and initial draws live in `src/original/battle-session.js`, while victory, defeat, test, dungeon, and direct mission settlement live in `src/original/battle-session-settlement.js`; enemy continuation ownership lives in `src/original/battle-auto-enemy.js`; turn selection and preparation prompts live in `src/original/battle-turn-start.js`, input advancement lives in `src/original/battle-turn-input.js`, and `src/original/battle-turn-preparation.js` is their compatibility facade. Completion and phase advancement live in `src/original/battle-turn-completion.js` and `src/original/battle-turn-flow.js`; public resolution actions live in `src/original/battle-resolution-actions.js`. Supporting rules remain in `src/original/battle-turn-state.js`, `src/original/battle-combat.js`, and `src/original/battle-card-specials.js`. Attack orchestration lives in `src/original/battle-combat-attack-flow.js`, attack values and multi-hit handling live in `src/original/battle-combat-attack-values.js`, and `src/original/battle-combat-attack.js` is their facade. Damage lifecycle, response resolution, and final hit application live in `src/original/battle-damage-lifecycle.js`, `src/original/battle-damage-resolution.js`, and `src/original/battle-damage-hit.js`; `src/original/battle-damage.js` assembles their public API. Hand reveal/discard/theft and tactic counter/clash behavior live in `src/original/battle-card-hand-interactions.js` and `src/original/battle-card-counter-interactions.js`, with `src/original/battle-card-interactions.js` as their facade. Interrupted card state, after-card hooks, and resume steps live in `src/original/battle-card-resume-state.js`, `src/original/battle-card-resume-hooks.js`, and `src/original/battle-card-resume-flow.js`, with `src/original/battle-card-resume.js` as their facade. Prompt resolution and interrupted-turn continuation shared by New Moon, Gerda, Kaiichi, and Miller live in `src/original/battle-share-flow.js`; damage-side relic continuations live in `src/original/battle-damage-relics.js`.
+- Battle flow and turn rules: `src/original/battle.js` is the public `BattleSystem` facade. Battle entry and initial draws live in `src/original/battle-session.js`, while victory, defeat, test, dungeon, and direct mission settlement live in `src/original/battle-session-settlement.js`; enemy continuation ownership lives in `src/original/battle-auto-enemy.js`; turn selection and preparation prompts live in `src/original/battle-turn-start.js`, input advancement lives in `src/original/battle-turn-input.js`, and `src/original/battle-turn-preparation.js` is their compatibility facade. Completion and phase advancement live in `src/original/battle-turn-completion.js` and `src/original/battle-turn-flow.js`; public resolution actions live in `src/original/battle-resolution-actions.js`. Supporting rules remain in `src/original/battle-turn-state.js`, `src/original/battle-combat.js`, and `src/original/battle-card-specials.js`. Attack orchestration lives in `src/original/battle-combat-attack-flow.js`, attack values and multi-hit handling live in `src/original/battle-combat-attack-values.js`, and `src/original/battle-combat-attack.js` is their facade. Damage lifecycle, response resolution, and final hit application live in `src/original/battle-damage-lifecycle.js`, `src/original/battle-damage-resolution.js`, and `src/original/battle-damage-hit.js`; `src/original/battle-damage.js` assembles their public API. Hand reveal/discard/theft and tactic counter/clash behavior live in `src/original/battle-card-hand-interactions.js` and `src/original/battle-card-counter-interactions.js`, with `src/original/battle-card-interactions.js` as their facade. Interrupted card state, after-card hooks, and resume steps live in `src/original/battle-card-resume-state.js`, `src/original/battle-card-resume-hooks.js`, and `src/original/battle-card-resume-flow.js`, with `src/original/battle-card-resume.js` as their facade. Prompt resolution and interrupted-turn continuation shared by New Moon, Gerda, Kaiichi, and Miller live in `src/original/battle-share-flow.js`; damage-side relic continuations live in `src/original/battle-damage-relics.js`. Manual-continuation resume helpers (interrupted-action loop, combo-attack, and green-gatling resume) live in `src/original/battle-manual-continuation-resume.js` behind the `src/original/battle-manual-continuation.js` facade; deflect-result confirmation and auto-dodge live in `src/original/battle-dodge-deflect.js` behind `src/original/battle-dodge-response.js`; hand-owner visibility and prompt-card queueing helpers live in `src/original/battle-action-hand-visibility.js` behind `src/original/battle-action-hand-bindings.js`; checkpoint snapshot, pile restore, and adopt-restored helpers live in `src/original/battle-save-checkpoint-snapshot.js` behind `src/original/battle-save-checkpoint.js`. These four helper modules are internal splits of their parent facades and publish no new public API.
 - Battle input binding: `src/original/battle-actions.js` is the public binding facade. Prompt, target, and special-picker bindings live in `src/original/battle-action-prompt-bindings.js`, `src/original/battle-action-target-bindings.js`, and `src/original/battle-action-special-bindings.js`; shared selection and hand bindings remain in their existing `src/original/battle-action-*.js` modules.
 - Battle-only UI rendering lives in `src/original/ui-battle-pickers.js`, `src/original/ui-battle-targeting.js`, `src/original/ui-battle-units.js`, and `src/original/ui-battle-scene.js`; these modules load in the deferred `battle-ui` bundle after rules, skills, flow/settlement, AI, and presentation bundles, while `src/original/ui.js` resolves the complete battle scene only after the full battle set is ready.
 - Dialogue and battle lines: `src/original/battle-line-data.js`; timed unit speech lives in `src/original/battle-speech-controller.js`, skill captions live in `src/original/battle-caption-controller.js`, and `src/original/battle-lines.js` remains the public facade.
@@ -214,10 +214,10 @@ gameplay values and behavior remain here rather than being duplicated in
 - Experience and level changes are part of the idempotent dungeon-node reward receipt. Replaying the same settlement returns the stored progression payload and never grants experience twice. The battle victory screen and later node reward popup both show team experience; the reward popup also shows per-character level gains. Test and direct non-dungeon victories do not show team experience.
 - New saves store character `level`, `exp`, and current `hp`; canonical stats are derived at runtime and omitted from compact saves. Reloading a current-version compact save preserves that exact current HP, clamped only to the rebuilt maximum. The current version-3 growth migration preserves sanitized level and current-level experience, recomputes canonical stats, and adjusts current HP by the previous maximum-HP ratio; version-2 saves preserve exact current HP because maximum-HP growth is unchanged, and dead characters remain dead. Older manual-allocation migration still resets current-level experience to `0`, removes `spent` and the old stat-reset flag, and preserves HP ratio.
 - The bottom navigation destination formerly used by the training room is now `客厅`. The living room shows unlocked characters only, with level, current experience, and core stats; clicking a character opens the shared detail panel with the primary combat-role badge beside the name and level-0/current/level-15 growth values. The full character-position description remains on the Attributes tab and is not repeated on the Skills tab. The non-battle panel keeps Skills, two-slot Relics equip/unequip, available Skins, portrait zoom, backdrop/Escape closing, and exact opener-focus restoration usable. Its Relics tab has no codex button; the hall relic inventory remains the codex entry point. Skin choices use the hall appearance-persistence path rather than the battle-only switch action. There are no paid upgrades, allocation points, recommendations, or reset controls.
-- 贝尔蒂丝的等级特殊立绘 ID 固定为`bertis_level_10_special`，素材固定为`publish/assets/generated/bertis-level-10-special.022dd113.webp`。角色详情在`Lv.10`前显示锁定条件，达到`Lv.10`后按当前角色等级自动加入已拥有皮肤并允许装备、放大查看和作为正式战斗立绘；不得通过宝珠购买提前解锁。测试战斗配置与战斗内皮肤面板不得试用未解锁的等级特殊立绘，统一显示`Lv.10`锁定占位且不创建原图；已拥有立绘继续沿用正式装备路径。
-- 诺诺卡的等级特殊立绘 ID 固定为`nonoka_level_10_special`，素材固定为`publish/assets/generated/nonoka-level-10-special.ba4c8ff8.webp`。其等级解锁、正式装备、放大查看和测试战斗锁定展示规则与贝尔蒂丝等级特殊立绘相同；现有`nonoka_idol_rising_star`仍是独立的史诗皮肤，不被替换或降级。
-- 等级特殊立绘统一使用`specialIllustration: true`、`unlockLevel: 10`和零价格元数据。`src/original/store-migration-normalizers.js`在旧存档归一化时必须调用`SkinSystem.ensure(state)`：已解锁且当前等级达到`Lv.10`的角色，即使旧存档没有对应新立绘 ID，也会自动加入已拥有皮肤；未达到等级的错误拥有标记会被移除，若正装备该立绘则回退角色默认外观。任何拥有或装备修复都必须标记迁移存档重写，不能只在当前内存会话生效。旧`testSkins`中的等级特殊立绘试用记录也必须清除；测试战斗不得绕过等级解锁，正式装备仍按外观设置路径保存。
-- 当前等级特殊立绘为贝尔蒂丝`bertis_level_10_special`、诺诺卡`nonoka_level_10_special`、曼妮`manny_level_10_special`、芙萝娅`flora_level_10_special`、温蒂`wendy_level_10_special`和艾尔拉娜`elrana_level_10_special`。曼妮“枪之魅魔”、芙萝娅“音速刺客”和温蒂“慈爱教师”是彼此独立的史诗宝珠皮肤，不属于等级特殊立绘，也不得被等级归一化清除。
+- 贝尔蒂丝的等级特殊立绘 ID 固定为`bertis_level_10_special`，素材固定为`publish/assets/generated/bertis-level-10-special.022dd113.webp`。角色详情在`Lv.10`前显示锁定条件，达到`Lv.10`后按当前角色等级自动加入已拥有皮肤并允许装备、放大查看和作为正式战斗立绘；不得通过宝珠购买提前解锁。正式副本与据点中未解锁的等级特殊立绘统一显示`Lv.10`锁定占位；测试战斗放开试用（含未拥有的等级特殊立绘，见 2026-09-01 规则），已拥有立绘继续沿用正式装备路径。
+- 诺诺卡的等级特殊立绘 ID 固定为`nonoka_level_10_special`，素材固定为`publish/assets/generated/nonoka-level-10-special.ba4c8ff8.webp`。其等级解锁、正式装备和放大查看规则与贝尔蒂丝等级特殊立绘相同；现有`nonoka_idol_rising_star`仍是独立的史诗皮肤，不被替换或降级。
+- 等级特殊立绘统一使用`specialIllustration: true`、`unlockLevel: 10`和零价格元数据。`src/original/store-migration-normalizers.js`在旧存档归一化时必须调用`SkinSystem.ensure(state)`：已解锁且当前等级达到`Lv.10`的角色，即使旧存档没有对应新立绘 ID，也会自动加入已拥有皮肤；未达到等级的错误拥有标记会被移除，若正装备该立绘则回退角色默认外观。任何拥有或装备修复都必须标记迁移存档重写，不能只在当前内存会话生效。旧`testSkins`中的等级特殊立绘试用记录按测试战斗试用规则保留不清除；正式装备仍按外观设置路径保存。
+- 当前等级特殊立绘为贝尔蒂丝`bertis_level_10_special`、诺诺卡`nonoka_level_10_special`、曼妮`manny_level_10_special`、芙萝娅`flora_level_10_special`、温蒂`wendy_level_10_special`、艾尔拉娜`elrana_level_10_special`和安洁莉卡`angelica_level_10_special`。曼妮“枪之魅魔”、芙萝娅“音速刺客”、温蒂“慈爱教师”、艾尔拉娜“堕落医师”和安洁莉卡“帝血弑天”是彼此独立的史诗宝珠皮肤，不属于等级特殊立绘，也不得被等级归一化清除。
 - Cloud KV mutations are serialized per key through the completion of the underlying SDK request. A client-side timeout may report a recoverable failure, but its late completion must never overtake and overwrite a newer save or delete.
 - When `dzmm.kv` is available it is the required durable copy; sandboxed `localStorage` remains a best-effort fallback. A successful cloud slot/main write or delete must not be reported as permanently partial only because the iframe blocks local storage.
 - 生产主档、手动槽1-3和设置都直接使用浏览器 `dzmm.kv` 的现有 key。启动不调用 `dzmm.fn`，函数 bridge、函数发布状态和 Cloudflare challenge 不得阻止标题画面。设置读取失败时可使用有效本地副本或受锁定的默认值继续启动；主档/槽位读取仍必须区分明确空值与失败，失败不得初始化空档或覆盖未知云端数据。
@@ -246,6 +246,11 @@ gameplay values and behavior remain here rather than being duplicated in
 - 【与我一战】由目标先打出【杀（普攻）】，双方轮流打出直至一方无法继续；未打出的角色受到最后出牌者造成的等同于其攻击力的物理伤害。控神魔眼生成的虚拟【与我一战】使用相同伤害公式。
 - 文案标准化只澄清现有运行效果，不得借改文案暗中改变卡牌逻辑。新增或调整正式卡牌时，必须同步更新卡牌描述一致性测试。
 
+### 安洁莉卡与奥菲莉亚默认立绘
+
+- 安洁莉卡默认战场、角色栏与头像立绘固定使用`./assets/images/angelica-portrait.webp`，1024×1024方形WebP资源；奥菲莉亚默认战场、角色栏与头像立绘固定使用`./assets/images/ophelia-portrait.webp`，2048×2048方形WebP压缩资源。两者均通过`src/original/data-characters-extra.js`引用。
+- 2026-08-31起两张立绘为原文件名原位替换的新版形象，原立绘不再保留；2026-09-01安洁莉卡立绘按用户桌面新设计稿再次原位替换（1024×1024）。替换时不得修改引用路径或引入哈希后缀，新素材单文件体积必须低于2MiB资产预算。
+
 ### 天日国部队名称
 
 - 游戏所有玩家可见文案统一使用“鹰7部队”，不得再使用旧称“137部队”。
@@ -258,7 +263,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 感电追加伤害属于独立的实际生命值伤害事件，必须经过统一伤害与受伤后触发链；它忽略护甲且不会再次触发感电，但可正常触发半魅魔血等“受到生命值伤害后”效果。
 - 毒、燃烧、刺弹爆炸与【魔王军入侵】造成的实际生命值伤害同样经过统一受伤后触发链。毒伤不会重新叠毒，刺弹爆炸不会再次引爆其他刺弹；准备阶段若被半魅魔血等提示暂停，必须从原准备阶段步骤继续，不能漏掉后续毒伤、敌方准备技能、饰品或判定摸牌阶段。
 - 准备阶段的每个步骤必须在执行可能中断的技能、反击或提示前推进游标；中断恢复时只继续尚未完成的步骤，不得重做已经结算的状态伤害、准备技能或费用。嵌套敌方准备游标在整段准备流程完成后必须一并清理；若敌方准备被打断后恢复到出牌阶段，只对仍有 AI 的敌人自动继续出牌，测试单位停留在输入阶段。
-- 安洁莉卡【挑衅】要求所有存活敌人依次完成“使用1张单体【杀】或弃置1张手牌”；其中任一次强制攻击触发责任担当、次元转移或其他锁定提示时，必须保留尚未行动的敌人，并在提示结算后从下一名敌人继续。
+- 任一强制攻击类效果（如要求敌人依次“使用1张单体【杀】或弃置1张手牌”）在任一次强制攻击触发责任担当、次元转移或其他锁定提示时，必须保留尚未行动的敌人，并在提示结算后从下一名敌人继续。
 - 曼妮【次元转移】触发后，底部手牌区统一切换为曼妮的真实手牌；玩家必须亲自选择1张可见黑色手牌，选牌后再指定一名存活敌人承受伤害。红色牌与待摸牌不可选择；玩家可以放弃发动，放弃时不弃牌并让原目标继续承受已经确认命中的该次伤害，不得重新获得一次响应机会。次元转移每次只改写当前伤害段，多段【杀】的剩余伤害继续走统一续跑并可逐段重新选择。
 - 多段伤害续跑显示下一次【次元转移】提示后，费用牌与敌方目标必须立即可操作；若上一段的动画或操作锁仍在收尾，目标点击需排队到收尾完成后执行，不能静默丢弃并让提示卡死。敌方回合续跑失败必须进入战斗动作错误恢复，并且不得把失败后的状态写成稳定操作检查点。
 - 多段伤害的中断续跑必须重新确认伤害来源仍存活；若来源在次元转移、反击或其他反应中生命降至0，立即丢弃该来源尚未结算的剩余伤害段，再继续公共反应队列与回合清理。
@@ -658,7 +663,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 所有`拼花`统一为双方各亮出自己摸牌堆顶1张牌比较标准花色，亮出的牌分别置入各自弃牌堆；不得再从手牌选择、弃置或消耗拼花牌。摸牌堆为空时先按既有规则随机洗回弃牌堆，再亮出牌堆顶牌；不得按弃牌堆原顺序直接移回而产生固定结果。
 - `爱之鞭挞`等拼花结果弹窗必须显示在技能标题之上，且战斗锁定时不得被压暗。
 - 战斗单位节点本身不使用浏览器原生`title`属性；战场立绘与行动区立绘使用和测试战斗角色立绘一致的原生技能说明浮字，内容读取角色技能摘要，不渲染额外自绘悬停面板。角色详情继续通过点击面板查看。
-- 角色与怪物按实战功能统一分为`输出`、`控制`、`辅助/续航`、`防御/嘲讽`、`成长/资源`五类，每个单位只保留一项主定位。战场姓名不显示定位；点击战斗头像打开角色详情后，在详情名字右侧显示完整主定位，技能按钮的原生悬停浮字同步显示该定位。旧战斗存档即使保存了多项定位，也优先按角色或怪物规范ID回查当前单一主定位；未知单位最多显示其首项定位。
+- 角色与怪物按实战功能统一分为`输出`、`控制`、`辅助/续航`、`防御/嘲讽`、`成长/资源`五类，每个单位只保留一项主定位。安洁莉卡当前主定位为`输出`。战场姓名不显示定位；点击战斗头像打开角色详情后，在详情名字右侧显示完整主定位，技能按钮的原生悬停浮字同步显示该定位。旧战斗存档即使保存了多项定位，也优先按角色或怪物规范ID回查当前单一主定位；未知单位最多显示其首项定位。
 - 顶栏莉莉丝元显示名为`据点余额`；副本探索期间仍显示当前可消费的据点数值，并在旁边同步显示本次探索的`待结算 +N`金币与精华宝珠。副本顶部累计收入显示名为`本次探索待结算`，通关或撤退执行入账后才并入据点余额。
 - 副本节点结算成功后必须校验真实奖励载荷，并可从当前副本奖励收据账本或待结算资源增量恢复兼容返回；不得在奖励字段缺失或异常时静默显示莉莉丝元0、精华宝珠0。无法确认真实奖励时暂停节点完成并显示可重试错误。
 - 角色最大生命值只按各自成长配置自动提升，不再存在生命值加点或通用固定换算。
@@ -673,6 +678,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 专属皮肤以行动者本人为主体的瞬时技能特效在行动区显示时，必须同时复制到该角色的战场头像；目标受击层和行动者到目标的连线仍保持各自单一锚点。
 - `battlefield`、`action`、`action-first`和`battlefield-first`是固定定位模式；新增技能优先复用这些模式，不为单个技能建立另一套位置规则。
 - 专属皮肤的立绘 class、技能特效控制器和胜利演出统一以当前实际装备皮肤为准；战斗单位上缓存的`skinDynamicEffect`只作缺少装备状态时的兼容回退。战斗内切换到默认皮肤必须立即停用专属效果，重新切回专属皮肤后入场与常驻效果可以重新同步，不能因旧的已播放标记永久失效。
+- 只有装备（或测试战斗试用）专属皮肤时才有皮肤专属技能特效；切回默认皮肤后所有专属特效立即失效，这是固定的产品设定。所有皮肤特效控制器的每个公开入口都必须有`active()`守卫，包括异步结算回调（如芙萝娅袭影击败回场）。战斗内切换皮肤成功后必须立即取消所有皮肤控制器挂载中的特效（`app-battle-skin-actions.js`聚合调用各控制器的`cancel`），新皮肤的入场特效由重绘同步重新触发。
 - 专属皮肤立绘 class 上的绝对定位装饰必须以立绘容器自身为定位上下文；战场、行动区和胜利结算中的装饰均不得越出角色画面覆盖技能、按钮或结算数据。
 - 测试战斗存档配置只保留当前正式角色、有效怪物索引、正式卡牌、正式饰品、匹配角色的有效皮肤和当前角色名下的测试装备；删除内容后加载旧存档必须清理对应测试项并请求回写。
 
@@ -687,6 +693,16 @@ gameplay values and behavior remain here rather than being duplicated in
 - `读书的智慧`显示教案自动翻页、战术魔法阵与金色字符凝成新牌，并在眼镜位置闪过书页反光。
 - `解答迷惑`显示高举教案、巨大金色魔法阵与环形战术牌虚影；将临时牌交给其他角色时显示学识符文丝带，交给卡迪西斯或芙萝娅时丝带表现增强。
 - 胜利结算显示温蒂合上教案、黑板浮现“下课”、书签归位，并在教案总结区显示本次实际伤害、由该技能累计授予的护甲和由`读书的智慧`累计摸到的牌数。与其他专属皮肤同队时，仍只展示实际贡献排名最高者的一套专属胜利画面和音效。
+
+### 安洁莉卡皮肤：帝血弑天
+
+- 皮肤 ID：`angelica_berserker`；品质固定为史诗，兑换价格固定为10精华宝珠，仅属于安洁莉卡；`angelica_default`保留原立绘并允许随时切回。帝血弑天继续使用`publish/assets/generated/angelica-berserker.371936f3.webp`，专属动态特效标识固定为`angelica-berserker`。
+- 形象固定为暗红血意支配的成年狂战女性：暗红长发遮住半张脸，露出的竖瞳带有灼红能量，脸颊裂痕与脖颈锁骨沿线流动红色光流，半透明鳞片状血甲游动覆盖身体，右手凝成巨剑，左手保留三根红色尖刺，颈后到尾椎悬浮脊椎残影。不得改成明亮圣骑士、金发蓝瞳、普通火焰战士或无暗红能量识别点的形象。
+- 专属特效控制器为`src/original/angelica-berserker-skin-fx.js`，注册在 battle-presentation bundle；样式注册于`src/original/runtime-battle-styles.js`的`angelica-berserker`映射，指向`publish/angelica-berserker-skin.css`。
+- 出场演出由战斗开始事件单次排队：中央先显出搏动的暗红巨剑轮廓，随后血意环、红雾粒子与安洁莉卡立绘一同升起，剑光在角色前方凝成。
+- `力量爆发`（本回合每张实体【杀】倍率递增）显示血甲收紧、巨剑膨胀与粗壮暗红剑柱；`狂战意志`受击或造成伤害时获得血色印记（受击更强），消耗1枚狂战标记代替1点杀意消耗时显示印记炸裂、血雾回流与能量脉冲，并化为本回合攻击血色拖尾（`angelica-berserker-rage-trail`连线，由`battle-damage-utils.js`在攻击时触发）；`猩红暴走`按设计稿分阶段显示血甲收束、标记逐枚炸裂、插地冲击波与地面龟裂、猩红巨人虚影凝聚并渗透治愈、血雨洒落，每弃置1枚标记触发一次自脚下上浮的暗红脉冲光环，多枚时连续触发且颜色逐圈加深，最终在胸口汇聚成猩红核心后沉入体内。
+- 胜利结算显示帝血弑天专属立绘区、CSS 巨剑、血色碎片粒子与台词"帝血未冷，下一场继续。"；与其他专属皮肤同队时，仍只展示实际贡献排名最高者的一套专属胜利画面和音效。
+- 测试战斗可试用该皮肤（与其他史诗皮肤规则一致）；`tools/test-angelica-berserker-skin.js`注册于 presentation 组。
 
 ### 罗卡尔皮肤：恋母勇者
 
@@ -776,3 +792,62 @@ When a setting changes:
 4. Follow `docs/original/qa-workflow.md`.
 5. Run the publish path compliance check before saving.
 6. Use the Game Studio git save endpoint after edits.
+
+## Ruins Sand City Dungeon
+
+- `ruins_sand_city` is a completed formal dungeon, defined in
+  `src/original/data-ruins-sand-city.js` and
+  `src/original/data-ruins-sand-city-enemies.js`. Content (cards and relics)
+  lives in `src/original/data-ruins-content.js`.
+- Unlock flag: `ruinsSandCityUnlocked`; unlock condition: first clear of
+  `orc_dungeon` at warrior difficulty triggers the unlock event.
+- Route: fixed-random, 15 layers, rest at 4 and 9, chest at 7, boss at 15.
+- BGM: `./assets/new-bgm/ruins-sand-city-battle.mp3`.
+- Enemy roster: 4 normal (noble_soldier, noble_sniper, merca_tank,
+  attack_drone), 3 elite (hilde, attack_helicopter, armored_carrier),
+  2 boss (mech_ai_dragon, witherer_1312).
+- 10 new cards in `data-ruins-content.js`: 拼杀, 魔之连杀, 魅惑术, 魅杀,
+  偷袭, 冰冻术, 流星杀, 吸魔杀, 物资私分, 枪林弹雨.
+- 10 new relics in `data-ruins-content.js`: 推进器, 智能大脑, 魅魔钢叉,
+  粉色魅魔装, 冰心双刺剑, 刺客胶衣, 螺旋桨, 导弹发射器, 物资货物, 武器库.
+- Enemy art lives in `publish/assets/ruins-enemies/`; note that
+  `noble_sniper.art` points to `attack-drone.webp` and `attack_drone.art`
+  points to `noble-sniper.webp` (cross-referenced).
+- Enemy skills are implemented in `src/original/ruins-enemy-skills.js`,
+  `src/original/ruins-grunt-skills.js`, `src/original/ruins-dragon-skills.js`,
+  `src/original/ruins-witherer-skills.js`, and `src/original/ruins-elite-skills.js`.
+- Relic effects are implemented in `src/original/ruins-relic-effects.js`.
+
+## Incomplete New Characters (Excluded From Formal Scope)
+
+- `artina` (亚缇娜) and `maria` (玛利亚) are defined in
+  `src/original/data-new-characters.js` with `unlockFlag: "ruinsSandCityUnlocked"`.
+- They are incomplete: skill implementations exist in
+  `src/original/artina-maria-skills.js` but their full battle AI, unlock
+  events, and testing paths are not finalized.
+- Artina: ranged sniper with suit-recording and enhanced next slash.
+  Maria: support with divine-count marking and team stat blessing.
+- Their portraits exist at `publish/assets/new-portraits/artina.webp` and
+  `publish/assets/new-portraits/maria.webp`.
+- Their skill art exists in `publish/assets/generated/cards/`.
+- Do not treat them as formal playable characters in content checks or
+  codex requirements. The 26 formal characters do not include them.
+
+## GGGG Folder
+
+- `/workspace/GGGG/` is a persistent folder for development tools,
+  installed packages, and other non-project files that must survive
+  container restarts.
+- It is added to `.gitignore` and must not be tracked in Git.
+- It must not be scanned by container health scans or file watchers.
+- Do not place project source, publish files, or documentation in it.
+- Created on 2026-09-04 for DeepSeek remake handoff document preparation.
+
+## DeepSeek Remake Handoff Documents
+
+- `/workspace/项目文档/` contains 13 plain-text (.txt) documents for
+  DeepSeek remake handoff. These are not part of the game runtime.
+- `/workspace/docs/deepseek-rebuild/` contains the earlier Markdown
+  version of the handoff documents.
+- Both sets document the same project but the `项目文档` set is more
+  comprehensive and uses .txt format for DeepSeek compatibility.

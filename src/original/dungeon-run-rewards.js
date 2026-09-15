@@ -75,7 +75,8 @@ window.DungeonRunRewards = (() => {
       ? "，商店已刷新。" : "，部分附加结算未完成。"}`);
     state.explore = null;
     state.view = "hall";
-    if (!window.triggerOrcDungeonUnlockEvent?.(state, run)) {
+    if (!window.triggerOrcDungeonUnlockEvent?.(state, run)
+      && !window.triggerRuinsSandCityUnlockEvent?.(state, run)) {
       window.triggerPostUnderwaterTrainClearEvents?.(state, run);
     }
     window.NewCharacterUnlockEvents?.triggerPending?.(state);

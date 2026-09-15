@@ -43,6 +43,8 @@ window.BattleDamage = (deps, ctx) => {
     deps, ctx, damage: lifecycle.damage, directDamage: lifecycle.directDamage,
   });
   lifecycle.damage.hitWithoutDodge = hit.hitWithoutDodge;
+  lifecycle.damage.scheduleAfterDamage = lifecycle.scheduleAfterDamage;
+  lifecycle.damage.delayUntilHitSettled = lifecycle.delayUntilHitSettled;
   lifecycle.damage.directDamage = lifecycle.directDamage;
   lifecycle.damage.finalizeDamage = lifecycle.finalizeDamage;
   return {

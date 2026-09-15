@@ -17,6 +17,7 @@ window.DungeonEnemyGroups = (() => {
     const diff = GameData.difficulties[run.difficultyId], pool = GameData.enemies[run.missionId] || [];
     if (run.missionId === "underwater_train") return underwaterEnemies(pool, diff, type, state);
     if (run.missionId === "orc_dungeon") return orcDungeonEnemies(pool, diff, type, state);
+    if (run.missionId === "ruins_sand_city") return ruinsEnemies(pool, diff, type, state);
     if (type === "boss") {
       const boss = sample(pool.filter(e => e.type === "boss"), state);
       return boss?.id === "pursuer_edis" ? fixedGroup(pool, diff, type, [boss.id], state) : fixedGroup(pool, diff, type, ["mecha_minotaur", boss?.id || "mechanical_bull_king", "skeleton_patrol"], state);
@@ -40,6 +41,20 @@ window.DungeonEnemyGroups = (() => {
   function orcDungeonEnemies(pool, diff, type, state) {
     if (type === "boss") return fixedGroup(pool, diff, type, sample([["xx_witherer_1124"], ["demon_mecha_cerberus", "demon_king_bakaar"]], state), state);
     if (type === "elite") return fixedGroup(pool, diff, type, sample([["witherer_1124_split", "witherer_1124_split"], ["orc_king_bondi"], ["demon_beast_unit", "guard_kelly", "demon_witch"], ["demon_witch", "assassin_sakura_risa", "demon_witch"]], state), state);
+    const count = rand(1, 4, state), picked = [], normalPool = pool.filter(e => e.type === "normal");
+    for (let i = 0; i < count; i++) picked.push(pickRepeatable(normalPool, picked, state));
+    return withLabels(picked.map(e => scaleEnemy(e, diff, type)));
+  }
+  function ruinsEnemies(pool, diff, type, state) {
+    if (type === "boss") return fixedGroup(pool, diff, type, sample([
+      ["mech_ai_dragon", "noble_soldier", "noble_sniper"],
+      ["witherer_1312", "noble_soldier", "attack_drone"],
+    ], state), state);
+    if (type === "elite") return fixedGroup(pool, diff, type, sample([
+      ["merca_tank", "attack_helicopter"],
+      ["merca_tank", "armored_carrier", "noble_soldier", "noble_soldier"],
+      ["hilde"],
+    ], state), state);
     const count = rand(1, 4, state), picked = [], normalPool = pool.filter(e => e.type === "normal");
     for (let i = 0; i < count; i++) picked.push(pickRepeatable(normalPool, picked, state));
     return withLabels(picked.map(e => scaleEnemy(e, diff, type)));

@@ -18,6 +18,10 @@ window.RelicSystem = {
 };
 
 require("../src/original/battle-draw-feedback.js");
+require("../src/original/battle-card-active-relics-core.js");
+require("../src/original/battle-card-active-relics-demon.js");
+require("../src/original/battle-card-active-relics-assassin.js");
+require("../src/original/battle-card-active-relics-arsenal.js");
 require("../src/original/battle-card-active-relics.js");
 
 function actor(hand = [], deck = []) {

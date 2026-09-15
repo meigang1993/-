@@ -10,13 +10,13 @@ module.exports = ({ assert, unit }) => {
   const skills = templates.flatMap(template => template.skills || []);
   const relics = Object.keys({ ...GameDataRelics, ...GameDataFutureRelics });
 
-  assert(GameData.characters.length === 26,
-    "skill audit must cover all 26 playable characters");
-  assert(enemies.length === 27, "skill audit must cover all 27 enemies");
-  assert(GameData.characters.flatMap(template => template.skills || []).length === 71,
-    "skill audit must cover all 71 playable-character skills");
-  assert(enemies.flatMap(template => template.skills || []).length === 54,
-    "skill audit must cover all 54 enemy skills");
+  assert(GameData.characters.length === 28,
+    "skill audit must cover all 28 playable characters");
+  assert(enemies.length === 36, "skill audit must cover all 36 enemies");
+  assert(GameData.characters.flatMap(template => template.skills || []).length === 75,
+    "skill audit must cover all 75 playable-character skills");
+  assert(enemies.flatMap(template => template.skills || []).length === 72,
+    "skill audit must cover all 72 enemy skills");
   assert(relics.length === 30, "relic audit must cover all 30 formal relics");
   const combatRoleNames = new Set([
     "输出", "控制", "辅助/续航", "防御/嘲讽", "成长/资源",
@@ -26,8 +26,6 @@ module.exports = ({ assert, unit }) => {
       `${template.id} must define exactly one primary combat role`);
     assert(template.combatRoles.every(role => combatRoleNames.has(role)),
       `${template.id} must use only canonical combat roles`);
-    assert(window.UICommon.combatRoleText(template).includes(template.combatRoles[0]),
-      `${template.id} combat roles must appear in public hover wording`);
   });
   assert(JSON.stringify(window.GameCombatRoles.byId.little_elrana)
     === JSON.stringify(["输出"]),
@@ -76,8 +74,8 @@ module.exports = ({ assert, unit }) => {
   ];
   const namedActiveSkills = new Map();
   activeSkills.forEach(skill => namedActiveSkills.set(skill.name, skill));
-  assert(namedActiveSkills.size === 36,
-    "skill artwork audit must cover all 36 named active skills");
+  assert(namedActiveSkills.size === 46,
+    "skill artwork audit must cover all 46 named active skills");
   const artOwners = new Map();
   const hashOwners = new Map();
   namedActiveSkills.forEach((skill, name) => {

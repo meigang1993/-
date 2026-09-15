@@ -25,6 +25,9 @@
 .unit-art { width: 96px; height: 96px; display: grid; place-items: center; overflow: hidden; border-radius: 14px; font-size: 34px; font-weight: 900; background: radial-gradient(circle at 50% 16%, rgba(255,155,215,.3), rgba(50,9,68,.7)); border: 1px solid rgba(255,215,166,.3); }
 .unit-art[style*="background-image"] { background-size: cover; background-position: top center; }
 .unit-art img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.unit-art.skin-switch-layer,
+.portrait.skin-switch-layer { position: relative; }
+.unit-art > img.skin-switch-old-art, .portrait > img.skin-switch-old-art { position: absolute; inset: 0; z-index: 4; display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; pointer-events: none; }
 .skin-state-art { position: relative; overflow: hidden; }
 .skin-state-art > img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
 .unit-art.art-lokar, .unit-art.art-lokar img { background-position: center; object-position: center; transform: none; }
@@ -87,3 +90,5 @@
 .asset-fallback-art { display: grid; place-items: center; align-content: center; gap: 4px; background: radial-gradient(circle at 50% 36%, rgba(255,214,154,.18), transparent 28%), linear-gradient(160deg, rgba(66,26,67,.96), rgba(20,8,27,.98)); color: #ffe0ad; box-shadow: inset 0 0 0 1px rgba(255,215,166,.28); }
 .asset-fallback-face { font-size: clamp(24px, 5vh, 44px); font-weight: 900; text-shadow: 0 0 16px rgba(255,170,215,.5); }
 .asset-fallback-art small { color: #e5b8ca; font-size: 10px; font-weight: 800; }
+.rage-mark-badge { background: rgba(255,120,120,.94); color: #3a0b0b; border: 1px solid rgba(255,255,255,.72); box-shadow: 0 0 12px rgba(255,70,70,.62), 0 2px 6px rgba(0,0,0,.28); }
+.active-portrait-shell .rage-mark-badge { right: 5px; top: 5px; font-size: 12px; }

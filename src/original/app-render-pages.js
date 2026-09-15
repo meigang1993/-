@@ -1,10 +1,10 @@
 window.AppRenderPages = (() => {
   function battleLoading() {
     const p = state.loadingBattleProgress || {}, total = p.total || 0, done = Math.min(p.done || 0, total), pct = total ? Math.round(done / total * 100) : 12;
-    return `<div class="battle-loading"><section class="battle-start-ui"><div class="gear-panel"><img src="./assets/images/battle-start-ui.png" alt="机械齿轮启动"><span class="scan-line"></span></div><div class="battle-start-card"><span class="boot-label">COMBAT SYSTEM</span><h2>战斗系统启动</h2><p>${UICommon.esc(state.loadingBattleName || "战斗")} · ${total ? `加载素材 ${done}/${total}` : "正在准备素材…"}</p><div class="load-bar"><i style="width:${pct}%"></i></div><div class="boot-row"><b>${pct}%</b><span>本地战斗模块准备中</span></div><small>首次进入会稍慢，之后会使用缓存快速切换。</small></div></section></div>`;
+    return `<div class="battle-loading"><section class="battle-start-ui"><div class="gear-panel"><img src="./assets/images/battle-start-ui.webp" alt="机械齿轮启动"><span class="scan-line"></span></div><div class="battle-start-card"><span class="boot-label">COMBAT SYSTEM</span><h2>战斗系统启动</h2><p>${UICommon.esc(state.loadingBattleName || "战斗")} · ${total ? `加载素材 ${done}/${total}` : "正在准备素材…"}</p><div class="load-bar"><i style="width:${pct}%"></i></div><div class="boot-row"><b>${pct}%</b><span>本地战斗模块准备中</span></div><small>首次进入会稍慢，之后会使用缓存快速切换。</small></div></section></div>`;
   }
   function dungeonConfirm() {
-    return `<div class="battle-loading dungeon-confirm"><section class="battle-start-ui"><div class="gear-panel"><img src="./assets/images/battle-start-ui.png" alt="机械齿轮启动"><span class="scan-line"></span></div><div class="battle-start-card"><span class="boot-label">DUNGEON SYSTEM</span><h2>远征路线确认</h2><p>${UICommon.esc(state.loadingBattleName || "副本远征")} · 正在生成本地路线…</p><div class="load-bar indeterminate"><i></i></div><div class="boot-row"><b>LOCAL</b><span>本地远征模块准备中</span></div><small>副本路线与奖励将直接在本地结算。</small></div></section></div>`;
+    return `<div class="battle-loading dungeon-confirm"><section class="battle-start-ui"><div class="gear-panel"><img src="./assets/images/battle-start-ui.webp" alt="机械齿轮启动"><span class="scan-line"></span></div><div class="battle-start-card"><span class="boot-label">DUNGEON SYSTEM</span><h2>远征路线确认</h2><p>${UICommon.esc(state.loadingBattleName || "副本远征")} · 正在生成本地路线…</p><div class="load-bar indeterminate"><i></i></div><div class="boot-row"><b>LOCAL</b><span>本地远征模块准备中</span></div><small>副本路线与奖励将直接在本地结算。</small></div></section></div>`;
   }
   function nursery() {
     if (state.succubusCodex) return SuccubusCodex.render(state);

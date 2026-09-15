@@ -92,6 +92,7 @@ window.BattleDamageHit = ({
     const extra = window.BattleDamageRelics.resolveEdisSwordHit(
       state, actor, target, amount, card, hitWithoutDodge);
     window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, card);
+    lifecycle.flushAfterDamage(state);
     return {
       dodged: false,
       hpLoss: hpLoss + (extra?.hpLoss || 0),

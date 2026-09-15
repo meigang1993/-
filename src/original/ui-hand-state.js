@@ -103,7 +103,7 @@ window.GameUIHandState = (() => {
   function needsHandChoice(card) {
     return !!(card?.bloodPact || card?.elranaBag
       || card?.armyOrder || card?.elranaHeal || card?.idolKiss || card?.crazyShooting
-      || card?.demonPoker || card?.cadicisPlan);
+      || card?.demonPoker || card?.cadicisPlan || card?.mariaHonorBlessing);
   }
 
   function selectionReady(battle, actor, card, handChoice, soulNeed) {
@@ -120,6 +120,12 @@ window.GameUIHandState = (() => {
     }
     if (card?.crazyShooting) return costReady;
     if (card?.elranaBag) return true;
+    if (card?.mariaHonorBlessing) {
+      const list = [...new Set(battle?.selectedBagIndexes || [])]
+        .filter(index => actor.hand?.[index] && !actor.hand[index]._pendingDraw);
+      return list.length > 0 && list.length <= 4
+        && new Set(list.map(index => actor.hand[index].suit)).size === list.length;
+    }
     if (handChoice) return costReady;
     return card?.targetless || battle.pendingTargetUid
       || card?.allyTarget && battle.allies.filter(unit => unit.hp > 0).length === 1;

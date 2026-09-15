@@ -58,10 +58,6 @@ window.UICommonSkillModel = () => {
   const combatRolesOf = unit => (
     window.GameCombatRoles?.of?.(unit) || unit?.combatRoles?.slice(0, 1) || []
   );
-  const combatRoleText = unit => {
-    const roles = combatRolesOf(unit);
-    return roles.length ? `实战定位：${roles.join(" / ")}` : "";
-  };
   const rolePositionText = unit =>
     unit?.evaluation ? `角色定位：${unit.evaluation}` : "";
   const skillCard = skill => skill.card ? { ...skill.card, _skill: true } : null;
@@ -75,6 +71,9 @@ window.UICommonSkillModel = () => {
     }
     if (battle?.locked) return { usable: false, reason: "战斗结算中，暂不可发动" };
     if (!card) return { usable: false, reason: "该技能缺少可使用的技能牌" };
+    if (battle?.activeUid && battle.activeUid !== actor.uid) {
+      return { usable: false, reason: "不是当前行动角色，无法发动" };
+    }
     const prepareKey = card.speedAssault ? "awaitingSpeedAssaultUid"
       : card.extract ? "awaitingExtractUid"
         : card.mimicVoice ? "awaitingMimicUid" : null;
@@ -98,6 +97,6 @@ window.UICommonSkillModel = () => {
   }
   return {
     skillIcon, skillsOf, skillText, activeSkillName, combatRolesOf,
-    combatRoleText, rolePositionText, skillState,
+    rolePositionText, skillState,
   };
 };

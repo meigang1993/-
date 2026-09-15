@@ -1,6 +1,7 @@
 const { test, expect } = require("@playwright/test");
 const {
   openGame, startFreshGame, startRegressionBattle,
+  openTestBattle,
 } = require("./helpers/preview-game");
 
 async function startBattleWithAcquiredCard(page) {
@@ -10,8 +11,7 @@ async function startBattleWithAcquiredCard(page) {
     window.state.deck.push(window.CardUtils.cloneEntity(
       "魔弹特攻", { suit: "♣", qaAcquired: true }));
   });
-  await page.locator("[data-open-modal='team']").first().click();
-  await page.getByRole("button", { name: "测试战斗" }).click();
+  await openTestBattle(page);
   await page.evaluate(() => {
     window.state.testEnemies = [0, 1];
     window.GameAssets.preloadBattle = async () => {};

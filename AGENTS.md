@@ -46,6 +46,518 @@ documents and contains only rules that must be visible before every task.
 - After meaningful edits, run the publish path compliance check and save through
   the Game Studio git save endpoint.
 
+## Git / LFS Operations
+
+- Git branch names cannot contain spaces. GitHub rejects
+  `refs/heads/<name with space>` with 422; strip spaces or use ASCII names.
+- Judge whether large files really occupy repository size by reading the raw
+  git blob, not the contents API: the contents API resolves LFS pointers and
+  reports the *real* byte size (e.g. 225442304), which looks like a real binary
+  but is actually a ~134-byte pointer. A pointer begins with
+  `version https://git-lfs.github.com/spec/v1`.
+- An LFS pointer with no object behind it (batch API returns 404
+  `Object does not exist`) poisons every clone made with git-lfs enabled:
+  checkout dies at the smudge stage. Removing such files restores clone health.
+- When performing several consecutive write operations on one branch through
+  the GitHub API (create tree / update file / create commit), re-read the
+  branch HEAD before each step. Reusing a stale parent SHA makes the commit
+  fail with 422.
+- To verify a clone result when the sandbox blocks `github.com` and
+  `media.githubusercontent.com`: use GitHub Actions as a remote executor, and
+  have the workflow write its own log file to a branch so it can be read back
+  through `api.github.com` (Actions log URLs are also blocked). Note that
+  `.gitattributes` containing `* filter=lfs` turns the workflow file itself
+  into a pointer, so exclude `.github/**` first.
+- A repository may have Actions disabled (`/actions/workflows` returns
+  `total_count: 0`) even after a workflow file is pushed; dispatch then 404s.
+  Cross-verify by running the workflow from another repository that has Actions
+  enabled.
+
+## Push Policy — Stage Locally, Push Only On Request (2026-09-14)
+
+**Default is: do not push.** After finishing an update, keep everything in the
+permanent working copy `/data/workspace/repo`, print the list of changed files,
+and wait for an explicit "推送" instruction from the user. Verification is still
+required — only the push itself is gated.
+
+- Finish the edit → rebuild bundles → run the test suites → **verify** → report.
+- Report must end with a "待推送清单" listing every changed file, so the user can
+  decide when (or whether) they go remote.
+- Stage the same set as an overlay package under `/data/workspace/` so the push,
+  when requested, is a one-step apply.
+
+### Atomic version + content pushes
+
+A version bump (`publish/index.html`, `publish/villa.css`) **must never be pushed
+without the content it advertises**. Shipping the bump alone produces the worst
+possible state: the UI reports version N while the bundles still run version N-1,
+so the tester believes a fix is live when it is not.
+
+Before any push, confirm the batch is complete:
+
+```
+version files  +  every modified src/original/*.js  +  every affected bundle
+```
+
+Then re-run the full-file git-blob SHA comparison (not a sample) to prove the
+remote matches. See "Resolved case: version 34 shipped without its content".
+
+### Resolved case: version 34 shipped without its content (2026-09-14)
+
+Reported symptom: "神数标记增加的属性有效，但面板没有变化". Root cause was **not** a
+logic bug — the 33 fix (marks accumulate, capped by target, instead of resetting
+to zero) was never pushed. Only 3 files reached the remote
+(`villa.css`, `index.html`, one bundle), leaving the remote on the old
+reset-to-zero code while `index.html` already advertised version 34.
+
+Eight files were out of sync when the full comparison finally ran:
+
+```
+src/original/artina-maria-skills.js      marks accumulate + temp clear at turn end
+src/original/data-new-characters.js      skill text (三国杀式 + cap wording)
+src/original/ui-info.js                  bonus = Math.min(marks, target)
+publish/bundles/startup.min.js           skill text
+publish/bundles/startup-app.min.js       bonus cap
+publish/bundles/battle-skills.min.js     early-return refactor
+tools/test-new-character-skills.js       assertions
+tests/preview-artina-maria-skills.spec.js
+```
+
+Lesson: a Contents API push returns 200 per file, so a partial batch *looks*
+completely successful. Success must be proven by a whole-tree blob SHA diff
+afterwards, never by the per-file status codes.
+
+### Push transport: `urllib` `method=` is not trustworthy (2026-09-14)
+
+**Never use `urllib.request.Request(..., method='PUT')` to push.** On several
+call paths the `method=` kwarg does not take effect and the request goes out as
+`GET`. A GET on an existing file returns **200**, so the push looks successful
+while nothing changed. This is the root cause of the "version 29 pushed but
+never arrived" incident: the write silently no-op'd, and the follow-up read hit
+a cache and confirmed the false success.
+
+Use one of these instead:
+
+```
+http.client.HTTPSConnection('api.github.com').request('PUT', path, body, headers)
+curl -X PUT ... -d @payload.json        # large files: body from file, not argv
+```
+
+`curl -d @payload.json` matters for big files (`docs/开发日记.md` is ~110 KB;
+base64 in an argv exceeds the limit and fails with `Argument list too long`).
+
+### Push verification: three channels (2026-09-14)
+
+The user requires verification after **every** push. Per-file status codes are
+not verification. Run all three:
+
+| # | channel | proves |
+|---|---|---|
+| 1 | whole-tree blob SHA diff (`/git/trees/main?recursive=1`) | every path matches byte-for-byte; catches partial batches |
+| 2 | contents API read-back, compare returned `sha` | the server really stored the bytes |
+| 3 | `codeload` tarball + `cmp` | independent of the write path entirely |
+
+Channel 1 is the authoritative one — git blob SHAs are content-addressed, so
+`1048/1048 identical` is a byte-level proof across the whole repo.
+
+**Do not trust `raw.githubusercontent.com` as the sole check.** In this session
+it returned **0 bytes** for `publish/index.html` (the same URL that had worked
+earlier), and it can serve stale content for source paths behind CDN cache. It
+is fine as a supporting signal, never as the verdict.
+
+Two mechanics that cost time and are worth remembering:
+
+- The tarball's top-level directory is **`--main`** (repo name is `-`), which
+  every shell parses as an option. Always prefix `./` — `./--main/publish/...`
+  — or `cmp`/`ls` fail with `unrecognized option`.
+- The tarball only contains **263 `publish/` files**: `.gitattributes` marks
+  `src/`, `tools/`, `tests/`, `docs/` `export-ignore`. It can verify bundles and
+  version files but **cannot verify source**, so channel 1 remains mandatory.
+
+### Settled design: 神数咒语 marks clear when the target is reached (2026-09-14)
+
+The mark semantics were changed **three times**; the user rejected both
+alternatives, so treat this as settled and do not "improve" it again.
+
+```
+31  clear on reach          user: 面板看不到变化（加成瞬间归零）
+33  accumulate, cap=target  user: 标记达到目标没有清空  ← rejected
+34  clear on reach          ← current, do not change
+```
+
+The user's two explicit requirements, in their own words, are both satisfied by
+clearing: *"把标记清0，不然角色输出很强，数字也乱"* (output control + clean
+numbers). The 33 "panel does not change" complaint was a **separate** display
+issue; the fix is to make the attribute panel reflect temp bonuses, **not** to
+keep marks alive. Never trade a stated game-balance requirement away to make a
+UI symptom disappear.
+
+With clearing, the bonus sequence is a sawtooth `0,1,0,1,2,0` and the badge reads
+`mark/target` where the mark is always below the target — that is intended, not a
+bug.
+
+### Whole-tree comparison (zero-download)
+
+`api.github.com` cannot be reached for browsing but the tree endpoint works, and
+git blob SHAs can be computed locally, so the entire repository can be compared
+without downloading a single file body:
+
+```
+GET /repos/{owner}/{repo}/git/trees/main?recursive=1     # 1 API call
+local_sha = sha1("blob <len>\0" + file_bytes)            # compare to tree sha
+```
+
+This finds three classes: missing locally, extra locally, content-divergent.
+Run it before reporting any "in sync" claim.
+
+### Note on `codeload` tarballs
+
+The `codeload` archive of this repo contains **only 263 files** (the `publish/`
+tree) because `.gitattributes` marks `src/`, `tools/`, `tests/` and `docs/` with
+`export-ignore`. It is fine for verifying `publish/`, useless for verifying
+source or docs. Use the tree endpoint for those.
+
+## Bundle Rebuild Discipline — Never Ship Source Without Rebuilding (2026-09-13)
+
+Any edit to `src/original/*.js` **must** be followed by a bundle rebuild before
+pushing. The full required sequence is:
+
+```
+1. bump version: publish/index.html (12 sites) + publish/villa.css (4 sites)
+   + badge v26.0911.N — all three must move together
+2. npm run build:bundles
+3. npm run check:bundles        # == node tools/build-publish-bundles.js --check
+4. push: changed bundles + version files
+```
+
+**Never bump the version alone without rebuilding.** `assertRepositoryPublishVersion`
+enforces that the version advances, but it does not prove bundles match sources —
+only `--check` does.
+
+### Ship `.map` files together with their bundles (2026-09-15)
+
+`tools/build-publish-bundles.js` emits **two** artifacts per bundle:
+
+```
+publish/bundles/<name>.min.js        # carries a trailing //# sourceMappingURL= comment
+publish/bundles/<name>.min.js.map    # the mapping itself
+```
+
+Bundles are single-line minified files (60–190 KiB; `battle-rules` alone holds
+29,802 mapping segments). Without the `.map` present on the remote, every
+production stack trace reads `battle-rules.min.js:2:<col>` and cannot be traced
+back to `src/original/...`. **A push that includes `.min.js` but omits
+`.min.js.map` is incomplete** — every file still returns HTTP 200, so the
+per-file success code proves nothing.
+
+- Push 11 `.min.js` **and** 11 `.map` in the same batch.
+- Verify with `contents/publish/bundles?ref=main`; it must list **22** entries.
+- To prove a push is behaviour-neutral: strip the trailing
+  `//# sourceMappingURL=` line from the local `.min.js` and compare its git
+  blob SHA with the remote. Equal SHA ⇒ the only delta is that comment.
+- `includeSources` defaults to **true**: every map embeds `sourcesContent`, so
+  DevTools resolves real files and lines even from a standalone `publish/`
+  deployment or a downloaded release archive — no `src/` needed.
+- Opt out with `node tools/build-publish-bundles.js --no-sources`
+  (`npm run build:bundles:lean`) when the publish artifact must stay small.
+  Lean maps then fall back to resolving `../../src/original/...`, which only
+  works from a checkout.
+
+Measured cost of embedding (2026-09-15):
+
+| | maps total | build time |
+|---|---|---|
+| `--no-sources` | 1.22 MiB | ~44 s |
+| default (embedded) | 3.02 MiB | ~96 s |
+
+The +1.79 MiB equals `src/original` (1,739,002 bytes) **exactly once** — the
+manifest is an exact partition of all 416 sources across the 11 bundles, so
+nothing is duplicated. `.map` is only fetched when DevTools is open, so players
+never download it; the cost is repository size and build time, not runtime.
+Embedding never changes `.min.js` bytes (verified: all 11 SHAs identical across
+both modes).
+
+### Bundle ownership is declared, not guessable
+
+Every source file's bundle is fixed in `tools/publish-bundles.json`. **Do not
+infer it from the filename.** Real example that caused a false bug report:
+
+```
+src/original/ui-info.js  →  startup-app        (NOT battle-ui)
+```
+
+`validateManifest()` also enforces that the manifest covers *exactly* the file
+set under `src/original/` — a new source file without a manifest entry fails the
+build loudly, so silence means coverage.
+
+### Verifying a reported "bundle drift" before acting (2026-09-13)
+
+A report of the form *"you changed X but did not rebuild bundle Y"* can be a
+false positive. Confirm all four before touching anything:
+
+1. Which bundle does X actually belong to? (`publish-bundles.json`)
+2. Does `npm run check:bundles` pass locally against the *remote* source set?
+3. Do the local `src/original` files match remote blob SHAs? (0 diffs required)
+4. Do all 11 remote bundles match local byte-for-byte?
+
+If all four pass, the drift is not in the repository — it is in the reporter's
+working copy (uncommitted local edits, or a stale HEAD). **Report the evidence
+rather than "fixing" a non-problem.** Note that a teammate who later pushes
+their own source edit without rebuilding *will* create real drift, so the rule
+above still stands.
+
+### Resolved case: `battle-ui` `!0` vs `1` (2026-09-13, closed)
+
+**Symptom.** `--check` flagged only `battle-ui` as stale; the other 10 bundles
+matched. Local rebuild produced 78,903 bytes vs HEAD's 78,905.
+
+**Root cause (two Terser versions, not a missed rebuild).** At offset 7581:
+
+```
+HEAD (terser 5.51.2):  …attle)??!0)&&awa…
+local (terser 5.49.0): …attle)??1)&&awa…
+```
+
+`!0` and `1` are both `true` — **semantically identical**, different literal
+spelling across Terser minors. `preamble` was byte-identical, ruling out a
+build-script difference. The sandbox runs **5.51.2**; the lockfile pinned
+**5.49.0**; each environment was internally consistent with its own lock, so
+neither side was "wrong".
+
+**Why only one bundle.** The divergence needs input whose compressed output
+contains a bare `true` in that exact position; 10 of 11 bundles never hit it.
+
+**Fix applied (two rounds — the first was incomplete).** Aligned the lockfile to
+the version that actually produced HEAD: `package.json` `^5.49.0 → ^5.51.2`,
+and in `package-lock.json` **both** places terser appears:
+
+1. `packages[""].devDependencies.terser` — the root package's declared range
+2. `packages["node_modules/terser"]` — `version`, `resolved`, `integrity`
+
+Dependency ranges were identical between 5.49.0 and 5.51.2, so no
+sub-dependency churn. `integrity` was verified by re-hashing the real tarball.
+Post-change: all 11 bundles rebuild byte-identical, `--check` reports current.
+
+**Trap: a lockfile carries the dependency twice, and both must be edited.**
+Round one changed only `packages["node_modules/terser"]`. The other environment
+ran `npm ci --include=dev` and still got **5.49.0**, because
+`packages[""].devDependencies` still said `^5.49.0` — npm resolved from the
+root declaration. Symptoms: `npm ci` "succeeds" but installs the old version,
+then `build:bundles` dies with
+`Cache-versioned publish resources changed (bundles/battle-ui.min.js); bump
+meta[name=game-build] above …`.
+
+**Do not bump `game-build` to silence that error.** It fires because the
+freshly-built bundle differs from HEAD's — i.e. the toolchain is wrong, not the
+version stale. A bump changes zero bytes inside bundles and only masks the
+mismatch. Fix the dependency, then rebuild.
+
+### Symptom: `git pull` says "Already up to date" but the working copy is behind
+
+Seen after the `魅魔杀 → main` rename. A clone made while the branch had its
+old name keeps a **single-branch refspec**
+(`remote.origin.fetch = +refs/heads/魅魔杀:refs/remotes/origin/魅魔杀`).
+That ref no longer exists upstream, so `git pull` fetches nothing new and
+merges a **stale** remote-tracking ref — it reports "Already up to date" while
+sitting N commits behind.
+
+**Check `remote.origin.url` FIRST — it outranks the refspec hypothesis.**
+In the actual resolution of this case the agent reported "已将 origin 更新为
+`https://github.com/meigang1993/-.git`" — its configured origin had pointed
+somewhere else. `git pull` then ran against a *different* remote that legitimately
+had nothing new, so "Already up to date" was truthful about the wrong repo.
+A stale refspec and a wrong URL produce identical symptoms; confirm the URL
+before touching `remote.origin.fetch`.
+
+**Tell-tale sign:** a build error quoting a version you already advanced, e.g.
+
+```
+Cache-versioned publish resources changed (bundles/battle-ui.min.js);
+bump meta[name=game-build] above 20260911-26 before rebuilding
+```
+
+`20260911-26` is read from **`HEAD:publish/index.html`**. If you already pushed
+27, that message proves the local HEAD predates your push — not that the remote
+is stale. Check the remote before believing your own `git pull`.
+
+**Confirm which side is wrong (never assume — check the remote directly):**
+
+```bash
+git remote -v                            # FIRST: must be meigang1993/-.git
+git rev-parse --abbrev-ref HEAD          # expect: main
+git rev-parse HEAD                       # compare with the remote tip
+git config --get remote.origin.fetch     # single-branch refspec is the other cause
+git branch -vv                           # upstream shown here
+grep -o 'name="game-build"[^>]*' publish/index.html
+```
+
+**Fix:**
+
+```bash
+git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+git fetch --prune origin
+git branch --set-upstream-to=origin/main main   # or: git checkout -B main origin/main
+git reset --hard origin/main                    # ONLY on a clean tree
+```
+
+`git reset --hard` discards uncommitted work — run `git status` first.
+
+**Resolved (2026-09-14).** All three working copies now report `terser 5.51.2`,
+`build:bundles` succeeds, and `--check` reports **11/11 current**. No
+`game-build` bump was used at any point — the mismatch was toolchain-only, so
+bumping would have changed zero bytes and only masked it. Root cause was the
+agent's origin pointing at a different remote, not a stale refspec.
+
+**Verify after any dependency realignment:**
+
+```bash
+node -e "const d=require('./package-lock.json');\
+console.log('root decl :',d.packages[''].devDependencies.terser);\
+console.log('locked    :',d.packages['node_modules/terser'].version)"
+grep -c '5\.49\.0' package-lock.json   # expect 0 after migrating to 5.51.2
+```
+
+**Aftermath for other environments.** Anyone who previously ran `npm ci` on the
+old lock has 5.49.0 installed and must reinstall:
+
+```bash
+npm ci --include=dev          # plain `npm ci` may skip devDeps if omit=dev is set
+node -e "console.log(require('terser/package.json').version)"   # expect 5.51.2
+npm run build:bundles
+node tools/build-publish-bundles.js --check
+```
+
+**Do not** "fix" this class of diff by rebuilding-and-pushing from a
+mismatched environment: that flips the bytes back and starts a ping-pong
+between environments. Align the dependency first, then rebuild.
+
+**Do not** advance `game-build` for it — version strings are not injected into
+bundles, so a bump changes zero bytes and only pollutes version history.
+
+### Diagnosing a single-bundle mismatch: suspect Terser, not a missed rebuild (2026-09-13)
+
+If `--check` flags **one** bundle (e.g. `battle-ui`) while the others match, do
+**not** conclude "source was changed without rebuilding". A missed rebuild
+usually fails loudly across the bundle(s) that own the edited file — and file→
+bundle ownership is declared in `publish-bundles.json`, never inferred.
+
+A single-bundle mismatch is far more often **build-environment drift**. Compare
+these three things first:
+
+1. **Terser actual dependency** — `package.json` may declare a caret range
+   (`"terser": "^5.49.0"`) while `package-lock.json` pins an exact version
+   (`5.49.0`). Any environment that resolves fresh gets a *newer* minor whose
+   compression heuristics differ, producing different bytes for identical
+   input. Verify with:
+   ```
+   node -e "console.log(require('terser/package.json').version)"   # 实际运行版本
+   python3 -c "import json;d=json.load(open('package-lock.json'));\
+     print([v.get('version') for k,v in d['packages'].items() if k.endswith('/terser')])"
+   ```
+2. **Build parameters** — `tools/build-publish-bundles.js` `compile()`:
+   `compress.passes=3`, `keep_classnames`, `keep_fnames`,
+   `mangle.keep_classnames/keep_fnames`, `ecma=2020`,
+   `format.ascii_only=false|beautify=false|comments=false`, plus a
+   `preamble`. A differing preamble alone shifts every byte offset.
+3. **Bundle SHA** — compare the remote blob SHA/byte length against the local
+   rebuild before deciding anything.
+
+Known state at 2026-09-13: sandbox runs terser **5.51.2** while the lockfile
+pins **5.49.0**; the 11 remote bundles still rebuilt byte-identical, so the
+drift had not yet manifested. Treat this as a live risk, not a settled matter.
+
+**Do not advance `game-build` merely to paper over such a mismatch.** A version
+bump does not change bundle bytes (version strings are not injected into
+bundles), so bumping "to fix" a bundle diff ships nothing and pollutes the
+version history. Resolve the dependency/param difference, or report the
+evidence and let a human decide.
+
+### Rebuild is idempotent when sources are unchanged
+
+If `npm run build:bundles` reproduces all 11 bundles byte-identical to remote,
+that is proof sources and bundles are in sync — only the version files need
+pushing. Version strings are **not** injected into bundle bodies, so a version
+bump alone changes `index.html` / `villa.css` only.
+
+## Playwright / Chromium in the Sandbox (2026-09-12)
+
+- Chromium 152.0.7977.0 lives in the persistent directory
+  `/data/workspace/.pw-browsers/chromium_headless_shell-1228/chrome-headless-shell-linux64/`
+  (197 MB). `/data/workspace/rebuild/.playwright-browsers` is only a symlink to
+  it, so rebuilding the project copy never loses the browser.
+- **Exporting `PLAYWRIGHT_BROWSERS_PATH` alone is NOT enough.** Every `bash`
+  call starts a fresh shell, so an `export` in one call never reaches the next.
+  Playwright then falls back to the default cache `~/.cache/ms-playwright` and
+  fails with `Executable doesn't exist at /root/.cache/ms-playwright/...` —
+  the binary is present, merely not on the searched path. This is why the
+  environment "broke" repeatedly (4 times) even after being fixed.
+- **The fix that survives shell resets** (both done by
+  `bash /data/workspace/setup-qa-env.sh`, step 4):
+  1. symlink `/root/.cache/ms-playwright/chromium_headless_shell-1228`
+     -> `/data/workspace/.pw-browsers/chromium_headless_shell-1228`
+  2. write `/root/.cache/ms-playwright/settings.json` containing
+     `{"browsersPath":"/data/workspace/.pw-browsers"}`
+  Neither depends on any environment variable, so a brand-new shell finds the
+  browser automatically. Verify with `env -u PLAYWRIGHT_BROWSERS_PATH node <script>`
+  — if it launches, the fix is real; if only `export` was used, it will fail.
+- Note the repo symlink `.playwright-browsers -> .pw-browsers` is **not**
+  sufficient on its own, because Playwright does not look there by default.
+- **Never run `npx playwright install chromium`.** It downloads from
+  `cdn.playwright.dev`, which this sandbox blocks with HTTP 403, so it always
+  fails with `Download failure, code=1`. That failure does **not** mean the
+  browser is missing. Restore it instead with `bash /data/workspace/setup-qa-env.sh`
+  (step 4), which pulls `@sparticuz/chromium` 152 from the reachable npm mirror
+  and brotli-decompresses `bin/chromium.br`.
+- Diagnosis order when browser tests will not start: (1) is the binary at
+  `$REAL` and executable — `$REAL --version`; (2) is `PLAYWRIGHT_BROWSERS_PATH`
+  exported; (3) only then consider re-downloading.
+
+## Multi-Agent Collaboration
+
+- More than one AI session may edit this repository at the same time. The
+  sandbox keeps several working copies (for example `/data/workspace/rebuild`
+  and `/data/workspace/wk`); each can hold a different snapshot of the same
+  branch.
+- Never push a full-repository bulk sync from a stale local copy. A bulk sync
+  overwrites every file with the local snapshot and silently reverts changes
+  another session already pushed.
+  - Real incident (2026-09-11): a button restored in `src/original/villa-team.js`
+    at `010fae10` was wiped one commit later by `ba55b183`, a bulk sync made
+    from a copy that never pulled the fix. The user saw the button disappear
+    right after being told it was restored.
+  - The stale copy was detected afterwards by comparing
+    `grep -c testBattle src/original/villa-team.js` (0) and
+    `meta[name=game-build]` (20260910-05) against the remote.
+- Before any bulk or many-file sync, check that the local
+  `meta[name=game-build]` matches the remote one. If the local build id is
+  older, pull and reconcile first instead of pushing.
+- Push only the files that genuinely changed, after diffing each candidate
+  against its remote version. Do not re-push bundles that are byte-equivalent
+  but differ only because of a local terser version (for example `??1` versus
+  `??!0`); that reintroduces unrelated churn and can clobber another session's
+  artifacts.
+- After pushing, re-read the remote file to confirm the change survived. A later
+  bulk sync from another copy can still revert it, so re-verify before telling
+  the user a fix is live.
+- Binary assets need the same pre-push diff as source, and are easier to break
+  silently because a diff is not obvious from the file name.
+  - Real incident (2026-09-11/12): the user's own uploaded Lv.10 special art was
+    committed by another session at `c63f48579f`. One day later `13e0b27014`
+    pushed a stale local copy of
+    `publish/assets/generated/angelica-level-10-special.9ce0de16.webp` and
+    reverted it to the 2026-09-06 art. The path never changed, so nothing in the
+    commit message hinted that art had been swapped.
+  - Before pushing any image/audio, compare `git hash-object <file>` with the
+    remote blob sha. If they differ but the intended change does not touch that
+    asset, do not push it — the local copy is stale.
+  - When restoring or replacing an asset, write it under a content-hash file
+    name (`<name>.<sha256[:8]>.webp`) and update the reference. Asset URLs carry
+    no `?v=`, so only a new file name busts the browser cache.
+- This file *is* tracked by Git (it appears in the remote tree), so a bulk sync
+  can overwrite it. Keep rules short and re-verify them after any bulk sync;
+  also prefer keeping durable cross-session rules here because every session is
+  told to read this file first.
+
 ## Memory Discipline
 
 - Exact gameplay values and behavior belong in runtime/data sources and
@@ -58,3 +570,66 @@ documents and contains only rules that must be visible before every task.
 - When a user changes a rule, update the implementation first, then update the
   matching canonical document. If code and memory disagree, treat the conflict
   as a bug and reconcile it instead of silently choosing one copy.
+
+## Test Count Expectations
+
+- Numeric expectations in skill audits (`assert(x.length === N)`) go stale the
+  moment a dungeon or character is added. Updating them is a **test-data
+  update**, not "hiding a failure" — but only after confirming the new count is
+  correct and every entry still resolves its artwork/catalog registration.
+- A thrown assertion **masks every assertion after it**. After fixing the first
+  failure in a suite, always re-run: later expectations are usually stale too.
+  (`skill-audit` hid two more stale counts behind the combat-role assertion.)
+- Adding entries to `data-combat-roles.js` `byId` is **not enough** — the unit's
+  source array must also be present in the `templates` list, or `combatRoles`
+  is never assigned. Ruins Sand City enemies were missing from that list.
+- New playable-character active skills must be registered in
+  `character-skill-access.js`; `definitionOf()` returning null breaks the
+  boundary catalog audit. Unregistered skills still resolve in play because
+  `canActor` defaults to allow, so this failure is invisible in manual testing.
+
+## Two-State Verification Before Reporting Anomalies (2026-09-12)
+
+**Never report a file as missing, broken, dangling or unreferenced until both
+the remote tree and the local working copy have been checked.** A single-sided
+check has produced two false alarms in two consecutive days.
+
+- Required before reporting any anomaly, for every path involved:
+
+  | local | remote | meaning | action |
+  |---|---|---|---|
+  | has | has | normal | diff them; only report if the diff is the intended change |
+  | missing | has | local copy is stale | pull/re-fetch before concluding anything |
+  | has | missing | never pushed, or deleted remotely | confirm with `commits` API — **0 commits means it never existed remotely**, not "deleted" |
+  | missing | missing | **not an anomaly — it is nothing** | do not report, and do not create the file |
+
+- Existence is only half the check. **Verify the reference direction too**:
+  before calling something a "dangling reference", grep the *referencing* side
+  (bundles, `package.json`, config) and prove at least one hit. A 404 with no
+  referrer is not a broken link — there is no link.
+- **Never fabricate a file to "fix" a dangling reference.** If nothing
+  references it, creating it adds dead weight and hides the real state.
+
+Two real incidents behind this rule:
+- *2026-09-11* — "11 unreferenced assets": reported from a stale local copy.
+  9 had **0 commits in the remote** (existed only in a sandbox copy); the rest
+  were already deleted. A remote check would have killed the report instantly.
+- *2026-09-12* — "`startup-marker.js` and `duplicates-legacy.js` are dangling
+  runtime references": the remote check *was* done, but one-sided. Both files
+  were absent locally **and** remotely, and `startup.min.js`, `package.json`
+  and `.jscpd.json` contained **zero** hits. There was no reference to break.
+  Reporting them as a crash risk nearly led to inventing two dead files.
+
+The common failure is treating "I did not find it" as "it is broken". Absence
+with no referrer is a non-event; say nothing.
+
+## Asset "unreferenced" Audits (2026-09-11)
+
+Never conclude an asset is unreferenced from a **stale local copy**. This is a
+special case of the two-state rule above — check the remote tree *and* the local
+copy before reporting anything:
+- Sync the working copy against the remote tree first (compare blob SHA per path), otherwise deleted / never-pushed files look like "unused assets".
+- On 2026-09-11 a report of "11 unreferenced assets" was entirely bogus: 9 of them (`futuristic-city*`, `mechanical-factory-assembly-line*`, `card-art-guard-break*`) had **0 commits in the remote** — they only ever existed in a stale sandbox copy; the rest had already been deleted.
+- Exclude `deliver/`, `.studio/`, `node_modules/` when grepping for references. A leftover `deliver/` unpack dir once contained old bundles and produced fake "referenced" hits for already-deleted art.
+- Two-file-name trap: `angelica-level-10-special.9ce0de16.webp` and `.1f484c88.webp` had **identical bytes** (sha256 `1f484c88…`). A name-based scan reports the unused twin as garbage — always compare content hashes before deleting art.
+- Correct method: download every non-asset blob, grep basenames, then verify the reverse direction (every code reference resolves to an existing blob). Healthy state is a 1:1 match; on 2026-09-11 it was 223 refs / 223 files / 0 missing / 0 unreferenced.

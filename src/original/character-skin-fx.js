@@ -103,7 +103,8 @@ window.CharacterSkinFX = (() => {
     sync(state);
   }
   function endTurn(state, unit) {
-    const pact = !!unit?.skinBloodPactActive, extract = !!unit?.skinExtractActive;
+    const pact = !!unit?.skinBloodPactActive && active(unit, "lokar-motherbound");
+    const extract = !!unit?.skinExtractActive && active(unit, "besta-mecha");
     if (pact) anchored(state, unit, "skinfx-pact-end", 850, "<i></i><i></i><i></i><i></i><i></i>");
     if (extract) anchored(state, unit, "skinfx-extract-end", 720, "<i></i><span></span>");
     delete unit.skinBloodPactActive; delete unit.skinBloodPactPower;

@@ -22,9 +22,7 @@ window.VillaTestUI = ({ U, portrait }) => {
     const c = state.chars.find(x => x.id === id), current = state.testSkins?.[id] || state.equippedSkins?.[id];
     if (!c) return "";
     return `<div class="test-skin-row"><b>${U.esc(c.name)}</b><div class="test-pick-list">${SkinSystem.forChar(id).map(s => {
-      const locked = !!s.specialIllustration && !SkinSystem.owned(state, s);
-      const label = locked ? `Lv.${s.unlockLevel}解锁` : s.name;
-      return `<button class="test-pick ${current === s.id ? "selected" : ""}" data-test-skin-char="${U.esc(id)}" data-test-skin="${U.esc(s.id)}" ${locked ? "disabled" : ""}>${U.esc(label)}</button>`;
+      return `<button class="test-pick ${current === s.id ? "selected" : ""}" data-test-skin-char="${U.esc(id)}" data-test-skin="${U.esc(s.id)}">${U.esc(s.name)}</button>`;
     }).join("")}</div></div>`;
   }
   function testPick(name, key, selected) { return `<button class="test-pick ${selected ? "selected" : ""}" data-${key}="${U.esc(name)}">${U.esc(name)}</button>`; }

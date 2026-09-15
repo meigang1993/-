@@ -6,6 +6,7 @@ require("../src/original/data-relics.js");
 require("../src/original/relics.js");
 require("../src/original/data-machine-factory-enemies.js");
 require("../src/original/data-underwater-train-enemies.js");
+require("../src/original/data-ruins-sand-city-enemies.js");
 require("../src/original/data-world.js");
 
 window.GameData = {

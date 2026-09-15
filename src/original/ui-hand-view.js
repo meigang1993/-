@@ -7,7 +7,7 @@ window.GameUIHandView = (() => {
     const handWrap = `<div class="hand-scroll-wrap no-scroll"><button class="hand-scroll-btn left" data-hand-scroll="-1">‹</button><div class="hand active-hand" data-hand-owner="${U.esc(actor.uid)}">${handCards}</div><button class="hand-scroll-btn right" data-hand-scroll="1">›</button></div>`;
     const intentMax = Math.min(99, Math.max(1, (actor.stats.bloodlust || 1) + (actor.intentMaxBonus || 0)));
     const charge = actor.charge
-      ? `<span class="tag">蓄力×${Math.pow(1.5, actor.charge).toFixed(3).replace(/\.0+$/, "").replace(/0+$/, "")}</span>`
+      ? `<span class="tag">蓄力×${Math.pow(2, actor.charge).toFixed(3).replace(/\.0+$/, "").replace(/0+$/, "")}</span>`
       : "";
     return `<div class="hand-panel ${battle.locked && !modes.transferLocked ? "locked" : ""}"><div class="hand-head"><b>${U.esc(actor.name)} 的手牌</b><span class="tag">${phaseLabel(context)}</span><span class="tag">杀意 ${actor.intent || 0}/${intentMax}</span>${charge}${controls}</div><div class="hand-body ${skillLine ? "has-skills" : ""}">${skillLine}${handWrap}</div></div>`;
   }
@@ -64,6 +64,7 @@ window.GameUIHandView = (() => {
     if (card?.cadicisPlan) return "选择一张杀牌或战术牌作为作战计划，再点击使用";
     if (card?.armyOrder) return `选择2张花色完全相同的手牌当【魔王军入侵】使用；当前已选${(battle.selectedBagIndexes || []).length}张`;
     if (card?.elranaBag) return `选择任意张手牌弃置后摸等量牌；当前已选${(battle.selectedBagIndexes || []).length}张`;
+    if (card?.mariaHonorBlessing) return `选择1至4张花色各不相同的手牌弃置；当前已选${(battle.selectedBagIndexes || []).length}张`;
     if (handChoice) return "选择一张手牌作为转化或消耗，再点击使用";
     if (card?.comboAttack) return battle.comboPartnerUid
       ? battle.pendingTargetUid
@@ -121,7 +122,8 @@ window.GameUIHandView = (() => {
         || modes.dimensionTransfer && battle.dimensionTransfer.costIndex === index
         || picks.discardSet.has(index) || picks.shareSet.has(index)
         || picks.kaiichiSet.has(index) || picks.millerSet.has(index)
-        || (battle.selectedSkillCard?.elranaBag || battle.selectedSkillCard?.armyOrder)
+        || (battle.selectedSkillCard?.elranaBag || battle.selectedSkillCard?.armyOrder
+          || battle.selectedSkillCard?.mariaHonorBlessing)
           && (battle.selectedBagIndexes || []).includes(index);
       const normalLocked = !modes.dimensionTransfer && !modes.share && !modes.kaiichiShare
         && !modes.cadicisShare && !modes.borrowChoice && !modes.discard

@@ -1,6 +1,6 @@
 window.GameDataCharactersExtra = [
   {
-    id: "bertis", name: "贝尔蒂丝", gender: "female", face: "贝", art: "./assets/images/bertis-portrait.png", avatar: "./assets/images/bertis-portrait.png", role: "束缚公主", locked: true, unlockCost: 18,
+    id: "bertis", name: "贝尔蒂丝", gender: "female", face: "贝", art: "./assets/images/bertis-portrait.webp", avatar: "./assets/images/bertis-portrait.webp", role: "束缚公主", locked: true, unlockCost: 18,
     stats: { attack: 3, magic: 3, speed: 3, maxHp: 38, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "满生命强化与团队资源核心。傲慢雌小鬼在满生命时强化多项属性，苦肉鞭笞以友方伤害换取手牌和杀意，快速生长持续积累共享“粮食”。",
     skills: [
@@ -10,7 +10,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "gerlot", name: "杰洛特", gender: "male", face: "杰", art: "./assets/images/gerlot-portrait.png", avatar: "./assets/images/gerlot-portrait.png", role: "雌小鬼之子", locked: true,
+    id: "gerlot", name: "杰洛特", gender: "male", face: "杰", art: "./assets/images/gerlot-portrait.webp", avatar: "./assets/images/gerlot-portrait.webp", role: "雌小鬼之子", locked: true,
     stats: { attack: 3, magic: 1, speed: 4, maxHp: 34, bloodlust: 2, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "杀牌反击与判定爆发输出。复仇反击围绕自己和贝尔蒂丝遭受的单体杀牌展开反攻，爆头一击通过同色判定翻倍伤害，疯狂屠戮提供一次群体爆发。",
     skills: [
@@ -20,17 +20,17 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "angelica", name: "安洁莉卡", gender: "female", face: "安", art: "./assets/images/angelica-portrait.jpg", avatar: "./assets/images/angelica-portrait.jpg", role: "红刃公主", locked: true, unlockCost: 14,
+    id: "angelica", name: "安洁莉卡", gender: "female", face: "安", art: "./assets/images/angelica-portrait.webp", avatar: "./assets/images/angelica-portrait.webp", role: "红刃公主", locked: true, unlockCost: 14,
     stats: { attack: 3, magic: 1, speed: 3, maxHp: 45, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
-    evaluation: "首牌爆发与承伤蓄力核心。力大无穷强化每回合第一张牌的伤害，造成或受到伤害可积累“狂战”，挑衅则强制敌方攻击或弃牌。",
+    evaluation: "实体杀牌叠加倍率与承伤蓄力核心。力量爆发让本回合每张实体【杀】的伤害倍率递增，狂战意志在每次伤害后积累“狂战”标记并可代替杀意消耗，猩红暴走则把标记一次性转化为过牌与回复。",
     skills: [
-      { name: "力大无穷", type: "passive", icon: "⭐", text: "锁定技，每个回合内，你使用的第一张牌造成的伤害为3倍；当你使用任意牌后，本回合此技能失效。" },
-      { name: "狂战意志", type: "active", icon: "⚔️", text: "当你造成伤害或受到伤害后，你获得1枚“狂战”标记；以此技能获得的【杀】造成伤害时不获得标记。出牌阶段限一次，你可以移去所有“狂战”标记并获得等量临时【杀（普攻）】；这些牌不消耗杀意，离开手牌后进入消耗牌堆。", card: { name: "狂战意志", type: "tactic", angelicaRage: true, targetless: true, icon: "⚔️", text: "移去所有“狂战”标记，获得等量不消耗杀意的临时【杀（普攻）】。" } },
-      { name: "挑衅", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以令所有存活的敌方角色依次对你使用1张单体【杀】；未如此做的角色弃置1张手牌。", card: { name: "挑衅", type: "tactic", angelicaTaunt: true, targetless: true, icon: "⚔️", text: "令所有敌方角色依次对你使用1张单体【杀】；未如此做的角色弃置1张手牌。" } }
+      { name: "力量爆发", type: "passive", icon: "⭐", text: "锁定技，本回合内，你使用的实体【杀】牌造成的伤害×X，X为你本回合使用过的实体【杀】牌数+1倍（第1张×2、第2张×3、第3张×4，以此类推，每多使用一张实体【杀】，伤害倍率便+1倍）。本回合结束后X重置。虚拟【杀】牌或转换【杀】牌不计入X。" },
+      { name: "狂战意志", type: "passive", icon: "⭐", text: "锁定技，当你造成或受到伤害后，你获得1枚“狂战”标记（多段或连击伤害时逐段结算）。你使用实体【杀】牌时，可弃1枚“狂战”标记代替1点杀意消耗。“狂战”标记数量在头像旁以“狂战×N”显示，上限为10枚。" },
+      { name: "猩红暴走", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以弃置所有“狂战”标记，摸等量的牌，然后回复X点生命值，X为你以此法弃置的“狂战”标记数×你生命值上限的10%。", card: { name: "猩红暴走", type: "tactic", crimsonRampage: true, targetless: true, icon: "⚔️", text: "弃置所有“狂战”标记，摸等量的牌，然后回复X点生命值，X为你以此法弃置的“狂战”标记数×你生命值上限的10%。" } }
     ]
   },
   {
-    id: "luka", name: "鲁卡", gender: "male", face: "鲁", art: "./assets/images/luka-portrait.png", avatar: "./assets/images/luka-portrait.png", role: "军人之子", locked: true,
+    id: "luka", name: "鲁卡", gender: "male", face: "鲁", art: "./assets/images/luka-portrait.webp", avatar: "./assets/images/luka-portrait.webp", role: "军人之子", locked: true,
     stats: { attack: 3, magic: 1, speed: 4, maxHp: 38, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "自愈型杀牌输出。嗜血杀戮将杀牌生命值伤害转为恢复或满血补牌，狼牙回战让专属【狼牙杀】在战斗开始、使用战术牌后和回合开始时持续回到手牌。",
     skills: [
@@ -53,7 +53,7 @@ window.GameDataCharactersExtra = [
     stats: { attack: 3, magic: 3, speed: 3, maxHp: 32, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "持续毒伤与治疗联动辅助。毒针为杀牌附加可叠加的回合开始伤害，再生之躯提供自愈，协助母亲在艾尔拉娜完成有效治疗后为其补牌。",
     skills: [
-      { name: "毒针", type: "passive", icon: "⭐", text: "锁定技，当你使用【杀】造成生命值伤害后，目标获得1枚“毒”标记。拥有“毒”标记的角色回合开始时，受到等同于其“毒”标记数的毒属性伤害。" },
+      { name: "毒针", type: "passive", icon: "⭐", text: "锁定技，当你使用【杀】造成生命值伤害后，目标获得1枚“毒”标记（多段或连击伤害时逐段结算）。拥有“毒”标记的角色回合开始时，受到等同于其“毒”标记数的毒属性伤害。" },
       { name: "再生之躯", type: "passive", icon: "⭐", text: "锁定技，结束阶段，你恢复X点生命值（X为你手牌中的红色牌数+你的魔力）；若你的生命值已满，改为摸1张牌。" },
       { name: "协助母亲", type: "passive", icon: "⭐", text: "锁定技，当艾尔拉娜使用恢复类卡牌或技能并实际恢复生命值后，艾尔拉娜摸1张牌。" }
     ]
@@ -102,7 +102,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "besta", name: "贝丝妲", gender: "female", face: "贝", art: "./assets/images/besta-portrait.png", avatar: "./assets/images/besta-portrait.png", role: "魅魔国长公主", locked: true, unlockCost: 40,
+    id: "besta", name: "贝丝妲", gender: "female", face: "贝", art: "./assets/images/besta-portrait.webp", avatar: "./assets/images/besta-portrait.webp", role: "魅魔国长公主", locked: true, unlockCost: 40,
     stats: { attack: 2, magic: 4, speed: 2, maxHp: 28, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "黑色手牌驱动的暗属性魔力输出。黑暗之力扩充黑牌容量并转换部分杀牌结算，终焉鬼影斩批量释放黑牌，终焉回旋斩在闪避后按黑色【杀】数量反击。",
     skills: [

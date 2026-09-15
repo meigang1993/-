@@ -64,6 +64,14 @@ async function startFreshGame(page) {
   await expect(page.locator("[data-open-modal='team']")).toBeVisible();
 }
 
+async function openTestBattle(page) {
+  await page.evaluate(() => {
+    window.state.hallModal = "testBattle";
+    window.render();
+  });
+  await page.locator("[data-start-test-battle]").waitFor({ state: "visible" });
+}
+
 async function startRegressionBattle(page) {
   await openGame(page);
   await enterRegressionBattle(page);
@@ -71,8 +79,7 @@ async function startRegressionBattle(page) {
 
 async function enterRegressionBattle(page) {
   await startFreshGame(page);
-  await page.locator("[data-open-modal='team']").first().click();
-  await page.getByRole("button", { name: "测试战斗" }).click();
+  await openTestBattle(page);
   await page.evaluate(() => {
     window.state.testEnemies = [0, 1];
     window.GameAssets.preloadBattle = async () => {};
@@ -130,5 +137,6 @@ async function capturedAoeLineCount(page, key) {
 
 module.exports = {
   collectErrors, relevantErrors, openGame, waitForImages, expectImagesLoaded, startFreshGame,
-  startRegressionBattle, enterRegressionBattle, prepareAoeLineCapture, capturedAoeLineCount,
+  openTestBattle, startRegressionBattle, enterRegressionBattle, prepareAoeLineCapture,
+  capturedAoeLineCount,
 };

@@ -1,14 +1,14 @@
 const { test, expect } = require("@playwright/test");
 const {
   collectErrors, relevantErrors, openGame, startFreshGame,
+  openTestBattle,
 } = require("./helpers/preview-game");
 
 test("damage attributes render in priority order and style critical numbers", async ({ page }) => {
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
-  await page.locator("[data-open-modal='team']").first().click();
-  await page.getByRole("button", { name: "测试战斗" }).click();
+  await openTestBattle(page);
   await page.evaluate(() => {
     window.GameAssets.preloadBattle = async () => {};
     window.BattleEffects.whenIdle = async () => {};

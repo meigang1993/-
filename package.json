@@ -28,6 +28,8 @@
     "check:resources": "node tools/check-resources.js",
     "check:asset-budget": "node tools/check-asset-budget.js",
     "check:scripts": "node tools/check-script-contracts.js",
+    "check:lines": "node tools/line-count.js",
+    "check:all": "node tools/check-all.js",
     "check:performance": "node tools/check-startup-performance.js",
     "check:duplicates": "jscpd --config .jscpd.json --no-colors --no-tips",
     "impact": "node tools/impact-check.js",
@@ -79,7 +81,8 @@
     "replay:record": "node tools/battle-replay.js record",
     "replay:verify": "node tools/battle-replay.js verify",
     "qa:extended": "npm run qa:full && npm run coverage:logic && npm run test:soak && npm run optimize:all",
-    "screenshot": "node tools/run-browser-tests.js focus smoke"
+    "screenshot": "node tools/run-browser-tests.js focus smoke",
+    "build:bundles:lean": "node tools/build-publish-bundles.js --no-sources"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
@@ -98,6 +101,6 @@
     "jscpd": "^5.0.12",
     "sharp": "^0.35.3",
     "stylelint": "^17.14.0",
-    "terser": "^5.49.0"
+    "terser": "^5.51.2"
   }
 }

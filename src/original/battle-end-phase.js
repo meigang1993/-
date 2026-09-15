@@ -16,6 +16,7 @@ window.BattleEndPhase = deps => {
       () => window.EnemySkills?.endTurn?.(state, unit, draw, combat.damage),
       () => window.UnderwaterTrainSkills?.endTurn?.(state, unit),
       () => window.ElranaAceNanaliSkills?.endTurn?.(state, unit, { draw, damage: combat.damage, pushFloat: combat.pushFloat }),
+      () => window.ArtinaMariaSkills?.endTurn?.(state, unit),
       () => promptSpeedAssault(state, unit),
     ];
     let index = Number.isInteger(b.endPhaseStep) ? b.endPhaseStep : 0;

@@ -10,4 +10,5 @@ window.GameDataFutureDungeons = [
     bgm: "./assets/new-bgm/orc-dungeon-battle.ogg",
     route: { type: "fixed-random", layers: 13, rest: [9], chest: [7], boss: [13] }
   },
+  ...(window.GameDataRuinsSandCity ? [window.GameDataRuinsSandCity.mission] : []),
 ];

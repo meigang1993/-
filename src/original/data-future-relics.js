@@ -100,3 +100,4 @@ window.GameDataFutureRelics = {
     enemy: "demon_king_bakaar"
   },
 };
+Object.assign(window.GameDataFutureRelics, window.GameDataRuinsContent?.relics || {});

@@ -3,8 +3,8 @@ const {
 } = require("./progression-test-harness");
 
 function testGrowthProfiles() {
-  assert(Progression.expToNext.reduce((sum, value) => sum + value, 0) === 20410,
-    "level 15 must require 20410 total experience");
+  assert(Progression.expToNext.reduce((sum, value) => sum + value, 0) === 47710,
+    "level 20 must require 47710 total experience");
   const nodeRewards = Object.values(GameData.difficulties).map(difficulty =>
     ["normal", "elite", "boss"].map(kind =>
       Progression.rewardFor(kind, difficulty)));
@@ -12,6 +12,13 @@ function testGrowthProfiles() {
     [30, 70, 130], [35, 81, 150], [41, 95, 176],
     [48, 112, 208], [57, 133, 247],
   ]), "difficulty experience rewards changed");
+  const dungeonRewards = ["machine_factory", "underwater_train", "orc_dungeon",
+    "ruins_sand_city"].map(missionId => Progression.rewardFor(
+    "boss", GameData.difficulties.normal, missionId));
+  assert(JSON.stringify(dungeonRewards) === JSON.stringify([130, 260, 390, 520]),
+    "victory experience must scale by dungeon: 1x / 2x / 3x / 4x");
+  assert(Progression.rewardFor("boss", GameData.difficulties.normal, "unknown_dungeon") === 130,
+    "unknown dungeons must fall back to the unscaled reward");
   assert(Object.keys(Progression.growth).sort().join(",")
     === GameData.characters.map(character => character.id).sort().join(","),
   "every playable character needs exactly one dedicated growth profile");
@@ -23,8 +30,8 @@ function testExperienceGrant() {
   const first = Progression.grant(unit, 30, template);
   assert(first.level === 0 && unit.exp === 30,
     "one normal victory must retain partial level-zero experience");
-  const multi = Progression.grant(unit, 20380, template);
-  assert(multi.level === 15 && unit.exp === 0, "large rewards must support multi-level gains and cap at 15");
+  const multi = Progression.grant(unit, 47680, template);
+  assert(multi.level === 20 && unit.exp === 0, "large rewards must support multi-level gains and cap at 20");
   const capped = JSON.stringify(unit);
   Progression.grant(unit, 99999, template);
   assert(JSON.stringify(unit) === capped, "capped characters must not accumulate overflow experience");
@@ -67,7 +74,7 @@ function testMigration() {
   const grown = character(growth);
   assert(grown.level === 10 && grown.exp === 120,
     "growth migration must preserve level and current-level experience");
-  assert(grown.stats.maxHp === 84 && grown.hp === 31,
+  assert(grown.stats.maxHp === 86 && grown.hp === 31,
     "growth migration must rebuild rebalanced stats and preserve compact-save HP ratio");
   assert(growth.flags.characterGrowthVersion === 3,
     "growth migration must advance its independent version");
@@ -85,8 +92,8 @@ function testMigration() {
   assert(character(secondGrowth).hp === 40
     && secondGrowth.flags.characterGrowthVersion === 3,
   "version-2 growth migration must preserve HP when maximum-HP growth is unchanged");
-  assert(character(secondGrowth).stats.attack === 12
-    && character(secondGrowth).stats.magic === 4,
+  assert(character(secondGrowth).stats.attack === 15.29
+    && character(secondGrowth).stats.magic === 5.1,
   "version-2 growth migration must rebuild attack and magic from the new growth table");
 
   const current = fresh();
@@ -100,7 +107,7 @@ function testMigration() {
   assert(!Object.hasOwn(character(current), "stats"),
     "compact saves must omit derived character stats");
   Store.migrate(current);
-  assert(character(current).stats.maxHp === 84,
+  assert(character(current).stats.maxHp === 86,
     "current compact saves must rebuild level-derived maximum HP");
   assert(character(current).hp === 40,
     "current compact saves must preserve exact HP instead of healing to full");

@@ -51,7 +51,11 @@ window.GameAssets = (() => {
     };
     timer = setTimeout(() => finish(null), timeout);
     img.decoding = "async"; img.loading = "eager";
-    img.onload = () => finish(img);
+    img.onload = () => {
+      const decoded = img.decode?.();
+      if (decoded?.then) decoded.then(() => finish(img), () => finish(img));
+      else finish(img);
+    };
     img.onerror = () => finish(null); img.src = resolved;
     return p;
   }
@@ -113,6 +117,9 @@ window.GameAssets = (() => {
     const policy = isSlowNetwork() ? battlePolicy.slow : battlePolicy.normal;
     return preload([...set], onProgress, { ...policy, eager: true });
   }
+  function preloadAssets(urls) {
+    return preload(urls, null, { limit: 1, timeout: 12000, deadline: 20000 });
+  }
   function retryBattle(list, onProgress) {
     const slow = isSlowNetwork();
     return preload(list, onProgress, {
@@ -125,6 +132,6 @@ window.GameAssets = (() => {
   const failed = url => !!url && failedUrls.has(url);
   return {
     cardBack, faceDownCardBack: cardBack, criticalUrls, preloadCritical,
-    warmHall, preloadBattle, retryBattle, failed, reportFailure,
+    warmHall, preloadBattle, preloadAssets, retryBattle, failed, reportFailure,
   };
 })();

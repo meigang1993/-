@@ -57,6 +57,12 @@ Required guards:
   contract, correct that contract, rerun its focused check, and retry the
   authenticated save endpoint. Confirm the returned commit hash and a clean
   worktree before reporting the change as saved.
+- A failed save may leave files staged or partially synchronized while the
+  endpoint reports no commit. Treat the repository status as authoritative:
+  rerun the hook against the exact staged worktree, inspect any unstaged
+  tracked files that would bypass validation, and retry only after the hook
+  passes. Never report a save as complete without both a successful response
+  containing a commit hash and a clean status check.
 - `npm run dev:save -- "message"` must remain fail-closed. It runs the quick QA
   chain before calling the Game Studio save endpoint and must not save when any
   gate fails.
@@ -65,6 +71,13 @@ Required guards:
   JavaScript clone findings and exceeds the configured `0.30%` duplication
   budget; until that baseline is repaired, `dev:save` is expected to stop
   before saving runtime changes.
+- Save incident recorded on September 5, 2026: the first attempted Game
+  Studio save returned `500 Save failed` because `meta[name="game-build"]` had
+  been advanced without advancing the startup bundle, stylesheet import,
+  stylesheet link, and visible build-badge cache versions. The save was not
+  considered successful; the versions were synchronized, the pre-commit gate
+  passed, and the retry returned commit
+  `ffc7bb52d42c5b06c80e6e7f68617c50f35c5a16`.
 - Documentation-only changes still require hooks/path checks and the
   authenticated Game Studio save endpoint. They do not require rebuilding
   runtime bundles unless `src/original/` or `publish/` changes.
@@ -107,6 +120,13 @@ load intentionally replaces the state and resets application action guards. It
 must capture the originating state plus runtime-error generation, reject stale
 work after every asynchronous boundary before adoption, then capture the loaded
 state for settings synchronization and final UI writeback.
+
+Angelica's Berserker skin must not create entry effects from render-time
+`sync()`. The former one-time entry path appended fixed-position nodes to the
+document body and animated the portrait whenever its marker was lost, so an
+unrelated or delayed rerender could produce visible corruption outside the skin
+panel. Entry is queued only by explicit battle-start or successful skin-switch
+events; the remaining visuals are limited to explicit skill events.
 
 Loading a battle snapshot occurs before deferred dungeon modules are guaranteed
 to exist. A legacy start-only or malformed snapshot must therefore clear
@@ -295,6 +315,14 @@ scroll position, or apply old DOM indices to another character's hand.
 Required guards:
 
 - preserve matching image/video nodes and stable keyed roster cards;
+- battle skin changes must preserve every unchanged unit's media node; disabling
+  media preservation for the whole battle view can force large decoded portraits
+  such as Angelica's Berserker art through a new decode/composition cycle and
+  visibly corrupt or flash her portrait when another character changes skin;
+- when the changed unit receives a different image source, keep its previous
+  battle image visibly layered above the replacement until `decode()` completes
+  and the replacement survives two animation frames; preload completion alone
+  does not guarantee that the new DOM image has reached stable composition;
 - derive HP-dependent skill-state portraits and decorators from `visualHp`
   while damage or healing is queued, so group effects cannot expose a later
   target's state change before its own visual hit commits;

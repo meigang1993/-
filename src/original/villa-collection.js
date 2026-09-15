@@ -65,9 +65,11 @@ window.VillaCollectionUI = ({ U, cardTypeLabel }) => {
   }
   function skinCard(state, s) {
     const c = state.chars.find(x => x.id === s.charId), locked = !c || c.locked, owned = SkinSystem.owned(state, s), equipped = state.equippedSkins?.[s.charId] === s.id, cost = SkinSystem.price(s), enough = (state.resources?.essence || 0) >= cost;
-    const action = locked ? `<button disabled>角色未解锁</button>` : owned ? `<button data-equip-skin="${s.id}" ${equipped ? "disabled" : ""}>${equipped ? "已装备" : "装备"}</button>` : s.unlockLevel ? `<button disabled>Lv.${s.unlockLevel} 解锁</button>` : `<button data-buy-skin="${s.id}" ${enough ? "" : "disabled"}>兑换：${cost}精华宝珠</button>`;
-    const hidden = !!s.unlockLevel && !owned;
-    const preview = hidden ? `<span class="skin-level-lock">Lv.${s.unlockLevel}</span>` : `<img src="${U.esc(s.art)}" alt="${U.esc(s.name)}" loading="lazy" decoding="async">`;
+    const specialLocked = !!s.unlockLevel && !owned;
+    const action = locked ? `<button disabled>角色未解锁</button>` : owned ? `<button data-equip-skin="${s.id}" ${equipped ? "disabled" : ""}>${equipped ? "已装备" : "装备"}</button>` : specialLocked ? `<button disabled>Lv.${s.unlockLevel} 解锁</button>` : `<button data-buy-skin="${s.id}" ${enough ? "" : "disabled"}>兑换：${cost}精华宝珠</button>`;
+    const hidden = specialLocked && !s.specialIllustration;
+    const lockedImgClass = specialLocked && s.specialIllustration ? " locked" : "";
+    const preview = hidden ? `<span class="skin-level-lock">Lv.${s.unlockLevel}</span>` : `<img src="${U.esc(s.art)}" alt="${U.esc(s.name)}" loading="lazy" decoding="async" class="${lockedImgClass.trim()}">`;
     const previewData = hidden ? "" : ` data-art-src="${U.esc(s.art)}" data-art-name="${U.esc(c?.name || s.charId)} · ${U.esc(s.name)}"`;
     const unlock = s.initial ? "随角色解锁" : s.unlockLevel ? `Lv.${s.unlockLevel} 自动解锁` : `${cost} 精华宝珠`;
     return `<div class="card skin-card ${owned ? "owned" : ""} ${equipped ? "equipped" : ""} ${state.skinFlash === s.id ? "skin-flash" : ""}"><div class="skin-preview"${previewData}>${preview}</div><b>${U.esc(c?.name || s.charId)} · ${U.esc(s.name)}</b><div class="skin-meta"><span class="tag">${SkinSystem.qualityName(s)}</span>${s.specialEffect ? `<span class="tag">专属特效</span>` : ""}<span class="tag">${unlock}</span>${equipped ? `<span class="tag">已装备</span>` : ""}</div><p class="muted">${U.esc(s.desc)}</p>${!s.unlockLevel && !owned && !enough && !locked ? `<p class="muted">宝珠不足。</p>` : ""}${action}</div>`;

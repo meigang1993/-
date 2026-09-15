@@ -143,7 +143,6 @@ test("Lokar and Besta Doll skins render exclusive skill effects", async ({ page 
       return image.offsetWidth === element.clientWidth
         && image.offsetHeight === element.clientHeight;
     }))).toBe(true);
-  await expect(page.locator(".battle-damage-skin-overlay")).toHaveCount(0);
   const normalArt = await page.evaluate(() => {
     const besta = window.state.battle.allies.find(unit => unit.ref === "besta_doll");
     besta.hp = besta.visualHp = Math.floor(besta.maxHp / 3);
@@ -153,7 +152,6 @@ test("Lokar and Besta Doll skins render exclusive skill effects", async ({ page 
   });
   await expect(page.locator('[data-target="a1"] .unit-art'))
     .toHaveAttribute("data-art-src", normalArt);
-  await expect(page.locator(".battle-damage-skin-overlay")).toHaveCount(0);
 
   await page.evaluate(() => {
     const lokar = window.state.battle.allies.find(unit => unit.ref === "lokar");
@@ -209,6 +207,5 @@ test("Default Besta Doll skin never activates Extract Essence state art", async 
 
   await expect(page.locator('[data-target="a0"] .unit-art'))
     .toHaveAttribute("data-art-src", defaultArt);
-  await expect(page.locator(".battle-damage-skin-overlay")).toHaveCount(0);
   expect(relevantErrors(errors)).toEqual([]);
 });

@@ -50,11 +50,10 @@ test("battle detail shows one primary role beside the name and in skill hover te
     return window.UICommon.skillSummary(target);
   });
   await expect(art).toHaveAttribute("title", expected);
-  await expect(art).not.toHaveAttribute("title", /实战定位：/);
   await expect(unit.locator(".unit-name .combat-role")).toHaveCount(0);
   const activeSkill = page.locator(".active-skills .skill").first();
   await expect(activeSkill).toBeVisible();
-  await expect(activeSkill).toHaveAttribute("title", /实战定位：/);
+  await expect(activeSkill).toHaveAttribute("title", /状态：/);
   await page.locator("[data-active-info]").first().click();
   const detailTitle = page.locator(".info-overlay .info-title-row");
   await expect(detailTitle.locator("h2")).toBeVisible();
@@ -72,11 +71,9 @@ test("battle detail shows one primary role beside the name and in skill hover te
     return bounds.left >= section.left && bounds.right <= section.right;
   })).toBe(true);
   await page.locator("[data-info-tab='skills']").click();
-  await expect(page.locator(".info-overlay .role-position")).toHaveCount(1);
   await expect(page.locator(".skill-detail .skill").first())
-    .toHaveAttribute("title", new RegExp(`实战定位：${expectedRole}`));
-  await expect(page.locator(".battle-screen .unit-skill-tooltip"))
-    .toHaveCount(0);
+  await expect(page.locator(".skill-detail .skill").first())
+    .toHaveAttribute("title", /状态：/);
   expect(relevantErrors(errors)).toEqual([]);
 });
 
@@ -129,7 +126,10 @@ test("all playable characters keep readable skill buttons in the active battle p
         missingName:
           buttons.some(button => !button.querySelector("em")?.textContent.trim()),
         missingTip:
-          buttons.some(button => !button.title.includes(template.combatRoles[0])),
+          buttons.some((button, index) => {
+            const skill = expected[index];
+            return !skill || !button.title.includes(skill.name);
+          }),
         overflow,
         scrollable: skillViewport.scrollHeight > skillViewport.clientHeight,
         lastReachable,

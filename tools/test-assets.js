@@ -1,5 +1,8 @@
 global.window = global;
-global.navigator = { connection: {} };
+// Node >=21 ships a built-in read-only global navigator; mutate it instead of replacing it.
+const testNavigator = global.navigator || {};
+testNavigator.connection = testNavigator.connection || {};
+global.navigator = testNavigator;
 global.document = { baseURI: "https://game.test/" };
 const fs = require("fs");
 const path = require("path");
