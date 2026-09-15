@@ -124,17 +124,17 @@
     {
       "name": "lokar-level-10-special",
       "status": "success",
-      "path": "publish/assets/generated/lokar-level-10-special.2e26f846.webp",
-      "contentHash": "2e26f846",
+      "path": "publish/assets/generated/lokar-level-10-special.849df5d4.webp",
+      "contentHash": "849df5d4",
       "revisedPrompt": "User-uploaded Lokar level-10 special illustration, compressed without content inspection.",
       "model": "user-upload",
-      "size": "384x384",
+      "size": "512x512",
       "wantsTransparent": false,
       "chromaKey": null,
       "outputFormat": "webp",
-      "compressionProfile": "lossy_q55_opaque",
-      "originalBytes": 2406275,
-      "finalBytes": 13578,
+      "compressionProfile": "lossy_q50_opaque",
+      "originalBytes": 2247872,
+      "finalBytes": 16080,
       "createdAt": "2026-09-15T00:00:00Z"
     },
     {
