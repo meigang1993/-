@@ -13,7 +13,6 @@ const reservedAssets = new Set([
   "assets/new-portraits/hoshino-yi-witherer.webp",
   "assets/new-portraits/sonia.webp",
   "assets/new-portraits/maria.webp",
-  "assets/new-portraits/atina.webp",
 ].map(file => path.resolve(root, file)));
 const refs = [];
 const assets = [];
