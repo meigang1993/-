@@ -381,7 +381,7 @@ The following table records the current screen families.
 
 ### Primary Identity Art
 
-- `publish/assets/generated/besta-villa-new.9d71c032.webp` is the title and villa hero
+- `publish/assets/generated/besta-villa-new.3cf7a4f0.webp` is the title and villa hero
   image. Its white-haired red-eyed horned heroine, black-red gothic costume,
   throne, wings, and crimson lighting are first-viewport identity signals.
 - `publish/assets/generated/succubus-card-back.1fdff617.webp` is the canonical
