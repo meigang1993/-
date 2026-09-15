@@ -381,10 +381,10 @@ The following table records the current screen families.
 
 ### Primary Identity Art
 
-- `publish/assets/generated/besta-villa-new.webp` is the title and villa hero
+- `publish/assets/generated/besta-villa-new.9d71c032.webp` is the title and villa hero
   image. Its white-haired red-eyed horned heroine, black-red gothic costume,
   throne, wings, and crimson lighting are first-viewport identity signals.
-- `publish/assets/generated/succubus-card-back.cca22db5.webp` is the canonical
+- `publish/assets/generated/succubus-card-back.1fdff617.webp` is the canonical
   hidden-card face and a low-opacity gothic watermark.
 - Character and enemy portraits are sourced through canonical data and skin
   resolution. The repository currently contains:
