@@ -261,6 +261,11 @@ pushing. The full required sequence is:
 enforces that the version advances, but it does not prove bundles match sources —
 only `--check` does.
 
+The same trap hits the *receiving* side: browser tests load `bundles/`, never
+`src/`, so a stale bundle makes correct source look broken. When handing a fix to
+another session, tell it to rebuild too — see
+*Multi-Agent Collaboration → Tell the other session to rebuild, not just to pull*.
+
 ### Ship `.map` files together with their bundles (2026-09-15)
 
 `tools/build-publish-bundles.js` emits **two** artifacts per bundle:
@@ -584,6 +589,39 @@ bump alone changes `index.html` / `villa.css` only.
   can overwrite it. Keep rules short and re-verify them after any bulk sync;
   also prefer keeping durable cross-session rules here because every session is
   told to read this file first.
+
+### Tell the other session to rebuild, not just to pull (2026-09-15)
+
+Handing another session a fix is not finished when the push lands. If the fix
+touched `src/original/*.js`, say explicitly:
+
+```
+git pull
+npm run build:bundles      # ← required; a pull alone runs the OLD bundle
+npm run check:bundles
+```
+
+Why the reminder is necessary: the browser entry point is
+`publish/index.html` → `publish/bundles/*.min.js`. `src/original/` is **not**
+loaded at runtime. A pull that brings new source but no rebuilt bundle leaves
+the page executing pre-fix code, so tests fail on a fix that is already
+correct in the source tree — which reads exactly like a broken fix.
+
+- Real incident (2026-09-15): four existing level-art cases (Bertis / Nonoka /
+  Lokar / Besta Doll) failed on the other session while the local source was
+  already correct. Root cause was `publish/bundles/hall.min.js` still carrying
+  the pre-fix `villa-test.js`; rebuilding made all four pass **without touching
+  a line of source**.
+- Diagnostic order when the other session reports failures in code you believe
+  is correct:
+  1. `node tools/build-publish-bundles.js --check` — must be `11/11 current`.
+  2. Compare the remote `.min.js` blob sha against a freshly built local one.
+  3. Only then suspect the source. Do **not** "fix" correct source to satisfy a
+     stale bundle; that is how the trialing rule got over-corrected into
+     "locked everywhere" the same day.
+- Symmetrically, when you are the one pulling someone else's source change,
+  rebuild before running browser tests — otherwise you will report a regression
+  that exists only in your stale bundle.
 
 ## Memory Discipline
 
