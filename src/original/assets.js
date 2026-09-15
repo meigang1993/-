@@ -17,7 +17,7 @@ window.GameAssets = (() => {
     });
     return set;
   }
-  function criticalUrls() { return ["./assets/generated/besta-villa-new.9d71c032.webp", cardBack]; }
+  function criticalUrls() { return ["./assets/generated/besta-villa-new.3cf7a4f0.webp", cardBack]; }
   function reportFailure(url, expected) {
     if (!url) return;
     failedUrls.add(url);
