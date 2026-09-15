@@ -23,7 +23,7 @@ body.start-mode .content-panel {
   padding: 18px;
   background:
     linear-gradient(90deg, rgba(7, 7, 9, .96), rgba(17, 9, 14, .58) 50%, rgba(7, 7, 9, .96)),
-    url("./assets/generated/succubus-card-back.cca22db5.webp") center 44% / min(46vh, 38vw) auto no-repeat,
+    url("./assets/generated/succubus-card-back.1fdff617.webp") center 44% / min(46vh, 38vw) auto no-repeat,
     #08070a;
 }
 
@@ -69,7 +69,7 @@ body.start-mode .content-panel {
   border: 1px solid rgba(201, 167, 100, .52);
   background:
     linear-gradient(180deg, transparent 48%, rgba(7, 6, 9, .78) 82%, rgba(7, 6, 9, .96)),
-    url("./assets/generated/besta-villa-new.webp") center / cover no-repeat;
+    url("./assets/generated/besta-villa-new.9d71c032.webp") center / cover no-repeat;
   clip-path: polygon(8% 0, 92% 0, 100% 8%, 100% 92%, 92% 100%, 8% 100%, 0 92%, 0 8%);
   filter: contrast(1.05) drop-shadow(0 16px 28px rgba(0, 0, 0, .76));
 }
