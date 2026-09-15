@@ -17,7 +17,7 @@ window.OrcUnlockEvents = (() => {
       ["普雷希", "可能是最高级别凋零者，他们都会时空魔法，来到这个世界很容易。他们目的好像寻找什么混沌之子。"],
       ["贝丝妲", "混沌之子？我知道了，我会告诉孩子们注意凋零者。我这就出发。"]
     ];
-    const besta = state.chars.find(c => c.id === "besta") || { name: "贝丝妲", avatar: "./assets/generated/besta-villa-new.9d71c032.webp" };
+    const besta = state.chars.find(c => c.id === "besta") || { name: "贝丝妲", avatar: "./assets/generated/besta-villa-new.3cf7a4f0.webp" };
     const preshi = { name: "普雷希", avatar: "./assets/images/besta-portrait.3dca20b9.webp" };
     return `<div class="first-defeat-event"><h2>兽人地下城求援</h2><div class="vn-stage">${portrait(besta)}${portrait(preshi)}</div><div class="vn-lines">${lines.map(([n, t]) => `<div class="vn-line"><b>${U().esc(n)}</b><span>${U().esc(t)}</span></div>`).join("")}</div><p class="muted">事件结束后，副本“兽人地下城”开放；任务接取上限提高至10个。</p><div class="actions"><button data-orc-dungeon-unlock-complete="1">出发前往兽人领地</button></div></div>`;
   }
