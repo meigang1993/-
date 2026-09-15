@@ -8,7 +8,7 @@ window.GameDataFutureEnemies.orc_dungeon.push({
   evaluation: "翻面补牌与团队护甲精英。结束阶段翻面并按本回合用牌数摸牌，因此跳过下一个完整回合；翻面期间仍可将黑色牌当【看破】、红色牌当【佯攻】使用或打出。其他友方角色受到生命值伤害后，若其存活，获得等同于凯丽魔力的护甲。",
   gender: "female",
   face: "凯",
-  art: "./assets/new-portraits/guard-kelly.webp",
+  art: "./assets/new-portraits/guard-kelly.5d3401a1.webp",
   bgm: "./assets/sounds/guard-kelly.ogg",
   hp: 210,
   attack: 8,
