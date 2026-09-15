@@ -139,6 +139,8 @@ window.SkinSystem = (() => {
   function testEquip(state, charId, skinId) {
     const skin = byId(skinId);
     if (!skin || skin.charId !== charId) return false;
+    // 等级立绘必须达到等级解锁，测试战斗的"试用"不适用于它，避免绕过按钮直接写入。
+    if (skin.unlockLevel && !owned(state, skin)) return false;
     state.testSkins ||= {};
     state.testSkins[charId] = skinId;
     state.skinFlash = skinId;
