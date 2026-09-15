@@ -8,8 +8,10 @@ window.GameSkinData = (() => {
   const skins = [
     { id: "lokar_default", charId: "lokar", name: "默认", quality: "default", price: 0, art: "./assets/images/lokar-portrait.webp", desc: "罗卡尔的初始外观。", initial: true },
     { id: "lokar_motherbound", charId: "lokar", name: "恋母勇者", quality: "rare", art: "./assets/generated/lokar-motherbound-refined-bg.235e8f11.webp", dynamicEffect: "lokar-motherbound", specialEffect: true, desc: "为了母亲，他愿意成为任何怪物。" },
+    { id: "lokar_level_10_special", charId: "lokar", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/lokar-level-10-special.2e26f846.webp", desc: "罗卡尔达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "besta_doll_default", charId: "besta_doll", name: "默认", quality: "default", price: 0, art: "./assets/images/besta-doll-portrait.webp", desc: "贝丝妲魔偶的初始外观。", initial: true },
     { id: "besta_doll_energy_queen", charId: "besta_doll", name: "机铠魔偶", quality: "normal", price: 10, art: "./assets/generated/besta-doll-fullbody-heels-bg.56c37ce5.webp", damagedArt: "./assets/generated/besta-doll-critical-damage.99e0ac86.webp", dynamicEffect: "besta-mecha", specialEffect: true, desc: "小型机械魔偶全身机体启动，黑红机械高跟鞋在工厂红光中踏出冷冽回响。" },
+    { id: "besta_doll_level_10_special", charId: "besta_doll", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/besta-doll-level-10-special.7e839287.webp", desc: "贝丝妲魔偶达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "nonoka_default", charId: "nonoka", name: "默认", quality: "default", price: 0, art: "./assets/images/nonoka-portrait.webp", desc: "诺诺卡的初始外观。", initial: true },
     { id: "nonoka_idol_rising_star", charId: "nonoka", name: "偶像明日星", quality: "epic", price: 10, art: "./assets/generated/nonoka-idol-rising-star-star-eyes.97cc2566.webp", dynamicEffect: "nonoka-idol", specialEffect: true, desc: "蓝色星形瞳光点亮舞台，星纹电吉他将旋律化为笼罩全场的魔力声浪。" },
     { id: "nonoka_level_10_special", charId: "nonoka", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/nonoka-level-10-special.ba4c8ff8.webp", desc: "诺诺卡达到10级后自动解锁，可作为正式战斗立绘装备。" },

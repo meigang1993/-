@@ -1,6 +1,13 @@
 window.UpdateNotice = (() => {
   const updates = [
     {
+      title: "2026年9月15日 · 今日更新",
+      items: [
+        "新增罗卡尔与贝丝妲魔偶的等级特殊立绘，角色达到10级后自动解锁并可作为正式战斗立绘装备。",
+        "两张新增立绘已压缩为轻量 WebP 素材，保留角色原有默认皮肤与宝珠皮肤。",
+      ],
+    },
+    {
       title: "2026年9月11日 · 今日更新",
       items: [
         "安洁莉卡技能重做：【力大无穷】更名为【力量爆发】，效果为本回合内每张实体【杀】的伤害×X，X为本回合已使用过的实体【杀】牌数+1倍（第1张×2、第2张×3，以此类推），回合结束后重置；虚拟【杀】与转换【杀】不计入X。",
@@ -96,9 +103,9 @@ window.UpdateNotice = (() => {
             <span class="update-notice-kicker">版本更新</span>
             <h2 id="update-notice-title">更新公告</h2>
           </div>
-        <time datetime="2026-09-11">更新至2026年9月11日</time>
+        <time datetime="2026-09-15">更新至2026年9月15日</time>
       </header>
-        <p class="update-notice-summary">本次更新包含安洁莉卡技能重做、【帝血弑天】皮肤立绘更换与实战定位调整。</p>
+        <p class="update-notice-summary">本次更新新增罗卡尔与贝丝妲魔偶的10级特殊立绘，并保留既有皮肤与战斗规则。</p>
         <div class="update-notice-list">${sections}</div>
       </section>
     `;

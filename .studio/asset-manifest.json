@@ -1,7 +1,7 @@
 {
   "version": 1,
   "createdAt": "2026-06-23T08:39:45Z",
-  "updatedAt": "2026-08-30T01:00:11.496728+00:00",
+  "updatedAt": "2026-09-15T00:00:00Z",
   "assets": [
     {
       "name": "succubus-card-back",
@@ -120,6 +120,38 @@
       "originalBytes": 1682333,
       "finalBytes": 195964,
       "createdAt": "2026-08-09T05:40:16Z"
+    },
+    {
+      "name": "lokar-level-10-special",
+      "status": "success",
+      "path": "publish/assets/generated/lokar-level-10-special.2e26f846.webp",
+      "contentHash": "2e26f846",
+      "revisedPrompt": "User-uploaded Lokar level-10 special illustration, compressed without content inspection.",
+      "model": "user-upload",
+      "size": "384x384",
+      "wantsTransparent": false,
+      "chromaKey": null,
+      "outputFormat": "webp",
+      "compressionProfile": "lossy_q55_opaque",
+      "originalBytes": 2406275,
+      "finalBytes": 13578,
+      "createdAt": "2026-09-15T00:00:00Z"
+    },
+    {
+      "name": "besta-doll-level-10-special",
+      "status": "success",
+      "path": "publish/assets/generated/besta-doll-level-10-special.7e839287.webp",
+      "contentHash": "7e839287",
+      "revisedPrompt": "User-uploaded Besta Doll level-10 special illustration, compressed without content inspection.",
+      "model": "user-upload",
+      "size": "384x384",
+      "wantsTransparent": false,
+      "chromaKey": null,
+      "outputFormat": "webp",
+      "compressionProfile": "lossy_q55_opaque",
+      "originalBytes": 2689067,
+      "finalBytes": 23872,
+      "createdAt": "2026-09-15T00:00:00Z"
     },
     {
       "name": "lokar-motherbound-refined-bg",

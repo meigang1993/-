@@ -92,9 +92,11 @@ test("Nonoka special art unlocks and equips automatically at level 10", async ({
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test("Manny, Flora, and Wendy special art unlocks and equips automatically at level 10", async ({ page }) => {
+test("additional special art unlocks and equips automatically at level 10", async ({ page }) => {
   const errors = collectErrors(page);
   const cases = [
+    ["lokar", "lokar_level_10_special", "lokar-level-10-special"],
+    ["besta_doll", "besta_doll_level_10_special", "besta-doll-level-10-special"],
     ["manny", "manny_level_10_special", "manny-level-10-special"],
     ["flora", "flora_level_10_special", "flora-level-10-special"],
     ["wendy", "wendy_level_10_special", "wendy-level-10-special"],
