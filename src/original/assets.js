@@ -1,7 +1,7 @@
 window.GameAssets = (() => {
   const cache = new Map();
   const failedUrls = new Set();
-  const cardBack = "./assets/generated/succubus-card-back.cca22db5.webp";
+  const cardBack = "./assets/generated/succubus-card-back.1fdff617.webp";
   const battlePolicy = {
     normal: { limit: 2, timeout: 5000, deadline: 14000 },
     slow: { limit: 1, timeout: 9000, deadline: 24000 },
@@ -17,7 +17,7 @@ window.GameAssets = (() => {
     });
     return set;
   }
-  function criticalUrls() { return ["./assets/generated/besta-villa-new.webp", cardBack]; }
+  function criticalUrls() { return ["./assets/generated/besta-villa-new.9d71c032.webp", cardBack]; }
   function reportFailure(url, expected) {
     if (!url) return;
     failedUrls.add(url);
