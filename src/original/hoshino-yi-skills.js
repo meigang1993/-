@@ -79,7 +79,7 @@ window.HoshinoYiSkills = (() => {
   function resolveMission(state, actor, result) {
     actor.hoshinoMissionResult = result;
     delete actor.hoshinoMissionCards;
-    actor.art = "./assets/new-portraits/hoshino-yi-witherer.1f4a9193.webp";
+    actor.art = "./assets/new-portraits/hoshino-yi-witherer.82c7b817.webp";
     actor.avatar = actor.art;
     window.BattleLines?.skill(state, actor, result === "success" ? "梦想真理成功" : "梦想真理失败");
     const nonoka = state.battle.allies.find(unit => unit.ref === "nonoka" && alive(unit));
