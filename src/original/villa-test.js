@@ -22,7 +22,10 @@ window.VillaTestUI = ({ U, portrait }) => {
     const c = state.chars.find(x => x.id === id), current = state.testSkins?.[id] || state.equippedSkins?.[id];
     if (!c) return "";
     return `<div class="test-skin-row"><b>${U.esc(c.name)}</b><div class="test-pick-list">${SkinSystem.forChar(id).map(s => {
-      return `<button class="test-pick ${current === s.id ? "selected" : ""}" data-test-skin-char="${U.esc(id)}" data-test-skin="${U.esc(s.id)}">${U.esc(s.name)}</button>`;
+      // 等级立绘需达到等级解锁，测试战斗试用不适用于它。
+      const levelLocked = !!s.unlockLevel && !SkinSystem.owned(state, s);
+      const label = levelLocked ? `${U.esc(s.name)} · Lv.${s.unlockLevel}解锁` : U.esc(s.name);
+      return `<button class="test-pick ${current === s.id ? "selected" : ""}" data-test-skin-char="${U.esc(id)}" data-test-skin="${U.esc(s.id)}"${levelLocked ? " disabled" : ""}>${label}</button>`;
     }).join("")}</div></div>`;
   }
   function testPick(name, key, selected) { return `<button class="test-pick ${selected ? "selected" : ""}" data-${key}="${U.esc(name)}">${U.esc(name)}</button>`; }
