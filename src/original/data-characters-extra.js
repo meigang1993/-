@@ -10,7 +10,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "gerlot", name: "杰洛特", gender: "male", face: "杰", art: "./assets/images/gerlot-portrait.915f345b.webp", avatar: "./assets/images/gerlot-portrait.915f345b.webp", role: "雌小鬼之子", locked: true,
+    id: "gerlot", name: "杰洛特", gender: "male", face: "杰", art: "./assets/images/gerlot-portrait.e6f7410f.webp", avatar: "./assets/images/gerlot-portrait.e6f7410f.webp", role: "雌小鬼之子", locked: true,
     stats: { attack: 3, magic: 1, speed: 4, maxHp: 34, bloodlust: 2, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "杀牌反击与判定爆发输出。复仇反击围绕自己和贝尔蒂丝遭受的单体杀牌展开反攻，爆头一击通过同色判定翻倍伤害，疯狂屠戮提供一次群体爆发。",
     skills: [
@@ -30,7 +30,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "luka", name: "鲁卡", gender: "male", face: "鲁", art: "./assets/images/luka-portrait.a86f8155.webp", avatar: "./assets/images/luka-portrait.a86f8155.webp", role: "军人之子", locked: true,
+    id: "luka", name: "鲁卡", gender: "male", face: "鲁", art: "./assets/images/luka-portrait.c94e6540.webp", avatar: "./assets/images/luka-portrait.c94e6540.webp", role: "军人之子", locked: true,
     stats: { attack: 3, magic: 1, speed: 4, maxHp: 38, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "自愈型杀牌输出。嗜血杀戮将杀牌生命值伤害转为恢复或满血补牌，狼牙回战让专属【狼牙杀】在战斗开始、使用战术牌后和回合开始时持续回到手牌。",
     skills: [
@@ -59,7 +59,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "ace", name: "艾斯", gender: "male", face: "斯", art: "./assets/images/ace-portrait.4d578a96.webp", avatar: "./assets/images/ace-portrait.4d578a96.webp", role: "医生之子", locked: true,
+    id: "ace", name: "艾斯", gender: "male", face: "斯", art: "./assets/images/ace-portrait.115ef71b.webp", avatar: "./assets/images/ace-portrait.115ef71b.webp", role: "医生之子", locked: true,
     stats: { attack: 3, magic: 1, speed: 3, maxHp: 38, bloodlust: 1, handLimit: 5, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "防守夺牌与手牌转移辅助。勾爪陷阱在成功响应敌方牌后夺取手牌，急逃为空手状态提供应急补牌，贡献计划将全部手牌和下回合杀意上限交给队友。",
     skills: [
@@ -69,7 +69,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "nanali", name: "娜娜莉", gender: "female", face: "娜", art: "./assets/images/nanali-portrait.206b134b.webp", avatar: "./assets/images/nanali-portrait.206b134b.webp", role: "纯血公主", locked: true, unlockCost: 30,
+    id: "nanali", name: "娜娜莉", gender: "female", face: "娜", art: "./assets/images/nanali-portrait.bcf85424.webp", avatar: "./assets/images/nanali-portrait.bcf85424.webp", role: "纯血公主", locked: true, unlockCost: 30,
     stats: { attack: 3, magic: 3, speed: 3, maxHp: 32, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "手牌封锁与反击终结核心。魔刀阿波罗暂时扣置目标手牌并补充自身资源，虚弱斩杀惩罚空手目标，复仇之刃在友方受伤后立即反攻。",
     skills: [
@@ -79,7 +79,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "ophelia", name: "奥菲莉亚", gender: "female", face: "奥", art: "./assets/images/ophelia-portrait.fdbf0d27.webp", avatar: "./assets/images/ophelia-portrait.fdbf0d27.webp", role: "人鱼公主", locked: true,
+    id: "ophelia", name: "奥菲莉亚", gender: "female", face: "奥", art: "./assets/images/ophelia-portrait.371fb468.webp", avatar: "./assets/images/ophelia-portrait.371fb468.webp", role: "人鱼公主", locked: true,
     stats: { attack: 1, magic: 4, speed: 3, maxHp: 30, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "物理单体杀牌转换与护驾防守核心。女王之尾将物理单体杀牌改为魔力结算，并在弃到杀牌时连续追击，为我护驾转移闪避或伤害责任，食人鱼公主通过死亡与击杀永久提高杀意上限。",
     skills: [
@@ -89,7 +89,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "aileng", name: "艾伦格", gender: "male", face: "艾", art: "./assets/images/aileng-portrait.e99f0adb.webp", avatar: "./assets/images/aileng-portrait.e99f0adb.webp", role: "充能王子", locked: true,
+    id: "aileng", name: "艾伦格", gender: "male", face: "艾", art: "./assets/images/aileng-portrait.5b5e628d.webp", avatar: "./assets/images/aileng-portrait.5b5e628d.webp", role: "充能王子", locked: true,
     stats: { attack: 3, magic: 3, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "手牌循环与牌权转移角色。计算下注重整手牌并可重置杀意，战斗演练把已结算的牌交给队友，征服欲望根据伤害次数或角色死亡觉醒为不同的衍生能力。",
     skills: [
@@ -102,7 +102,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "besta", name: "贝丝妲", gender: "female", face: "贝", art: "./assets/images/besta-portrait.e6a6361b.webp", avatar: "./assets/images/besta-portrait.e6a6361b.webp", role: "魅魔国长公主", locked: true, unlockCost: 40,
+    id: "besta", name: "贝丝妲", gender: "female", face: "贝", art: "./assets/images/besta-portrait.3dca20b9.webp", avatar: "./assets/images/besta-portrait.3dca20b9.webp", role: "魅魔国长公主", locked: true, unlockCost: 40,
     stats: { attack: 2, magic: 4, speed: 2, maxHp: 28, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "黑色手牌驱动的暗属性魔力输出。黑暗之力扩充黑牌容量并转换部分杀牌结算，终焉鬼影斩批量释放黑牌，终焉回旋斩在闪避后按黑色【杀】数量反击。",
     skills: [
