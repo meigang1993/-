@@ -42,7 +42,7 @@ test("draw animations use whole card backs with staggered launches", async ({ pa
       face: flight?.dataset.cardFace,
       wholeCard: !!flight?.querySelector(".card-flight-back"),
       formalBack: backStyle.backgroundImage
-        .includes("succubus-card-back.cca22db5.webp"),
+        .includes("succubus-card-back.1fdff617.webp"),
       width: Math.round(parseFloat(style.width) || 0),
       opacity: Number(style.opacity),
     };
@@ -117,9 +117,9 @@ test("real skill flights use named artwork without replacing represented card ar
     Object.values(nodes).forEach(node => node.remove());
     return result;
   });
-  expect(artwork.player).toContain("skill-art-essence-extract.b7145c8f.webp");
-  expect(artwork.enemy).toContain("skill-art-control-eye.1291a4db.webp");
-  expect(artwork.relic).toContain("skill-art-demon-poker.22d93d33.webp");
+  expect(artwork.player).toContain("skill-art-essence-extract.ecb49b53.webp");
+  expect(artwork.enemy).toContain("skill-art-control-eye.8765b0b1.webp");
+  expect(artwork.relic).toContain("skill-art-demon-poker.e05b46de.webp");
   expect(artwork.virtual).toContain("card-art-gatling-slash.295b69b7.webp");
   expect(artwork.converted).toContain("card-art-thunder-slash.9263b699.webp");
   expect(artwork.unknown).toContain("card-art-charge.bfb8fcb9.webp");
@@ -131,7 +131,7 @@ test("flying-card motion starts without waiting for artwork decode", async ({ pa
     const originalDecode = HTMLImageElement.prototype.decode;
     let decodeCalls = 0;
     HTMLImageElement.prototype.decode = function delayedFlightDecode() {
-      if (!this.src.includes("skill-art-military-order.3c919eca.webp")) {
+      if (!this.src.includes("skill-art-military-order.794b2a24.webp")) {
         return originalDecode.call(this);
       }
       decodeCalls += 1;
@@ -163,6 +163,6 @@ test("flying-card motion starts without waiting for artwork decode", async ({ pa
     return { ...starts[0], decodeCalls };
   });
   expect(result.elapsed).toBeLessThan(300);
-  expect(result.source).toContain("skill-art-military-order.3c919eca.webp");
+  expect(result.source).toContain("skill-art-military-order.794b2a24.webp");
   expect(result.decodeCalls).toBe(0);
 });
