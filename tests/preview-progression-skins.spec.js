@@ -142,7 +142,7 @@ test("additional special art unlocks and equips automatically at level 10", asyn
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test("test battle keeps Bertis special art locked before level 10", async ({ page }) => {
+test("test battle lets Bertis trial special art before level 10", async ({ page }) => {
   test.setTimeout(45000);
   const errors = collectErrors(page);
   await openGame(page);
@@ -162,32 +162,33 @@ test("test battle keeps Bertis special art locked before level 10", async ({ pag
   });
 
   const trial = page.locator('[data-test-skin="bertis_level_10_special"]');
-  await expect(trial).toBeDisabled();
-  await expect(trial).toContainText("Lv.10解锁");
+  await expect(trial).toBeEnabled();
+  await expect(trial).toContainText("Lv.10试用");
+  await trial.click();
   await expect.poll(() => page.evaluate(() =>
-    window.state.testSkins.bertis || null)).toBe(null);
+    window.state.testSkins.bertis || null)).toBe("bertis_level_10_special");
 
   await page.locator("[data-start-test-battle]").click();
   await expect(page.locator(".battle-screen")).toBeVisible();
   await expect(page.locator(".ally-unit .unit-art"))
-    .toHaveAttribute("data-art-src", /bertis-portrait/);
+    .toHaveAttribute("data-art-src", /bertis-level-10-special/);
   await page.evaluate(() => {
     const bertis = window.state.battle.allies.find(unit => unit.ref === "bertis");
     window.state.infoUnit = bertis.uid;
     window.state.infoTab = "skins";
     window.render();
   });
-  const lockedSkin = page.locator('[data-battle-equip-skin="bertis_level_10_special"]');
-  await expect(lockedSkin).toBeDisabled();
-  await expect(lockedSkin).toContainText("Lv.10解锁");
-  await expect(lockedSkin.locator("img")).toHaveCount(0);
+  const trialSkin = page.locator('[data-battle-equip-skin="bertis_level_10_special"]');
+  await expect(trialSkin).toContainText("试用中");
+  await expectImagesLoaded(trialSkin.locator("img"));
   await expect.poll(() => page.evaluate(() =>
-    window.state.testSkins.bertis || null)).toBe(null);
+    window.state.testSkins.bertis || null)).toBe("bertis_level_10_special");
+  // 试用只写入 testSkins，正式外观与所有权保持不变。
   expect(await page.evaluate(() => window.state.equippedSkins.bertis))
     .toBe("bertis_default");
+  expect(await page.evaluate(() =>
+    !!window.state.ownedSkins.bertis_level_10_special)).toBe(false);
   await expect(page.locator(".ally-unit .unit-art"))
-    .toHaveAttribute("data-art-src", /bertis-portrait/);
-  expect(await page.evaluate(() => window.state.equippedSkins.bertis))
-    .toBe("bertis_default");
+    .toHaveAttribute("data-art-src", /bertis-level-10-special/);
   expect(relevantErrors(errors)).toEqual([]);
 });
