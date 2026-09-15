@@ -1,6 +1,6 @@
 window.GameDataCharactersCore = [
   {
-    id: "lokar", name: "罗卡尔", gender: "male", face: "洛", art: "./assets/images/lokar-portrait.webp", avatar: "./assets/images/lokar-portrait.webp", role: "恋母勇者",
+    id: "lokar", name: "罗卡尔", gender: "male", face: "洛", art: "./assets/images/lokar-portrait.914de079.webp", avatar: "./assets/images/lokar-portrait.914de079.webp", role: "恋母勇者",
     stats: { attack: 3, magic: 1, speed: 3, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "持续进攻型物理核心。使用实体【杀】与【与我一战】可补充手牌和杀意，热血契约提供回合内攻击成长，狂风绝息斩负责集中释放手中的全部【杀】。",
     skills: [
@@ -10,7 +10,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "besta_doll", name: "贝丝妲魔偶", gender: "female", face: "偶", art: "./assets/images/besta-doll-portrait.webp", avatar: "./assets/images/besta-doll-portrait.webp", role: "机器魔偶",
+    id: "besta_doll", name: "贝丝妲魔偶", gender: "female", face: "偶", art: "./assets/images/besta-doll-portrait.1bceea8d.webp", avatar: "./assets/images/besta-doll-portrait.1bceea8d.webp", role: "机器魔偶",
     stats: { attack: 2, magic: 3, speed: 3, maxHp: 28, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "红桃爆发与魔法收割核心。榨取精华以友方男性的生命值换取摸牌，每张红桃令本回合魔力增加50%，并将物理攻击牌转换为魔法攻击；追魂之刃会在实体【杀】被闪后重用原牌，锁魂镰刀负责群体连锁收割。",
     skills: [
@@ -20,7 +20,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "manny", name: "曼妮", gender: "female", face: "曼", art: "./assets/images/manny-portrait.webp", avatar: "./assets/images/manny-portrait.webp", role: "异次元公主", locked: true, unlockCost: 10,
+    id: "manny", name: "曼妮", gender: "female", face: "曼", art: "./assets/images/manny-portrait.032001c2.webp", avatar: "./assets/images/manny-portrait.032001c2.webp", role: "异次元公主", locked: true, unlockCost: 10,
     stats: { attack: 3, magic: 3, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 3 },
     evaluation: "伤害转移与重火器支援角色。次元转移可用黑色手牌改写友方受到的杀牌伤害目标，次元军火库则按战况选择单体、群体或属性火力。",
     skills: [
@@ -29,7 +29,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "miller", name: "米勒", gender: "male", face: "米", art: "./assets/images/miller-portrait.webp", avatar: "./assets/images/miller-portrait.webp", role: "女仆之子", locked: true,
+    id: "miller", name: "米勒", gender: "male", face: "米", art: "./assets/images/miller-portrait.76b845da.webp", avatar: "./assets/images/miller-portrait.76b845da.webp", role: "女仆之子", locked: true,
     stats: { attack: 3, magic: 3, speed: 3, maxHp: 40, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "随机摸牌与手牌转移辅助。贪玩老虎机提供波动较大的补牌量，收获分享可将弃牌阶段需要弃置的手牌转交给其他友方角色。",
     skills: [
@@ -38,7 +38,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "nonoka", name: "诺诺卡", gender: "female", face: "诺", art: "./assets/images/nonoka-portrait.webp", avatar: "./assets/images/nonoka-portrait.webp", role: "乐星公主", locked: true, unlockCost: 12,
+    id: "nonoka", name: "诺诺卡", gender: "female", face: "诺", art: "./assets/images/nonoka-portrait.1124766c.webp", avatar: "./assets/images/nonoka-portrait.1124766c.webp", role: "乐星公主", locked: true, unlockCost: 12,
     stats: { attack: 1, magic: 3, speed: 3, maxHp: 34, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "花色循环、伤害来源替换与治疗辅助。新月之歌持续补牌并分配手牌，模仿之音联动指定角色的出牌，偶像之吻同时恢复自己与一名队友。",
     skills: [
@@ -48,7 +48,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "loki", name: "洛基", gender: "male", face: "洛", art: "./assets/images/loki-portrait.webp", avatar: "./assets/images/loki-portrait.webp", role: "偶像之子", locked: true,
+    id: "loki", name: "洛基", gender: "male", face: "洛", art: "./assets/images/loki-portrait.92a0e9d0.webp", avatar: "./assets/images/loki-portrait.92a0e9d0.webp", role: "偶像之子", locked: true,
     stats: { attack: 3, magic: 1, speed: 3, maxHp: 42, bloodlust: 2, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "禁用战术牌的纯杀牌输出。手中可见【杀】数量占优时可使杀牌伤害翻倍，并能替诺诺卡响应或承受杀牌伤害；青春草原提供永久成长。",
     skills: [
@@ -58,7 +58,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "flora", name: "芙萝娅", gender: "female", face: "芙", art: "./assets/images/flora-portrait.71c5d516.webp", avatar: "./assets/images/flora-portrait.71c5d516.webp", role: "音速公主", locked: true, unlockCost: 8,
+    id: "flora", name: "芙萝娅", gender: "female", face: "芙", art: "./assets/images/flora-portrait.71c5d516.71c5d516.webp", avatar: "./assets/images/flora-portrait.71c5d516.71c5d516.webp", role: "音速公主", locked: true, unlockCost: 8,
     twinWith: "wendy",
     stats: { attack: 3, magic: 1, speed: 5, maxHp: 28, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 3 },
     evaluation: "高速刺杀与协同追击角色。神速之袭可在准备和结束阶段各突袭一次，准备阶段发动时跳过判定和摸牌，结束阶段发动后自身翻面；神速之翼提供稳定闪避，神速飞剑每回合对同一目标最多追加一次弃牌与刺杀。",
@@ -69,7 +69,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "wendy", name: "温蒂", gender: "female", face: "温", art: "./assets/images/wendy-portrait.f262b034.webp", avatar: "./assets/images/wendy-portrait.f262b034.webp", role: "智慧公主", locked: true, unlockCost: 8,
+    id: "wendy", name: "温蒂", gender: "female", face: "温", art: "./assets/images/wendy-portrait.f262b034.f262b034.webp", avatar: "./assets/images/wendy-portrait.f262b034.f262b034.webp", role: "智慧公主", locked: true, unlockCost: 8,
     twinWith: "flora",
     stats: { attack: 1, magic: 3, speed: 4, maxHp: 34, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "战术牌生成与团队护甲辅助。读书的智慧从友方战术牌中补牌，解答迷惑定向制造临时战术牌，飘浮掩体把弃牌转化为全队护甲。",
@@ -80,7 +80,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "cadicis", name: "卡迪西斯", gender: "male", face: "卡", art: "./assets/images/cadicis-portrait.webp", avatar: "./assets/images/cadicis-portrait.webp", role: "教师之子", locked: true,
+    id: "cadicis", name: "卡迪西斯", gender: "male", face: "卡", art: "./assets/images/cadicis-portrait.27a02770.webp", avatar: "./assets/images/cadicis-portrait.27a02770.webp", role: "教师之子", locked: true,
     stats: { attack: 3, magic: 3, speed: 3, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "牌名强化与群体火力支援角色。战场指挥官强化友方同名杀牌与战术牌，指挥官责任在队友受击前调配手牌，重火力支援使实体杀牌附带继承其伤害属性的全体直伤。",
     skills: [
@@ -90,7 +90,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "carlos", name: "卡洛斯", gender: "male", face: "卡", art: "./assets/images/carlos-portrait.webp", avatar: "./assets/images/carlos-portrait.webp", role: "风女之子", locked: true,
+    id: "carlos", name: "卡洛斯", gender: "male", face: "卡", art: "./assets/images/carlos-portrait.2d09280b.webp", avatar: "./assets/images/carlos-portrait.2d09280b.webp", role: "风女之子", locked: true,
     stats: { attack: 3, magic: 1, speed: 4, maxHp: 32, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 4 },
     evaluation: "红牌转化与单体追加伤害输出。疯狂射击把红色手牌转为群体杀牌，疯狂刺刀根据命中后仍持有的【杀】数量追加多段无视护甲伤害。",
     skills: [
