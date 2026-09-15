@@ -4,7 +4,7 @@ const {
 } = require("./helpers/preview-game");
 
 test("flying-card artwork falls back after a named skill image fails", async ({ page }) => {
-  await page.route("**/skill-art-military-order.3c919eca.webp", route => route.abort());
+  await page.route("**/skill-art-military-order.794b2a24.webp", route => route.abort());
   await startRegressionBattle(page);
   const result = await page.evaluate(async () => {
     const card = { name: "军令状", type: "tactic", _skill: true };
@@ -64,14 +64,14 @@ test("player and enemy skill trail snapshots keep their named artwork", async ({
       name: "毒气手雷",
       skillName: "毒气手雷",
       isSkill: true,
-      art: expect.stringContaining("skill-art-poison-grenade.fe4bfefd.webp"),
+      art: expect.stringContaining("skill-art-poison-grenade.69277c14.webp"),
       flightLabel: expect.stringContaining("技能"),
     }),
     expect.objectContaining({
       name: "榨取精华",
       skillName: "榨取精华",
       isSkill: true,
-      art: expect.stringContaining("skill-art-essence-extract.b7145c8f.webp"),
+      art: expect.stringContaining("skill-art-essence-extract.ecb49b53.webp"),
       flightLabel: expect.stringContaining("技能"),
     }),
   ]);
@@ -127,7 +127,7 @@ test("enemy skill animation and resolved snapshot render one public card", async
     costNames: ["灵魂锁链", "魔弹特攻"],
     poisonCount: 1,
     label: expect.stringContaining("技能"),
-    art: expect.stringContaining("skill-art-poison-grenade.fe4bfefd.webp"),
+    art: expect.stringContaining("skill-art-poison-grenade.69277c14.webp"),
     decoded: true,
   });
 });
