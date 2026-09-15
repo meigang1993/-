@@ -30,7 +30,7 @@ window.ExtraUnlockEventViews = (() => {
       ["贝丝妲", "差点忘了。艾伦格把他送回来了。他现在在你房间里，你去找他吧。"],
       ["艾尔拉娜", "谢谢，母亲。"]
     ];
-    const elrana = state.chars.find(c => c.id === "elrana"), ace = state.chars.find(c => c.id === "ace"), besta = { name: "贝丝妲", avatar: "./assets/generated/besta-villa-new.9d71c032.webp" };
+    const elrana = state.chars.find(c => c.id === "elrana"), ace = state.chars.find(c => c.id === "ace"), besta = { name: "贝丝妲", avatar: "./assets/generated/besta-villa-new.3cf7a4f0.webp" };
     return `<div class="first-defeat-event"><h2>艾尔拉娜苏醒后的真相</h2><div class="vn-stage">${portrait(besta)}${portrait(elrana)}${portrait(ace)}</div><div class="vn-lines">${lines.map(([n, t]) => `<div class="vn-line"><b>${U().esc(n)}</b><span>${U().esc(t)}</span></div>`).join("")}</div><p class="muted">事件结束后，艾斯将加入角色栏。</p><div class="actions"><button data-ace-unlock-complete="1">结束剧情，解锁艾斯</button></div></div>`;
   }
   function underwaterTrainUnlock(state) {
