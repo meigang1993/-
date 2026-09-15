@@ -234,6 +234,49 @@ pushing. The full required sequence is:
 enforces that the version advances, but it does not prove bundles match sources —
 only `--check` does.
 
+### Ship `.map` files together with their bundles (2026-09-15)
+
+`tools/build-publish-bundles.js` emits **two** artifacts per bundle:
+
+```
+publish/bundles/<name>.min.js        # carries a trailing //# sourceMappingURL= comment
+publish/bundles/<name>.min.js.map    # the mapping itself
+```
+
+Bundles are single-line minified files (60–190 KiB; `battle-rules` alone holds
+29,802 mapping segments). Without the `.map` present on the remote, every
+production stack trace reads `battle-rules.min.js:2:<col>` and cannot be traced
+back to `src/original/...`. **A push that includes `.min.js` but omits
+`.min.js.map` is incomplete** — every file still returns HTTP 200, so the
+per-file success code proves nothing.
+
+- Push 11 `.min.js` **and** 11 `.map` in the same batch.
+- Verify with `contents/publish/bundles?ref=main`; it must list **22** entries.
+- To prove a push is behaviour-neutral: strip the trailing
+  `//# sourceMappingURL=` line from the local `.min.js` and compare its git
+  blob SHA with the remote. Equal SHA ⇒ the only delta is that comment.
+- `includeSources` defaults to **true**: every map embeds `sourcesContent`, so
+  DevTools resolves real files and lines even from a standalone `publish/`
+  deployment or a downloaded release archive — no `src/` needed.
+- Opt out with `node tools/build-publish-bundles.js --no-sources`
+  (`npm run build:bundles:lean`) when the publish artifact must stay small.
+  Lean maps then fall back to resolving `../../src/original/...`, which only
+  works from a checkout.
+
+Measured cost of embedding (2026-09-15):
+
+| | maps total | build time |
+|---|---|---|
+| `--no-sources` | 1.22 MiB | ~44 s |
+| default (embedded) | 3.02 MiB | ~96 s |
+
+The +1.79 MiB equals `src/original` (1,739,002 bytes) **exactly once** — the
+manifest is an exact partition of all 416 sources across the 11 bundles, so
+nothing is duplicated. `.map` is only fetched when DevTools is open, so players
+never download it; the cost is repository size and build time, not runtime.
+Embedding never changes `.min.js` bytes (verified: all 11 SHAs identical across
+both modes).
+
 ### Bundle ownership is declared, not guessable
 
 Every source file's bundle is fixed in `tools/publish-bundles.json`. **Do not
