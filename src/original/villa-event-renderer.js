@@ -2,8 +2,8 @@ window.VillaEventRenderer = (() => {
   const ui = window.UICommon;
   const besta = {
     name: "贝丝妲",
-    avatar: "./assets/generated/besta-villa-new.9d71c032.webp",
-    art: "./assets/generated/besta-villa-new.9d71c032.webp",
+    avatar: "./assets/generated/besta-villa-new.3cf7a4f0.webp",
+    art: "./assets/generated/besta-villa-new.3cf7a4f0.webp",
     skills: [],
   };
 
