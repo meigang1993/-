@@ -43,8 +43,20 @@ function verifySpecialArt(charId, skinId, art) {
     `${skinId} must replace the formal portrait`);
   state.chars[0].level = 0;
   state.battle = { test: true };
-  assert(!SkinSystem.testEquip(state, charId, skin.id),
-    `${skinId} must stay locked in test battles below level 10`);
+  assert(SkinSystem.testEquip(state, charId, skin.id),
+    `${skinId} must be trialable in test battles below level 10`);
+  const freshState = {
+    chars: [{ id: charId, locked: false, level: 0 }],
+    ownedSkins: {}, equippedSkins: {}, testSkins: {}, battle: { test: true },
+  };
+  assert(SkinSystem.testEquip(freshState, charId, skin.id),
+    `${skinId} must be trialable while unowned`);
+  assert(!freshState.ownedSkins[skin.id] && !freshState.equippedSkins[charId],
+    `${skinId} trial must not grant ownership or equip formally`);
+  assert(freshState.testSkins[charId] === skin.id,
+    `${skinId} trial must land in testSkins only`);
+  assert(state.testSkins[charId] === skin.id,
+    `${skinId} trial must land in testSkins only`);
   state.chars[0].level = 10;
   assert(SkinSystem.testEquip(state, charId, skin.id),
     `${skinId} must be trialable in test battles once unlocked`);
