@@ -122,20 +122,21 @@ window.GameUIInfo = (U) => {
       ? "data-battle-equip-skin" : "data-equip-skin";
     const items = skins.map(s => {
       const formalOwned = window.SkinSystem.owned(state, s);
-      const trialOnly = trial && !formalOwned;
+      // 等级立绘必须达到等级才解锁，测试战斗的"试用"不适用于它，否则会提前泄露未解锁立绘。
+      const specialLocked = !!s.unlockLevel && !formalOwned;
+      const trialOnly = trial && !formalOwned && !specialLocked;
       const available = formalOwned || trialOnly, equipped = current === s.id;
       const disabled = saving || !available || equipped;
       const action = saving && equipped ? "保存中…" : equipped ? (trialOnly ? "试用中" : "已装备") : trialOnly ? "试用" : formalOwned ? "装备" : s.unlockLevel ? `Lv.${s.unlockLevel}解锁` : "未拥有";
-      const specialLocked = !trial && s.unlockLevel && !formalOwned;
-      const preview = specialLocked && !s.specialIllustration
+      const preview = specialLocked
         ? `<span class="skin-level-lock">Lv.${s.unlockLevel}</span>`
-        : `<img src="${U.esc(s.art)}" alt="${U.esc(s.name)}" loading="lazy" decoding="async"${specialLocked ? ' class="locked"' : ''}>`;
+        : `<img src="${U.esc(s.art)}" alt="${U.esc(s.name)}" loading="lazy" decoding="async">`;
       return `<button class="battle-skin-option ${equipped ? "selected" : ""}" ${equipAttr}="${U.esc(s.id)}" ${disabled ? "disabled" : ""}>${preview}<b>${U.esc(s.name)}${s.specialEffect ? " · 专属特效" : ""}</b><span>${action}</span></button>`;
     }).join("");
     const warning = status.state === "error" && status.pending
       ? `<div class="save-warning" role="alert"><span>外观选择尚未保存，刷新后可能恢复为上次选择。</span><button data-retry-settings="1">重试保存</button></div>`
       : "";
-    const hint = trial ? "测试战斗中可试用未拥有的皮肤，包含等级特殊立绘。"
+    const hint = trial ? "测试战斗中可试用未拥有的普通皮肤；等级特殊立绘仍需达到等级解锁。"
       : state?.view === "battle" ? "战斗中可直接切换已拥有皮肤，只改变外观。"
       : "选择已拥有皮肤作为角色外观。";
     return `${infoTitle(u)}<p class="muted">${hint}</p>${warning}<div class="battle-skin-list">${items}</div>`;
@@ -147,9 +148,9 @@ window.GameUIInfo = (U) => {
   }
   function specialArtPane(u, item) {
     const unlocked = window.SkinSystem.owned(window.state, item);
-    const lockedClass = unlocked ? "" : " locked";
-    const overlay = unlocked ? "" : `<div class="special-art-lock-overlay"><b>Lv.${item.unlockLevel}</b><span>达到等级后自动解锁</span></div>`;
-    return `<div class="portrait large special-art-portrait${lockedClass}" data-art-src="${U.esc(item.art)}" data-art-name="${U.esc(item.name)}"><img src="${U.esc(item.art)}" alt="${U.esc(item.name)}" loading="lazy" decoding="async" draggable="false">${overlay}</div>`;
+    // 未解锁时不得渲染立绘本体，否则等于提前公开奖励内容。
+    if (!unlocked) return `<div class="special-art-lock"><b>Lv.${item.unlockLevel}</b><span>达到等级后自动解锁</span></div>`;
+    return `<div class="portrait large special-art-portrait" data-art-src="${U.esc(item.art)}" data-art-name="${U.esc(item.name)}"><img src="${U.esc(item.art)}" alt="${U.esc(item.name)}" loading="lazy" decoding="async" draggable="false"></div>`;
   }
   function relicPanel(u) {
     const state = window.state, test = state?.hallModal === "testBattle", map = test ? state.testEquipment || {} : state.equipment || {};
