@@ -216,7 +216,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - The bottom navigation destination formerly used by the training room is now `客厅`. The living room shows unlocked characters only, with level, current experience, and core stats; clicking a character opens the shared detail panel with the primary combat-role badge beside the name and level-0/current/level-15 growth values. The full character-position description remains on the Attributes tab and is not repeated on the Skills tab. The non-battle panel keeps Skills, two-slot Relics equip/unequip, available Skins, portrait zoom, backdrop/Escape closing, and exact opener-focus restoration usable. Its Relics tab has no codex button; the hall relic inventory remains the codex entry point. Skin choices use the hall appearance-persistence path rather than the battle-only switch action. There are no paid upgrades, allocation points, recommendations, or reset controls.
 - 贝尔蒂丝的等级特殊立绘 ID 固定为`bertis_level_10_special`，素材固定为`publish/assets/generated/bertis-level-10-special.022dd113.webp`。角色详情在`Lv.10`前显示锁定条件，达到`Lv.10`后按当前角色等级自动加入已拥有皮肤并允许装备、放大查看和作为正式战斗立绘；不得通过宝珠购买提前解锁。正式副本与据点中未解锁的等级特殊立绘统一显示`Lv.10`锁定占位；测试战斗放开试用（含未拥有的等级特殊立绘，见 2026-09-01 规则），已拥有立绘继续沿用正式装备路径。
 - 诺诺卡的等级特殊立绘 ID 固定为`nonoka_level_10_special`，素材固定为`publish/assets/generated/nonoka-level-10-special.ba4c8ff8.webp`。其等级解锁、正式装备和放大查看规则与贝尔蒂丝等级特殊立绘相同；现有`nonoka_idol_rising_star`仍是独立的史诗皮肤，不被替换或降级。
-- 罗卡尔的等级特殊立绘 ID 固定为`lokar_level_10_special`，素材固定为`publish/assets/generated/lokar-level-10-special.849df5d4.webp`；贝丝妲魔偶的等级特殊立绘 ID 固定为`besta_doll_level_10_special`，素材固定为`publish/assets/generated/besta-doll-level-10-special.7e839287.webp`。两者达到`Lv.10`后按统一机制自动解锁，可装备、放大查看并作为正式战斗立绘；原有“恋母勇者”和“机铠魔偶”保持独立。
+- 罗卡尔的等级特殊立绘 ID 固定为`lokar_level_10_special`，素材固定为`publish/assets/generated/lokar-level-10-special.2be685ee.webp`；贝丝妲魔偶的等级特殊立绘 ID 固定为`besta_doll_level_10_special`，素材固定为`publish/assets/generated/besta-doll-level-10-special.7d69a6be.webp`。两者达到`Lv.10`后按统一机制自动解锁，可装备、放大查看并作为正式战斗立绘；原有“恋母勇者”和“机铠魔偶”保持独立。
 - 等级特殊立绘统一使用`specialIllustration: true`、`unlockLevel: 10`和零价格元数据。`src/original/store-migration-normalizers.js`在旧存档归一化时必须调用`SkinSystem.ensure(state)`：已解锁且当前等级达到`Lv.10`的角色，即使旧存档没有对应新立绘 ID，也会自动加入已拥有皮肤；未达到等级的错误拥有标记会被移除，若正装备该立绘则回退角色默认外观。任何拥有或装备修复都必须标记迁移存档重写，不能只在当前内存会话生效。旧`testSkins`中的等级特殊立绘试用记录按测试战斗试用规则保留不清除；正式装备仍按外观设置路径保存。
 - 当前等级特殊立绘为罗卡尔`lokar_level_10_special`、贝丝妲魔偶`besta_doll_level_10_special`、贝尔蒂丝`bertis_level_10_special`、诺诺卡`nonoka_level_10_special`、曼妮`manny_level_10_special`、芙萝娅`flora_level_10_special`、温蒂`wendy_level_10_special`、艾尔拉娜`elrana_level_10_special`和安洁莉卡`angelica_level_10_special`。罗卡尔“恋母勇者”、贝丝妲魔偶“机铠魔偶”、曼妮“枪之魅魔”、芙萝娅“音速刺客”、温蒂“慈爱教师”、艾尔拉娜“堕落医师”和安洁莉卡“帝血弑天”是彼此独立的宝珠皮肤，不属于等级特殊立绘，也不得被等级归一化清除。
 - Cloud KV mutations are serialized per key through the completion of the underlying SDK request. A client-side timeout may report a recoverable failure, but its late completion must never overtake and overwrite a newer save or delete.
@@ -708,7 +708,7 @@ gameplay values and behavior remain here rather than being duplicated in
 ### 罗卡尔皮肤：恋母勇者
 
 - 皮肤 ID：`lokar_motherbound`；正式素材固定为`publish/assets/generated/lokar-motherbound-refined-bg.235e8f11.webp`，专属动态特效标识固定为`lokar-motherbound`。
-- 罗卡尔等级特殊立绘 ID 固定为`lokar_level_10_special`，使用正式压缩素材`publish/assets/generated/lokar-level-10-special.849df5d4.webp`；品质为特殊、价格为0、`unlockLevel`为10，并按统一等级特殊立绘机制解锁和装备。
+- 罗卡尔等级特殊立绘 ID 固定为`lokar_level_10_special`，使用正式压缩素材`publish/assets/generated/lokar-level-10-special.2be685ee.webp`；品质为特殊、价格为0、`unlockLevel`为10，并按统一等级特殊立绘机制解锁和装备。
 - 形象固定为成年男性恶魔战士：凌乱银白短发、红色眼睛、黑红弯角、宽大的黑红破损蝠翼；穿黑色皮革战斗长衣、束带长裤、手套和长靴，胸前佩戴红色晶石。
 - 武器固定为黑红魔纹双手大剑，剑身与护手带红色能量纹路；背景固定为红光照明的黑暗哥特工业要塞。不得改成少年体型、无角无翼、浅色圣骑士、现代便装或无剑形象。
 - 专属技能特效保持现有规则：战斗之勇使用深红气焰、摸牌飞行和恢复杀意时的金色粒子红眼反馈；热血契约显示燃烧手牌、贝丝妲轮廓持剑虚影和本回合攻击红色拖尾；狂风绝息斩显示杀牌剑刃风暴、冲击波、暗紫命中、落地裂痕与击倒后的残留紫色电弧。
@@ -716,7 +716,7 @@ gameplay values and behavior remain here rather than being duplicated in
 ### 贝丝妲魔偶皮肤：机铠魔偶
 
 - 皮肤 ID：`besta_doll_energy_queen`；正式立绘固定为`publish/assets/generated/besta-doll-fullbody-heels-bg.56c37ce5.webp`，大破立绘固定为`publish/assets/generated/besta-doll-critical-damage.99e0ac86.webp`，专属动态特效标识固定为`besta-mecha`。
-- 贝丝妲魔偶等级特殊立绘 ID 固定为`besta_doll_level_10_special`，使用正式压缩素材`publish/assets/generated/besta-doll-level-10-special.7e839287.webp`；品质为特殊、价格为0、`unlockLevel`为10，并按统一等级特殊立绘机制解锁和装备。
+- 贝丝妲魔偶等级特殊立绘 ID 固定为`besta_doll_level_10_special`，使用正式压缩素材`publish/assets/generated/besta-doll-level-10-special.7d69a6be.webp`；品质为特殊、价格为0、`unlockLevel`为10，并按统一等级特殊立绘机制解锁和装备。
 - 形象必须保持小型女性机械魔偶身份：银白齐颈短发、红色眼睛、黑红小角、机械耳部组件；全身为黑亮金属机体与红色能量节点，胸口具有醒目的红色心形核心。
 - 背部固定为黑红机械蝠翼，腰后保留分节机械尾巴；武器固定为高于角色的大型黑红机械镰刀，脚部固定为黑红机械高跟长靴，背景固定为红光机械工厂。不得改成人类肉身、普通女仆装、无翼无尾、平底鞋或小型手持武器。
 - 仅装备该皮肤时，发动`榨取精华`后，在本回合物理攻击牌转为魔法攻击的持续状态内，战场与行动区立绘统一切换为大破立绘；该状态于回合结束清除后恢复正常立绘。大破立绘不再由生命值阈值触发，也不播放6秒或其他全屏大图演出；既有榨取精华能量触须、核心充能、武器光晕和持续状态特效全部保留。
