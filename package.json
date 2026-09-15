@@ -81,7 +81,8 @@
     "replay:record": "node tools/battle-replay.js record",
     "replay:verify": "node tools/battle-replay.js verify",
     "qa:extended": "npm run qa:full && npm run coverage:logic && npm run test:soak && npm run optimize:all",
-    "screenshot": "node tools/run-browser-tests.js focus smoke"
+    "screenshot": "node tools/run-browser-tests.js focus smoke",
+    "build:bundles:lean": "node tools/build-publish-bundles.js --no-sources"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
