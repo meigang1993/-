@@ -9,7 +9,7 @@ require("../src/original/nonoka-idol-skin-fx.js");
 
 const skin = SkinSystem.byId("nonoka_idol_rising_star");
 const base = SkinSystem.byId("nonoka_default");
-assert(base?.initial && base.art === "./assets/images/nonoka-portrait.webp",
+assert(base?.initial && base.art === "./assets/images/nonoka-portrait.1124766c.webp",
   "Nonoka must retain a selectable default skin");
 assert(skin?.charId === "nonoka" && skin.quality === "epic",
   "Idol Rising Star must be an epic Nonoka skin");
