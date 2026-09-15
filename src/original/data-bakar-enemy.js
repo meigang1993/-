@@ -6,7 +6,7 @@ window.GameDataBakarEnemy = {
   evaluation: "入侵夺取与炎拳成长首领。【魔王军入侵】对巴卡尔无效；其他角色使用实体【魔王军入侵】后，他获得那张使用过的牌，自己使用的入侵不会被回收，虚拟入侵也不会被夺取。发动角色技能时摸1张牌；杀牌附加火属性，并在造成生命值伤害后从下回合起永久叠加30%杀牌伤害。",
   gender: "male",
   face: "王",
-  art: "./assets/new-portraits/demon-king-bakaar.3e4de3ad.webp",
+  art: "./assets/new-portraits/demon-king-bakaar.64e4f555.webp",
   bgm: "./assets/new-bgm/demon-king-bakaar.ogg",
   hp: 330,
   attack: 11,
