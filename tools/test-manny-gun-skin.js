@@ -10,7 +10,7 @@ require("../src/original/manny-gun-skin-fx.js");
 
 const defaultSkin = SkinSystem.byId("manny_default");
 const gunSkin = SkinSystem.byId("manny_gun_succubus");
-assert(defaultSkin?.initial && defaultSkin.art === "./assets/images/manny-portrait.webp",
+assert(defaultSkin?.initial && defaultSkin.art === "./assets/images/manny-portrait.032001c2.webp",
   "Manny's default portrait must remain available");
 assert(gunSkin?.charId === "manny" && gunSkin.quality === "epic"
   && !gunSkin.unlockLevel && !gunSkin.specialIllustration && SkinSystem.price(gunSkin) === 12,
