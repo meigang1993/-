@@ -79,7 +79,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "ophelia", name: "奥菲莉亚", gender: "female", face: "奥", art: "./assets/images/ophelia-portrait.371fb468.webp", avatar: "./assets/images/ophelia-portrait.371fb468.webp", role: "人鱼公主", locked: true,
+    id: "ophelia", name: "奥菲莉亚", gender: "female", face: "奥", art: "./assets/images/ophelia-portrait.10278309.webp", avatar: "./assets/images/ophelia-portrait.10278309.webp", role: "人鱼公主", locked: true,
     stats: { attack: 1, magic: 4, speed: 3, maxHp: 30, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "物理单体杀牌转换与护驾防守核心。女王之尾将物理单体杀牌改为魔力结算，并在弃到杀牌时连续追击，为我护驾转移闪避或伤害责任，食人鱼公主通过死亡与击杀永久提高杀意上限。",
     skills: [
