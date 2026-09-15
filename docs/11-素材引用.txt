@@ -64,7 +64,7 @@
   krow-doctor.webp                     -> 克罗博士
   invader-chiyo.webp                   -> 入侵者橘千樱
   mechanical-bull-king.webp            -> 机械牛头王
-  pursuer-edis.715fedea.webp           -> 内英组杀手伊迪斯
+  pursuer-edis.8d1fc755.webp           -> 内英组杀手伊迪斯
   terror-slime.webp                    -> 恐怖史莱姆
   shark-pirate-crew.webp               -> 狂鲨海盗团船员
   shark-pirate-raider.webp             -> 狂鲨海盗团掠夺者
@@ -121,7 +121,7 @@
 
   文件名                              -> 用途
   besta-villa-new.webp                  -> 标题页和殿堂女主hero图
-  succubus-card-back.cca22db5.webp      -> 魅魔牌背和水印
+  succubus-card-back.1fdff617.webp      -> 魅魔牌背和水印
 
 【八、卡牌插画（publish/assets/generated/cards/）】
 
@@ -130,7 +130,7 @@
 --- 正式/状态卡牌插画（43张）---
   card-art-basic-slash.9b6ab50a.webp        -> 杀（普攻）
   card-art-magic-slash.2d2353e6.webp        -> 魔杀
-  card-art-succubus-slash.ac0bd910.webp     -> 魅杀
+  card-art-succubus-slash.3516d2f9.webp     -> 魅杀
   card-art-dodge.d22afef8.webp              -> 闪
   card-art-charge.bfb8fcb9.webp             -> 蓄力
   card-art-healing-mana-bottle.218ba846.webp -> 愈魔瓶
@@ -139,9 +139,9 @@
   card-art-duel.1138c5e7.webp              -> 与我一战
   card-art-magic-refining.d40d78c6.webp     -> 魔力提炼
   card-art-dismantle.2996df87.webp          -> 拆解
-  card-art-binding-trap.5bb236e6.webp       -> 束缚陷阱
+  card-art-binding-trap.338b9450.webp       -> 束缚陷阱
   card-art-seal-spell.4639c897.webp         -> 封印术
-  card-art-magic-seal-status.222ffb29.webp  -> 封魔状态牌
+  card-art-magic-seal-status.d02d4678.webp  -> 封魔状态牌
   card-art-thunder-slash.9263b699.webp      -> 雷杀
   card-art-gatling-slash.295b69b7.webp      -> 机枪扫杀
   card-art-reckless-punch.04233f97.webp     -> 无谋冲拳
@@ -152,7 +152,7 @@
   card-art-fountain-of-life.7458b046.webp   -> 生命之泉
   card-art-steal.639a0455.webp             -> 偷窃
   card-art-soul-chain.80890b9b.webp         -> 灵魂锁链
-  card-art-clash.edb75a11.webp             -> 魔法对决
+  card-art-clash.6898834c.webp             -> 魔法对决
   card-art-magic-bullet.39bbd19c.webp      -> 魔弹特攻
   card-art-double-slash.d35ca482.webp      -> 双重打杀
   card-art-berserk-slash.583b7fb8.webp     -> 暴走杀
@@ -171,67 +171,67 @@
   card-art-revenge-slash.1d4ac914.webp     -> 仇杀
   card-art-fire-slash.ef14e210.webp        -> 火杀
   card-art-wolf-fang-slash.26e93535.webp   -> 狼牙杀
-  card-art-stun-status-new.58f54da8.webp   -> 眩晕状态牌
+  card-art-stun-status-new.62b67f60.webp   -> 眩晕状态牌
   card-art-slime-status.7f86dfcc.webp      -> 粘液状态牌
-  card-art-bullet-storm.09c53e6c.webp      -> 枪林弹雨
-  card-art-freeze-spell.b95d3886.webp      -> 冰冻术
-  card-art-charm.21f8b4cd.webp             -> 魅惑术
-  card-art-meteor-slash.fe12b0fe.webp      -> 流星杀
-  card-art-mana-steal.dc54839a.webp        -> 吸魔杀
-  card-art-supply-sharing.3aafdb52.webp    -> 物资私分
+  card-art-bullet-storm.1f9c87b3.webp      -> 枪林弹雨
+  card-art-freeze-spell.3821d462.webp      -> 冰冻术
+  card-art-charm.b510209d.webp             -> 魅惑术
+  card-art-meteor-slash.1581f246.webp      -> 流星杀
+  card-art-mana-steal.8cec64c9.webp        -> 吸魔杀
+  card-art-supply-sharing.b5524d4c.webp    -> 物资私分
   card-art-demon-invasion.82db049e.webp    -> 魔王军入侵
   card-art-borrowed-blade.de60cf28.webp    -> 借刀杀人
 
 --- 技能插画（36张）---
-  skill-art-answer-confusion.37cdaa5e.webp     -> 解答迷惑
-  skill-art-artina-sniper.d751a4ee.webp        -> 亚缇娜狙击目标（未完成角色）
-  skill-art-barrett.f98fc824.webp              -> 巴特雷
-  skill-art-battlefield-commander.8854b38c.webp -> 战场指挥官
+  skill-art-answer-confusion.4b87bb39.webp     -> 解答迷惑
+  skill-art-artina-sniper.b1dba20c.webp        -> 亚缇娜狙击目标（未完成角色）
+  skill-art-barrett.9263336b.webp              -> 巴特雷
+  skill-art-battlefield-commander.7eb264a3.webp -> 战场指挥官
   skill-art-battlefield-sweep.dc085e1b.webp    -> 战场扫射
-  skill-art-berserker-will.74c92ecb.webp       -> 狂战意志
-  skill-art-berserk-speed-shift.f6e7cca1.webp  -> 暴走与极速
-  skill-art-blood-pact.86515b89.webp           -> 热血契约
-  skill-art-calculated-bet.29ef1ee1.webp       -> 计算下注
-  skill-art-charged-essence.fd83f56b.webp      -> 充能精华
-  skill-art-contribution-plan.5c201347.webp    -> 贡献计划
-  skill-art-control-eye.1291a4db.webp          -> 控神魔眼
-  skill-art-crazy-shooting.735324eb.webp       -> 疯狂射击
-  skill-art-crazy-slaughter.70187f58.webp      -> 疯狂屠戮
-  skill-art-death-wave.689e0965.webp           -> 死亡音波
-  skill-art-demon-poker.22d93d33.webp          -> 鬼王扑克
-  skill-art-dimension-armory.b4b47e50.webp     -> 次元军火库
-  skill-art-dragon-slash.481f3a15.webp         -> 电钻火花
-  skill-art-drill-spark.236e0585.webp          -> (重复/变体)
-  skill-art-drone-extract.7c3a0b92.webp        -> 无人机采精
+  skill-art-berserker-will.51f36fec.webp       -> 狂战意志
+  skill-art-berserk-speed-shift.aa36282b.webp  -> 暴走与极速
+  skill-art-blood-pact.d333993a.webp           -> 热血契约
+  skill-art-calculated-bet.4054b9e6.webp       -> 计算下注
+  skill-art-charged-essence.376fbb0d.webp      -> 充能精华
+  skill-art-contribution-plan.29b404d6.webp    -> 贡献计划
+  skill-art-control-eye.8765b0b1.webp          -> 控神魔眼
+  skill-art-crazy-shooting.cce6591a.webp       -> 疯狂射击
+  skill-art-crazy-slaughter.7dbbf054.webp      -> 疯狂屠戮
+  skill-art-death-wave.66c1eac9.webp           -> 死亡音波
+  skill-art-demon-poker.e05b46de.webp          -> 鬼王扑克
+  skill-art-dimension-armory.98680273.webp     -> 次元军火库
+  skill-art-dragon-slash.64c65c7e.webp         -> 电钻火花
+  skill-art-drill-spark.73282249.webp          -> (重复/变体)
+  skill-art-drone-extract.a84f55e0.webp        -> 无人机采精
   skill-art-essence-extract.b714c8f.webp       -> 榨取精华
-  skill-art-half-succubus-essence.c71c3abc.webp -> 半魅魔精华
-  skill-art-idol-kiss.b87d956c.webp            -> 偶像之吻
-  skill-art-killing-intent-gaze.9eed1604.webp  -> 杀欲窥视
-  skill-art-long-tongue-1124.166aa9bd.webp     -> 1124号长舌头
-  skill-art-magic-cruise-missile.8dd004f3.webp -> 魔法巡飞弹
-  skill-art-many-eyes.ed9c837d.webp            -> 百眼魅魔
-  skill-art-maria-honor-blessing.14392afa.webp -> 玛利亚荣誉祝福（未完成角色）
-  skill-art-military-order.3c919eca.webp       -> 军令状
+  skill-art-half-succubus-essence.38f22194.webp -> 半魅魔精华
+  skill-art-idol-kiss.03ce3e80.webp            -> 偶像之吻
+  skill-art-killing-intent-gaze.96198fac.webp  -> 杀欲窥视
+  skill-art-long-tongue-1124.2cbb0cc8.webp     -> 1124号长舌头
+  skill-art-magic-cruise-missile.e989e139.webp -> 魔法巡飞弹
+  skill-art-many-eyes.8f373b74.webp            -> 百眼魅魔
+  skill-art-maria-honor-blessing.bb3f4b54.webp -> 玛利亚荣誉祝福（未完成角色）
+  skill-art-military-order.794b2a24.webp       -> 军令状
   skill-art-mimic-voice.7656694e.webp          -> 模仿之音
-  skill-art-mine-placement.c22c12c6.webp       -> 放置地雷
-  skill-art-phantom-final-slash.a652ca00.webp  -> 终焉鬼影斩
-  skill-art-playful-slot.e25dd2eb.webp         -> 贪玩老虎机
-  skill-art-poison-grenade.fe4bfefd.webp       -> 毒气手雷
-  skill-art-reinforcement.7a694f5c.webp        -> 增援部队
-  skill-art-rejuvenating-hand.53d2b069.webp    -> 回春之手
-  skill-art-self-punishing-whip.316e7796.webp  -> 苦肉鞭笞
-  skill-art-shadow-backstab.a5f14213.webp      -> 潜影背刺
+  skill-art-mine-placement.06f31cda.webp       -> 放置地雷
+  skill-art-phantom-final-slash.de39f1c5.webp  -> 终焉鬼影斩
+  skill-art-playful-slot.3104c35f.webp         -> 贪玩老虎机
+  skill-art-poison-grenade.69277c14.webp       -> 毒气手雷
+  skill-art-reinforcement.3a06f2c4.webp        -> 增援部队
+  skill-art-rejuvenating-hand.08870ba4.webp    -> 回春之手
+  skill-art-self-punishing-whip.1afab66d.webp  -> 苦肉鞭笞
+  skill-art-shadow-backstab.9f3e155f.webp      -> 潜影背刺
   skill-art-shadow-dance.4f8cfc79.webp         -> 影舞步
-  skill-art-shock-flashbang.a78b4b66.webp      -> 震感闪光弹
-  skill-art-sniper-target.077d96a9.webp        -> 狙击目标
-  skill-art-speed-assault.94f48bb5.webp        -> 神速之袭
-  skill-art-succubus-fork.20768ad5.webp        -> 魅魔钢叉
-  skill-art-tail-machinegun.a8d29ad7.webp      -> 机尾机枪
-  skill-art-take-rations.74a8e30c.webp         -> 取粮
-  skill-art-tank-shell.b7bcc54e.webp           -> 坦克炮弹
-  skill-art-targeting-radar.6e237707.webp      -> 索敌雷达
-  skill-art-terror-hammer.92642403.webp        -> 霹雳之锤
-  skill-art-wind-execution.21c85fb4.webp       -> 狂风绝息斩
+  skill-art-shock-flashbang.1708cb72.webp      -> 震感闪光弹
+  skill-art-sniper-target.f36526d7.webp        -> 狙击目标
+  skill-art-speed-assault.2df815af.webp        -> 神速之袭
+  skill-art-succubus-fork.bdc0e56b.webp        -> 魅魔钢叉
+  skill-art-tail-machinegun.4d88dacf.webp      -> 机尾机枪
+  skill-art-take-rations.11d64493.webp         -> 取粮
+  skill-art-tank-shell.cfe53029.webp           -> 坦克炮弹
+  skill-art-targeting-radar.065fa2e0.webp      -> 索敌雷达
+  skill-art-terror-hammer.0c5ae580.webp        -> 霹雳之锤
+  skill-art-wind-execution.b663998e.webp       -> 狂风绝息斩
 
 【九、音频文件（publish/assets/sounds/）】
 
