@@ -8,7 +8,7 @@ window.GameDataFutureEnemies.orc_dungeon.push({
   evaluation: "群体弃牌与夺牌反击精英。当其【杀】数量多于非【杀】数量时，使用【杀】会令所有敌方角色各弃置1张牌；受到实体牌伤害后，他获得该牌，且以此法获得的牌造成双倍伤害。",
   gender: "male",
   face: "邦",
-  art: "./assets/new-portraits/orc-king-bondi.webp",
+  art: "./assets/new-portraits/orc-king-bondi.32769173.webp",
   bgm: "./assets/new-bgm/orc-king-bondi.ogg",
   hp: 220,
   attack: 10,
