@@ -220,19 +220,19 @@ attack_drone 的 art 指向 noble-sniper.webp，这是交叉引用。
 目录：publish/assets/generated/cards/
 
   文件名                                  -> 对应技能
-  skill-art-mine-placement.c22c12c6.webp  -> 放置地雷
-  skill-art-sniper-target.077d96a9.webp   -> 狙击目标
-  skill-art-tank-shell.b7bcc54e.webp      -> 坦克炮弹
-  skill-art-dragon-slash.481f3a15.webp    -> 电钻火花
-  skill-art-drill-spark.236e0585.webp     -> 电钻火花变体
-  skill-art-tail-machinegun.a8d29ad7.webp -> 机尾机枪
-  skill-art-death-wave.689e0965.webp      -> 死亡音波
-  skill-art-many-eyes.ed9c837d.webp       -> 百眼魅魔
+  skill-art-mine-placement.06f31cda.webp  -> 放置地雷
+  skill-art-sniper-target.f36526d7.webp   -> 狙击目标
+  skill-art-tank-shell.cfe53029.webp      -> 坦克炮弹
+  skill-art-dragon-slash.64c65c7e.webp    -> 电钻火花
+  skill-art-drill-spark.73282249.webp     -> 电钻火花变体
+  skill-art-tail-machinegun.4d88dacf.webp -> 机尾机枪
+  skill-art-death-wave.66c1eac9.webp      -> 死亡音波
+  skill-art-many-eyes.8f373b74.webp       -> 百眼魅魔
   skill-art-shadow-dance.4f8cfc79.webp    -> 影舞步
-  skill-art-shadow-backstab.a5f14213.webp -> 潜影背刺
+  skill-art-shadow-backstab.9f3e155f.webp -> 潜影背刺
   skill-art-battlefield-sweep.dc085e1b.webp -> 战场扫射
-  skill-art-reinforcement.7a694f5c.webp   -> 增援部队
-  skill-art-succubus-fork.20768ad5.webp   -> 魅魔钢叉
+  skill-art-reinforcement.3a06f2c4.webp   -> 增援部队
+  skill-art-succubus-fork.bdc0e56b.webp   -> 魅魔钢叉
 
 ===============================================================
 
