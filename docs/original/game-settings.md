@@ -249,7 +249,7 @@ gameplay values and behavior remain here rather than being duplicated in
 
 ### 安洁莉卡与奥菲莉亚默认立绘
 
-- 安洁莉卡默认战场、角色栏与头像立绘固定使用`./assets/images/angelica-portrait.webp`，1024×1024方形WebP资源；奥菲莉亚默认战场、角色栏与头像立绘固定使用`./assets/images/ophelia-portrait.webp`，2048×2048方形WebP压缩资源。两者均通过`src/original/data-characters-extra.js`引用。
+- 安洁莉卡默认战场、角色栏与头像立绘固定使用`./assets/images/angelica-portrait.96fc74ac.webp`，1024×1024方形WebP资源；奥菲莉亚默认战场、角色栏与头像立绘固定使用`./assets/images/ophelia-portrait.fdbf0d27.webp`，2048×2048方形WebP压缩资源。两者均通过`src/original/data-characters-extra.js`引用。
 - 2026-08-31起两张立绘为原文件名原位替换的新版形象，原立绘不再保留；2026-09-01安洁莉卡立绘按用户桌面新设计稿再次原位替换（1024×1024）。替换时不得修改引用路径或引入哈希后缀，新素材单文件体积必须低于2MiB资产预算。
 
 ### 天日国部队名称
@@ -293,7 +293,7 @@ gameplay values and behavior remain here rather than being duplicated in
 
 - Character data file: `src/original/data-future-characters.js`
 - Recruit event file: `src/original/recruit-unlock-events.js`
-- Portrait: all Sonia views share `publish/assets/new-portraits/sonia.webp`; replace this asset in place so the codex, roster, nursery, and battle UI stay synchronized.
+- Portrait: all Sonia views share `publish/assets/new-portraits/sonia.ebcb6c6b.webp`; when the artwork changes, write the new bytes under the new content-hash filename and update every reference in the same commit so the codex, roster, nursery, and battle UI stay synchronized.
 - Identity: 索尼娅 is the recruited human-form name of XX型凋零者1124号; her mother is 混沌女神 and her source dungeon is 兽人地下城.
 - Player-visible identity: `XX型凋零者`.
 - Normal base stats: attack 2, magic 2, speed 4, hp 36, bloodlust 1, hand limit 4, draw per turn base 2 + 3, initial draw base 4 + 2.
@@ -337,7 +337,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 巨蛋演出: 星野依 records standard suits only during her current turn. Her battlefield portrait and active portrait display the current set as `巨蛋 ♥♦...`. Each time she completes a set containing ♥, ♦, ♠, and ♣ in that turn, she deals attack + magic composite damage to every living enemy and clears that suit set so another same-turn cycle can begin. Any incomplete set and its portrait marker are cleared at her turn end. Suit-preserving relic conversions count through the generated card; 军令状's virtual 【魔王军入侵】 inherits the identical suit paid by its two cards.
 - 梦想真理 counts cards successfully used by 星野依 and her own completed turns. It succeeds immediately upon reaching 20 cards within her first three turns; otherwise it fails when her third turn ends.
 - Before 梦想真理 resolves, the battle portrait displays the current successfully used-card count as `使命 n/20`. The display and internal mission counter are removed after success or failure and must not be recreated by later card uses.
-- When 梦想真理 resolves, her current battle portrait and avatar switch to `publish/assets/new-portraits/hoshino-yi-witherer.webp`. The transformed portrait is battle-only.
+- When 梦想真理 resolves, her current battle portrait and avatar switch to `publish/assets/new-portraits/hoshino-yi-witherer.1f4a9193.webp`. The transformed portrait is battle-only.
 - Success: after each later standard-suit card whose suit differs from her previous standard-suit card during the same turn, 星野依 gains +1 temporary attack and +1 temporary magic for the current turn. Normal turn cleanup removes the temporary stat bonuses and all Hoshino Yi color/suit/巨蛋 tracking state.
 - Failure: every later four-suit completion makes each living enemy discard one non-pending hand card. The same completion still triggers 巨蛋演出's attack + magic composite damage to every living enemy.
 - Unlock: the first successful clear of `orc_dungeon` on `adventure` difficulty queues the family event after run rewards are banked. Party composition does not affect this condition. Completing the event unlocks 星野依 and 星野海一 together.
@@ -473,7 +473,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - Targetability: 翻面 is not defeat or incapacitation. A face-down unit can still be attacked, healed, gain armor, and receive marks or statuses.
 - Difference from 眩晕: 眩晕 resolves during the judgement phase and, on a black result, skips only the play phase; the draw phase and other phases proceed normally. 翻面 skips the entire turn.
 - Difference from direct turn skipping: effects such as a successful 母亲敕令 suit clash that directly skip the next turn are mechanically equivalent to 翻面 for turn resolution, but do not turn the portrait over or use the 翻面 visual state.
-- Universal card-back rule: all hidden hand cards and unrevealed judgement cards use `GameAssets.cardBack` (`publish/assets/generated/succubus-card-back.cca22db5.webp`), a black, crimson, and antique-gold succubus sigil. Do not use question marks, color blocks, or separate hidden-card back designs without an explicit setting change.
+- Universal card-back rule: all hidden hand cards and unrevealed judgement cards use `GameAssets.cardBack` (`publish/assets/generated/succubus-card-back.1fdff617.webp`), a black, crimson, and antique-gold succubus sigil. Do not use question marks, color blocks, or separate hidden-card back designs without an explicit setting change.
 - Judgement overlays use the same card footprint as the single-card reveal used by 【魔弹特攻】: `104×160` at the `1280×720` baseline, with the same compact-height reductions as reveal cards. Judgement card content must not stretch the popup beyond that footprint.
 - Visual rule: while face-down, both the half-body portrait in the team area and the active-unit portrait reuse the universal `GameAssets.cardBack` instead of the normal art. `GameAssets.faceDownCardBack` remains a compatibility alias. Turning face-down and face-up each use an approximately 0.3-second rotation animation.
 - Skill wording: use `令一名角色翻面` as the standard effect phrase. A complete basic description is `指定一名角色翻面，该角色跳过其下一个回合。`; additional effects should keep timing, target, and result explicit, for example `你可以指定一名角色翻面，然后该角色摸两张牌。`
@@ -500,7 +500,7 @@ gameplay values and behavior remain here rather than being duplicated in
 ### 内英组杀手伊迪斯
 
 - 伊迪斯的机制型身份名称固定为`连锁追击封疗Boss`；角色定位必须按实际技能概括实体杀牌连锁追击、超出手牌上限的原目标追加结算、无限暗刃恢复封锁与拷贝魔眼实体牌复制，不得使用组织头衔或“蓄力链锯追杀Boss”作为战斗身份。
-- 伊迪斯当前默认战场与角色详情立绘使用压缩资源`./assets/images/pursuer-edis.715fedea.webp`，保持`2048×2048`方形构图；旧`pursuer-edith.webp`不再保留。
+- 伊迪斯当前默认战场与角色详情立绘使用压缩资源`./assets/images/pursuer-edis.8d1fc755.8d1fc755.webp`，保持`2048×2048`方形构图；旧`pursuer-edith.webp`不再保留。
 - 伊迪斯普通难度基础攻击力为`3`、基础魔力为`2`。
 - 伊迪斯三项角色技能的图标固定为锁定技星形`⭐`；无限暗刃不得使用蓝色触发图标。
 - 伊迪斯的每回合摸牌数固定为基础`2`加角色加成`2`，初始摸牌数固定为基础`4`加角色加成`1`。
@@ -685,7 +685,7 @@ gameplay values and behavior remain here rather than being duplicated in
 
 ### 温蒂皮肤：慈爱教师
 
-- 皮肤 ID：`wendy_benevolent_teacher`；品质固定为史诗，兑换价格固定为10精华宝珠，仅属于温蒂；`wendy_default`保留原立绘并允许随时切回。默认立绘使用正式压缩素材`publish/assets/images/wendy-portrait.f262b034.webp`；慈爱教师素材固定为`publish/assets/generated/wendy-benevolent-teacher-desert-school.bcfc0372.webp`，专属动态特效标识固定为`wendy-teacher`。
+- 皮肤 ID：`wendy_benevolent_teacher`；品质固定为史诗，兑换价格固定为10精华宝珠，仅属于温蒂；`wendy_default`保留原立绘并允许随时切回。默认立绘使用正式压缩素材`publish/assets/images/wendy-portrait.f262b034.f262b034.webp`；慈爱教师素材固定为`publish/assets/generated/wendy-benevolent-teacher-desert-school.bcfc0372.webp`，专属动态特效标识固定为`wendy-teacher`。
 - 等级特殊立绘 ID：`wendy_level_10_special`；品质固定为特殊，价格为0，`unlockLevel`固定为10，使用正式压缩素材`publish/assets/generated/wendy-level-10-special.8b3d47ab.webp`。达到Lv.10后自动加入已拥有皮肤并允许装备、放大查看和作为正式战斗立绘；测试战斗不得无视等级和拥有状态试用，未解锁时显示等级锁定占位。
 - 形象固定为与默认立绘一致的成年恶魔教师：深翠绿色长发向发梢渐变为鲜明黄绿色，金黄色眼眸佩戴金丝圆框眼镜；保留黑色金尖弯角、尖耳、收束在身后的黑色金棕翼膜蝠翼与黑色心形尾刺。服装固定为深翠绿色金边教师西装、扣合的米白衬衫、同色及膝裙、深色丝袜与黑色低跟鞋，胸前佩戴金色学院徽章。
 - 左臂固定托举深棕皮革魔法教案，书脊嵌有发光魔力书签；右手引导金色战术字符和抽象魔法图。背景固定为沙漠边缘学校庭院，包含砂岩教学楼、遮阳连廊、教学黑板和远处沙丘。不得改成棕发、紫瞳、红角红尾、学生制服、少女体型、无角无尾、无教案、展开攻击姿态蝠翼、哥特城堡或普通现代教室。
@@ -762,7 +762,7 @@ gameplay values and behavior remain here rather than being duplicated in
 
 ### 芙萝娅皮肤：音速刺客
 
-- 默认皮肤 ID `flora_default`固定使用上传的方形素材`publish/assets/images/flora-portrait.71c5d516.webp`并允许随时切回。`flora_sonic_assassin`品质固定为史诗，兑换价格固定为10精华宝珠，仅属于芙萝娅；正式素材固定为`publish/assets/generated/flora-sonic-assassin.8543df2c.webp`，胜利素材固定为`publish/assets/generated/flora-sonic-assassin-victory.7ab2b6cd.webp`，专属动态特效标识固定为`flora-sonic`。
+- 默认皮肤 ID `flora_default`固定使用上传的方形素材`publish/assets/images/flora-portrait.71c5d516.71c5d516.webp`并允许随时切回。`flora_sonic_assassin`品质固定为史诗，兑换价格固定为10精华宝珠，仅属于芙萝娅；正式素材固定为`publish/assets/generated/flora-sonic-assassin.8543df2c.webp`，胜利素材固定为`publish/assets/generated/flora-sonic-assassin-victory.7ab2b6cd.webp`，专属动态特效标识固定为`flora-sonic`。
 - 芙萝娅等级特殊立绘 ID 固定为`flora_level_10_special`，素材固定为`publish/assets/generated/flora-level-10-special.075896ea.webp`。达到`Lv.10`后按统一等级特殊立绘机制自动解锁；其与“音速刺客”的购买、装备和专属特效互相独立。
 - 形象必须保留芙萝娅的成年绿色长发魅魔身份、向后弯曲的恶魔角、黑红蝠翼、心形尾刺和双匕首战斗轮廓。音速刺客造型固定为高马尾、荧光翠绿渐变发梢、紫色眼眸、深色半面罩、眼角绿色斜纹油彩与深墨绿色哑光夜行装；肩胛骨处固定延伸两道半透明绿色音波光刃，腕部和小腿护具刻有消音符文，双匕首使用无实体刀身的高频绿色声波刃口。
 - 背景固定为月夜下的黑暗哥特工业战场，并以少量绿色残影提示高速移动轨迹。不得改成无角无翼、无尾、短发、无面罩、普通实体匕首、明亮日间环境或不具音波光刃的普通忍者形象。
@@ -830,8 +830,8 @@ When a setting changes:
   events, and testing paths are not finalized.
 - Artina: ranged sniper with suit-recording and enhanced next slash.
   Maria: support with divine-count marking and team stat blessing.
-- Their portraits exist at `publish/assets/new-portraits/artina.webp` and
-  `publish/assets/new-portraits/maria.webp`.
+- Their portraits exist at `publish/assets/new-portraits/artina.da18278e.webp` and
+  `publish/assets/new-portraits/maria.722130dd.webp`.
 - Their skill art exists in `publish/assets/generated/cards/`.
 - Do not treat them as formal playable characters in content checks or
   codex requirements. The 26 formal characters do not include them.
