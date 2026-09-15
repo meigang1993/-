@@ -141,7 +141,7 @@ BGM：./assets/sounds/mechanical-bull-king.ogg
 类型：boss | 定位：输出 | AI：pursuer_edis
 性别：女
 属性：HP180 ATK3 MAG2 SPD7 杀意2 手牌5 摸牌2 初始1
-立绘：./assets/images/pursuer-edis.715fedea.webp
+立绘：./assets/images/pursuer-edis.8d1fc755.webp
 BGM：./assets/sounds/pursuer-edith.ogg
 精华掉落率：普通0.2 冒险0.4 勇士0.6 王者0.8 英雄1.0
 评价：连锁追击封疗Boss。
