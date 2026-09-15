@@ -29,7 +29,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "miller", name: "米勒", gender: "male", face: "米", art: "./assets/images/miller-portrait.76b845da.webp", avatar: "./assets/images/miller-portrait.76b845da.webp", role: "女仆之子", locked: true,
+    id: "miller", name: "米勒", gender: "male", face: "米", art: "./assets/images/miller-portrait.0bbd25fb.webp", avatar: "./assets/images/miller-portrait.0bbd25fb.webp", role: "女仆之子", locked: true,
     stats: { attack: 3, magic: 3, speed: 3, maxHp: 40, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "随机摸牌与手牌转移辅助。贪玩老虎机提供波动较大的补牌量，收获分享可将弃牌阶段需要弃置的手牌转交给其他友方角色。",
     skills: [
@@ -48,7 +48,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "loki", name: "洛基", gender: "male", face: "洛", art: "./assets/images/loki-portrait.92a0e9d0.webp", avatar: "./assets/images/loki-portrait.92a0e9d0.webp", role: "偶像之子", locked: true,
+    id: "loki", name: "洛基", gender: "male", face: "洛", art: "./assets/images/loki-portrait.e4c2018a.webp", avatar: "./assets/images/loki-portrait.e4c2018a.webp", role: "偶像之子", locked: true,
     stats: { attack: 3, magic: 1, speed: 3, maxHp: 42, bloodlust: 2, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "禁用战术牌的纯杀牌输出。手中可见【杀】数量占优时可使杀牌伤害翻倍，并能替诺诺卡响应或承受杀牌伤害；青春草原提供永久成长。",
     skills: [
@@ -80,7 +80,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "cadicis", name: "卡迪西斯", gender: "male", face: "卡", art: "./assets/images/cadicis-portrait.27a02770.webp", avatar: "./assets/images/cadicis-portrait.27a02770.webp", role: "教师之子", locked: true,
+    id: "cadicis", name: "卡迪西斯", gender: "male", face: "卡", art: "./assets/images/cadicis-portrait.0c2fa8f8.webp", avatar: "./assets/images/cadicis-portrait.0c2fa8f8.webp", role: "教师之子", locked: true,
     stats: { attack: 3, magic: 3, speed: 3, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "牌名强化与群体火力支援角色。战场指挥官强化友方同名杀牌与战术牌，指挥官责任在队友受击前调配手牌，重火力支援使实体杀牌附带继承其伤害属性的全体直伤。",
     skills: [
@@ -90,7 +90,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "carlos", name: "卡洛斯", gender: "male", face: "卡", art: "./assets/images/carlos-portrait.2d09280b.webp", avatar: "./assets/images/carlos-portrait.2d09280b.webp", role: "风女之子", locked: true,
+    id: "carlos", name: "卡洛斯", gender: "male", face: "卡", art: "./assets/images/carlos-portrait.3f1e07f0.webp", avatar: "./assets/images/carlos-portrait.3f1e07f0.webp", role: "风女之子", locked: true,
     stats: { attack: 3, magic: 1, speed: 4, maxHp: 32, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 4 },
     evaluation: "红牌转化与单体追加伤害输出。疯狂射击把红色手牌转为群体杀牌，疯狂刺刀根据命中后仍持有的【杀】数量追加多段无视护甲伤害。",
     skills: [
