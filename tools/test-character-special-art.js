@@ -43,8 +43,11 @@ function verifySpecialArt(charId, skinId, art) {
     `${skinId} must replace the formal portrait`);
   state.chars[0].level = 0;
   state.battle = { test: true };
+  assert(!SkinSystem.testEquip(state, charId, skin.id),
+    `${skinId} must stay locked in test battles below level 10`);
+  state.chars[0].level = 10;
   assert(SkinSystem.testEquip(state, charId, skin.id),
-    `${skinId} must be trialable in test battles regardless of level`);
+    `${skinId} must be trialable in test battles once unlocked`);
   assert(SkinSystem.applyToChar(state, state.chars[0], true).art === skin.art,
     `${skinId} trial must replace the portrait in test battle`);
 }
