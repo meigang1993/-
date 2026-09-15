@@ -16,16 +16,16 @@ window.VillaTestUI = ({ U, portrait }) => {
     const ownedRelics = new Set([...(state.relicCollection || []), ...(state.resources?.relics || []), ...Object.values(state.equipment || {}).flat()]), pickedRelics = new Set(state.testRelics || []);
     const relicButtons = RelicSystem.all(state).filter(r => !ownedRelics.has(r.name)).map(r => testPick(r.name, "test-relic", pickedRelics.has(r.name))).join("") || `<span class="muted">没有未获得饰品。</span>`;
     const skinRows = (state.testAllies || []).map(id => testSkinRow(state, id)).join("") || `<span class="muted">请先选择我方角色。</span>`;
-    return `<div class="test-extra"><section><h3>临时卡牌配置</h3><p class="muted">当前公共牌库默认可用，勾选后仅在本次测试战斗中追加。</p><div class="actions"><button data-test-cards-all="add">添加全部卡牌</button><button class="ghost" data-test-cards-all="remove">移除全部卡牌</button></div><div class="test-pick-list">${cardButtons}</div></section><section><h3>临时饰品配置</h3><p class="muted">添加后可在测试角色卡的饰品列表中自由穿戴。</p><div class="actions"><button data-test-relics-all="add">添加全部饰品</button><button class="ghost" data-test-relics-all="remove">移除全部饰品</button></div><div class="test-pick-list">${relicButtons}</div></section><section class="test-skins"><h3>测试皮肤</h3><p class="muted">测试战斗可试用未拥有的普通皮肤；等级特殊立绘需达到等级解锁。</p>${skinRows}</section></div>`;
+    return `<div class="test-extra"><section><h3>临时卡牌配置</h3><p class="muted">当前公共牌库默认可用，勾选后仅在本次测试战斗中追加。</p><div class="actions"><button data-test-cards-all="add">添加全部卡牌</button><button class="ghost" data-test-cards-all="remove">移除全部卡牌</button></div><div class="test-pick-list">${cardButtons}</div></section><section><h3>临时饰品配置</h3><p class="muted">添加后可在测试角色卡的饰品列表中自由穿戴。</p><div class="actions"><button data-test-relics-all="add">添加全部饰品</button><button class="ghost" data-test-relics-all="remove">移除全部饰品</button></div><div class="test-pick-list">${relicButtons}</div></section><section class="test-skins"><h3>测试皮肤</h3><p class="muted">测试战斗可试用全部皮肤，包含尚未达到等级的特殊立绘（仅本次试用，不会解锁）。</p>${skinRows}</section></div>`;
   }
   function testSkinRow(state, id) {
     const c = state.chars.find(x => x.id === id), current = state.testSkins?.[id] || state.equippedSkins?.[id];
     if (!c) return "";
     return `<div class="test-skin-row"><b>${U.esc(c.name)}</b><div class="test-pick-list">${SkinSystem.forChar(id).map(s => {
-      // 等级立绘需达到等级解锁，测试战斗试用不适用于它。
+      // 测试战斗可试用全部皮肤；等级立绘仅标注等级，不再禁用按钮。
       const levelLocked = !!s.unlockLevel && !SkinSystem.owned(state, s);
-      const label = levelLocked ? `${U.esc(s.name)} · Lv.${s.unlockLevel}解锁` : U.esc(s.name);
-      return `<button class="test-pick ${current === s.id ? "selected" : ""}" data-test-skin-char="${U.esc(id)}" data-test-skin="${U.esc(s.id)}"${levelLocked ? " disabled" : ""}>${label}</button>`;
+      const label = levelLocked ? `${U.esc(s.name)} · Lv.${s.unlockLevel}试用` : U.esc(s.name);
+      return `<button class="test-pick ${current === s.id ? "selected" : ""}" data-test-skin-char="${U.esc(id)}" data-test-skin="${U.esc(s.id)}">${label}</button>`;
     }).join("")}</div></div>`;
   }
   function testPick(name, key, selected) { return `<button class="test-pick ${selected ? "selected" : ""}" data-${key}="${U.esc(name)}">${U.esc(name)}</button>`; }
