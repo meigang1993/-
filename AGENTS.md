@@ -196,6 +196,33 @@ With clearing, the bonus sequence is a sawtooth `0,1,0,1,2,0` and the badge read
 `mark/target` where the mark is always below the target — that is intended, not a
 bug.
 
+### Settled design: test battles trial every skin, formal play keeps level art locked (2026-09-15)
+
+Two different contexts, two different rules — do not collapse them:
+
+| 场景 | 等级特殊立绘（`unlockLevel`） | 普通未拥有皮肤 |
+|:--|:--|:--|
+| 大厅 / 正式战斗 | **锁定**：按钮禁用、不渲染立绘本体 | 不可装备 |
+| 测试战斗（`battle.test`） | **可试用**：可选、渲染、外观生效 | 可试用 |
+
+Implementation points:
+
+- `SkinSystem.testEquip` writes **`testSkins` only**. It must never grant
+  `ownedSkins` or overwrite `equippedSkins`. Trialing a level-10 art at level 0
+  does **not** unlock it.
+- `selectedForUnit` trusts `testSkins` **only** while `state.battle.test` is true,
+  so a leftover `testSkins` entry cannot leak into formal play.
+- `ui-info.js` computes `specialLocked = !!s.unlockLevel && !formalOwned && !trial`
+  — the `!trial` term is what unlocks trialing. Dropping it silently re-locks
+  test battles; removing `!formalOwned` leaks unreleased art in the hall.
+- `villa-test.js` labels locked level art `Lv.N试用` and **does not** disable the
+  button.
+
+History: this was "locked everywhere" once (2026-09-15), which over-corrected and
+blocked legit trialing. The browser case
+`test battle lets Bertis trial special art before level 10` is the regression
+guard — if it fails, someone re-locked trials or let trials grant ownership.
+
 ### Whole-tree comparison (zero-download)
 
 `api.github.com` cannot be reached for browsing but the tree endpoint works, and
