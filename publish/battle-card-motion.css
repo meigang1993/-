@@ -6,7 +6,7 @@
 .card-flight-front .card-art { flex: 1 1 auto; min-height: 54px; }
 .card-flight-front .card-footer { flex: 0 0 25px; }
 .card-flight-front .card-effect { font-size: 8px; -webkit-line-clamp: 1; }
-.card-flight-back { border: 2px solid rgba(216,181,109,.82); border-radius: 7px; transform: rotateY(180deg); background: #12080d url('./assets/generated/succubus-card-back.cca22db5.webp') center / cover no-repeat; box-shadow: 0 10px 22px rgba(0,0,0,.4); }
+.card-flight-back { border: 2px solid rgba(216,181,109,.82); border-radius: 7px; transform: rotateY(180deg); background: #12080d url('./assets/generated/succubus-card-back.1fdff617.webp') center / cover no-repeat; box-shadow: 0 10px 22px rgba(0,0,0,.4); }
 .flying-card.card-flight.enemy-flying .card-flight-front { box-shadow: 0 0 0 2px rgba(255,64,92,.72), 0 0 24px rgba(255,64,92,.62); }
 .flying-card.card-flight.enemy-flying { box-shadow: none; }
 .card-flight.give-card-fly .card-flight-back { border-color: #7eff92; }
