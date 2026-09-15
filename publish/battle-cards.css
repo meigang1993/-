@@ -63,7 +63,7 @@
 .play-card.drag-source { transform: none; opacity: .45; }
 .play-card.discardable { border-color: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.72), 0 0 24px rgba(255,215,102,.85), 0 8px 18px rgba(0,0,0,.25); }
 .play-card.disabled { opacity: .35; filter: grayscale(1); cursor: not-allowed; transform: none; border-color: rgba(80,70,88,.75); box-shadow: none; }
-.play-card.back { flex-basis: 28px; min-height: 42px; padding: 0; background: #12080d url('./assets/generated/succubus-card-back.cca22db5.webp') center / cover no-repeat; color: transparent; border-color: rgba(216,181,109,.72); cursor: default; box-shadow: 0 4px 10px rgba(0,0,0,.34); }
+.play-card.back { flex-basis: 28px; min-height: 42px; padding: 0; background: #12080d url('./assets/generated/succubus-card-back.1fdff617.webp') center / cover no-repeat; color: transparent; border-color: rgba(216,181,109,.72); cursor: default; box-shadow: 0 4px 10px rgba(0,0,0,.34); }
 .hand-reveal-card .play-card.back {
   flex-basis: var(--hand-reveal-card-width);
   width: 100%;
