@@ -6,8 +6,8 @@ require("../src/original/data-skins.js");
 require("../src/original/skins.js");
 
 const expectedSpecialArt = {
-  lokar_level_10_special: ["lokar", "./assets/generated/lokar-level-10-special.849df5d4.webp"],
-  besta_doll_level_10_special: ["besta_doll", "./assets/generated/besta-doll-level-10-special.7e839287.webp"],
+  lokar_level_10_special: ["lokar", "./assets/generated/lokar-level-10-special.2be685ee.webp"],
+  besta_doll_level_10_special: ["besta_doll", "./assets/generated/besta-doll-level-10-special.7d69a6be.webp"],
   bertis_level_10_special: ["bertis", "./assets/generated/bertis-level-10-special.022dd113.webp"],
   nonoka_level_10_special: ["nonoka", "./assets/generated/nonoka-level-10-special.ba4c8ff8.webp"],
   manny_level_10_special: ["manny", "./assets/generated/manny-level-10-special.a8c2eeed.webp"],
