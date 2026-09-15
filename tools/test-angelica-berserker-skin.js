@@ -136,7 +136,7 @@ assert(!AngelicaLukaSkills.canPayIntentWithRage(rageActor,
 
 const base = SkinSystem.byId("angelica_default");
 const berserker = SkinSystem.byId("angelica_berserker");
-assert(base?.initial && base.art === "./assets/images/angelica-portrait.webp"
+assert(base?.initial && base.art === "./assets/images/angelica-portrait.96fc74ac.webp"
   && fs.existsSync(`./publish/${base.art.slice(2)}`),
   "Angelica must retain a selectable default skin");
 assert(berserker?.charId === "angelica" && berserker.quality === "epic"
