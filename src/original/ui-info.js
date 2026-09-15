@@ -122,8 +122,8 @@ window.GameUIInfo = (U) => {
       ? "data-battle-equip-skin" : "data-equip-skin";
     const items = skins.map(s => {
       const formalOwned = window.SkinSystem.owned(state, s);
-      // 等级立绘必须达到等级才解锁，测试战斗的"试用"不适用于它，否则会提前泄露未解锁立绘。
-      const specialLocked = !!s.unlockLevel && !formalOwned;
+      // 等级立绘在正式场景需达到等级解锁；测试战斗允许试用，故仅在非试用态锁定。
+      const specialLocked = !!s.unlockLevel && !formalOwned && !trial;
       const trialOnly = trial && !formalOwned && !specialLocked;
       const available = formalOwned || trialOnly, equipped = current === s.id;
       const disabled = saving || !available || equipped;
@@ -136,7 +136,7 @@ window.GameUIInfo = (U) => {
     const warning = status.state === "error" && status.pending
       ? `<div class="save-warning" role="alert"><span>外观选择尚未保存，刷新后可能恢复为上次选择。</span><button data-retry-settings="1">重试保存</button></div>`
       : "";
-    const hint = trial ? "测试战斗中可试用未拥有的普通皮肤；等级特殊立绘仍需达到等级解锁。"
+    const hint = trial ? "测试战斗中可试用全部皮肤，包含未达等级的特殊立绘（仅本次试用，不会解锁）。"
       : state?.view === "battle" ? "战斗中可直接切换已拥有皮肤，只改变外观。"
       : "选择已拥有皮肤作为角色外观。";
     return `${infoTitle(u)}<p class="muted">${hint}</p>${warning}<div class="battle-skin-list">${items}</div>`;
