@@ -10,6 +10,11 @@ const sourceDir = path.join(root, "src", "original");
 const publish = path.join(root, "publish");
 const outputDir = path.join(publish, "bundles");
 const checkOnly = process.argv.includes("--check");
+// 默认内嵌可读源码到 .map（sourcesContent），使 publish 独立部署或仅下载发布包时，
+// DevTools 仍能还原源文件与行号，而不是只能看到单个巨型压缩包的第 2 行。
+// .map 仅在打开 DevTools 时才会被请求，正常玩家不会下载，因此不增加运行时流量。
+// 需要精简发布产物时用 --no-sources 关闭（此时依赖仓库内 src/original 解析）。
+const includeSources = !process.argv.includes("--no-sources");
 const expectedOutputs = Object.keys(manifest).map(name => `${name}.min.js`).sort();
 
 function listJavaScript(dir, prefix = "") {
@@ -21,11 +26,13 @@ function listJavaScript(dir, prefix = "") {
   });
 }
 
+// sources 写成相对 .map 文件自身位置的路径（.map 位于 publish/bundles/），
+// DevTools 才能回溯到可读源文件 src/original/<file>，而不是单个巨型压缩包的第 2 行。
 function readSources(files) {
   return Object.fromEntries(files.map(file => {
     const full = path.join(sourceDir, file);
     if (!fs.existsSync(full)) throw new Error(`Missing bundle source: src/original/${file}`);
-    return [file, fs.readFileSync(full, "utf8")];
+    return [`../../src/original/${file}`, fs.readFileSync(full, "utf8")];
   }));
 }
 
@@ -63,6 +70,11 @@ async function compile(name, files) {
       keep_fnames: true,
     },
     ecma: 2020,
+    sourceMap: {
+      filename: `${name}.min.js`,
+      url: `${name}.min.js.map`,
+      includeSources,
+    },
     format: {
       ascii_only: false,
       beautify: false,
@@ -71,20 +83,34 @@ async function compile(name, files) {
     },
   });
   if (!result.code) throw new Error(`Terser returned no output for ${name}`);
-  return `${result.code}\n`;
+  if (!result.map) throw new Error(`Terser returned no source map for ${name}`);
+  return { code: `${result.code}\n`, map: `${result.map}\n` };
+}
+
+function writeAtomic(target, content) {
+  const temporary = `${target}.${process.pid}.tmp`;
+  fs.writeFileSync(temporary, content);
+  fs.renameSync(temporary, target);
 }
 
 async function main() {
   validateManifest();
   validatePublishBoundary();
   const outputs = {};
-  for (const [name, files] of Object.entries(manifest)) outputs[name] = await compile(name, files);
+  const sourceMaps = {};
+  for (const [name, files] of Object.entries(manifest)) {
+    const compiled = await compile(name, files);
+    outputs[name] = compiled.code;
+    sourceMaps[name] = compiled.map;
+  }
   const index = fs.readFileSync(path.join(publish, "index.html"), "utf8");
   assertRepositoryPublishVersion(root, outputs, index);
   if (checkOnly) {
     const stale = Object.entries(outputs).filter(([name, code]) => {
       const file = path.join(outputDir, `${name}.min.js`);
-      return !fs.existsSync(file) || fs.readFileSync(file, "utf8") !== code;
+      if (!fs.existsSync(file) || fs.readFileSync(file, "utf8") !== code) return true;
+      const mapFile = path.join(outputDir, `${name}.min.js.map`);
+      return !fs.existsSync(mapFile) || fs.readFileSync(mapFile, "utf8") !== sourceMaps[name];
     }).map(([name]) => name);
     if (stale.length) throw new Error(`Stale publish bundles: ${stale.join(", ")}; run npm run build:bundles`);
     console.log(`Publish bundles are current: ${Object.keys(outputs).join(", ")}`);
@@ -92,10 +118,10 @@ async function main() {
   }
   fs.mkdirSync(outputDir, { recursive: true });
   Object.entries(outputs).forEach(([name, code]) => {
-    const target = path.join(outputDir, `${name}.min.js`);
-    const temporary = `${target}.${process.pid}.tmp`;
-    fs.writeFileSync(temporary, code);
-    fs.renameSync(temporary, target);
+    writeAtomic(path.join(outputDir, `${name}.min.js`), code);
+  });
+  Object.entries(sourceMaps).forEach(([name, map]) => {
+    writeAtomic(path.join(outputDir, `${name}.min.js.map`), map);
   });
   validatePublishBoundary();
   console.log(Object.entries(outputs).map(([name, code]) => `${name} ${(Buffer.byteLength(code) / 1024).toFixed(1)} KiB`).join(", "));
