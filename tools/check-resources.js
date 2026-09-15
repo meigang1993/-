@@ -7,12 +7,12 @@ const sourceRoot = path.join(repositoryRoot, "src", "original");
 const assetRoot = path.join(root, "assets");
 const sourceExt = /\.(html|css|js)$/i;
 const reservedAssets = new Set([
-  "assets/new-portraits/gerda.e9bfed5f.webp",
-  "assets/new-portraits/hoshino-kaiichi.7b05067b.webp",
-  "assets/new-portraits/hoshino-yi.c3110cc2.webp",
-  "assets/new-portraits/hoshino-yi-witherer.1f4a9193.webp",
-  "assets/new-portraits/sonia.ebcb6c6b.webp",
-  "assets/new-portraits/maria.722130dd.webp",
+  "assets/new-portraits/gerda.ddb6449d.webp",
+  "assets/new-portraits/hoshino-kaiichi.b7ab4193.webp",
+  "assets/new-portraits/hoshino-yi.3b9812bf.webp",
+  "assets/new-portraits/hoshino-yi-witherer.82c7b817.webp",
+  "assets/new-portraits/sonia.ded1c88c.webp",
+  "assets/new-portraits/maria.dc753ea7.webp",
 ].map(file => path.resolve(root, file)));
 const refs = [];
 const assets = [];
