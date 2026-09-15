@@ -72,7 +72,7 @@ window.GameUIInfo = (U) => {
     const title = `${infoTitle(u)}${u.role ? `<p class="role-line">${U.esc(u.role)}</p>` : ""}${unlock}`;
     const livingRoom = !u.side && window.state?.view === "livingRoom";
     const growth = livingRoom ? progressionPanel(u) : "";
-    const body = safeTab === "skills" ? `${title}<h3>技能</h3>${skillList(u)}` : safeTab === "relics" ? relicPanel(u) : safeTab === "skins" ? skinPanel(u, refId) : safeTab === "specialArt" ? specialArtPanel(u, specialArt) : `${title}${growth}${u.side === "enemy" && u.battleRelics?.length ? relicBattlePanel(u) : ""}<div class="stats">${U.statHtml({ stats: u.stats, relicStats: relicStats || u.relicStats || {}, tempAttack: u.tempAttack, tempMagic: u.tempMagic })}</div>`;
+    const body = safeTab === "skills" ? `${title}<h3>技能</h3>${skillList(u)}` : safeTab === "relics" ? relicPanel(u) : safeTab === "skins" ? skinPanel(u, refId) : safeTab === "specialArt" ? specialArtPanel(u, specialArt) : `${title}${growth}${u.side === "enemy" && u.battleRelics?.length ? relicBattlePanel(u) : ""}<div class="stats">${U.statHtml({ ...u, stats: u.stats, relicStats: relicStats || u.relicStats || {}, tempAttack: u.tempAttack, tempMagic: u.tempMagic })}</div>`;
     const relicButton = canUseRelics ? `<button class="${safeTab === "relics" ? "active" : ""}" data-info-tab="relics">饰品</button>` : "";
     const skinButton = canUseSkins ? `<button class="${safeTab === "skins" ? "active" : ""}" data-info-tab="skins">皮肤</button>` : "";
     const specialArtButton = canUseSpecialArt ? `<button class="${safeTab === "specialArt" ? "active" : ""}" data-info-tab="specialArt">立绘</button>` : "";

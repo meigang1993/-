@@ -47,8 +47,15 @@ window.ArtinaMariaSkills = (() => {
       // 若保留则加成会随出牌无限累积（输出过强），且标记数会超过目标数（显示混乱）。
       actor.mariaMarks = 0;
     }
-    actor.tempAttack = actor.mariaMarks;
-    actor.tempMagic = actor.mariaMarks;
+    // 神数加成以「实际贡献」记账：先扣回上次神数贡献，再加上当前贡献。
+    // 若直接赋值（= mariaMarks）会抹掉热血契约等其他临时加成来源，
+    // 导致这些加成在玛利亚出牌后凭空消失。
+    const grant = actor.mariaGrant || 0;
+    const baseAtk = Math.max(0, (actor.tempAttack || 0) - grant);
+    const baseMag = Math.max(0, (actor.tempMagic || 0) - grant);
+    actor.tempAttack = baseAtk + actor.mariaMarks;
+    actor.tempMagic = baseMag + actor.mariaMarks;
+    actor.mariaGrant = actor.mariaMarks;
   }
   function modifySlashDamage(state, actor, target, amount, card) {
     if (actor?.ref !== "artina" || !isSlash(card) || card.virtual) return amount;
@@ -157,7 +164,7 @@ window.ArtinaMariaSkills = (() => {
     if (unit?.ref === "maria") {
       unit.mariaMarks = 0; unit.mariaUseCount = 0;
       unit.mariaNext = 1; unit.mariaTier = 1;
-      unit.tempAttack = 0; unit.tempMagic = 0;
+      unit.tempAttack = 0; unit.tempMagic = 0; unit.mariaGrant = 0;
       unit.mariaPhaseMarked = false;
       unit.usedMariaHonorBlessing = false;
     }
