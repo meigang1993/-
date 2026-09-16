@@ -72,6 +72,7 @@ const groups = Object.freeze({
     "test-sakura-risa-skills.js",
     "test-ophelia-skills.js",
     "test-new-character-skills.js",
+    "test-maria-blessing-tempattack.js",
     "test-new-character-relic-matrix.js",
     "test-skill-coverage.js",
     "test-skill-audit.js",
