@@ -8,13 +8,13 @@ window.BattleResponseUI = (() => {
   function counterChoices(b) {
     const p = b.manualCounter, actor = b.enemies.concat(b.allies).find(u => u.uid === p?.actorUid), target = b.allies.find(u => u.uid === p?.targetUid), tactic = p?.card;
     const backflips = (window.SakuraRisaSkills?.backflipCandidates?.(b.allies, actor, target, tactic) || []).map(x => ({ unit: x.unit, card: x.card, responseKind: "backflip" }));
-    const counters = b.allies.flatMap(unit => unit.hp > 0 ? unit.hand.filter(card => (card.counterTactic || window.WithererSkills?.canCounterTacticCard?.(unit, card) || window.GuardKellySkills?.canCounterTacticCard?.(unit, card)) && !card._pendingDraw).map(card => ({ unit, card, responseKind: "counter" })) : []);
+    const counters = b.allies.flatMap(unit => unit.hp > 0 ? unit.hand.filter(card => (card.counterTactic || card.ambush || window.WithererSkills?.canCounterTacticCard?.(unit, card) || window.GuardKellySkills?.canCounterTacticCard?.(unit, card)) && !card._pendingDraw).map(card => ({ unit, card, responseKind: card.ambush ? "ambush" : "counter" })) : []);
     return { actor, target, choices: [...backflips, ...counters] };
   }
   function manualCounterHand(b) {
     const { actor: source, choices } = counterChoices(b), selected = Math.max(0, Math.min(b.manualCounter?.selectedIndex || 0, choices.length - 1)), owner = choices[selected]?.unit || choices[0]?.unit || b.allies.find(unit => unit.hp > 0);
     if (!owner) return `<div class="hand-panel response-hand-panel"><span class="muted">等待响应牌。</span></div>`;
-    const cards = choices.map((choice, index) => { const label = choice.responseKind === "backflip" ? "后空翻" : choice.card.counterTactic ? choice.card.name : "视为看破"; return `<button class="manual-dodge-card hand-response-card ${index === selected ? "selected" : ""}" data-manual-counter-pick="${index}" aria-label="${U.esc(choice.unit.name)}的${U.esc(label)}"><small class="response-card-owner">${U.esc(choice.unit.name)} · ${U.esc(label)}</small>${U.card(choice.card, false, { actor: choice.unit })}</button>`; }).join("");
+    const cards = choices.map((choice, index) => { const label = choice.responseKind === "backflip" ? "后空翻" : (choice.card.counterTactic || choice.card.ambush) ? choice.card.name : "视为看破"; return `<button class="manual-dodge-card hand-response-card ${index === selected ? "selected" : ""}" data-manual-counter-pick="${index}" aria-label="${U.esc(choice.unit.name)}的${U.esc(label)}"><small class="response-card-owner">${U.esc(choice.unit.name)} · ${U.esc(label)}</small>${U.card(choice.card, false, { actor: choice.unit })}</button>`; }).join("");
     const controls = `<button data-manual-counter-use="1">使用响应牌</button><button class="ghost response-cancel" data-manual-counter-cancel="1">取消</button>`;
     return handPanel(owner, "响应牌", controls, cards, `${source?.name || "敌方"}使用了${b.manualCounter?.card?.name || "战术牌"}；响应牌来自标注角色。`);
   }
