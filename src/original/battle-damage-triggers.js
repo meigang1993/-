@@ -47,6 +47,9 @@ window.BattleDamageTriggers = (api) => {
     window.WithererSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, deps.draw, ctx.pushFloat);
     window.BondiSkills?.afterDamage?.(state, actor, target, card, hpLoss);
     window.BakarSkills?.afterDamage?.(state, actor, target, card, hpLoss);
+    window.RuinsCardSkills?.applyVulnerable?.(state, actor, target, card);
+    window.RuinsCardSkills?.stealAfterHit?.(state, actor, target, card);
+    window.RuinsCardSkills?.chainExtraTargets?.(state, actor, target, card, damage);
     window.BertisGerlotSkills?.refreshArrogance?.(state);
     window.BertisGerlotSkills?.afterAnyDeath?.(state);
     if (!hpLoss || !window.CardUtils?.isSingleKill?.(card)
