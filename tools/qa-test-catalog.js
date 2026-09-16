@@ -55,6 +55,10 @@ const groups = Object.freeze({
     "test-card-consistency.js",
     "test-formal-card-edge-contracts.js",
     "test-status-card-rules.js",
+    "test-ruins-card-effects.js",
+    "test-ruins-cards-practical.js",
+    "test-ruins-card-flag-driven.js",
+    "test-status-card-judgement-popup.js",
   ],
   characters: [
     "test-nanali-skills.js",
@@ -74,6 +78,7 @@ const groups = Object.freeze({
     "test-new-character-skills.js",
     "test-maria-blessing-tempattack.js",
     "test-new-character-relic-matrix.js",
+    "test-wendy-tutor-new-tactics.js",
     "test-skill-coverage.js",
     "test-skill-audit.js",
   ],
