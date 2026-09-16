@@ -49,7 +49,23 @@ window.BattleStatusCardTriggers = (() => {
   function triggerConfusion(state, unit) {
     const allies = (unit.side === "ally" ? state.battle?.allies : state.battle?.enemies) || [];
     const others = allies.filter(target => target !== unit && target.hp > 0);
-    const target = others.length ? window.GameRandom?.sample?.(others, state) || others[0] : unit;
+    if (!others.length) {
+      const amount = (unit.stats?.attack || 0) + (unit.tempAttack || 0);
+      unit.skipPlayPhase = true;
+      if (amount > 0) {
+        const before = unit.hp;
+        unit.hp = Math.max(0, unit.hp - amount);
+        const loss = before - unit.hp;
+        if (loss > 0) {
+          window.BattleSystem?.pushFloat?.(state.battle, unit.uid, "hp-loss", loss);
+          window.BattleLog.add(state,
+            `${unit.name} 的混乱触发，没有其他存活同伴，对自己造成${amount}点伤害并跳过出牌阶段。`);
+        }
+      }
+      window.BattleLines?.skill?.(state, unit, "混乱");
+      return;
+    }
+    const target = window.GameRandom?.sample?.(others, state) || others[0];
     if (!target) return;
     const virtual = window.CardUtils?.copyPlayable?.(
       { name: "杀（普攻）", type: "slash", power: 0, scale: "attack", suit: "" },
