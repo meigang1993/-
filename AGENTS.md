@@ -196,6 +196,31 @@ With clearing, the bonus sequence is a sawtooth `0,1,0,1,2,0` and the badge read
 `mark/target` where the mark is always below the target — that is intended, not a
 bug.
 
+### Settled design: 荣誉祝福 counts 玛利亚's current attack, including temp bonuses (2026-09-16)
+
+Honor Blessing used to read `actor.stats.attack` only, so 神数咒语's
+`tempAttack` never reached the team. The user tested the documented combo
+("stack marks to 2/3 or 3/4, then bless") and reported **"好像没有效果"** — the
+combo was real but the code ignored it, and the attribute panel showed
+`stats + temp` while the bless granted `stats`, so the numbers never reconciled.
+
+```
+实际攻击 = stats.attack + tempAttack      ← 两段式，面板显示这个
+bonus    = stats.attack + tempAttack      ← 祝福必须取同一口径（speed 无 temp）
+```
+
+Do **not** revert to `stats`-only. The old comment claimed counting temp bonuses
+would cause "无限膨胀"; that is wrong — inflation is already prevented by
+subtracting `self` (the previous bless bonus), and by the
+`usedMariaHonorBlessing` + `mariaBlessingSuits` double lock. Verified: casting
+twice keeps the team at the same total instead of stacking.
+
+Decay stays exact: the bonus is snapshotted at cast time and subtracted
+verbatim, so clearing 神数 marks at end of turn cannot corrupt it.
+
+Regression: `tools/test-maria-blessing-tempattack.js` (4 scenarios: no marks,
+with marks, repeat-cast no inflation, exact decay back to base).
+
 ### Settled design: test battles trial every skin, formal play keeps level art locked (2026-09-15)
 
 Two different contexts, two different rules — do not collapse them:
