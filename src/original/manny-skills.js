@@ -134,16 +134,6 @@ window.MannySkills = (() => {
     }
     api.damage(state, actor, stat(target, "attack"), "刺刀AK47", target, counter);
   }
-  function resolveCounterTrigger(state, target, actor, api) {
-    window.BattleLines?.skill(state, target, "刺刀AK47");
-    window.MannyGunSkinFX?.weaponAttack?.(state, target, actor, "ak47");
-    const counter = virtualCard("杀（普攻）", { mannyCounter: true });
-    if (window.MannyGunSkinFX?.active?.(target)) {
-      counter._playedFlightDone = true;
-      counter._playedTargetUid = actor.uid;
-    }
-    api.damage(state, actor, stat(target, "attack"), "刺刀AK47", target, counter);
-  }
   function markSpike(state, actor, target) { if (!alive(target) || target.spikeShell) return; target.spikeShell = { ownerUid: actor.uid, attack: stat(actor, "attack") }; markStatus(target, "刺弹"); window.MannyGunSkinFX?.spikeMark?.(state, actor, target); window.BattleLog.add(state, `${target.name} 被施加刺弹标记。`); }
   function explodeSpike(state, target, damage, directDamage) {
     const spike = target.spikeShell, owner = state.battle.allies.concat(state.battle.enemies).find(u => u.uid === spike?.ownerUid);
