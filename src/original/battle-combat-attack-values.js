@@ -11,8 +11,9 @@ window.BattleCombatAttackValues = api => {
       : statKey === "attack" ? attack
         : card.virtual ? attack
           : card._skill ? 0
-            : card.scale === "magic" ? magic
-              : card.type === "slash" ? attack : magic;
+            : card.hybridAttack && card.type === "tactic" ? attack + magic
+              : card.scale === "magic" ? magic
+                : card.type === "slash" ? attack : magic;
     let amount = card.doubleOnClash && clashOk
       ? (base + bonus) * 2 : base + bonus;
     if (card.armoredRam) amount = attack + (actor.block || 0);
