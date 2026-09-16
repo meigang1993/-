@@ -202,7 +202,7 @@
 @keyframes imperialGiantEye { 0%, 100% { opacity: 0; } 30%, 62% { opacity: 1; } }
 @keyframes imperialGiantMaw { from { opacity: 0; transform: translateY(6px) scale(.4); } 40% { opacity: .88; } to { opacity: 0; transform: translateY(-20px) scale(1.22); } }
 @keyframes imperialMistSoak { from { opacity: 0; scale: 1.32; } 40% { opacity: 1; scale: .95; } to { opacity: 0; scale: .78; } }
-@keyframes imperialScarClose { from { opacity: 0; scaleX(1.45); } 38% { opacity: 1; } to { opacity: 0; scaleX(.18); } }
+@keyframes imperialScarClose { from { opacity: 0; transform: scaleX(1.45); } 38% { opacity: 1; } to { opacity: 0; transform: scaleX(.18); } }
 @keyframes imperialPulseRing { from { opacity: .9; scale: .3; } to { opacity: 0; scale: 2.7; } }
 @keyframes imperialDebrisLift { from { opacity: 0; transform: translateY(10px) scale(.4); } 40% { opacity: 1; } to { opacity: 0; transform: translateY(-40px) scale(1.12); } }
 @keyframes imperialBloodRain { from { opacity: 0; transform: translateY(-22px) scale(.6); } 30% { opacity: 1; } to { opacity: 0; transform: translateY(66px) scale(1.1); } }
