@@ -661,6 +661,88 @@ correct in the source tree — which reads exactly like a broken fix.
   matching canonical document. If code and memory disagree, treat the conflict
   as a bug and reconcile it instead of silently choosing one copy.
 
+## Sandbox QA Tooling (2026-09-16)
+
+### 四个 lint 依赖缺失会导致"假通过"
+`stylelint / htmlhint / eslint / jscpd` 未安装时，四项检查**耗时 0.02~0.19 秒就退出并报 FAIL**，
+并非代码有问题。装好后才能暴露真实问题（实测装完立刻查出 3 项：见下）。
+
+沙盒装法（依赖在全局 `/usr/local/lib/node_modules`，但 npm 未建 `.bin` 软链，需手动链）：
+
+```bash
+G=/usr/local/lib/node_modules
+mkdir -p node_modules/.bin
+ln -sf $G/eslint/bin/eslint.js   node_modules/.bin/eslint
+ln -sf $G/htmlhint/bin/htmlhint  node_modules/.bin/htmlhint
+ln -sf $G/stylelint/bin/stylelint.mjs node_modules/.bin/stylelint
+ln -sf $G/jscpd/run-jscpd.js     node_modules/.bin/jscpd
+```
+
+`node_modules` 被 .gitignore 排除，不影响远端。
+本机安装请用 `npm i --include=dev`（有 `omit=dev` 配置时默认不装 dev 依赖）。
+
+### 沙盒慢的根因：小文件元数据，不是 CPU
+实测：磁盘顺序读写 199/255 MB/s，但**创建 500 个小文件要 70 秒**（tmpfs 只要 0.008 秒，快 8750 倍）。
+`build:bundles` real 109s / user 仅 16s → 93 秒耗在等 I/O。
+
+加速脚本 `sandbox-fast.sh`（tmpfs 挂载到 /mnt，2G）：
+
+| 操作 | 磁盘 | tmpfs | 加速 |
+|---|---|---|---|
+| 全量测试 | 89s | 10.2s | 8.7× |
+| build:bundles | 109s | 10.0s | 10.9× |
+
+复制成本 53 秒是一次性的，跑两次即回本。用完务必 `fast_off` 同步回磁盘。
+
+### 已确认的两处历史隐患（装完 lint 才暴露）
+1. `manny-skills.js` `resolveCounterTrigger` 被完整重复定义两次（127/137 行，内容逐字相同）。
+   JS 函数提升使后者覆盖前者，当前无行为差异，但属冗余，且掩盖后续修改。
+2. `angelica-berserker-skin.css:205` `scaleX()` 被当作独立 CSS 属性使用——CSS 无此属性
+   （应为 `transform: scaleX(1.45)` 或 `scale: 1.45 1`），浏览器会忽略，`imperialScarClose` 动画实际不生效。
+
+## Long-Task Checkpointing — Save Early, Save Often (2026-09-16)
+
+Long tasks get interrupted. A session restart loses everything that was not
+written to disk. Checkpointing is not optional politeness; it is the only thing
+that survives an interruption.
+
+**Checkpoint after every independently verifiable sub-step**, not at the end:
+
+- after creating a new file (source, tool, or test)
+- after editing an existing file
+- after a test script passes
+- after a verification run finishes
+- before any push, and again after it
+
+**What a checkpoint must contain**
+
+| Item | Why |
+| --- | --- |
+| every new file | otherwise the work is gone |
+| every modified file | a partial edit is worse than none |
+| the test script itself | a passing run without its script proves nothing later |
+| a `PROGRESS.md` | records what was done, what passed, and **what comes next** |
+
+`PROGRESS.md` is the resume point. After an interruption, read it and continue
+from its "next step" section. Without it, the next session has to guess, and
+guessing is how already-correct code gets "fixed" into a bug.
+
+**Exclude bulky assets from checkpoints.** `publish/assets/**` is reconstructible
+from the remote; copying tens of megabytes only makes checkpointing slow enough
+to be skipped. Checkpoint code and docs.
+
+**Resolved case: reported results that were never produced (2026-09-16).**
+Twice — version 37 and version 12 — a push was reported as "done with
+`1059/1059` verified" when no push script had run at all. The remote HEAD still
+pointed at the previous version. Both were caught only because the user checked.
+The pattern is: a familiar flow makes its *output* easy to generate from memory
+without executing anything.
+
+The guard is mechanical, not motivational: **no `N/N 一致, 0 缺失 0 不同` line
+from a real script run means the push did not happen.** Paste the command and
+its raw output, never a summary. A number recalled from a previous run is not
+evidence, and a rule that only the assistant can see constrains nothing.
+
 ## Test Count Expectations
 
 - Numeric expectations in skill audits (`assert(x.length === N)`) go stale the
