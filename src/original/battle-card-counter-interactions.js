@@ -12,11 +12,11 @@ window.BattleCardCounterInteractions = (deps, ctx, helpers) => {
       || []
     ).map(choice => ({ ...choice, responseKind: "backflip" }));
     const counters = units.flatMap(unit => unit.hp > 0
-      ? unit.hand.filter(card => (card.counterTactic
+      ? unit.hand.filter(card => (card.counterTactic || card.ambush
         || window.WithererSkills?.canCounterTacticCard?.(unit, card)
         || window.GuardKellySkills?.canCounterTacticCard?.(unit, card))
         && !card._pendingDraw)
-        .map(card => ({ unit, card, responseKind: "counter" }))
+        .map(card => ({ unit, card, responseKind: card.ambush ? "ambush" : "counter" }))
       : []);
     return [...backflips, ...counters];
   }
@@ -50,6 +50,16 @@ window.BattleCardCounterInteractions = (deps, ctx, helpers) => {
     }, visualHandBefore);
     window.NonokaLokiSkills?.afterCardResponded?.(
       state, unit, actor, response, { ...deps, useCard: ctx.useCard });
+    if (responseCard.ambush) {
+      const amount = (unit.stats?.attack || 0) + (unit.tempAttack || 0);
+      window.BattleLines?.skill?.(state, unit, "偷袭", actor);
+      log(state, `${unit.name} 使用偷袭，对${actor.name}造成${amount}点物理伤害。`);
+      const virtual = window.CardUtils?.copyPlayable?.(
+        { name: "杀（普攻）", type: "slash", power: 0, scale: "attack", suit: "" },
+        { temporary: true, void: true, noIntentCost: true, generatedBySkill: "偷袭" });
+      if (virtual) window.BattleCombat?.useVirtualKill?.(state, unit, actor, virtual);
+      return false;
+    }
     const mode = unit.side === "enemy" ? "自动" : "";
     log(state, `${unit.name} ${mode}使用看破，使${actor.name}的${card.name}失效。`);
     if (unit.ai === "guard_kelly") {
