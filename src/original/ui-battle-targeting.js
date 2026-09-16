@@ -48,7 +48,7 @@ window.GameUIBattleTargeting = (() => {
     } else if (card?.elranaHeal) allowed = unitData.side === actorSide(battle);
     else if (handChoice) allowed = unitData.uid === battle.activeUid;
     else if (card?.extract) allowed = unitData.side === "ally" && unitData.gender === "male";
-    else if (allyTarget) allowed = true;
+    else if (allyTarget) allowed = !card?.excludeSelf || unitData.uid !== battle.activeUid;
     else if (card?.comboAttack) allowed = comboTarget;
     else if (card?.borrowSlash) allowed = borrowTarget;
     else if (handInteraction) allowed = unitData.hp > 0
