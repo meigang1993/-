@@ -37,6 +37,11 @@ window.GameUIInfo = (U) => {
       ? `<span class="green-hat-badge dome-suit-badge" title="蓄力子弹：已记录${suits.join("、")}，下一张实体单体【杀】伤害×${1 + suits.length}">蓄力 ${suits.join("")}</span>`
       : "";
   }
+  function vulnerableMark(u) {
+    return u?.vulnerable
+      ? `<span class="green-hat-badge vulnerable-badge" title="脆弱标记：受到的伤害提升50%">脆弱</span>`
+      : "";
+  }
   function mariaNumberMark(u) {
     if (u?.ref !== "maria") return "";
     // 显示「标记数/目标数」：本阶段使用的牌数达到目标数时摸等量牌，
@@ -171,5 +176,5 @@ window.GameUIInfo = (U) => {
     const stats = u?.id && window.RelicSystem ? RelicSystem.statsOf(state, u.id) : null;
     return infoPanel(u, state.infoTab, stats);
   }
-  return { greenHatMark, foodMark, rageMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, mariaNumberMark, mariaBlessingMark, findInfoUnit, infoPanel, infoPanelForState };
+  return { greenHatMark, foodMark, rageMark, vulnerableMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, mariaNumberMark, mariaBlessingMark, findInfoUnit, infoPanel, infoPanelForState };
 };
