@@ -3,7 +3,7 @@ window.BattleCombatTargeting = (deps, hooks) => {
     sameSideUnits, opposingUnits, effectiveCard, needsSingleHand, needsHandChoice,
     canSelectHandCost, hasNoIntentCost, canPlay,
   } = window.BattleCardPlayability(deps);
-  const targetOf = (b, actor, source, targetUid) => { const card = effectiveCard(actor, source), uid = Array.isArray(targetUid) ? targetUid[0] : targetUid; return card?.mimicVoice || card?.discardTarget || card?.stealCard ? b.allies.concat(b.enemies).find(u => u.uid === uid && u.uid !== actor?.uid && u.hp > 0) : card?.allyTarget ? sameSideUnits(b, actor).find(u => u.uid === uid) : card?.targetless ? actor : opposingUnits(b, actor).find(u => u.uid === uid); };
+  const targetOf = (b, actor, source, targetUid) => { const card = effectiveCard(actor, source), uid = Array.isArray(targetUid) ? targetUid[0] : targetUid; return card?.mimicVoice || card?.discardTarget || card?.stealCard ? b.allies.concat(b.enemies).find(u => u.uid === uid && u.uid !== actor?.uid && u.hp > 0) : card?.allyTarget ? sameSideUnits(b, actor).find(u => u.uid === uid && (!card.excludeSelf || u.uid !== actor?.uid)) : card?.targetless ? actor : opposingUnits(b, actor).find(u => u.uid === uid); };
   const onlySelfAlive = (b, actor) => sameSideUnits(b, actor).filter(u => u.hp > 0).length === 1;
   const comboPartner = (b, actor) => sameSideUnits(b, actor).find(u => u.uid === b?.comboPartnerUid && u.uid !== actor?.uid && u.hp > 0);
   const soulChainNeed = (b, actor) => Math.min(2, opposingUnits(b, actor).filter(u => u.hp > 0).length);
