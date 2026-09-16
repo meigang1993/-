@@ -1,15 +1,15 @@
 window.GameDataRuinsContent = {
   cards: [
-    { name: "拼杀", price: 1200, type: "slash", scale: "attack", ignoreResponse: true, suits: { "♠": 1, "♥": 1 }, text: "指定一名敌方角色，造成等同于攻击力的伤害；此牌不可被响应。" },
-    { name: "魔之连杀", price: 1400, type: "slash", scale: "magic", attackType: "magic", fixedRepeats: 2, suits: { "♣": 1, "♦": 1 }, text: "指定一名敌方角色，对其连续造成2次等同于魔力的魔法伤害。" },
-    { name: "魅惑术", price: 1200, type: "obstacle", statusKey: "confusion", suits: { "♥": 1, "♦": 1 }, text: "令一名敌方角色生成一张【混乱】状态牌。" },
-    { name: "魅杀", price: 1400, type: "slash", scale: "magic", attackType: "magic", suits: { "♠": 1, "♣": 1 }, text: "指定一名敌方角色，造成等同于魔力的魔法伤害。" },
-    { name: "偷袭", price: 1100, type: "response", ambush: true, suits: { "♠": 1, "♣": 1 }, text: "敌方使用战术牌后，对其造成攻击力物理伤害。" },
-    { name: "冰冻术", price: 1500, type: "obstacle", statusKey: "freeze", suits: { "♥": 1, "♦": 1 }, text: "指定敌方一名角色，使其手牌区生成一张【冰冻】状态牌；判定阶段进行判定，若结果为♦方块或♣梅花，本回合无法使用【杀】牌。" },
-    { name: "流星杀", price: 1200, type: "slash", scale: "magic", attackType: "magic", sweep: true, targetless: true, suits: { "♥": 1, "♦": 1 }, text: "对所有敌方角色造成魔力魔法伤害。" },
-    { name: "吸魔杀", price: 1600, type: "slash", scale: "magic", attackType: "magic", stealCard: true, suits: { "♣": 1, "♠": 1 }, text: "造成魔法伤害后获得目标一张牌。" },
-    { name: "物资私分", price: 1700, type: "consume", allyTarget: true, drawCards: 3, suits: { "♥": 1, "♣": 1 }, text: "指定其他友方角色，双方各摸3张牌。" },
-    { name: "枪林弹雨", price: 1400, type: "tactic", hybridAttack: true, sweep: true, targetless: true, suits: { "♠": 1, "♦": 1 }, text: "对所有敌方角色造成基础1点加攻击力与魔力的复合伤害。" },
+    { name: "拼杀", enemy: "mech_ai_dragon", price: 1200, type: "slash", scale: "attack", clashResponse: true, suits: { "♠": 1, "♥": 1 }, text: "指定一名敌方角色，造成等同于攻击力的伤害；若你的【杀】牌数量多于该角色，此牌不可被响应。" },
+    { name: "魔之连杀", enemy: "mech_ai_dragon", price: 1400, type: "slash", scale: "magic", attackType: "magic", chainBySlash: true, suits: { "♣": 1, "♦": 1 }, text: "指定一名敌方角色，造成等同于魔力值的伤害；根据你【杀】牌数量，额外随机指定等量目标。" },
+    { name: "魅惑术", enemy: "witherer_1312", price: 1200, type: "obstacle", statusKey: "confusion", suits: { "♥": 1, "♦": 1 }, text: "令一名敌方角色生成一张【混乱】状态牌。" },
+    { name: "魅杀", enemy: "witherer_1312", price: 1400, type: "slash", scale: "magic", attackType: "magic", vulnerable: true, suits: { "♠": 1, "♣": 1 }, text: "指定一名敌方角色，造成等同于魔力值的魔法伤害，并施加脆弱标记（受到伤害+50%）。" },
+    { name: "偷袭", enemy: "hilde", price: 1100, type: "response", ambush: true, suits: { "♠": 1, "♣": 1 }, text: "敌方使用战术牌后，对其造成攻击力物理伤害。" },
+    { name: "冰冻术", enemy: "hilde", price: 1500, type: "obstacle", statusKey: "freeze", suits: { "♥": 1, "♦": 1 }, text: "指定敌方一名角色，使其手牌区生成一张【冰冻】状态牌；判定阶段进行判定，若结果为♦方块或♣梅花，本回合无法使用【杀】牌。" },
+    { name: "流星杀", enemy: "attack_helicopter", price: 1200, type: "slash", scale: "magic", attackType: "magic", sweep: true, targetless: true, suits: { "♥": 1, "♦": 1 }, text: "对所有敌方角色造成魔力魔法伤害。" },
+    { name: "吸魔杀", enemy: "attack_helicopter", price: 1600, type: "slash", scale: "magic", attackType: "magic", stealCard: true, suits: { "♣": 1, "♠": 1 }, text: "造成魔法伤害后获得目标一张牌。" },
+    { name: "物资私分", enemy: "armored_carrier", price: 1700, type: "consume", allyTarget: true, excludeSelf: true, drawCards: 3, allyDrawCards: 3, suits: { "♥": 1, "♣": 1 }, text: "指定我方其他一名角色，双方各摸3张牌。" },
+    { name: "枪林弹雨", enemy: "armored_carrier", price: 1400, type: "tactic", power: 1, hybridAttack: true, sweep: true, targetless: true, suits: { "♠": 1, "♦": 1 }, text: "对所有敌方角色造成基础1点加攻击力与魔力的复合伤害；敌方可用【闪】抵消。" },
   ],
   relics: {
     "推进器": { icon: "推", stats: {}, effect: "根据你使用牌指定的目标数摸等量牌。", lore: "世界贵族军的推进设备。", source: "废墟沙城普通怪物", enemy: "noble_soldier" },
@@ -34,10 +34,20 @@ if (window.GameDataCards) {
   });
   const cards = window.GameDataRuinsContent.cards.map(cardEntry);
   window.GameDataCards.eliteCards.push(...cards);
+  // 注意：本文件可能先于 GameData 初始化被加载，必须整体可选链，
+  // 只写 window.GameData.enemies || {} 会在 window.GameData 未定义时抛错。
+  const enemyName = id => Object.values(window.GameData?.enemies || {})
+    .flat().find(item => item.id === id)?.name || id;
   window.GameDataCards.cardCodex.push(...cards.map(card => ({
     ...card, suitsText: Object.entries(card.suits).map(([s, n]) => `${s}×${n}`).join(" "),
-    source: `废墟沙城·${card.name}`,
+    source: `废墟沙城·${enemyName(card.enemy)}`,
   })));
+  // 按敌人 ID 分组登记：解锁遍历的是 battle.defeatedEnemyIds（敌人ID），
+  // 不能挂副本ID ruins_sand_city，否则 10 张牌永远不会解锁。
   window.GameDataCards.eliteUnlocks ||= {};
-  window.GameDataCards.eliteUnlocks.ruins_sand_city = cards.map(card => card.name);
+  cards.forEach(card => {
+    if (!card.enemy) return;
+    const list = window.GameDataCards.eliteUnlocks[card.enemy] ||= [];
+    if (!list.includes(card.name)) list.push(card.name);
+  });
 }
