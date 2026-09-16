@@ -287,6 +287,7 @@
     "ruins-dragon-skills.js",
     "ruins-witherer-skills.js",
     "ruins-elite-skills.js",
+    "ruins-card-skills.js",
     "enemy-skills.js",
     "abe-mike-skills.js",
     "underwater-train-control-skills.js",
