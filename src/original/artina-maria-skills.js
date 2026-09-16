@@ -105,11 +105,14 @@ window.ArtinaMariaSkills = (() => {
     discarded.forEach(item => window.BattleCards?.put?.(
       state.battle, actor, item, "discard", { showDiscard: true }));
     const suitList = discarded.map(item => item.suit);
-    // 加成必须基于玛利亚的「基础」属性：若沿用已被上一次祝福抬高的
-    // stats，连续两回合施放会把加成重复计入，全队属性无限膨胀。
+    // 加成基于玛利亚的「当前」属性（stats + 神数咒语等临时加成），与属性面板
+    // 显示的数字一致；减掉上一次祝福的 bonus 可避免连续施放重复计入、无限膨胀。
+    // 速度没有临时加成，仍只取 stats。
     const self = actor.mariaBlessing;
-    const bonus = { attack: (actor.stats?.attack || 0) - (self?.attack || 0),
-      magic: (actor.stats?.magic || 0) - (self?.magic || 0),
+    const curAttack = (actor.stats?.attack || 0) + (actor.tempAttack || 0);
+    const curMagic = (actor.stats?.magic || 0) + (actor.tempMagic || 0);
+    const bonus = { attack: curAttack - (self?.attack || 0),
+      magic: curMagic - (self?.magic || 0),
       speed: (actor.stats?.speed || 0) - (self?.speed || 0) };
     (state.battle.allies || []).filter(alive).forEach(unit => {
       const previous = unit.mariaBlessing;
