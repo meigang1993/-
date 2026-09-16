@@ -81,6 +81,11 @@ window.BattleCombatCardEffects = api => {
       return run(() => { drawn = deps.draw(actor, card.drawCards, state.battle); }, () => {
         const drawText = window.BattleDrawFeedback.action(actor, card.drawCards, drawn);
         window.BattleLog.add(state, `${actor.name} 使用${card.name}，${drawText}。`);
+        if (card.allyDrawCards && target && target !== actor && target.hp > 0) {
+          const allyDrawn = deps.draw(target, card.allyDrawCards, state.battle);
+          window.BattleLog.add(state,
+            `${target.name} 也${window.BattleDrawFeedback.action(target, card.allyDrawCards, allyDrawn)}。`);
+        }
         specials.repeatTactic(state, actor, target, card);
       });
     }
@@ -90,7 +95,13 @@ window.BattleCombatCardEffects = api => {
     });
     if (card.teamHealPct) return run(() => specials.healTeam(state, actor, card, target));
     if (card.discardTarget) return repeatAfterUnlocked(state, actor, target, card, specials.discardTarget(state, actor, target, card));
-    if (card.stealCard) return repeatAfterUnlocked(state, actor, target, card, specials.stealCard(state, actor, target, card));
+    if (card.stealCard) {
+      // 杀牌类（如吸魔杀）需先走完整伤害/响应流程，偷牌延后到受击结算后，
+      // 不能在这里直接 return，否则 attack.resolve 不会执行、完全不造成伤害。
+      window.BattleCardStealApi ||= (...args) => specials.stealCard(...args);
+      if (deps.isKillCard(card)) return false;
+      return repeatAfterUnlocked(state, actor, target, card, specials.stealCard(state, actor, target, card));
+    }
     if (card.borrowSlash) {
       specials.borrowSlash(state, actor, target, card);
       if (!state.battle?.locked) specials.repeatTactic(state, actor, target, card);
