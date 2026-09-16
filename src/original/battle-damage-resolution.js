@@ -64,7 +64,10 @@ window.BattleDamageResolution = ({
       state, target, amount, effectiveCard) ?? amount;
     source = window.NonokaLokiSkills?.sourceLabel?.(
       state.battle, actor, source) || source;
+    amount = window.RuinsCardSkills?.modifyIncomingDamage?.(
+      state, target, amount, effectiveCard) ?? amount;
     amount = amount > 0 ? Math.max(1, Math.round(amount)) : 0;
+    window.RuinsCardSkills?.beforeResponseCheck?.(state, actor, target, effectiveCard);
     queueAttackAnim(state, actor, target, effectiveCard);
     if (deps.isKillCard(effectiveCard) && effectiveCard?.ignoreResponse) {
       window.BattleLog.add(state,
