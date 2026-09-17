@@ -24,7 +24,7 @@ window.AppHallBindings = (() => {
         }
       }, { persist: false });
     });
-    document.querySelectorAll("[data-codex-card]").forEach(b => { b.onclick = () => updateModalState(() => { getState().selectedCodexCard = b.dataset.codexCard; }, { persist: false }); });
+    document.querySelectorAll("[data-codex-card]").forEach(b => { b.onclick = () => preserveClickedCardScroll(b, "data-codex-card", b.dataset.codexCard, () => updateModalState(() => { getState().selectedCodexCard = b.dataset.codexCard; }, { persist: false })); });
     document.querySelector(".card-codex-overlay")?.addEventListener("click", e => {
       if (e.target !== e.currentTarget) return;
       updateModalState(() => { getState().cardCodex = false; }, { persist: false });
