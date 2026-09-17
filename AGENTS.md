@@ -84,6 +84,33 @@ what follows instead is an explanation of why the output was not saved. Compare
 the remote commit timestamp and message against what was claimed. Self-promises
 have already failed three times; verification from outside has caught all three.
 
+## Sandbox DNS — Run `fix_dns.sh` First On Every Session
+
+The sandbox's default nameservers `183.60.83.19` / `183.60.82.98` drop roughly
+80% of UDP queries. Measured 2026-09-17: 6 queries → 1 success on each.
+
+Because `resolv.conf` servers are tried in order with a 5s timeout and retries,
+a failed lookup burns up to ~20s before failing. It surfaces as:
+
+```
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+```
+
+and it is **intermittent** — the same command passes on retry, which makes it
+look like flaky network rather than a broken resolver.
+
+Fix — put public DNS first:
+
+```bash
+source /data/workspace/fix_dns.sh     # idempotent, self-checks
+```
+
+Measured after: 30/30 successful, median 8ms (was max 20s). `urllib`, which
+failed most often, went to 10/10 at ~626ms per call.
+
+Do not confuse this with a real push failure. A DNS failure means the request
+never left the sandbox; nothing was written. Retry after `fix_dns.sh`.
+
 ## Git / LFS Operations
 
 - Git branch names cannot contain spaces. GitHub rejects
