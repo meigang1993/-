@@ -7,6 +7,13 @@ window.BattleAITactics = (() => {
         !card._pendingDraw && window.BattleStatusCards?.isStatus?.(card)));
   const statusTarget = (units, card) => units.find(unit =>
     unit.hp > 0 && !window.BattleStatusCards?.has?.(unit, card.statusKey));
+  function hybridDamageScore(ctx, actor, card, aliveFoes) {
+    const count = (aliveFoes || []).length;
+    if (!count) return 0;
+    const damage = (card.power || 0) + ctx.stat(actor, "attack") + ctx.stat(actor, "magic");
+    if (damage <= 0) return 0;
+    return 58 + damage * count * 2;
+  }
   function tacticScore(ctx, actor, card, team, foes, aliveFoes, ensureSlash) {
     const { alive, hpPct, visible, handLimit, healTarget, lowHandAllies, withHand, hasDodge, keyCount, stat, slashScore, slashTarget, magicBulletTarget, borrowPartner, otherAlly, comboPartner } = ctx;
     if (!["tactic", "consume", "obstacle"].includes(card.type)) return 0;
@@ -27,6 +34,7 @@ window.BattleAITactics = (() => {
     if (card.drawCards) return 66 + Math.max(0, handLimit(actor) - visible(actor));
     if (card.bloodletting) { const intentCap = Math.min(99, Math.max(1, (actor.stats?.bloodlust || 1) + (actor.intentMaxBonus || 0))), needsIntent = (actor.intent || 0) < intentCap && ((actor.intent || 0) <= 0 || actor.playedSlashThisTurn); return actor.hp > Math.max(1, Math.floor(actor.maxHp * .25)) && needsIntent ? 72 : 0; }
     if (card.armSelf) return (actor.block || 0) < stat(actor, "attack") ? 70 : 24;
+    if (card.hybridAttack) return hybridDamageScore(ctx, actor, card, aliveFoes);
     return 0;
   }
   function duelTarget(ctx, actor, foes) { return ctx.topBy(ctx.alive(foes).filter(u => !ctx.hasBasicKill(u) || ctx.hasBasicKill(actor)), u => (ctx.hasBasicKill(u) ? -20 : 20) - ctx.visible(u)); }
@@ -42,6 +50,7 @@ window.BattleAITactics = (() => {
     return target ? { card, target, score: best.score } : null;
   }
   function tacticTarget(ctx, actor, card, team, foes) {
+    if (card.allyTarget && card.excludeSelf) return ctx.otherAlly(actor, team) || actor;
     if (card.heal || card.healPct || card.teamHealPct || card.drawTeam || card.drawCards || card.charge || card.bloodletting || card.armSelf || card.demonInvasion) return (card.heal || card.healPct) ? (ctx.healTarget(team) || actor) : actor;
     if (card.statusKey) return statusTarget(ctx.alive(foes), card);
     if (card.discardTarget || card.stealCard) return statusHolder(team, actor) || ctx.withHand(foes);
