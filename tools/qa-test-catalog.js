@@ -3,6 +3,8 @@ const path = require("path");
 
 const standalone = Object.freeze([
   "test-frame-performance.js",
+  "test-ruins-layout-live.js",
+  "test-ai-ruins-cards-live.js",
 ]);
 
 const groups = Object.freeze({
@@ -34,6 +36,7 @@ const groups = Object.freeze({
     "test-receipt-ledgers.js",
     "test-bounty-system.js",
     "test-dungeon-matrix.js",
+    "test-ruins-sand-city-layout.js",
   ],
   battle: [
     "test-battle-ai-targeting.js",
@@ -57,6 +60,7 @@ const groups = Object.freeze({
     "test-status-card-rules.js",
     "test-ruins-card-effects.js",
     "test-ruins-cards-practical.js",
+    "test-ai-ruins-cards.js",
     "test-ruins-card-flag-driven.js",
     "test-status-card-judgement-popup.js",
   ],
