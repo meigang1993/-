@@ -21,6 +21,8 @@ const groups = Object.freeze({
     ["progression-equipment", "preview-progression-equipment.spec.js"],
     ["progression-skins", "preview-progression-skins.spec.js"],
     ["ruins-unlock", "preview-ruins-unlock.spec.js"],
+    ["card-codex-scroll", "card-codex-scroll.spec.js"],
+    ["relic-codex-size", "relic-codex-size.spec.js"],
     ["unlocks", "preview-unlocks.spec.js"],
   ],
   "battle-core": [
