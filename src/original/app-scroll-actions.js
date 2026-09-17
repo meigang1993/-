@@ -38,7 +38,7 @@ function preserveInteractionScroll(done) {
   }
 }
 function preserveClickedCardScroll(card, attr, value, done) {
-  const scrollSel = ".modal-card,.villa-page-scroll,.content-panel,.codex-scroll";
+  const scrollSel = ".modal-card,.villa-page-scroll,.content-panel,.codex-scroll,.card-codex-grid";
   const scroller = card?.closest?.(scrollSel);
   const beforeTop = scroller
     ? card.getBoundingClientRect().top - scroller.getBoundingClientRect().top : 0;
