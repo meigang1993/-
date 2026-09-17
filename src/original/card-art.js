@@ -47,6 +47,8 @@ window.CardArt = (() => {
     "眩晕": "./assets/generated/cards/card-art-stun-status-new.62b67f60.webp",
     "封魔": "./assets/generated/cards/card-art-magic-seal-status.d02d4678.webp",
     "粘液": "./assets/generated/cards/card-art-slime-status.7f86dfcc.webp",
+    "混乱": "./assets/generated/cards/card-art-confusion-status.91da7313.webp",
+    "冰冻": "./assets/generated/cards/card-art-freeze-status.89522a97.webp",
     "拼杀": "./assets/generated/cards/card-art-clash.6898834c.webp",
     "魔之连杀": "./assets/generated/cards/card-art-magic-multi-kill.fc4aef40.webp",
     "魅惑术": "./assets/generated/cards/card-art-charm.b510209d.webp",
