@@ -77,7 +77,19 @@
 .battle-skin-option b, .battle-skin-option span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .codex-overlay { position: absolute; inset: 0; z-index: 24; display: grid; place-items: center; padding: 24px; border-radius: 30px; background: rgba(4,0,9,.58); backdrop-filter: blur(7px); }
 .codex-panel { margin-top: 14px; padding: 14px; border-radius: 18px; background: rgba(0,0,0,.24); border: 1px solid rgba(255,215,166,.2); }
-.relic-codex-pop { position: relative; width: min(820px, 94%); max-height: 84%; overflow: auto; overscroll-behavior: contain; padding: 18px; background: linear-gradient(145deg, rgba(38,7,52,.98), rgba(93,20,72,.96)); box-shadow: 0 26px 76px rgba(0,0,0,.62); }
+.relic-codex-pop { position: relative; width: min(980px, 96vw); height: 92vh; max-height: 92vh; overflow: hidden; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 12px; padding: 18px; background: linear-gradient(145deg, rgba(38,7,52,.98), rgba(93,20,72,.96)); box-shadow: 0 26px 76px rgba(0,0,0,.62); }
+/* 饰品图鉴：解除祖先 contain/overflow，否则浮层会被 .content-panel/.villa-hall 的
+   contain: layout paint 缩到面板高度内（与卡牌图鉴同一处坑）。 */
+.codex-overlay:has(.relic-codex-pop) { position: fixed; inset: 0; z-index: 50; border-radius: 0; pointer-events: auto; }
+.main-grid:has(.relic-codex-pop),
+.content-panel:has(.relic-codex-pop),
+.villa-hall:has(.relic-codex-pop),
+.villa-modal:has(.relic-codex-pop),
+.modal-card:has(.relic-codex-pop) { contain: none; overflow: visible; }
+.villa-modal:has(.relic-codex-pop) { inset: 0; z-index: 60; }
+.modal-card:has(.relic-codex-pop) { width: 100%; max-width: none; height: 100%; max-height: none; }
+.relic-codex-pop .codex-grid { flex: 1 1 auto; min-height: 240px; max-height: none; }
+.relic-codex-pop .codex-detail { flex: 0 0 auto; }
 .card-codex-pop .codex-head h2 { margin: 0; color: #ffd88d; }
 .relic-codex-pop h3 { margin-right: 42px; color: #ffd88d; }
 .codex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 10px; max-height: min(34vh, 300px); overflow-y: auto; overscroll-behavior: contain; align-content: start; padding-right: 4px; }
