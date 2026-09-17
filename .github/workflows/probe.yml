@@ -4,12 +4,26 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
+      - uses: actions/checkout@v4
       - name: probe yb.woa.com
         run: |
-          echo "=== DNS ==="
-          getent hosts yb.woa.com || echo "DNS FAIL"
-          echo "=== HTTP ==="
-          curl -sS -o /tmp/p.bin -w "http=%{http_code} size=%{size_download} time=%{time_total}\n" --max-time 20 "http://yb.woa.com/25n8hDBOwls" || echo "CURL FAILED exit=$?"
-          echo "=== HEAD bytes ==="
-          head -c 16 /tmp/p.bin | xxd | head -2 || true
+          mkdir -p probe
+          {
+            echo "=== DNS ==="
+            getent hosts yb.woa.com || echo "DNS_FAIL"
+            echo "=== HTTP GET ==="
+            curl -sS -o probe/p.bin -w "http=%{http_code} size=%{size_download} time=%{time_total}\n" --max-time 20 "http://yb.woa.com/25n8hDBOwls" || echo "CURL_FAIL exit=$?"
+            echo "=== magic ==="
+            head -c 16 probe/p.bin 2>/dev/null | xxd | head -1 || echo "NOFILE"
+            ls -l probe/p.bin 2>/dev/null || echo "NOFILE"
+          } > probe/result.txt 2>&1
+      - name: commit result
+        run: |
+          git config user.name probe
+          git config user.email probe@x
+          git add probe/result.txt
+          git commit -m "probe: egress result" || echo "NO_CHANGE"
+          git push
