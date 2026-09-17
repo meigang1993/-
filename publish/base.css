@@ -103,13 +103,23 @@ body.dungeon-mode .main-grid { transform: translateY(-18px); padding-bottom: 20p
 .codex-card.locked { opacity: .5; filter: grayscale(1); }
 .codex-card.locked span { filter: blur(2px); }
 .codex-card.active { outline: 2px solid #ffc767; box-shadow: 0 0 18px rgba(255,199,103,.42); }
-.codex-card-detail { margin-top: 12px; display: grid; gap: 6px; padding: 14px; border-radius: 16px; background: rgba(0,0,0,.18); border: 1px solid rgba(255,215,166,.22); }
-.codex-card-detail b { color: #ffe4f3; font-size: 18px; }
-.card-codex-pop { position: relative; width: min(920px, 94%); max-height: 84%; overflow: hidden; display: flex; flex-direction: column; gap: 12px; padding: 18px; background: linear-gradient(145deg, rgba(38,7,52,.98), rgba(93,20,72,.96)); box-shadow: 0 26px 76px rgba(0,0,0,.62); }
+.codex-card-detail { margin-top: 12px; display: grid; gap: 6px; padding: 16px 18px; border-radius: 16px; background: rgba(0,0,0,.18); border: 1px solid rgba(255,215,166,.22); }
+.codex-card-detail b { color: #ffe4f3; font-size: 20px; }
+.codex-card-detail p { font-size: 14px; line-height: 1.7; }
+.card-codex-pop { position: relative; width: min(1180px, 96vw); height: 92vh; max-height: 92vh; overflow: hidden; display: flex; flex-direction: column; gap: 12px; padding: 22px; background: linear-gradient(145deg, rgba(38,7,52,.98), rgba(93,20,72,.96)); box-shadow: 0 26px 76px rgba(0,0,0,.62); }
 .codex-overlay.card-codex-overlay { position: fixed; inset: 0; z-index: 50; border-radius: 0; pointer-events: auto; }
 .card-codex-pop .codex-head { flex: 0 0 auto; }
-.card-codex-pop .card-codex-grid { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; }
-.card-codex-pop .codex-card-detail { flex: 0 0 auto; max-height: 25vh; overflow-y: auto; overscroll-behavior: contain; }
+.card-codex-pop .card-codex-grid { flex: 1 1 auto; min-height: 240px; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; }
+/* 图鉴展开时解除祖先的 contain/overflow/clip，否则浮层的 fixed 定位会被
+   .content-panel/.villa-hall 的 contain: layout paint 缩到面板高度内。 */
+.main-grid:has(.card-codex-overlay),
+.content-panel:has(.card-codex-overlay),
+.villa-hall:has(.card-codex-overlay),
+.villa-modal:has(.card-codex-overlay),
+.modal-card:has(.card-codex-overlay) { contain: none; overflow: visible; }
+.villa-modal:has(.card-codex-overlay) { inset: 0; z-index: 60; }
+.modal-card:has(.card-codex-overlay) { width: 100%; max-width: none; height: 100%; max-height: none; }
+.card-codex-pop .codex-card-detail { flex: 0 0 auto; max-height: 34vh; overflow-y: auto; overscroll-behavior: contain; }
 .drop-source { color: #ffc767; font-weight: 800; }
 .boot-card { height: 100%; min-height: 260px; display: grid; place-content: center; justify-items: center; gap: 12px; color: #ffe4f3; }
 .boot-card b { font-size: 20px; text-shadow: 0 0 16px rgba(255,92,171,.7); }
