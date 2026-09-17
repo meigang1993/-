@@ -111,6 +111,35 @@ failed most often, went to 10/10 at ~626ms per call.
 Do not confuse this with a real push failure. A DNS failure means the request
 never left the sandbox; nothing was written. Retry after `fix_dns.sh`.
 
+## Sandbox Playwright — Run `setup-playwright.sh` Before Browser Tests
+
+Playwright looks for browsers at `/root/.cache/ms-playwright`, but in this
+sandbox they live at `/data/workspace/.pw-browsers`. Without the env var,
+launch fails:
+
+```
+browserType.launch: Executable doesn't exist at
+/root/.cache/ms-playwright/chromium_headless_shell-1228/...
+```
+
+The trap: some older scripts `export PLAYWRIGHT_BROWSERS_PATH=...` internally,
+so browser tests appear to work — until a session runs one that does not, and
+it fails in a way that reads like "browser not installed".
+
+Fix — symlink the default path to the real one (preferred over the env var,
+because it works for every entry point: `npm test`, `node -e`, CI):
+
+```bash
+bash tools/setup-playwright.sh     # idempotent; self-checks by launching
+```
+
+Note `/root/.cache` sits on the container layer and may be reset between
+sessions. If the self-check fails, re-run the script.
+
+Do not "fix" this by deleting `.pw-browsers` or reinstalling — there is only
+one browser copy (chromium 152.0.7977.0, headless shell 1228) and it is
+required by the test suite.
+
 ## Git / LFS Operations
 
 - Git branch names cannot contain spaces. GitHub rejects
