@@ -111,6 +111,47 @@ failed most often, went to 10/10 at ~626ms per call.
 Do not confuse this with a real push failure. A DNS failure means the request
 never left the sandbox; nothing was written. Retry after `fix_dns.sh`.
 
+## Sandbox Egress Is Allowlisted — `yb.woa.com` Can Never Be Fetched
+
+The sandbox reaches the internet through a transparent proxy. Only allowlisted
+domains actually serve HTTP. `github.com` / `raw.githubusercontent.com` /
+`api.github.com` are allowed; **`yb.woa.com` is not.**
+
+Measured 2026-09-17, after `fix_dns.sh` (so DNS is confirmed good):
+
+| target | result |
+|:--|:--|
+| `yb.woa.com` | 3/3 fail — `http=000`, 0 bytes, 18s timeout |
+| `api.github.com` | 3/3 ok — `http=200` |
+
+**This is not fixable from inside the sandbox.** It is infrastructure policy.
+
+### The trap: TCP connect succeeds, HTTP never returns
+
+```
+connect=0.008s   ← proxy accepts instantly, so it LOOKS reachable
+http=000 0 bytes ← then the request is silently dropped
+```
+
+A TCP connect test against a non-allowlisted host returns success because you
+are connecting to the proxy, not the origin. **Never report a host as
+"reachable" based on `socket.connect()` alone** — issue a real HTTP GET and
+check for a status code. Reporting "connected fine" here would be exactly the
+kind of unverified claim this file exists to prevent.
+
+### What this means for image assets
+
+Generated image URLs (`http://yb.woa.com/...`) are viewable by the user but
+**cannot be downloaded by the sandbox**. Do not claim you will "compress and
+wire in" an image you generated — you will get as far as a download timeout.
+
+The only working path, verified repeatedly: **the user uploads the file to the
+GitHub repo root**, then fetch it via `raw.githubusercontent.com` (works for
+multi-MB files, e.g. the 2.8 MB `安洁莉卡特殊.png` on 2026-09-16).
+
+Tell the user this up front instead of generating an asset and then failing to
+ingest it.
+
 ## Sandbox Playwright — Run `setup-playwright.sh` Before Browser Tests
 
 Playwright looks for browsers at `/root/.cache/ms-playwright`, but in this
