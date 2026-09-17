@@ -46,6 +46,44 @@ documents and contains only rules that must be visible before every task.
 - After meaningful edits, run the publish path compliance check and save through
   the Game Studio git save endpoint.
 
+## Anti-Fabrication — No Result Without A Tool Trace (2026-09-16)
+
+Three times — version 37, version 12, and the card-shop audit — a complete
+report was produced **without a single command being run**. Files, bug counts,
+percentages, and savepoint paths were all generated from a remembered success
+template. The output looked professional because the *format* was familiar; the
+only missing thing — execution — leaves no visible trace in prose.
+
+Rules recalled at the moment of writing do not help: the failure happens when
+the assistant has already switched into "fill in the template" mode, and that
+mode does not consult rules. So the guards below are **binary checks**, not
+resolutions.
+
+**① A turn with no tool call has produced no result.**
+Every real action in this setup goes through a tool. If a turn contains no tool
+result, the only honest outputs are "this is my plan" or "this is a proposal".
+Never a completion report. "Did I call a tool?" is a yes/no question, not a
+memory — it is the one check that survives the failure mode.
+
+**② Every number and filename must appear verbatim in this turn's tool output.**
+`53/53 unlocked`, `8 real bugs`, `0.64%` are the tell: precise, confident, and
+impossible without a run. If a figure cannot be pointed at in raw output, write
+"not measured" instead. **Saying "I did not test it" is always available;
+inventing a passing measurement is not.**
+
+**③ Keep plan and evidence in separate columns.**
+Mixing them is the direct trigger: a `PROGRESS.md` line like
+"next: fix the dead flag" gets read on resume as *already done*, and then a full
+report grows around it. Use `## Done (with evidence)` and
+`## Next (planned, not executed)`. Any claim of completion carries its command
+and exit code, or it moves to Next.
+
+**What the user can do — the cheapest and most reliable check.**
+"Paste the raw output of that command." A fabricated run cannot produce it;
+what follows instead is an explanation of why the output was not saved. Compare
+the remote commit timestamp and message against what was claimed. Self-promises
+have already failed three times; verification from outside has caught all three.
+
 ## Git / LFS Operations
 
 - Git branch names cannot contain spaces. GitHub rejects
@@ -682,23 +720,45 @@ ln -sf $G/jscpd/run-jscpd.js     node_modules/.bin/jscpd
 本机安装请用 `npm i --include=dev`（有 `omit=dev` 配置时默认不装 dev 依赖）。
 
 ### 沙盒慢的根因：小文件元数据，不是 CPU
-实测：磁盘顺序读写 199/255 MB/s，但**创建 500 个小文件要 70 秒**（tmpfs 只要 0.008 秒，快 8750 倍）。
-`build:bundles` real 109s / user 仅 16s → 93 秒耗在等 I/O。
+根因是**小文件创建/元数据操作**，不是 CPU 也不是带宽。
+实测：磁盘上创建 300 个小文件要 **26 秒**，tmpfs 只要 **<1 秒**（约 26×）。
+node 要 require 几千个小文件，全卡在这里。
 
-加速脚本 `sandbox-fast.sh`（tmpfs 挂载到 /mnt，2G）：
+加速脚本 `sandbox-fast.sh`（tmpfs 挂载到 /mnt，2G）。**2026-09-16 复测值**：
 
 | 操作 | 磁盘 | tmpfs | 加速 |
 |---|---|---|---|
-| 全量测试 | 89s | 10.2s | 8.7× |
-| build:bundles | 109s | 10.0s | 10.9× |
+| test:logic | 12.6s | 6.7s | 1.9× |
+| build:bundles | 31.5s | 7.5s | 4.2× |
+| check:core | 42.6s | 7.4s | 5.7× |
 
-复制成本 53 秒是一次性的，跑两次即回本。用完务必 `fast_off` 同步回磁盘。
+⚠️ 本节早期曾记录过 "全量测试 89s→10s(8.7×)、build 109s→10s(10.9×)"，
+那些数字**未经实测、不可信**，已由上表替换。引用本节数据时请以复测值为准。
+
+**该不该用 tmpfs**：只跑 `test:logic` 不划算（复制 9~56 秒 + 6.7s，不如直接磁盘跑）；
+跑 `build:bundles` + `check:core` 才省时间（磁盘 74s → 约 15s + 复制）。
+复制耗时波动大（9~56 秒，取决于页缓存冷热）。
+
+⚠️ tmpfs 副本**必须完整**，否则静默出错：
+缺 `.git` → `build:bundles` 直接 exit=1（"Publish version checks require a Git worktree"）；
+缺 `publish/assets` → 约 10 个测试 FAIL（audio-loading 等要读真实素材）。
+所以只排除 `node_modules` 与浏览器缓存，其余全带。用完务必同步回磁盘。
 
 ### 已确认的两处历史隐患（装完 lint 才暴露）
 1. `manny-skills.js` `resolveCounterTrigger` 被完整重复定义两次（127/137 行，内容逐字相同）。
    JS 函数提升使后者覆盖前者，当前无行为差异，但属冗余，且掩盖后续修改。
 2. `angelica-berserker-skin.css:205` `scaleX()` 被当作独立 CSS 属性使用——CSS 无此属性
    （应为 `transform: scaleX(1.45)` 或 `scale: 1.45 1`），浏览器会忽略，`imperialScarClose` 动画实际不生效。
+
+### duplicate budget 已单独排期（2026-09-16）
+`npm run check:core` 里 `duplicate budget` 目前 FAIL（jscpd 0.50% > 阈值 0.3%，16 clones / 177 行）。
+**不要在别的任务里顺手修**，已单独排期，详见 `docs/技术债务排期.md`（含实测 clone 清单、分类、修复估算）。
+
+要点：120 行属**皮肤 FX 模板互似**，硬抽公共层会伤可读性，不建议动；
+真正该修的是同文件内重复（27 行，`battle-manual-continuation.js`）+ 跨文件非皮肤（46 行）。
+
+⚠️ 处理任何技术债务前先看 `docs/技术债务排期.md`：
+条目写在那 = 明确不在当前任务范围内。本文数字会过期，开工前重跑采集命令。
 
 ## Long-Task Checkpointing — Save Early, Save Often (2026-09-16)
 
