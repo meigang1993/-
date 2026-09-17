@@ -15,10 +15,15 @@ window.DungeonMap = (() => {
   function fixedRandomLayers(route, diff, state) {
     const last = route.layers || diff.layers, rest = new Set(route.rest || []), chest = new Set(route.chest || []), boss = new Set(route.boss || [last]);
     const fixedType = layer => layer === 1 ? "start" : boss.has(layer) ? "boss" : rest.has(layer) ? "rest" : chest.has(layer) ? "chest" : null;
+    // 固定节点之外的层按难度掷精英，与 default / linear 路由保持一致；
+    // mixedEliteFrom 可限制精英最早出现的层数，未配置时全层可出（对齐 machine_factory 的每节点掷点）。
+    const eliteFrom = route.mixedEliteFrom ?? 1;
     return Array.from({ length: last }, (_, i) => {
       const layer = i + 1, type = fixedType(layer);
       if (type) return [makeNode(layer, 0, type)];
-      return Array.from({ length: rand(3, 5, state) }, (_, c) => makeNode(layer, c, "normal"));
+      const eliteAllowed = layer >= eliteFrom;
+      return Array.from({ length: rand(3, 5, state) }, (_, c) =>
+        makeNode(layer, c, eliteAllowed && window.GameRandom.chance(diff.eliteRate || 0, state) ? "elite" : "normal"));
     });
   }
   function linearLayers(route, diff, state) {
