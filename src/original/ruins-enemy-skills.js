@@ -1,5 +1,6 @@
 window.RuinsEnemySkills = (() => {
-  const grunt = window.RuinsGruntSkills;
+  // 惰性解析：避免依赖打包顺序（曾因 enemy 在 grunt 之前加载而永久为空）
+  const grunt = new Proxy({}, { get: (_, key) => window.RuinsGruntSkills?.[key] });
   const dragon = window.RuinsDragonSkills;
   const witherer = window.RuinsWithererSkills;
   const elite = window.RuinsEliteSkills;
@@ -10,6 +11,7 @@ window.RuinsEnemySkills = (() => {
   function prepare(state, unit, damage) {
     if (!isRuins(unit)) return;
     dragon?.prepare?.(state, unit);
+    grunt?.tankPrepare?.(state, unit, damage);
     elite?.prepare?.(state, unit, damage);
   }
 
@@ -23,6 +25,7 @@ window.RuinsEnemySkills = (() => {
 
   function beforeKillUsed(state, actor, card) {
     if (!isRuins(actor)) return;
+    grunt?.beforeKillUsed?.(state, actor, card);
     dragon?.beforeKillUsed?.(state, actor, card);
   }
 
@@ -66,6 +69,8 @@ window.RuinsEnemySkills = (() => {
     const moves = [
       () => grunt?.landmineMove?.(state, actor),
       () => grunt?.sniperMove?.(state, actor),
+      () => grunt?.tankMove?.(state, actor),
+      () => grunt?.landmineRpsMove?.(state, actor),
       () => elite?.backstabMove?.(state, actor),
       () => elite?.helicopterMove?.(state, actor),
       () => elite?.carrierRamMove?.(state, actor),
@@ -81,6 +86,8 @@ window.RuinsEnemySkills = (() => {
   function useSkillCard(state, actor, target, card, damage) {
     if (card?.ruinsPlaceLandmine) return runUse(() => grunt?.usePlaceLandmine?.(state, actor, target));
     if (card?.ruinsSnipe) return runUse(() => grunt?.useSnipe?.(state, actor, target));
+    if (card?.ruinsTankShell) return runUse(() => grunt?.useTankShell?.(state, actor));
+    if (card?.ruinsLandmineRps) return runUse(() => grunt?.useLandmineRps?.(state, actor));
     if (card?.ruinsBackstab) return runUse(() => elite?.useBackstab?.(state, actor, target, damage));
     return false;
   }
@@ -97,5 +104,12 @@ window.RuinsEnemySkills = (() => {
     prepare, endTurn, beforeKillUsed, beforeKillTargeted, modifyDamage,
     afterDamage, afterDodged, beforeCardPlayed, allyTurnStart,
     aiMove, useSkillCard, battleStart,
+    landmineRps: {
+      playPhaseStart: (state, unit) => grunt?.playPhaseStart?.(state, unit),
+      open: (state, unit) => grunt?.openLandmineRps?.(state, unit),
+      resolveChoice: (state, choice) => grunt?.resolveLandmineRpsChoice?.(state, choice),
+      confirm: state => grunt?.confirmLandmineRps?.(state),
+      skip: state => grunt?.skipLandmineRps?.(state),
+    },
   };
 })();
