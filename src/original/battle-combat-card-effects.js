@@ -14,7 +14,8 @@ window.BattleCombatCardEffects = api => {
       window.BattleStatusCards?.apply?.(state, actor, target, card);
       return true;
     }
-    if (card.ruinsPlaceLandmine || card.ruinsSnipe || card.ruinsBackstab) {
+    if (card.ruinsPlaceLandmine || card.ruinsSnipe || card.ruinsBackstab
+      || card.ruinsTankShell || card.ruinsLandmineRps) {
       return run(() => window.RuinsEnemySkills?.useSkillCard?.(state, actor, target, card, damage),
         () => specials.repeatTactic?.(state, actor, target, card));
     }
