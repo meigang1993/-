@@ -42,7 +42,7 @@ window.BattleTurnInput = ({
         continue;
       }
       state.battle.phase = 4;
-      window.SakuraRisaSkills?.playPhaseStart?.(state, unit);
+      window.SakuraRisaSkills?.playPhaseStart?.(state, unit); window.RuinsEnemySkills?.landmineRps?.playPhaseStart?.(state, unit);
       record(state, `${unit.name} 可以出牌。`);
       onStep?.();
       if (unit.side === "ally") return;
