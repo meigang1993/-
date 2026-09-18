@@ -115,7 +115,7 @@ window.BattleCombatResponses = (api) => {
       if (picked.responseKind === "backflip") {
         const cancelled = window.SakuraRisaSkills?.resolveBackflip?.(state, picked.unit, actor, target, p.card, picked.card, { ...deps, useCard: deps.useCard });
         window.ElranaAceNanaliSkills?.afterResponse?.(state, picked.unit, actor, { damage });
-        if (cancelled !== false) { b.comboPartnerUid = null; return true; }
+        if (cancelled !== false) { window.BattleStatusCards?.triggerLandmine?.(state, picked.unit); b.comboPartnerUid = null; return true; }
         b.comboPartnerUid = p.comboPartnerUid || null;
         const nextTarget = allUnits(b).find(unit => p.card._targetUids?.includes(unit.uid) && unit.hp > 0);
         if (specials.counterTactic(state, actor, nextTarget, p.card)) return true;
@@ -130,6 +130,7 @@ window.BattleCombatResponses = (api) => {
         visualHandBefore);
       window.NonokaLokiSkills?.afterCardResponded?.(state, picked.unit, actor, response, deps);
       window.BattleLog.add(state, `${picked.unit.name} 使用看破，使${actor.name}的${p.card.name}失效。`);
+      window.BattleStatusCards?.triggerLandmine?.(state, picked.unit);
       if (picked.unit.ai === "guard_kelly") window.BattleLines?.skill(state, picked.unit, "突破重围", actor);
       if (target?.uid === picked.unit.uid) window.ElranaAceNanaliSkills?.afterResponse?.(state, picked.unit, actor, { damage });
       b.comboPartnerUid = null;
