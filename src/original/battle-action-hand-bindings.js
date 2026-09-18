@@ -80,6 +80,17 @@ window.BattleActionHandBindings = (() => {
     }
     const actor = BattleSystem.active(battle);
     const picked = battleCardView(actor, actor?.hand[index]);
+    // 点击手牌区的【地雷】状态牌 → 发起猜拳（赢了拆除 / 输了掉血并消耗）
+    if (battle?.phase === 4
+      && window.BattleStatusCards?.keyOf?.(actor?.hand?.[index]) === "landmine") {
+      return BattleActionGuard.run("地雷猜拳发起失败", async ({ state: actionState, isCurrent }) => {
+        const holder = BattleSystem.active(actionState.battle);
+        const opened = window.RuinsEnemySkills?.landmineRps?.open?.(actionState, holder);
+        if (!isCurrent()) return false;
+        if (opened) render();
+        return true;
+      }, { control: cardNode });
+    }
     const wasHammer = !!battle?.thunderHammer;
     if (battle?.phase === 5 || wasHammer) {
       return BattleActionGuard.run("战斗弃牌失败", async ({ state: actionState, isCurrent }) => {
