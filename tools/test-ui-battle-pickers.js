@@ -349,7 +349,7 @@ window.GameUIHand = { render: () => "" };
 window.BattlePileStats = { render: () => "" };
 window.BattleResponseUI = {
   handReveal: () => "", manualDodgePrompt: () => "", manualCounterPrompt: () => "",
-  recklessPrompt: () => "", evilEyePrompt: () => "",
+  recklessPrompt: () => "", evilEyePrompt: () => "", landmineRpsPrompt: () => "",
 };
 window.DungeonSystem = { rewardPopup: () => "" };
 GameData.missions = [];
