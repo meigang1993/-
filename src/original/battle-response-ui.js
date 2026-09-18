@@ -74,6 +74,22 @@ window.BattleResponseUI = (() => {
     }
     return `<div class="manual-dodge-overlay"><div class="manual-dodge-box"><h2>${p.tied ? "吸魔邪眼：再次选择手势" : "吸魔邪眼：选择手势"}</h2><p>【${U.esc(risa?.name || "丽莎")}】向【${U.esc(target?.name || "目标")}】发起猜拳</p>${gestureButtons("data-risa-eye-choice")}</div></div>`;
   }
+  function landmineRpsPrompt(b) {
+    const p = b.landmineRpsPrompt;
+    if (!p) return "";
+    const units = b.allies.concat(b.enemies);
+    const holder = units.find(u => u.uid === p.holderUid);
+    const source = units.find(u => u.uid === p.sourceUid);
+    const sourceName = source?.name || "地雷埋设者";
+    if (p.result) {
+      const r = p.result;
+      const title = r.outcome === "tie" ? "平局"
+        : r.outcome === "holder" ? `${holder?.name || "你"}获胜，地雷拆除`
+        : `${sourceName}获胜，地雷引爆`;
+      return `<div class="manual-dodge-overlay"><div class="manual-dodge-box rps-result-box"><h2>地雷猜拳结果</h2>${resultReveal(sourceName, r.sourceChoice, holder?.name || "你", r.holderChoice, title, "data-landmine-rps-result-confirm", r.outcome === "tie" ? "继续猜拳" : "确认结果")}</div></div>`;
+    }
+    return `<div class="manual-dodge-overlay"><div class="manual-dodge-box"><h2>${p.tied ? "地雷：再次选择手势" : "地雷：选择手势"}</h2><p>你手牌区的【地雷】可以发起猜拳：赢了直接拆除，输了受到 ${p.amount || 0} 点伤害</p>${gestureButtons("data-landmine-rps-choice")}<button class="ghost" data-landmine-rps-skip="1">暂不猜拳</button></div></div>`;
+  }
   function manualCounterPrompt() {
     return "";
   }
@@ -102,5 +118,5 @@ window.BattleResponseUI = (() => {
     const cards = (actor?.hand || []).filter(c => c.reckless && !c._pendingDraw).map((c, i) => `<button class="manual-dodge-card ${i === selected ? "selected" : ""}" data-reckless-pick="${i}">${U.card(c, false)}</button>`).join("");
     return `<div class="manual-dodge-overlay"><div class="manual-dodge-box"><h2>是否打出无谋冲拳？</h2><p>【${U.esc(actor?.name || "角色")}】准备阶段可以打出响应牌</p><b>【无谋冲拳】</b><div class="manual-dodge-cards">${cards}</div><div class="actions"><button data-reckless-use="1">打出</button><button class="ghost" data-reckless-cancel="1">保留</button></div></div></div>`;
   }
-  return { responseHand, manualCounterHand, handReveal, manualDodgePrompt, manualCounterPrompt, recklessPrompt, evilEyePrompt };
+  return { responseHand, manualCounterHand, handReveal, manualDodgePrompt, manualCounterPrompt, recklessPrompt, evilEyePrompt, landmineRpsPrompt };
 })();
