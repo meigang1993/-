@@ -79,7 +79,7 @@ window.BattleShareFlow = deps => {
       return;
     }
     battle.phase = 4;
-    window.SakuraRisaSkills?.playPhaseStart?.(state, unit);
+    window.SakuraRisaSkills?.playPhaseStart?.(state, unit); window.RuinsEnemySkills?.landmineRps?.playPhaseStart?.(state, unit);
     record(state, `${unit.name} 可以出牌。`);
     if (onStep) onStep();
     if (unit.side === "ally") return;
