@@ -6,11 +6,23 @@ window.DungeonEnemyGroups = (() => {
     if (bosses.length === 1 && bosses[0].id === "demon_king_bakaar") return fixedGroup(pool, diff, "boss", ["demon_mecha_cerberus", bosses[0].id], state);
     if (bosses.length === 1 && bosses[0].id === "shark_captain_mordio") return fixedGroup(pool, diff, "boss", ["shark_pirate_raider", bosses[0].id, "shark_pirate_crew", "shark_pirate_crew"], state);
     if (bosses.length === 1 && bosses[0].id === "mona_eagle_captain") return fixedGroup(pool, diff, "boss", [bosses[0].id], state);
+    if (bosses.length === 1 && bosses[0].id === "mech_ai_dragon") return fixedGroup(pool, diff, "boss", ["mech_ai_dragon", "noble_soldier", "noble_sniper"], state);
+    if (bosses.length === 1 && bosses[0].id === "witherer_1312") return fixedGroup(pool, diff, "boss", ["witherer_1312", "noble_soldier", "attack_drone"], state);
     if (bosses.length === 1 && bosses[0].id !== "pursuer_edis") return fixedGroup(pool, diff, "boss", ["mecha_minotaur", bosses[0].id, "skeleton_patrol"], state);
     return fixedGroup(pool, diff, "boss", bosses.map(b => b.id), state);
   }
   function eliteGroup(pool, diff, id, state = window.state) {
-    const groups = { elrana_clone: ["skeleton_patrol", "elrana_clone", "skeleton_patrol"], krow_doctor: ["krow_doctor", "machine_succubus", "machine_succubus", "machine_succubus"], invader_chiyo: ["invader_chiyo"], guard_kelly: ["demon_beast_unit", "guard_kelly", "demon_witch"] };
+    const groups = {
+      elrana_clone: ["skeleton_patrol", "elrana_clone", "skeleton_patrol"],
+      krow_doctor: ["krow_doctor", "machine_succubus", "machine_succubus", "machine_succubus"],
+      invader_chiyo: ["invader_chiyo"],
+      guard_kelly: ["demon_beast_unit", "guard_kelly", "demon_witch"],
+      // 兽人地下城 / 废墟沙城精英：赏金战与正常精英战保持同一固定组合
+      witherer_1124_split: ["witherer_1124_split", "witherer_1124_split"],
+      assassin_sakura_risa: ["demon_witch", "assassin_sakura_risa", "demon_witch"],
+      attack_helicopter: ["merca_tank", "attack_helicopter"],
+      armored_carrier: ["merca_tank", "armored_carrier", "noble_soldier", "noble_soldier"],
+    };
     return fixedGroup(pool, diff, "elite", groups[id] || [id], state);
   }
   function enemiesFor(run, type, state = window.state) {
