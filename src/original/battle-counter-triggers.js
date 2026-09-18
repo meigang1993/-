@@ -90,7 +90,7 @@ window.BattleCounterTriggers = (() => {
   function hasPromptLock(battle) {
     return !!(battle.manualDodge || battle.opheliaGuard
       || battle.thunderHammer || battle.dimensionTransfer
-      || battle.recklessPrompt || battle.risaEyePrompt
+      || battle.recklessPrompt || battle.risaEyePrompt || battle.landmineRpsPrompt
       || battle.gerdaComfort || battle.kaiichiShare
       || battle.millerShare || battle.newMoonShare
       || battle.handReveal || battle.manualCounter
