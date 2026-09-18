@@ -30,7 +30,10 @@ window.BattleCardCounterInteractions = (deps, ctx, helpers) => {
       ) ?? true;
       window.ElranaAceNanaliSkills?.afterResponse?.(
         state, unit, actor, { damage: ctx.damage });
-      if (cancelled) return true;
+      if (cancelled) {
+        window.BattleStatusCards?.triggerLandmine?.(state, unit);
+        return true;
+      }
       const nextTarget = state.battle.allies.concat(state.battle.enemies)
         .find(candidate =>
           card._targetUids?.includes(candidate.uid) && candidate.hp > 0);
@@ -58,10 +61,12 @@ window.BattleCardCounterInteractions = (deps, ctx, helpers) => {
         { name: "杀（普攻）", type: "slash", power: 0, scale: "attack", suit: "" },
         { temporary: true, void: true, noIntentCost: true, generatedBySkill: "偷袭" });
       if (virtual) window.BattleCombat?.useVirtualKill?.(state, unit, actor, virtual);
+      window.BattleStatusCards?.triggerLandmine?.(state, unit);
       return false;
     }
     const mode = unit.side === "enemy" ? "自动" : "";
     log(state, `${unit.name} ${mode}使用看破，使${actor.name}的${card.name}失效。`);
+    window.BattleStatusCards?.triggerLandmine?.(state, unit);
     if (unit.ai === "guard_kelly") {
       window.BattleLines?.skill(state, unit, "突破重围", actor);
     }
