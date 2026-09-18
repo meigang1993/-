@@ -22,7 +22,8 @@ window.BattleStatusCardRegistry = (() => {
     },
     landmine: {
       name: "地雷", flag: "landmine", text:
-        "状态牌。在使用或打出响应牌时受到等同于来源攻击力的伤害，随后地雷消耗。",
+        "状态牌。在使用或打出响应牌时受到等同于来源攻击力的伤害，随后地雷消耗。"
+        + "出牌阶段可点击此牌发起猜拳：赢了拆除，输了受到伤害并消耗。",
     },
     slime: { name: "粘液", flag: "slime" },
   });
