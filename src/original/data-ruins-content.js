@@ -6,7 +6,7 @@ window.GameDataRuinsContent = {
     { name: "魅杀", enemy: "witherer_1312", price: 1400, type: "slash", scale: "magic", attackType: "magic", vulnerable: true, suits: { "♠": 1, "♣": 1 }, text: "指定一名敌方角色，造成等同于魔力值的魔法伤害，并施加脆弱标记（受到伤害+50%）。" },
     { name: "偷袭", enemy: "hilde", price: 1100, type: "response", ambush: true, suits: { "♠": 1, "♣": 1 }, text: "敌方使用战术牌后，对其造成攻击力物理伤害。" },
     { name: "冰冻术", enemy: "hilde", price: 1500, type: "obstacle", statusKey: "freeze", suits: { "♥": 1, "♦": 1 }, text: "指定敌方一名角色，使其手牌区生成一张【冰冻】状态牌；判定阶段进行判定，若结果为♦方块或♣梅花，本回合无法使用【杀】牌。" },
-    { name: "流星杀", enemy: "attack_helicopter", price: 1200, type: "slash", scale: "magic", attackType: "magic", sweep: true, targetless: true, suits: { "♥": 1, "♦": 1 }, text: "对所有敌方角色造成魔力魔法伤害。" },
+    { name: "流星杀", enemy: "attack_helicopter", price: 1200, type: "slash", scale: "magic", attackType: "magic", sweep: true, targetless: true, responseKind: "dodge", suits: { "♥": 1, "♦": 1 }, text: "对所有敌方角色造成魔力魔法伤害。" },
     { name: "吸魔杀", enemy: "attack_helicopter", price: 1600, type: "slash", scale: "magic", attackType: "magic", stealCard: true, suits: { "♣": 1, "♠": 1 }, text: "造成魔法伤害后获得目标一张牌。" },
     { name: "物资私分", enemy: "armored_carrier", price: 1700, type: "consume", allyTarget: true, excludeSelf: true, drawCards: 3, allyDrawCards: 3, suits: { "♥": 1, "♣": 1 }, text: "指定我方其他一名角色，双方各摸3张牌。" },
     { name: "枪林弹雨", enemy: "armored_carrier", price: 1400, type: "tactic", power: 1, hybridAttack: true, sweep: true, targetless: true, responseKind: "dodge", suits: { "♠": 1, "♦": 1 }, text: "对所有敌方角色造成基础1点加攻击力与魔力的复合伤害；敌方可用【闪】抵消。" },
@@ -28,7 +28,7 @@ if (window.GameDataCards) {
   const cardEntry = item => ({
     ...item, power: item.power || 0, scale: item.scale || null,
     attackType: item.attackType || null, magicDamage: item.attackType === "magic",
-    targetless: !!item.targetless, sweep: !!item.sweep, fixedRepeats: item.fixedRepeats || 0,
+    targetless: !!item.targetless, sweep: !!item.sweep, ...(item.responseKind ? { responseKind: item.responseKind } : {}), fixedRepeats: item.fixedRepeats || 0,
     statusKey: item.statusKey || "", ignoreResponse: !!item.ignoreResponse,
     price: item.price, suits: item.suits,
   });
