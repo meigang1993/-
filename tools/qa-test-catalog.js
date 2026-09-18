@@ -10,8 +10,17 @@ const standalone = Object.freeze([
   "test-dungeon-playtest-live.js",
   "test-dungeon-walkthrough-live.js",
   "test-artina-skills-live.js",
+  "test-ruins-landmine-rps-live.js",
+  "test-landmine-counter-response-live.js",
+  "test-landmine-counter-paths-live.js",
   "check-ruins-boss-bounty-live.js",
   "test-underwater-elite-stats.js",
+  "test-ruins-grunt-skills-live.js",
+  "test-ruins-landmine-live.js",
+  "test-ruins-cards-response-modes-live.js",
+  "test-sweep-manual-response-live.js",
+  "test-landmine-response-verbs-live.js",
+  "test-ruins-rest6-manual-live.js",
 ]);
 
 const groups = Object.freeze({
@@ -48,6 +57,7 @@ const groups = Object.freeze({
     "check-enemy-pools.js",
     "check-bounty-groups.js",
     "check-bounty-elite-live.js",
+    "test-ruins-grunt-skills.js",
   ],
   battle: [
     "test-battle-ai-targeting.js",
