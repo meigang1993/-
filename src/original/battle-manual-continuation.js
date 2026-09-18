@@ -47,7 +47,7 @@ window.BattleManualContinuation = deps => {
         return;
       }
       state.battle.phase = 4;
-      window.SakuraRisaSkills?.playPhaseStart?.(state, unit);
+      window.SakuraRisaSkills?.playPhaseStart?.(state, unit); window.RuinsEnemySkills?.landmineRps?.playPhaseStart?.(state, unit);
       record(state, `${unit.name} 可以出牌。`);
       onStep?.();
       if (!unit.ai) return;
@@ -88,7 +88,7 @@ window.BattleManualContinuation = deps => {
         return;
       }
       state.battle.phase = 4;
-      window.SakuraRisaSkills?.playPhaseStart?.(state, unit);
+      window.SakuraRisaSkills?.playPhaseStart?.(state, unit); window.RuinsEnemySkills?.landmineRps?.playPhaseStart?.(state, unit);
       record(state, `${unit.name} 可以出牌。`);
       onStep?.();
       return;
