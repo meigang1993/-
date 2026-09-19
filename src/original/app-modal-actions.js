@@ -12,6 +12,7 @@ function completeClosableEventModal() {
     chiyoRecruitUnlock: window.completeChiyoRecruitUnlockEvent,
     gerdaNurseryUnlock: window.completeGerdaNurseryUnlockEvent,
     hoshinoFamilyUnlock: window.completeHoshinoFamilyUnlockEvent,
+    ruinsSandCityUnlock: window.completeRuinsSandCityUnlockEvent,
   };
   const action = actions[state.hallModal];
   if (action) {
