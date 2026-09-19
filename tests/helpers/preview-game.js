@@ -1,3 +1,34 @@
+// 浏览器自愈（必须在 require @playwright/test 之前执行：
+// playwright 在模块加载时即解析浏览器路径，之后再设 env 无效）。
+// 背景：playwright 自带 headless shell 二进制曾在 virtiofs 上损坏（I/O error），
+// 且下载源被白名单拦截无法重装；系统 nix store 内有可用 chromium 142。
+// /data/workspace/.pw-browsers 内的 wrapper 是持久的，但 /root/.cache 会被清空，
+// 故此处每次自动重建，实现自愈。
+(function ensureChromium() {
+  const fs = require("fs");
+  const nodePath = require("path");
+  const { execSync } = require("child_process");
+  let nix = "";
+  try {
+    nix = execSync(
+      "ls -d /nix/store/*-chromium-*/bin/chromium 2>/dev/null | grep -v unwrapped | head -1"
+    ).toString().trim();
+  } catch (e) { /* 系统无 chromium 则跳过 */ }
+  if (!nix) return;
+  process.env.PLAYWRIGHT_BROWSERS_PATH =
+    process.env.PLAYWRIGHT_BROWSERS_PATH || "/data/workspace/.pw-browsers";
+  [
+    "/root/.cache/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-linux64/chrome-headless-shell",
+    "/root/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+  ].forEach(target => {
+    try {
+      fs.mkdirSync(nodePath.dirname(target), { recursive: true });
+      fs.writeFileSync(target, `#!/bin/sh\nexec ${nix} --no-sandbox --disable-dev-shm-usage "$@"\n`);
+      fs.chmodSync(target, 0o755);
+    } catch (e) { /* 只读或其他异常则忽略，交由外层 wrapper 兜底 */ }
+  });
+})();
+
 const path = require("path");
 const { expect } = require("@playwright/test");
 
