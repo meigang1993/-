@@ -34,6 +34,7 @@ window.BattleAITactics = (() => {
     if (card.drawCards) return 66 + Math.max(0, handLimit(actor) - visible(actor));
     if (card.bloodletting) { const intentCap = Math.min(99, Math.max(1, (actor.stats?.bloodlust || 1) + (actor.intentMaxBonus || 0))), needsIntent = (actor.intent || 0) < intentCap && ((actor.intent || 0) <= 0 || actor.playedSlashThisTurn); return actor.hp > Math.max(1, Math.floor(actor.maxHp * .25)) && needsIntent ? 72 : 0; }
     if (card.armSelf) return (actor.block || 0) < stat(actor, "attack") ? 70 : 24;
+    if (card.warHorn) { const intentCap = Math.min(99, Math.max(1, (actor.stats?.bloodlust || 1) + (actor.intentMaxBonus || 0))), spent = Math.max(0, intentCap - (actor.intent || 0)), size = alive(team).length; return spent > 0 ? 78 + spent * 6 + size * 6 : size >= 2 ? 46 : 0; }
     if (card.hybridAttack) return hybridDamageScore(ctx, actor, card, aliveFoes);
     return 0;
   }
@@ -51,7 +52,7 @@ window.BattleAITactics = (() => {
   }
   function tacticTarget(ctx, actor, card, team, foes) {
     if (card.allyTarget && card.excludeSelf) return ctx.otherAlly(actor, team) || actor;
-    if (card.heal || card.healPct || card.teamHealPct || card.drawTeam || card.drawCards || card.charge || card.bloodletting || card.armSelf || card.demonInvasion) return (card.heal || card.healPct) ? (ctx.healTarget(team) || actor) : actor;
+    if (card.heal || card.healPct || card.teamHealPct || card.drawTeam || card.drawCards || card.charge || card.bloodletting || card.armSelf || card.warHorn || card.demonInvasion) return (card.heal || card.healPct) ? (ctx.healTarget(team) || actor) : actor;
     if (card.statusKey) return statusTarget(ctx.alive(foes), card);
     if (card.discardTarget || card.stealCard) return statusHolder(team, actor) || ctx.withHand(foes);
     if (card.magicBullet) return ctx.magicBulletTarget(actor, foes, card);
