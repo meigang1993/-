@@ -1,3 +1,4 @@
+process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH || "/data/workspace/.pw-browsers";
 const { chromium } = require("playwright");
 const path = require("path");
 
