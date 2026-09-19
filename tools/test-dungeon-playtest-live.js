@@ -1,5 +1,7 @@
 // 三个副本（废墟沙城 / 兽人地下城 / 水下列车）实战试玩 + 节点校验
 // 使用真实浏览器 + 真实发布 bundle，不做模拟
+// 浏览器装在 /data/workspace/.pw-browsers，不指定会去 /root/.cache 找不到可执行文件
+process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH || "/data/workspace/.pw-browsers";
 const { chromium } = require("playwright");
 const path = require("path");
 
