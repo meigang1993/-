@@ -27,7 +27,11 @@ const standalone = Object.freeze([
   "test-ruins-unlock-closex-live.js",
   "test-landmine-aoe-live.js",
   "test-ai-orc-cards.js",
+  "test-ai-orc-cards-all.js",
   "test-ai-orc-cards-live.js",
+  "test-ai-orc-cards-all-live.js",
+  "test-ai-orc-cards-rest.js",
+  "test-orc-cards-rest-live.js",
 ]);
 
 const groups = Object.freeze({
