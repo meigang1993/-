@@ -1,4 +1,5 @@
 // 三副本真实试玩：从起点逐个点击节点，进入战斗→结算→推进，验证节点链路
+process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH || "/data/workspace/.pw-browsers";
 const { chromium } = require("playwright");
 const path = require("path");
 
