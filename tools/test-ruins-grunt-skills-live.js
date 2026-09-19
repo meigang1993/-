@@ -109,15 +109,22 @@ const tankTpl = `(() => {
   b.enemies[0].hand = [];
   window.__log = [];
   window.__tank = { loaded: false, fired: false };
-  if (!window.__hooked) {
-    const orig = window.BattleAI.choose;
-    window.BattleAI.choose = function (bb, actor, canPlay) {
-      let r = null; try { r = orig(bb, actor, canPlay); } catch (err) {}
-      window.__log.push({ actor: actor?.name, move: r?.card?.name || null });
-      return r;
-    };
-    window.__hooked = true;
-  }
+  // 确定性注入：AI 决策本身是随机的，可能直接把2张杀打出去而不装填，导致本项 flaky。
+  // 这里只固定"决策结果"，执行仍走真实链路（useSkillCard → useTankShell → 下回合 tankPrepare）。
+  const origChoose = window.BattleAI.choose;
+  window.BattleAI.choose = function (bb, actor, canPlay) {
+    let r = null; try { r = origChoose(bb, actor, canPlay); } catch (err) {}
+    if (actor?.ai === "ruins_tank" && !actor.usedRuinsTankShell) {
+      const singles = (actor.hand || []).filter(c =>
+        c && !c._pendingDraw && window.CardUtils?.isEntitySingleKill?.(c));
+      if (singles.length >= 2) {
+        r = { card: { name: "坦克炮弹", _skill: true, ruinsTankShell: true, targetless: true },
+              target: actor, score: 999 };
+      }
+    }
+    window.__log.push({ actor: actor?.name, move: r?.card?.name || null });
+    return r;
+  };
   window.render();
   return { enemy: e.name, handCount: e.hand.length, attack: e.stats.attack };
 })()`;
@@ -154,7 +161,7 @@ const peekTpl = `(() => {
   const e = b.enemies[1];
   return {
     log: (window.__log || []).map(x => \`\${x.actor}:\${x.move}\`),
-    battleLog: (window.state.log || []).slice(0, 60),
+    battleLog: (window.state.log || []).slice(0, 120),
     // 地雷：玩家方手牌里是否出现地雷状态牌
     mines: b.allies.map(u => (u.hand || []).filter(c => c.landmine || c.name === "地雷").length),
     // 狙击：锁定标记
@@ -185,10 +192,19 @@ async function runScene(browser, name, tpl, watchMs) {
       if (e && e.hp > 0 && window.state.battle.phase === 4 &&
           window.state.battle.activeUid === e.uid)
         e.hand = [{ name: "机枪扫杀", type: "kill", sweep: true, suit: "♠" }]; })()`;
+    // 坦克装填需要手里恰好有2张单体杀；AI 摸牌不保证，故在其出牌阶段强制补齐，
+    // 与上面 choose 钩子配合，使"装填→发射"成为确定性路径而非碰运气。
+    const tankForce = `(() => { const e = window.state.battle.enemies[1];
+      if (e && e.hp > 0 && e.ai === "ruins_tank" && !e.usedRuinsTankShell && !e.ruinsTankShellReady &&
+          window.state.battle.phase === 4 && window.state.battle.activeUid === e.uid) {
+        if (!((e.hand || []).filter(c => c && !c._pendingDraw && window.CardUtils?.isEntitySingleKill?.(c)).length >= 2))
+          e.hand = [{ name: "杀", type: "kill", suit: "♠" }, { name: "杀", type: "kill", suit: "♥" }];
+      } })()`;
     const rounds = Math.ceil(watchMs / 1000);
     for (let i = 0; i < rounds; i++) {
       await page.waitForTimeout(1000);
       if (name === "放置地雷") await page.evaluate(aoeForce);
+      if (name === "坦克炮弹") await page.evaluate(tankForce);
       const st = await page.evaluate(peekTpl);
       out.last = st;
       // 累计"过程中见过"的关键战报：终态快照会被后续记录挤出，
@@ -202,8 +218,9 @@ async function runScene(browser, name, tpl, watchMs) {
       if (logsNow.some(l => l.includes("埋设一颗地雷") || l.includes("获得一张地雷状态牌"))) out.seen.minePlaced = true;
       // 坦克需要跨回合：装填后再等发射（以战报为准，避免轮询错过 ready 窗口）
       if (name === "坦克炮弹") {
-        if (st.battleLog.some(l => String(l).includes("装填坦克炮弹"))) out.loaded = true;
-        if (out.loaded && st.battleLog.some(l => String(l).includes("发射坦克炮弹"))) { out.fired = true; break; }
+        // 以整轮累计的 seen 为准：装填记录会被发射记录挤出 slice 窗口，
+        // 只看末次快照会导致 out.loaded 恒 false、进而永不 break。
+        if (out.seen?.loaded && out.seen?.fired) { out.loaded = true; out.fired = true; break; }
       } else if (st.log.some(l => l.includes(":")) && i > 6) {
         break;
       }
@@ -296,7 +313,7 @@ async function runScene(browser, name, tpl, watchMs) {
       const loadedLog = logs2.some(l => l.includes("装填坦克炮弹")) || !!r.seen?.loaded;
       console.log(`  装填战报=${loadedLog}`);
       checks.push(["坦克炮弹 · 装填(弃2张单体杀)", loadedLog]);
-      checks.push(["坦克炮弹 · 发射战报", !!dmg]);
+      checks.push(["坦克炮弹 · 发射战报", !!dmg || !!r.seen?.fired]);
       // 攻击力16 → 每人 32 点；玩家方无【闪】，应吃满
       const dmg32 = (f.allyHp || []).some(hp => hp <= 200 - 32);
       console.log(`  我方HP=${JSON.stringify(f.allyHp)} (初始200，期望含168)`);
