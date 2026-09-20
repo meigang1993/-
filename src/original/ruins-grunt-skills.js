@@ -218,17 +218,19 @@ window.RuinsGruntSkills = (() => {
       title: "狙击目标", cards: [{ ...shown }],
     });
     window.BattleLines?.skill?.(state, actor, "狙击目标", target);
-    log(state, `${actor.name} 展示${target.name}的${suit}${shown.name}，双方${suit}花色手牌为${own}/${foe}，${actor.ruinsSniperLocked ? "后续单体杀不可响应" : "未取得优势"}。`);
+    log(state, `${actor.name} 展示${target.name}的${suit}${shown.name}，双方${suit}花色手牌为${own}/${foe}，${actor.ruinsSniperLocked ? "后续实体单体杀不可响应" : "未取得优势"}。`);
     return true;
   }
 
   function beforeKillTargeted(state, actor, target, card) {
     if (actor?.ai !== "ruins_sniper" || !actor.ruinsSniperLocked) return;
     if (!target || target.uid !== actor.ruinsSniperTargetUid) return;
-    if (!window.CardUtils?.isSingleKill?.(card) && !(isSlash(card) && !card?.sweep)) return;
+    const isEntitySingle = window.CardUtils?.isEntitySingleKill?.(card)
+      || (isSlash(card) && !card?.virtual && !card?.sweep);
+    if (!isEntitySingle) return;
     if (!card.ignoreResponse) card._tempIgnoreResponse = true;
     card.ignoreResponse = true;
-    log(state, `${actor.name} 的狙击目标触发，对${target.name}的单体杀不可响应。`);
+    log(state, `${actor.name} 的狙击目标触发，对${target.name}的实体单体杀不可响应。`);
   }
 
   // 锁定技：攻击型无人机单体【杀】转为毒属性
