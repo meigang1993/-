@@ -19,6 +19,8 @@ const standalone = Object.freeze([
   "test-landmine-counter-response-live.js",
   "test-landmine-rps-dungeon-live.js",
   "test-landmine-rps-stuck-live.js",
+  "test-landmine-locked-stuck-live.js",
+  "test-landmine-rps-confirm-live.js",
   "test-landmine-convert-live.js",
   "test-landmine-counter-paths-live.js",
   "check-ruins-boss-bounty-live.js",
