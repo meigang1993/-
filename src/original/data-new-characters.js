@@ -65,7 +65,7 @@ window.GameDataNewCharacters = [
     stats: { attack: 3, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
     evaluation: "花色记录与单体狙击核心。每回合记录首次使用的花色，蓄力子弹强化下一张实体单体【杀】。",
     skills: [
-      { name: "狙击目标", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以选择一名敌方角色，展示其一张手牌。若你手牌中与此牌花色相同的牌数多于该角色，则你对其使用的下一张实体单体【杀】不可被响应。", card: { name: "狙击目标", type: "tactic", artinaSniper: true, enemyTarget: true, artName: "狙击目标", icon: "⚔️", text: "选择一名敌方角色，展示其一张手牌。" } },
+      { name: "狙击目标", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以选择一名敌方角色，展示其一张手牌。若你手牌中与此牌花色相同的牌数多于该角色（即取得优势），则其被锁定，你对其使用的下一张实体单体【杀】不可被响应；未取得优势时锁定不生效。", card: { name: "狙击目标", type: "tactic", artinaSniper: true, enemyTarget: true, artName: "狙击目标", icon: "⚔️", text: "选择一名敌方角色，展示其一张手牌。" } },
       { name: "蓄力子弹", type: "passive", icon: "⭐", text: "锁定技，每回合你首次使用一种花色的牌时，你记录该花色；你使用的下一张实体单体【杀】伤害×（1+你已记录的花色数）（记录1种为×2，2种为×3，3种为×4，4种为×5），然后你清除所有记录。" },
     ],
   },
