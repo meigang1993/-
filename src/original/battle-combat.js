@@ -98,6 +98,9 @@ window.BattleCombat = (deps) => {
     if (window.GuestCharacterSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat, intentMax: deps.intentMax }, specialCtx)) { card._countAsPlayed = true; return true; }
     if (!card._skill && !card._skipHandMove) { actor.hand.splice(actor.hand.indexOf(card), 1); const pile = card.type === "consume" || card.copiedByEdis || card.void ? "consumed" : "discard"; putCard(state, actor, card, pile, { skipAnim: pile === "discard" && !!card._playedFlightDone }); }
     card._playedByName = actor.name; card._playedAction = card.type === "tactic" ? "发动了" : "使用了";
+    // 出牌阶段限一次的技能：守卫命中时连「使用」日志一起拦掉，避免出现
+    // 日志里用了多次、实际只生效一次的误导。
+    if (window.RuinsEnemySkills?.isSkillBlocked?.(actor, card)) return false;
     card._countAsPlayed = true;
     window.BattleLog.add(state,`${actor.name} 使用${card.suit || ""}${card.name}。`);
     window.BattleLines?.skill(state, actor, card.name, target);
