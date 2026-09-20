@@ -27,16 +27,20 @@ window.RuinsGruntSkills = (() => {
 
   function usePlaceLandmine(state, actor, target) {
     actor.usedRuinsLandmine = true;
-    const fodder = visible(actor).find(card => !isStatus(card));
-    if (fodder) {
-      const index = actor.hand.indexOf(fodder);
-      if (index >= 0) actor.hand.splice(index, 1);
-      window.BattleCards?.put?.(state.battle, actor, fodder, "discard", { showDiscard: true });
-    }
+    // 描述：将敌方一张手牌转换为地雷状态牌 → 目标手牌数不变（替换，不新增）
     const landmine = window.BattleStatusCardRegistry?.create?.("landmine", actor);
-    if (landmine) window.BattleStatusCards?.add?.(state, target, landmine, actor.name);
+    if (!landmine) return false;
+    // 先加入地雷，成功后再移除被替换的那张牌，避免加不进去时白扣对方一张手牌
+    if (!window.BattleStatusCards?.add?.(state, target, landmine, actor.name)) return false;
+    const replaced = visible(target).filter(card => !isStatus(card))[0];
+    if (replaced) {
+      const index = target.hand.indexOf(replaced);
+      if (index >= 0) target.hand.splice(index, 1);
+      window.BattleStatusCards?.sync?.(target, state.battle);
+    }
     window.BattleLines?.skill?.(state, actor, "放置地雷", target);
-    log(state, `${actor.name} 对${target.name}发动放置地雷，在其手牌区埋设一颗地雷。`);
+    log(state, `${actor.name} 对${target.name}发动放置地雷，`
+      + `将其手牌${replaced ? `【${replaced.name}】` : "一张牌"}转换为【地雷】。`);
     return true;
   }
 
