@@ -83,6 +83,17 @@ window.RuinsEnemySkills = (() => {
     return null;
   }
 
+  // 前置守卫：供出牌流程在打印「XX 使用YY」日志之前调用。
+  // 通用日志先于技能效果打印，若不在日志前拦截，守卫命中时会留下
+  // 「使用了N次但只生效一次」的误导性日志。
+  function isSkillBlocked(actor, card) {
+    if (!actor || !card) return false;
+    if (card.ruinsPlaceLandmine) return !!actor.usedRuinsLandmine;
+    if (card.ruinsSnipe) return !!actor.usedRuinsSnipe;
+    if (card.ruinsTankShell) return !!actor.usedRuinsTankShell;
+    return false;
+  }
+
   function useSkillCard(state, actor, target, card, damage) {
     if (card?.ruinsPlaceLandmine) return runUse(() => grunt?.usePlaceLandmine?.(state, actor, target));
     if (card?.ruinsSnipe) return runUse(() => grunt?.useSnipe?.(state, actor, target));
@@ -92,7 +103,9 @@ window.RuinsEnemySkills = (() => {
     return false;
   }
 
-  function runUse(action) { action(); return true; }
+  // 透传技能函数的返回值：守卫命中（出牌阶段限一次）时须返回 false，
+  // 否则外层会误判为「打出成功」并打印使用日志，出现「用了三次但只生效一次」的噪音。
+  function runUse(action) { return !!action(); }
 
   function battleStart(state) {
     (state.battle?.enemies || []).filter(isRuins).forEach(unit => {
@@ -103,7 +116,7 @@ window.RuinsEnemySkills = (() => {
   return {
     prepare, endTurn, beforeKillUsed, beforeKillTargeted, modifyDamage,
     afterDamage, afterDodged, beforeCardPlayed, allyTurnStart,
-    aiMove, useSkillCard, battleStart,
+    aiMove, useSkillCard, isSkillBlocked, battleStart,
     landmineRps: {
       playPhaseStart: (state, unit) => grunt?.playPhaseStart?.(state, unit),
       open: (state, unit) => grunt?.openLandmineRps?.(state, unit),
