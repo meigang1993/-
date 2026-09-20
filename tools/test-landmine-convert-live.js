@@ -1,5 +1,5 @@
 // 验证两处修复：
-//  A) 放置地雷「转换」语义：目标手牌数不变（原牌被替换为地雷），来源方不弃自己的牌
+//  A) 放置地雷「埋设」语义（对齐 baseline）：目标手牌数 +1（新增一颗地雷），来源方弃置自己一张牌
 //  B) 地雷状态牌在手牌区不再置灰（可点击发起猜拳）
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
@@ -74,16 +74,21 @@ const cardTpl = `(() => {
 
   check("埋雷执行成功", after.ok === true, after);
   check("目标获得地雷状态牌", after.hasMine === true, after);
-  check("目标手牌数不变（转换而非新增）",
-    after.targetHand === before.targetHand, { before: before.targetHand, after: after.targetHand });
-  check("来源方不弃自己的手牌",
-    after.actorHand === before.actorHand, { before: before.actorHand, after: after.actorHand });
-  check("日志写明转换", (after.log || []).some(t => /转换为【地雷】/.test(String(t))), after.log);
+  check("目标手牌数 +1（新增地雷，非转换）",
+    after.targetHand === before.targetHand + 1, { before: before.targetHand, after: after.targetHand });
+  check("来源方弃置自己一张牌",
+    after.actorHand === before.actorHand - 1, { before: before.actorHand, after: after.actorHand });
+  check("日志写明埋设（非转换）", (after.log || []).some(t => /埋设一颗地雷/.test(String(t))), after.log);
 
   // --- B) 不置灰 ---
   // 地雷加入时带 _pendingDraw，需等发牌动画清除后才在手牌区渲染
-  await page.waitForTimeout(2500);
-  const card = await run(cardTpl);
+  // 固定等待不稳定（发牌动画时长不定），改为轮询，最多等 10s
+  let card = { found: false };
+  for (let i = 0; i < 25; i += 1) {
+    card = await run(cardTpl);
+    if (card.found) break;
+    await page.waitForTimeout(400);
+  }
   console.log("地雷牌外观:", JSON.stringify(card));
   check("手牌区能找到地雷牌", card.found === true, card);
   check("地雷牌不再带 disabled 类（不置灰）", card.hasDisabledClass === false, card);
