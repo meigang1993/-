@@ -23,8 +23,12 @@ window.GameUIBattleUnits = (U, I) => {
       || battle.opheliaGuardUid === unitData.uid
       || (battle.pendingTargetUids || []).includes(unitData.uid) ? "chosen-target" : "";
     const sideClass = unitData.side === "enemy" ? "enemy" : "ally";
+    const paralysisLock = unitData.skipPlayPhase && unitData.skipPlayReason === "麻痹"
+      ? "has-paralysis-locked" : "";
+    const stunLock = unitData.skipPlayPhase && unitData.skipPlayReason === "眩晕"
+      ? "has-stun-locked" : "";
     const fullName = unitData.label ? `${unitData.name} ${unitData.label}` : unitData.name;
-    return `<div class="unit ${sideClass}-unit ${active} ${broken} ${thinking} ${target} ${chosen} ${dead} ${deathAnim}" data-target="${U.esc(unitData.uid)}" aria-label="${U.esc(`${fullName}；${U.statTitle(unitData).replace(/\n/g, "；")}`)}">${unitBody(unitData, battle)}</div>`;
+    return `<div class="unit ${sideClass}-unit ${active} ${broken} ${thinking} ${target} ${chosen} ${dead} ${deathAnim} ${paralysisLock} ${stunLock}" data-target="${U.esc(unitData.uid)}" aria-label="${U.esc(`${fullName}；${U.statTitle(unitData).replace(/\n/g, "；")}`)}">${unitBody(unitData, battle)}</div>`;
   }
 
   function unitSpeech(unitData, battle) {
@@ -88,10 +92,25 @@ window.GameUIBattleUnits = (U, I) => {
     const lock = unitData.lockSuit
       ? `<span class="status-icon lock-suit" title="锁定标记：${U.esc(unitData.lockSuit)}">${U.esc(unitData.lockSuit)}</span>`
       : "";
-    const statuses = (unitData.statuses || []).filter(status => status !== "妒火")
+    // 判定已生效的状态不再重复显示"持牌"图标（持牌图标与生效标记会并排出现两次）
+    const lockedNames = [];
+    if (unitData.skipPlayPhase && unitData.skipPlayReason === "麻痹") lockedNames.push("麻痹");
+    if (unitData.skipPlayPhase && unitData.skipPlayReason === "眩晕") lockedNames.push("眩晕");
+    if (unitData.skipDrawPhase || unitData.drawLockedThisTurn) lockedNames.push("封魔");
+    if (unitData.frozenSlash) lockedNames.push("冰冻");
+    const statuses = (unitData.statuses || []).filter(status => status !== "妒火"
+      && !lockedNames.includes(status))
       .map(status => `<span class="status-icon ${statusClass(status)}" title="${U.esc(statusTip(status))}">${U.esc(statusText(status))}</span>`)
       .join("");
-    return `<div class="status-icons">${burning}${lock}${statuses}</div>`;
+    const paralysis = unitData.skipPlayPhase && unitData.skipPlayReason === "麻痹"
+      ? `<span class="status-icon paralysis-locked" title="麻痹：本回合无法使用牌">麻</span>` : "";
+    const stun = unitData.skipPlayPhase && unitData.skipPlayReason === "眩晕"
+      ? `<span class="status-icon stun-locked" title="眩晕：本回合跳过出牌阶段">晕</span>` : "";
+    const seal = unitData.skipDrawPhase || unitData.drawLockedThisTurn
+      ? `<span class="status-icon seal-locked" title="封魔：本回合跳过摸牌阶段，且无法摸牌">魔</span>` : "";
+    const freeze = unitData.frozenSlash
+      ? `<span class="status-icon freeze-locked" title="冰冻：本回合无法使用【杀】牌">冻</span>` : "";
+    return `<div class="status-icons">${burning}${lock}${statuses}${paralysis}${stun}${seal}${freeze}</div>`;
   }
 
   function targetButtons(battle, unitData) {
