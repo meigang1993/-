@@ -127,7 +127,11 @@ window.GameUIHandView = (() => {
         || (battle.selectedSkillCard?.elranaBag || battle.selectedSkillCard?.armyOrder
           || battle.selectedSkillCard?.mariaHonorBlessing)
           && (battle.selectedBagIndexes || []).includes(index);
-      const normalLocked = !modes.dimensionTransfer && !modes.share && !modes.kaiichiShare
+      // 地雷状态牌虽然不能作为手牌打出，但在出牌阶段可点击发起猜拳 → 不置灰
+      const rpsClickable = battle.phase === 4 && !battle.locked
+        && window.BattleStatusCards?.keyOf?.(card) === "landmine";
+      const normalLocked = !rpsClickable
+        && !modes.dimensionTransfer && !modes.share && !modes.kaiichiShare
         && !modes.cadicisShare && !modes.borrowChoice && !modes.discard
         && (!modes.playable || modes.extractStart || modes.mimicStart || modes.speedStart
           || costLocked
