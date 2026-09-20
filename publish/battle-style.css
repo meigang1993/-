@@ -1,7 +1,7 @@
 .battle-screen { position: relative; height: 100%; min-height: 0; overflow: hidden; display: grid; grid-template-rows: minmax(90px, .8fr) 28px minmax(124px, .8fr) 28px minmax(96px, .65fr) minmax(237px, 1.35fr); grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 122px; gap: 5px; background: radial-gradient(circle at center, rgba(255,205,112,.12), transparent 42%); }
 .battle-retreat { position: absolute; left: 8px; top: 8px; z-index: 18; min-height: 34px; padding: 6px 12px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); }
 .battle-retreat.test-retreat { z-index: 46; }
-.battle-tools { position: absolute; top: 8px; right: 8px; z-index: 22; display: flex; gap: 6px; }
+.battle-tools { position: absolute; top: 8px; right: 8px; z-index: 36; display: flex; gap: 6px; }
 .battle-tool-button { width: 44px; height: 44px; min-height: 44px; padding: 0; border-radius: 50%; border: 1px solid rgba(255,215,230,.32); background: rgba(47,12,43,.78); box-shadow: 0 6px 20px rgba(0,0,0,.34); font-size: 20px; line-height: 1; }
 .battle-asset-warning { position: absolute; left: 50%; top: 8px; z-index: 24; width: max-content; max-width: calc(100% - 240px); min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 5px 6px 5px 12px; transform: translateX(-50%); border: 1px solid rgba(255,190,110,.55); border-radius: 8px; background: rgba(54,20,13,.94); color: #ffe4b5; box-shadow: 0 8px 24px rgba(0,0,0,.42); font-size: 12px; font-weight: 800; }
 .battle-asset-warning span { min-width: 0; overflow-wrap: anywhere; }
@@ -52,3 +52,22 @@
   .battle-log-panel > header { padding-top: 5px; padding-bottom: 5px; }
   .battle-log-entry { padding: 5px 3px; font-size: 12px; }
 }
+
+/* 麻痹/眩晕等跳过出牌阶段：手牌整体灰化锁定 + 红色标签提示 */
+.hand-panel.play-locked .hand-body .play-card { filter: grayscale(1) brightness(0.55); }
+.hand-panel.play-locked .hand-body .play-card.selected { filter: none; }
+.hand-skip-tag { background: #7a2b2b; color: #ffe9c9; }
+
+/* 麻痹：单位卡显示"麻"标记并整体灰化，从判定成功持续到该单位下个回合开始 */
+.status-icon.paralysis-locked { background: #7a2b2b; color: #ffe9c9; }
+.unit.has-paralysis-locked .unit-main { filter: grayscale(1) brightness(0.55); }
+
+/* 眩晕：判定成功后单位卡显示"晕"标记并整体灰化（与麻痹同为跳过出牌阶段） */
+.status-icon.stun-locked { background: #5b3a72; color: #ffe9c9; }
+.unit.has-stun-locked .unit-main { filter: grayscale(1) brightness(0.55); }
+
+/* 封魔：跳过摸牌阶段，单位卡显示"魔"标记 */
+.status-icon.seal-locked { background: #2b5a7a; color: #ffe9c9; }
+
+/* 冰冻：本回合无法使用杀牌，单位卡显示"冻"标记 */
+.status-icon.freeze-locked { background: #2b6b7a; color: #ffe9c9; }
