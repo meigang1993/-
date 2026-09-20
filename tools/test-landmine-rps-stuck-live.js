@@ -88,6 +88,8 @@ const promptTpl = `(() => {
   r = await run(promptTpl);
   console.log("点手势后:", JSON.stringify(r));
   check("点击手势后产生 result（按钮有反应）", r.result !== null, r);
+  // outcome 必须在点确认前取：确认后 prompt.result 会被清空（平局分支）
+  const outcome = r.result?.outcome;
 
   // 4. 点确认 → 弹窗关闭、locked 解除
   if (r.confirmBtn) {
@@ -96,7 +98,14 @@ const promptTpl = `(() => {
   }
   r = await run(promptTpl);
   console.log("确认后:", JSON.stringify(r));
-  check("确认后弹窗关闭且 locked 解除", r.prompt === false && r.locked === false, r);
+  // 平局时「确认」= 继续猜拳（回到选手势，不关闭）；非平局才关闭并结算。
+  // 猜拳随机，断言必须按 outcome 分支，否则平局会误报失败（flaky）。
+  if (outcome === "tie") {
+    check("平局确认后回到选手势（弹窗不关闭）",
+      r.prompt === true && r.gestureCount === 3, r);
+  } else {
+    check("确认后弹窗关闭且 locked 解除", r.prompt === false && r.locked === false, r);
+  }
 
   // 5. 单独测 skip 关闭
   await run(setupTpl);
