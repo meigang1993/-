@@ -3,6 +3,11 @@ const path = require("path");
 
 const standalone = Object.freeze([
   "test-frame-performance.js",
+  "test-soldier-six-phases-live.js",
+  "test-confusion-freeze-live.js",
+  "test-paralysis-lock-ui-live.js",
+  "test-paralysis-effect-live.js",
+  "test-status-lock-icons-live.js",
   "test-ruins-layout-live.js",
   "test-ruins-dodge-live.js",
   "test-ruins-counter-live.js",
@@ -33,6 +38,7 @@ const standalone = Object.freeze([
   "test-ai-orc-cards-rest.js",
   "test-orc-cards-rest-live.js",
   "test-ai-underwater-cards.js",
+  "test-hover-tools-landmine-live.js",
 ]);
 
 const groups = Object.freeze({
