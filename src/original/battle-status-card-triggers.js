@@ -28,12 +28,12 @@ window.BattleStatusCardTriggers = (() => {
         : key === "confusion" ? card => card.suit === "♠" || card.suit === "♥"
         : card => card.suit === "♦" || card.suit === "♣";
       const { card, success } = drawJudge(state, unit, status.name, judgeOf);
-      if (success && key === "stun") unit.skipPlayPhase = true;
+      if (success && key === "stun") { unit.skipPlayPhase = true; unit.skipPlayReason = "眩晕"; }
       if (success && key === "seal") {
         unit.skipDrawPhase = true;
         unit.drawLockedThisTurn = true;
       }
-      if (success && key === "paralysis") unit.skipPlayPhase = true;
+      if (success && key === "paralysis") { unit.skipPlayPhase = true; unit.skipPlayReason = "麻痹"; }
       if (success && key === "freeze") unit.frozenSlash = true;
       if (success && key === "confusion") triggerConfusion(state, unit);
       const resultMap = {
@@ -52,6 +52,7 @@ window.BattleStatusCardTriggers = (() => {
     if (!others.length) {
       const amount = (unit.stats?.attack || 0) + (unit.tempAttack || 0);
       unit.skipPlayPhase = true;
+      unit.skipPlayReason = "混乱";
       if (amount > 0) {
         const before = unit.hp;
         unit.hp = Math.max(0, unit.hp - amount);
