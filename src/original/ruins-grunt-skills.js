@@ -26,6 +26,9 @@ window.RuinsGruntSkills = (() => {
   }
 
   function usePlaceLandmine(state, actor, target) {
+    // 出牌阶段限一次：AI 决策入口（landmineMove）已校验，但技能卡还可通过
+    // useSkillCard 直接打出，该路径不经过决策校验。守卫放在这里才对任何调用路径生效。
+    if (actor?.usedRuinsLandmine) return false;
     actor.usedRuinsLandmine = true;
     // 实现（对齐 baseline）：弃置自己一张非状态牌，在目标手牌区【新增】一颗地雷（目标手牌数 +1）
     const fodder = visible(actor).find(card => !isStatus(card));
@@ -87,6 +90,7 @@ window.RuinsGruntSkills = (() => {
   }
 
   function useLandmineRps(state, actor) {
+    if (actor?.usedRuinsLandmineRps) return true;
     actor.usedRuinsLandmineRps = true;
     const mine = landmineOf(actor);
     if (!mine) return true;
@@ -201,6 +205,8 @@ window.RuinsGruntSkills = (() => {
   }
 
   function useSnipe(state, actor, target) {
+    // 同 usePlaceLandmine：限一次守卫必须对 useSkillCard 的直接调用路径也生效。
+    if (actor?.usedRuinsSnipe) return false;
     actor.usedRuinsSnipe = true;
     const shown = visible(target)[0];
     if (!shown) {
@@ -266,6 +272,7 @@ window.RuinsGruntSkills = (() => {
   }
 
   function useTankShell(state, actor) {
+    if (actor?.usedRuinsTankShell) return false;
     actor.usedRuinsTankShell = true;
     const singles = visible(actor).filter(isSingleSlash).slice(0, 2);
     singles.forEach(card => {
