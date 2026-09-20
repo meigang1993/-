@@ -45,7 +45,7 @@ window.BattleDodgeDeflect = ({
     const needTwo = card?.krowFemaleTarget || card?.twoDodgesRequired;
     let second = needTwo
       && target.hand.find(item => item !== response && canDodge(card, item));
-    if (needTwo && !second) {
+    if (needTwo && !second && !card?.ignoreResponse) {
       second = window.FloraCarlosSkills?.dodgeAsFlash?.(
         state, target, actor, card,
         {
