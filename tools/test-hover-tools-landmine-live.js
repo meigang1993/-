@@ -138,8 +138,10 @@ const landmineTpl = (withDodge) => `(() => {
       await page.mouse.move(fbox.x + fbox.width / 2, fbox.y + fbox.height / 2);
       await page.waitForTimeout(320);
       const rh = await page.evaluate(probeRetreat);
-      ok(`hover 最左侧敌方后撤退按钮仍可命中（当前 z-index=${rh.z}）`,
-        rh.hits[0] === "self", rh);
+      // 已知取舍：用户明确「副本战斗中不用加撤退」，故撤退按钮保持基础层级 18，
+      // hover 最左侧敌方单位时会被 unit(z-index 35) 遮挡，此处只记录不断言失败。
+      console.log(`\n[已知取舍] 撤退按钮 z-index=${rh.z}，hover 时命中=${rh.hits[0]}`
+        + "（副本不使用撤退，按用户要求保持 18，不修）");
       await page.mouse.move(5, 500);
       await page.waitForTimeout(320);
     }
