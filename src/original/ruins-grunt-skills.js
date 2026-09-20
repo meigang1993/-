@@ -17,10 +17,11 @@ window.RuinsGruntSkills = (() => {
     if (actor?.ai !== "ruins_soldier" || actor.usedRuinsLandmine) return null;
     const targets = alive(state.battle.allies).filter(unit => visible(unit).length);
     if (!targets.length) return null;
+    // 目标选择：响应牌最多者优先；数量相同时血量低者优先。
+    // 注意：即使当前无人持有响应牌也要埋雷——地雷持续存在，等对方摸到闪时再触发。
     const target = targets.sort((left, right) =>
       visible(right).filter(isResponse).length
       - visible(left).filter(isResponse).length || left.hp - right.hp)[0];
-    if (!visible(target).filter(isResponse).length) return null;
     return { card: { name: "放置地雷", _skill: true, ruinsPlaceLandmine: true }, target };
   }
 
