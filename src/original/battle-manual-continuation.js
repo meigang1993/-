@@ -37,7 +37,7 @@ window.BattleManualContinuation = deps => {
         || state.battle.awaitingMimicUid === unit.uid
         || state.battle.awaitingSpeedAssaultUid === unit.uid) return;
       if (unit.skipPlayPhase) {
-        record(state, `${unit.name} 因眩晕跳过出牌阶段。`);
+        record(state, `${unit.name} 因${unit.skipPlayReason || "状态牌"}跳过出牌阶段。`);
         const done = finishTurn(state);
         combat.checkEnd(state);
         onStep?.();
@@ -78,7 +78,7 @@ window.BattleManualContinuation = deps => {
         || state.battle.awaitingSpeedAssaultUid === unit.uid
         || state.battle.recklessPrompt) return;
       if (unit.skipPlayPhase) {
-        record(state, `${unit.name} 因眩晕跳过出牌阶段。`);
+        record(state, `${unit.name} 因${unit.skipPlayReason || "状态牌"}跳过出牌阶段。`);
         const done = finishTurn(state);
         combat.checkEnd(state);
         onStep?.();
