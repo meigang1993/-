@@ -144,14 +144,23 @@ const cardTpl = `(() => {
   console.log("点手势后:", JSON.stringify(r));
   check("副本中点击手势产生 result", r.result !== null, r);
 
+  // 平局时「确认」= 继续猜拳（弹窗回到选手势，不关闭），非平局才关闭并结算。
+  // 猜拳是随机的，断言必须按 outcome 分支，否则平局时会误报失败（flaky）。
+  const outcome = r.result?.outcome;
+
   // 点确认
   if (r.confirmBtn) {
     await page.click('[data-landmine-rps-result-confirm]');
     await page.waitForTimeout(900);
   }
   r = await page.evaluate(promptTpl);
-  console.log("确认后:", JSON.stringify(r));
-  check("副本中确认后弹窗关闭且解锁", r.prompt === false && r.locked === false, r);
+  console.log("确认后:", JSON.stringify(r), "| outcome:", outcome);
+  if (outcome === "tie") {
+    check("副本中平局确认后回到选手势（弹窗不关闭，仍锁定）",
+      r.prompt === true && r.gestureCount === 3, r);
+  } else {
+    check("副本中确认后弹窗关闭且解锁", r.prompt === false && r.locked === false, r);
+  }
 
   // skip
   await page.evaluate(setupTpl);
