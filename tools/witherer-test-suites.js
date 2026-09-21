@@ -92,9 +92,13 @@ function runResponseTests(assert) {
     canDodge: () => true, draw() {}, afterDodged() {},
     hitWithoutDodge(_, __, target) { guardHit = target; return { dodged: false, hpLoss: 5 }; },
   });
-  assert(guarded?.hpLoss === 5 && guardHit === guard, "Ophelia guard must take unresponsive damage instead of using flash");
-  assert(guard.hand.includes(flash), "Ophelia proxy flash must not be consumed by an unresponsive slash");
+  // 护驾者未被狙击/不可响应标记针对：其【闪】仍可打出，不受奥菲莉亚身上的锁定影响
+  assert(guarded?.dodged && guarded?.hpLoss === 0,
+    "Ophelia guard may still use flash against an unresponsive slash");
+  assert(guard.hand.length === 0,
+    "Ophelia proxy flash is consumed when guarding an unresponsive slash");
   guardState.battle.opheliaGuardUid = guard.uid;
+  guard.hand.push(flash); // 上一场景已消耗，补回一张以验证普通杀的护驾动画
   const guardedDodge = guardApi.guardOphelia(
     guardState, attacker, ophelia, 5, "普通杀",
     { name: "普通杀", type: "slash" }, {
