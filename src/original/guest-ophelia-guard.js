@@ -12,28 +12,42 @@ window.GuestOpheliaGuard = (deps) => {
     if (!guard) return null;
     line(state, target, "为我护驾", guard); if (guard.ref === "lokar") api.draw(guard, 2, state.battle); if (guard.ref === "aileng") api.draw(guard, 4, state.battle);
     if (window.BondiSkills?.cancelKillCard?.(state, guard, card)) return { dodged: false, hpLoss: 0 };
-    const dodge = visible(guard).find(c => api.canDodge(card, c));
-    if (dodge) {
+    // 需两张闪的杀（莫娜·圣剑无双 / 克罗·肉欲之欢 / 坦克炮弹）护驾也要出两张，
+    // 否则护驾者只出 1 张闪就把双闪杀完全抵消，绕过了双闪要求。
+    const needTwo = !!(card?.krowFemaleTarget || card?.twoDodgesRequired);
+    const dodges = visible(guard).filter(c => api.canDodge(card, c));
+    const dodge = needTwo ? (dodges.length >= 2 ? dodges.slice(0, 2) : [])
+      : dodges.slice(0, 1);
+    if (dodge.length === (needTwo ? 2 : 1)) {
       const visualHandBefore = window.BattleCards.visibleHandCount(guard);
-      guard.hand.splice(guard.hand.indexOf(dodge), 1);
-      window.BattleCards?.put(
-        state.battle, guard, dodge, "discard", { skipAnim: true });
+      dodge.forEach(item => {
+        guard.hand.splice(guard.hand.indexOf(item), 1);
+        window.BattleCards?.put(
+          state.battle, guard, item, "discard", { skipAnim: true });
+      });
       window.BattleCards?.queueResponse?.(state.battle, guard, {
         type: "response", id: window.GameRandom.id("og"),
-        uid: guard.uid, side: guard.side, card: dodge,
-      }, visualHandBefore);
+        uid: guard.uid, side: guard.side,
+        // 出牌区按实际张数记录（cards 供 recordResponse 展开）
+        cards: dodge.length > 1 ? dodge : null,
+        card: dodge.length > 1 ? { ...dodge[0], name: "闪×2" } : dodge[0],
+      }, visualHandBefore, window.BattleCards.visibleHandCount(guard));
       window.NonokaLokiSkills?.afterCardResponded?.(
-        state, guard, actor, dodge, api);
+        state, guard, actor, dodge[0], api);
       api.afterDodged?.(state, actor, guard, card);
       window.BattleLog.add(
-        state, `${guard.name} 为${target.name}护驾，使用${dodge.name}抵消杀。`);
+        state, `${guard.name} 为${target.name}护驾，使用`
+        + `${dodge.length > 1 ? "两张闪" : dodge[0].name}抵消杀。`);
       return { dodged: true, hpLoss: 0 };
     }
     window.BattleLog.add(state, `${guard.name} 为${target.name}护驾，改为承受本次伤害。`); return api.hitWithoutDodge(state, actor, guard, amount, source, card);
   }
   function autoGuard(allies, amount, card, api) {
+    // 双闪杀：只有凑得出 2 张闪的友方才算"能护驾"，否则会选一个
+    // 只出得起 1 张闪的人白白替奥菲莉亚承受伤害
+    const required = card?.krowFemaleTarget || card?.twoDodgesRequired ? 2 : 1;
     return allies.reduce((best, u) => {
-      const canDodge = visible(u).some(c => api.canDodge(card, c)), favorite = u.ref === "aileng" ? 18 : u.ref === "lokar" ? 12 : 0, survives = u.hp > amount ? 8 : -18;
+      const canDodge = visible(u).filter(c => api.canDodge(card, c)).length >= required, favorite = u.ref === "aileng" ? 18 : u.ref === "lokar" ? 12 : 0, survives = u.hp > amount ? 8 : -18;
       const score = (canDodge ? 100 : 0) + favorite + survives + u.hp / 4;
       return !best || score > best.score ? { u, score } : best;
     }, null)?.u;
