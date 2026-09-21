@@ -35,15 +35,16 @@ const landmineTpl = `(() => {
   });
   b.enemies[0].hand = [];
   window.__log = [];
-  if (!window.__hooked) {
-    const orig = window.BattleAI.choose;
-    window.BattleAI.choose = function (bb, actor, canPlay) {
-      let r = null; try { r = orig(bb, actor, canPlay); } catch (err) {}
-      window.__log.push({ actor: actor?.name, move: r?.card?.name || null });
-      return r;
-    };
-    window.__hooked = true;
-  }
+  // 只保存一次原始 choose：后续场景都基于 __origChoose 包装，避免链式包装。
+  // 旧写法用 __hooked 只装一次，导致场景2/4 的注入被跳过；场景3 又无条件再包一层，
+  // 造成 __log 每条记录两次。统一为"每次重包装、orig 永远指向最初版本"。
+  if (!window.__origChoose) window.__origChoose = window.BattleAI.choose;
+  const orig = window.__origChoose;
+  window.BattleAI.choose = function (bb, actor, canPlay) {
+    let r = null; try { r = orig(bb, actor, canPlay); } catch (err) {}
+    window.__log.push({ actor: actor?.name, move: r?.card?.name || null });
+    return r;
+  };
   window.render();
   return { enemy: e.name, allyCounts: b.allies.map(u => (u.hand || []).length),
     allyNames: b.allies.map(u => u.name) };
@@ -74,15 +75,25 @@ const snipeTpl = `(() => {
   });
   b.enemies[0].hand = [];
   window.__log = [];
-  if (!window.__hooked) {
-    const orig = window.BattleAI.choose;
-    window.BattleAI.choose = function (bb, actor, canPlay) {
-      let r = null; try { r = orig(bb, actor, canPlay); } catch (err) {}
-      window.__log.push({ actor: actor?.name, move: r?.card?.name || null });
-      return r;
-    };
-    window.__hooked = true;
-  }
+  if (!window.__origChoose) window.__origChoose = window.BattleAI.choose;
+  const orig = window.__origChoose;
+  window.BattleAI.choose = function (bb, actor, canPlay) {
+    let r = null;
+    // 确定性注入：狙击锁定成立后强制打出实体单体杀。
+    // AI 随机决策可能接着打偷窃/蓄力而不打杀，导致"狙击目标触发"战报缺失（flaky）。
+    if (actor?.name === "贵族军狙击手" && actor?.ruinsSniperLocked) {
+      let kill = (actor.hand || []).find(c => window.CardUtils?.isEntitySingleKill?.(c));
+      if (!kill) {
+        kill = { name: "杀", type: "kill", suit: "♠" };
+        actor.hand = actor.hand || [];
+        actor.hand.push(kill);
+      }
+      r = { card: kill, target: (bb.allies || [])[0], score: 999 };
+    }
+    if (!r) { try { r = orig(bb, actor, canPlay); } catch (err) {} }
+    window.__log.push({ actor: actor?.name, move: r?.card?.name || null });
+    return r;
+  };
   window.render();
   return { enemy: e.name, enemySpade: (e.hand || []).filter(c => c.suit === "♠").length };
 })()`;
@@ -111,7 +122,8 @@ const tankTpl = `(() => {
   window.__tank = { loaded: false, fired: false };
   // 确定性注入：AI 决策本身是随机的，可能直接把2张杀打出去而不装填，导致本项 flaky。
   // 这里只固定"决策结果"，执行仍走真实链路（useSkillCard → useTankShell → 下回合 tankPrepare）。
-  const origChoose = window.BattleAI.choose;
+  if (!window.__origChoose) window.__origChoose = window.BattleAI.choose;
+  const origChoose = window.__origChoose;
   window.BattleAI.choose = function (bb, actor, canPlay) {
     let r = null; try { r = origChoose(bb, actor, canPlay); } catch (err) {}
     if (actor?.ai === "ruins_tank" && !actor.usedRuinsTankShell) {
@@ -143,15 +155,28 @@ const droneTpl = `(() => {
   b.allies.forEach(u => { u.hand = []; u.hp = 200; u.stats = u.stats || {}; u.stats.handLimit = 99; });
   b.enemies[0].hand = [];
   window.__log = [];
-  if (!window.__hooked) {
-    const orig = window.BattleAI.choose;
-    window.BattleAI.choose = function (bb, actor, canPlay) {
-      let r = null; try { r = orig(bb, actor, canPlay); } catch (err) {}
-      window.__log.push({ actor: actor?.name, move: r?.card?.name || null });
-      return r;
-    };
-    window.__hooked = true;
-  }
+  if (!window.__origChoose) window.__origChoose = window.BattleAI.choose;
+  const orig = window.__origChoose;
+  window.__droneKillDone = false;
+  window.BattleAI.choose = function (bb, actor, canPlay) {
+    let r = null;
+    // 确定性注入：麻痹毒子弹是锁定技（被动），必须真实打出单体【杀】才会触发。
+    // AI 随机决策可能选灵魂锁链/物资补给/魔力提炼而完全不打杀，导致麻痹与毒层数都是 0（flaky 根因）。
+    // 这里只固定"第一次出牌决策"为实体单体杀，执行仍走真实链路（beforeKillUsed→afterDamage）。
+    if (actor?.name === "攻击型无人机" && !window.__droneKillDone) {
+      let kill = (actor.hand || []).find(c => window.CardUtils?.isEntitySingleKill?.(c));
+      if (!kill) {
+        kill = { name: "杀", type: "slash", suit: "♠" };
+        actor.hand = actor.hand || [];
+        actor.hand.push(kill);
+      }
+      r = { card: kill, target: (bb.allies || [])[0], score: 999 };
+      window.__droneKillDone = true;
+    }
+    if (!r) { try { r = orig(bb, actor, canPlay); } catch (err) {} }
+    window.__log.push({ actor: actor?.name, move: r?.card?.name || null });
+    return r;
+  };
   window.render();
   return { enemy: e.name };
 })()`;
