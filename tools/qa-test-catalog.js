@@ -18,6 +18,8 @@ const standalone = Object.freeze([
   "test-artina-sniper-converted-live.js",
   "test-artina-sniper-boss-live.js",
   "test-sniper-converted-dodge-live.js",
+  "test-ruins-sniper-once-live.js",
+  "test-tank-shell-dodge-live.js",
   "test-ruins-landmine-rps-live.js",
   "test-landmine-counter-response-live.js",
   "test-landmine-rps-dungeon-live.js",
