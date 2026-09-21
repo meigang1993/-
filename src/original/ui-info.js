@@ -10,6 +10,12 @@ window.GameUIInfo = (U) => {
       ? `<span class="green-hat-badge rage-mark-badge" title="狂战标记：${count}/10">狂战×${count}</span>`
       : "";
   }
+  function tankShellMark(u) {
+    // 梅尔卡坦克：装填完毕后到下回合准备阶段发射前，头像上显示炮弹标记
+    return u?.ruinsTankShellReady
+      ? `<span class="green-hat-badge tank-shell-badge" title="炮弹标记：下回合准备阶段对所有敌方角色造成攻击力2倍伤害，每名角色需打出2张【闪】抵消">炮弹</span>`
+      : "";
+  }
   function missionMark(u) {
     if (u?.ref !== "hoshino_yi" || u.hoshinoMissionResult) return "";
     const count = Math.max(0, Math.min(20, u.hoshinoMissionCards || 0));
@@ -176,5 +182,5 @@ window.GameUIInfo = (U) => {
     const stats = u?.id && window.RelicSystem ? RelicSystem.statsOf(state, u.id) : null;
     return infoPanel(u, state.infoTab, stats);
   }
-  return { greenHatMark, foodMark, rageMark, vulnerableMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, mariaNumberMark, mariaBlessingMark, findInfoUnit, infoPanel, infoPanelForState };
+  return { greenHatMark, foodMark, rageMark, tankShellMark, vulnerableMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, mariaNumberMark, mariaBlessingMark, findInfoUnit, infoPanel, infoPanelForState };
 };
