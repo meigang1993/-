@@ -54,15 +54,27 @@ window.BattleEffectHandlers = (() => {
     const b = state.battle;
     if (!b || !evt?.card || evt._trailRecorded) return;
     const actor = (b.allies || []).concat(b.enemies || []).find(unit => unit.uid === evt.uid);
-    const card = window.CardUtils?.clean?.(evt.card) || { ...evt.card };
-    const skillName = window.UICommon?.activeSkillName?.(actor, evt.card) || "";
-    if (skillName) card.skillName = skillName;
-    card._playedByName = actor?.name || "";
-    card._playedAction = evt.action || responseAction(card);
-    card._destinationPile = evt.pile || (card.void || card.copiedByEdis
-      ? "consumed" : "discard");
-    card._destinationSide = evt.destinationSide || actor?.side || evt.side || "ally";
-    card._cardAnimationId = evt.id;
+    const snapshot = (raw, source) => {
+      const card = window.CardUtils?.clean?.(raw) || { ...raw };
+      const skillName = window.UICommon?.activeSkillName?.(actor, source || raw) || "";
+      if (skillName) card.skillName = skillName;
+      card._playedByName = actor?.name || "";
+      card._playedAction = evt.action || responseAction(card);
+      card._destinationPile = evt.pile || (card.void || card.copiedByEdis
+        ? "consumed" : "discard");
+      card._destinationSide = evt.destinationSide || actor?.side || evt.side || "ally";
+      card._cardAnimationId = evt.id;
+      return card;
+    };
+    // 一次打出多张响应牌（双闪：圣剑无双 / 坦克炮弹 / 肉欲之欢 / 克罗女性目标）：
+    // 实际消耗几张就在出牌区记录几张，此前只记录合并卡「闪×2」导致只显示 1 张。
+    if (evt.cards?.length > 1) {
+      const recorded = evt.cards.map(raw => snapshot(raw, evt.card));
+      recorded.slice().reverse().forEach(card => (b.played ||= []).unshift(card));
+      evt._trailRecorded = true;
+      return recorded[0];
+    }
+    const card = snapshot(evt.card, evt.card);
     (b.played ||= []).unshift(card);
     evt._trailRecorded = true;
     return card;
