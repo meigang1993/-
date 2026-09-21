@@ -98,8 +98,10 @@ window.BattleDamageResolution = ({
         return { dodged: true, hpLoss: 0 };
       }
     }
+    // 神速之翼：对所有"需用【闪】抵消"的牌生效（含【杀】、机枪扫杀、
+    // 坦克炮弹等带 responseKind 的牌），与技能描述一致
     if (!response && !effectiveCard?.ignoreResponse
-      && deps.isKillCard(effectiveCard)) {
+      && needsResponse(effectiveCard)) {
       response = window.FloraCarlosSkills?.dodgeAsFlash?.(
         state, target, actor, effectiveCard,
         { ...deps, afterCardResponded: window.NonokaLokiSkills?.afterCardResponded },
