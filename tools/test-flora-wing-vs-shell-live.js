@@ -1,7 +1,8 @@
 // 专项实战：神速之翼（芙萝娅转换闪）对阵 梅尔卡坦克·坦克炮弹
-// 当前预期：炮弹卡 responseKind="dodge"，但转换闪入口只判 isKillCard，
-// 导致神速之翼对阵炮弹不触发（BUG）。
-// 修复后应为：可用【闪】抵消的牌（杀 或 responseKind==="dodge"）均可触发转换闪。
+// 回归：神速之翼（芙萝娅转换闪）对阵 梅尔卡坦克·坦克炮弹。
+// 历史 BUG：炮弹为技能牌（responseKind="dodge"），转换闪入口只判 isKillCard，
+// 导致神速之翼对阵炮弹不触发。修复后入口改判 needsResponse，
+// 所有"需用【闪】抵消"的牌（含机枪扫杀、坦克炮弹）均可触发转换闪。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
