@@ -41,6 +41,10 @@ window.BattleDodgeCards = ({ deps, ctx, canDodge }) => {
       id: `rs${deps.nextAnim()}`,
       uid: target.uid,
       side: target.side,
+      // cards 为实际打出的每一张响应牌（双闪时是 2 张）：
+      // 出牌区据此逐张记录，避免"打出 2 张闪却只显示 1 张"。
+      // card 仍保留合并展示卡「闪×2」供飞行动画使用。
+      cards: played.length > 1 ? played : null,
       card: played.length > 1
         ? { ...(converted || played[0]), name: "闪×2" } : played[0],
       pile,
