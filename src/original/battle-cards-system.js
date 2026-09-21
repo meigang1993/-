@@ -77,7 +77,10 @@ window.BattleCards = window.BattleCards || (() => {
   }
   function putMany(b, holder, cards, pile = "discard", opts = {}) {
     const list = (cards || []).filter(Boolean);
-    if (!list.length) return;
+    // 返回已处理张数（真值）：调用方若写 `putMany(...) || 逐张 put(...)`，
+    // undefined 会让兜底分支再跑一遍，导致弃置的牌被重复入弃牌堆、
+    // 出牌区重复显示（坦克炮弹弃2张杀曾显示4张）。
+    if (!list.length) return 0;
     const discardCards = pile === "discard"
       ? list.filter(card => !card.void && !card.copiedByEdis) : list;
     if (!opts.skipAnim && pile === "discard" && discardCards.length && b?.animQueue) b.animQueue.push({
@@ -94,6 +97,7 @@ window.BattleCards = window.BattleCards || (() => {
       });
     });
     if (!opts.skipAfterHandLost) afterHandLost(b, holder);
+    return list.length;
   }
   return {
     afterHandLost, countsForHand, visibleHandCount, queueResponse, syncStatusCards,
