@@ -12,7 +12,7 @@ window.GuestOpheliaGuard = (deps) => {
     if (!guard) return null;
     line(state, target, "为我护驾", guard); if (guard.ref === "lokar") api.draw(guard, 2, state.battle); if (guard.ref === "aileng") api.draw(guard, 4, state.battle);
     if (window.BondiSkills?.cancelKillCard?.(state, guard, card)) return { dodged: false, hpLoss: 0 };
-    const dodge = card?.ignoreResponse ? null : visible(guard).find(c => api.canDodge(card, c));
+    const dodge = visible(guard).find(c => api.canDodge(card, c));
     if (dodge) {
       const visualHandBefore = window.BattleCards.visibleHandCount(guard);
       guard.hand.splice(guard.hand.indexOf(dodge), 1);
@@ -33,7 +33,7 @@ window.GuestOpheliaGuard = (deps) => {
   }
   function autoGuard(allies, amount, card, api) {
     return allies.reduce((best, u) => {
-      const canDodge = !card?.ignoreResponse && visible(u).some(c => api.canDodge(card, c)), favorite = u.ref === "aileng" ? 18 : u.ref === "lokar" ? 12 : 0, survives = u.hp > amount ? 8 : -18;
+      const canDodge = visible(u).some(c => api.canDodge(card, c)), favorite = u.ref === "aileng" ? 18 : u.ref === "lokar" ? 12 : 0, survives = u.hp > amount ? 8 : -18;
       const score = (canDodge ? 100 : 0) + favorite + survives + u.hp / 4;
       return !best || score > best.score ? { u, score } : best;
     }, null)?.u;
