@@ -224,7 +224,7 @@ window.RuinsGruntSkills = (() => {
       title: "狙击目标", cards: [{ ...shown }],
     });
     window.BattleLines?.skill?.(state, actor, "狙击目标", target);
-    log(state, `${actor.name} 展示${target.name}的${suit}${shown.name}，双方${suit}花色手牌为${own}/${foe}，${actor.ruinsSniperLocked ? "后续实体单体杀不可响应" : "未取得优势"}。`);
+    log(state, `${actor.name} 展示${target.name}的${suit}${shown.name}，双方${suit}花色手牌为${own}/${foe}，${actor.ruinsSniperLocked ? "锁定成立" : "未取得优势"}。`);
     return true;
   }
 
@@ -236,6 +236,9 @@ window.RuinsGruntSkills = (() => {
     if (!isEntitySingle) return;
     if (!card.ignoreResponse) card._tempIgnoreResponse = true;
     card.ignoreResponse = true;
+    // 与亚缇娜【狙击目标】一致：锁定是一次性的，命中一张实体单体【杀】后立即失效，
+    // 不再覆盖本回合后续的杀（此前为「本回合持续」，与描述「下一张」不符）。
+    actor.ruinsSniperLocked = false;
     log(state, `${actor.name} 的狙击目标触发，对${target.name}的实体单体杀不可响应。`);
   }
 
@@ -297,10 +300,13 @@ window.RuinsGruntSkills = (() => {
     const targets = alive(state.battle.allies);
     if (!targets.length) return;
     window.BattleLines?.skill?.(state, unit, "坦克炮弹");
-    log(state, `${unit.name} 发射坦克炮弹，对所有敌方角色各造成${amount}点伤害（每人需打出2张闪抵消）。`);
+    log(state, `${unit.name} 发射坦克炮弹，对所有敌方角色各造成${amount}点伤害，每名角色需打出2张【闪】才能抵消。`);
     const card = {
       name: "坦克炮弹", type: "skill", sweep: true, targetless: true,
-      twoDodgesRequired: true, virtual: true, scale: "attack",
+      virtual: true, scale: "attack",
+      // 与"机枪扫杀/枪林弹雨"同款：AOE 技能牌靠 responseKind 进入闪响应流程，
+      // twoDodgesRequired 使其需要 2 张闪（同莫娜·圣剑无双的双闪口径）
+      responseKind: "dodge", twoDodgesRequired: true,
     };
     const actions = targets.map(target =>
       window.BattleReactionQueue?.damageAction?.(unit, target, amount, "坦克炮弹", card) || {
