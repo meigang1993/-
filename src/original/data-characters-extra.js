@@ -63,8 +63,8 @@ window.GameDataCharactersExtra = [
     stats: { attack: 3, magic: 1, speed: 3, maxHp: 38, bloodlust: 1, handLimit: 5, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "防守夺牌与手牌转移辅助。勾爪陷阱在成功响应敌方牌后夺取手牌，急逃为空手状态提供应急补牌，贡献计划将全部手牌和下回合杀意上限交给队友。",
     skills: [
-      { name: "勾爪陷阱", type: "passive", icon: "⭐", text: "锁定技，当敌方角色使用牌指定你为目标后，若你因此使用【闪】或【看破】，你获得该角色1张手牌。" },
-      { name: "急逃", type: "passive", icon: "⭐", text: "锁定技，每回合限一次，当敌方角色使用单体【杀】指定你为目标时，若你没有手牌，你摸X张牌（X为你的每回合摸牌数）。" },
+      { name: "勾爪陷阱", type: "passive", icon: "⭐", text: "锁定技，当你使用响应牌抵消敌方角色对你使用的牌后，你获得该角色1张手牌；若夺得的是状态牌，则改为移除并消耗之。" },
+      { name: "急逃", type: "passive", icon: "⭐", text: "锁定技，每回合限一次，当敌方角色使用单体【杀】指定你为目标时，若你没有手牌，你摸2+X张牌（X为你的每回合摸牌数）。" },
       { name: "贡献计划", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以将所有手牌交给一名其他友方角色，令其下个回合的杀意上限+1。", card: { name: "贡献计划", type: "tactic", aceContribution: true, allyTarget: true, icon: "⚔️", text: "将所有手牌交给一名其他友方角色，令其下个回合的杀意上限+1。" } }
     ]
   },
