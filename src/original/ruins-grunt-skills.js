@@ -283,8 +283,9 @@ window.RuinsGruntSkills = (() => {
       if (index >= 0) actor.hand.splice(index, 1);
     });
     if (singles.length) {
-      window.BattleCards?.putMany?.(state.battle, actor, singles, "discard", { showDiscard: true })
-        || singles.forEach(card => window.BattleCards?.put?.(state.battle, actor, card, "discard", { showDiscard: true }));
+      // 不再写 `putMany(...) || 逐张 put(...)` 兜底：putMany 早先返回 undefined，
+      // 兜底分支会再跑一遍，弃置的 2 张杀被重复入弃牌堆且出牌区显示 4 张。
+      window.BattleCards?.putMany?.(state.battle, actor, singles, "discard", { showDiscard: true });
     }
     actor.ruinsTankShellReady = true;
     window.BattleLines?.skill?.(state, actor, "坦克炮弹");
