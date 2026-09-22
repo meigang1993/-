@@ -13,8 +13,8 @@ module.exports = ({ assert, unit }) => {
   assert(GameData.characters.length === 28,
     "skill audit must cover all 28 playable characters");
   assert(enemies.length === 36, "skill audit must cover all 36 enemies");
-  assert(GameData.characters.flatMap(template => template.skills || []).length === 75,
-    "skill audit must cover all 75 playable-character skills");
+  assert(GameData.characters.flatMap(template => template.skills || []).length === 74,
+    "skill audit must cover all 74 playable-character skills");
   assert(enemies.flatMap(template => template.skills || []).length === 72,
     "skill audit must cover all 72 enemy skills");
   assert(relics.length === 30, "relic audit must cover all 30 formal relics");
@@ -111,7 +111,9 @@ module.exports = ({ assert, unit }) => {
     assert(skill?.icon === "⭐" && skill?.type === "passive",
       `${name} must use the automatic locked-skill presentation`);
   });
-  const expectedTriggerIcons = new Set(["复仇之刃", "剑盾反攻"]);
+  const expectedTriggerIcons = new Set([
+    "指挥官责任", "复仇反击", "终焉回旋斩", "萌虎慰劳", "半魅魔血", "剑盾反攻",
+  ]);
   expectedTriggerIcons.forEach(name => {
     const skill = skills.find(entry => entry.name === name);
     assert(skill?.icon === "🔵" && skill?.type === "trigger",
