@@ -23,7 +23,7 @@ window.SuccubusCodex = (() => {
     return `<article id="codex-${entry.id}" class="codex-char ${unlocked ? "unlocked" : "locked"}${flash}"><div class="codex-portrait" tabindex="0">${entry.art ? art(entry) : silhouette(entry)}</div><div class="codex-skill-pop">${U.esc(skills)}</div><b>${U.esc(entry.name)}</b><p>${U.esc(roleOf(entry))}</p><p class="unlock-line ${unlocked ? "owned" : "locked"}">${unlockText(entry)}</p>${mother}${father}${grandfather}${son}</article>`;
   }
   function roleOf(c) { return roles[c.id] || c.role || "身份未知"; }
-  function skillText(c) { const skills = U.skillsOf(c).filter(s => s.source !== "relic" && s.showInSkillInfo !== false).map(s => `${s.icon || s.card?.icon || "⭐"} ${s.name}\n${cleanSkillText(U.skillText(s))}`).join("\n\n") || "暂无技能"; return [U.rolePositionText(c), skills].filter(Boolean).join("\n\n"); }
+  function skillText(c) { return U.skillsOf(c).filter(s => s.source !== "relic" && s.showInSkillInfo !== false).map(s => `${s.icon || s.card?.icon || "⭐"} ${s.name}\n${cleanSkillText(U.skillText(s))}`).join("\n\n") || "暂无技能"; }
   function cleanSkillText(text) { return String(text || "").replace(/[。；;]?\s*台词[:：][\s\S]*$/, "").trim(); }
   function art(c) { return c.art ? `<img src="${U.esc(c.art)}" alt="${U.esc(c.name)}" loading="lazy" decoding="async">` : `<span>${U.esc(c.face || c.name[0])}</span>`; }
   function silhouette(c) { return `<span class="codex-silhouette">${U.esc(c.face || c.name[0])}</span>`; }
