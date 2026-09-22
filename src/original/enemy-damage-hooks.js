@@ -38,6 +38,7 @@ window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
   }
 
   function afterDamage(state, actor, target, card, hpLoss, damage, cardUser = actor) {
+    // 精灵守护属受击触发（其他友方受伤后给护甲），按设计逐段结算。
     window.GuardKellySkills?.afterDamage?.(state, actor, target, card, hpLoss, cardUser);
     if (hpLoss && target.shock && !card?.shockBonus) {
       damage(state, target, target.shock, "感电", actor, {
