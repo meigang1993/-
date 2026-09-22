@@ -48,7 +48,12 @@ window.BattleReactionQueue = (() => {
     if (settling) return true;
     const base = {
       actorUid: actor.uid,
-      targetUid: target.uid,
+      // 护驾已把本次伤害转移到护驾者身上，连击追加段须继续打护驾者，
+      // 否则会重新以奥菲莉亚为目标再次触发护驾，导致追加段丢失。
+      // 转移目标须为存活友方，避免残留/异常值让剩余段打错人
+      targetUid: (battle.opheliaGuardRedirectUid
+        && (battle.allies || []).some(u => u.uid === battle.opheliaGuardRedirectUid && u.hp > 0))
+        ? battle.opheliaGuardRedirectUid : target.uid,
       amount,
       source,
       card: { ...card },
