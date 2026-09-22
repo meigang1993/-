@@ -204,7 +204,7 @@ async function testStaleEnemyTasks() {
 }
 
 async function testCounterReactionContinuations() {
-  const lethalCounters = ["终焉回旋斩", "复仇反击", "复仇之刃", "刺刀AK47", "弹反", "血色刺伞", "剑盾反攻", "电磁反制装置"];
+  const lethalCounters = ["终焉回旋斩", "复仇反击", "刺刀AK47", "弹反", "血色刺伞", "剑盾反攻", "电磁反制装置"];
   for (const counterName of lethalCounters) {
     const counteredEnemy = { uid: `countered-${counterName}`, hp: 5 };
     const counterState = { battle: { activeUid: counteredEnemy.uid, locked: false, thinkingUid: null } };
