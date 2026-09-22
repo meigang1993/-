@@ -60,7 +60,7 @@ function runKaiichiTeamPursuit() {
     assert.strictEqual(kaiichi.hp, 29,
       "only the first pursuit may hit Kaiichi before the first transfer");
     assert(window.BattleReactionQueue.pending(state.battle),
-      "the unfinished Nanali counter and Edis repeat must remain queued");
+      "the unfinished Edis repeat must remain queued");
 
     const first = window.HoshinoSkills.resolveShare(state, null);
     assert(first.ok && first.resumeEnemyUid === edis.uid,
@@ -92,8 +92,10 @@ function runKaiichiTeamPursuit() {
       { uid: kaiichi.uid, count: 2 },
       { uid: kaiichi.uid, count: 2 },
     ], "Edis attacking a teammate must make both Berserk Chainsaw pursuits draw two cards for Kaiichi");
-    assert.strictEqual(edis.hp, 26,
-      "all four Nanali revenge attacks must resume instead of being lost");
+    assert.strictEqual(edis.hp, 30,
+      "Edis must take no revenge damage now that Nanali's 复仇之刃 has been removed");
+    assert.strictEqual(nanali.hp, 28,
+      "the resuming Berserk Chainsaw repeats must still land instead of being lost");
   } finally {
     global.setTimeout = nativeSetTimeout;
   }
