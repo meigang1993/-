@@ -98,8 +98,14 @@ window.RelicSystem = (() => {
   function ownedNames(state) {
     return new Set(normalizeNames([...(state.relicCollection || []), ...(state.resources?.relics || []), ...Object.values(state.equipment || {}).flat(), ...Object.values(equipMap(state) || {}).flat()]));
   }
+  // enemy 可为单个 id 或 id 数组（机械AI龙同时掉落推进器与智能大脑）
+  function fromEnemy(name, enemyId) {
+    if (!enemyId) return true;
+    const value = special[name]?.enemy;
+    return Array.isArray(value) ? value.includes(enemyId) : value === enemyId;
+  }
   function randomElite(enemyId, exclude = new Set(), owner = window.state) {
-    const pool = eliteRelics.filter(r => (!enemyId || special[r].enemy === enemyId) && !exclude.has(r));
+    const pool = eliteRelics.filter(r => fromEnemy(r, enemyId) && !exclude.has(r));
     return pool.length ? sample(pool, owner) : null;
   }
   function sample(pool, owner) { return window.GameRandom.sample(pool, owner); }
@@ -131,7 +137,7 @@ window.RelicSystem = (() => {
     return bindings.bind(state, render, persist);
   }
   function enemyRelics(enemyId) {
-    return eliteRelics.filter(r => special[r].enemy === enemyId);
+    return eliteRelics.filter(r => fromEnemy(r, enemyId));
   }
   const skillIcon = name => {
     const d = data(name);
