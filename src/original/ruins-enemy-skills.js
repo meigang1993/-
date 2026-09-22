@@ -1,9 +1,9 @@
 window.RuinsEnemySkills = (() => {
   // 惰性解析：避免依赖打包顺序（曾因 enemy 在 grunt 之前加载而永久为空）
   const grunt = new Proxy({}, { get: (_, key) => window.RuinsGruntSkills?.[key] });
-  const dragon = window.RuinsDragonSkills;
-  const witherer = window.RuinsWithererSkills;
-  const elite = window.RuinsEliteSkills;
+  const dragon = new Proxy({}, { get: (_, key) => window.RuinsDragonSkills?.[key] });
+  const witherer = new Proxy({}, { get: (_, key) => window.RuinsWithererSkills?.[key] });
+  const elite = new Proxy({}, { get: (_, key) => window.RuinsEliteSkills?.[key] });
   const log = (state, text) => window.BattleLog?.add?.(state, text);
 
   const isRuins = unit => typeof unit?.ai === "string" && unit.ai.startsWith("ruins_");
