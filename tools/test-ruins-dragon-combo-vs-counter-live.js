@@ -4,6 +4,7 @@
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
+const fs = require("fs");
 const { chromium } = require("playwright");
 const { openGame, startRegressionBattle } = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
@@ -105,22 +106,28 @@ const comboTpl = `(() => {
     check("2.1 第1次达阈值 → 机尾机枪发动（获得护甲）", g1.block > 0,
       `护甲=${g1.block} hits=${g1.hits}`);
 
-    // 模拟进入下一个我方回合：龙的准备阶段应重置本回合受击计数
+    // 模拟进入下一个我方角色回合：按「每名角色回合限一次」，allyTurnStart 应同时重置
+    // 受击计数与开火标记。（此处原断言为过时的「每场战斗限一次」口径，已按设定更正）
     await page.evaluate(`(() => {
-      const e = window.state.battle.enemies[${DRAGON}];
+      const b = window.state.battle;
+      const e = b.enemies[${DRAGON}];
       e.block = 0;
-      window.RuinsEnemySkills?.prepare?.(window.state, e, window.BattleSystem.damage);
+      window.RuinsDragonSkills?.allyTurnStart?.(window.state, b.allies[0]);
       return true; })()`);
     const after = await page.evaluate(`(() => { const e = window.state.battle.enemies[${DRAGON}];
       return { hits: e.ruinsHitsThisTurn || 0, gunFired: !!e.ruinsGunFired }; })()`);
-    check("2.2 准备阶段重置本回合受击计数", after.hits === 0, `hits=${after.hits}`);
+    check("2.2 我方角色回合开始重置受击计数与开火标记",
+      after.hits === 0 && after.gunFired === false,
+      `hits=${after.hits} gunFired=${after.gunFired}`);
     const g2 = await allyHit();
-    // 按设计决策：机尾机枪为「每场战斗限一次」，故新回合再达阈值也不再发动
-    check("2.3 机尾机枪为每场战斗限一次（新回合不再发动）",
-      g2.block === 0 && after.gunFired,
-      `护甲=${g2.block} gunFired=${after.gunFired}`);
-    check("2.4 描述已同步「每场战斗限一次」",
-      true, "见 data-ruins-sand-city-enemies.js 机尾机枪 text");
+    // 按设定：机尾机枪为「每名角色回合限一次」，新的我方角色回合再达阈值应可再次发动
+    check("2.3 机尾机枪为每名角色回合限一次（新角色回合可再发动）",
+      g2.block > 0, `护甲=${g2.block}`);
+    const dragonText = fs.readFileSync(path.join(__dirname, "..", "src", "original",
+      "data-ruins-sand-city-enemies.js"), "utf8");
+    check("2.4 描述已同步「每名角色回合限一次」",
+      /机尾机枪[\s\S]{0,400}?每名角色回合限一次/.test(dragonText),
+      "见 data-ruins-sand-city-enemies.js 机尾机枪 text");
 
     // ---------- 场景3：连击 N 次是否各自触发受击方反击入队 ----------
     const counterTpl = `(() => {
