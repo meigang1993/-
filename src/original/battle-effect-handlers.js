@@ -6,7 +6,7 @@ window.BattleEffectHandlers = (() => {
   } = U;
   const cards = window.BattleEffectCards(U);
   const motion = window.BattleEffectCardMotion(U);
-  const DEATH_ANIM_MS = 760, CLASH_WAIT_MS = 1700, JUDGEMENT_WAIT_MS = 1100, REVEAL_WAIT_MS = 1000;
+  const DEATH_ANIM_MS = 760, CLASH_WAIT_MS = 1700, JUDGEMENT_WAIT_MS = 1100, DICE_WAIT_MS = 900, REVEAL_WAIT_MS = 1000;
   const fatal = unit => (unit?.visualHp ?? unit?.hp ?? 0) <= 0 && !window.SakuraRisaSkills?.pendingRevival?.(unit);
   async function clash(state, evt, renderStep, active = () => true) {
     if (state.battle) state.battle.lastClash = evt;
@@ -23,6 +23,15 @@ window.BattleEffectHandlers = (() => {
     if (evt.discardTo && evt.card && !evt.discardTo.includes(evt.card)) evt.discardTo.push(evt.card);
     evt.commit?.();
     if (state.battle?.judgement?.id === evt.id) state.battle.judgement = null; const fatal = applyDeferredDeath(state, evt.uid); renderStep(); if (fatal) await wait(DEATH_ANIM_MS);
+  }
+  async function dice(state, evt, renderStep, active = () => true) {
+    // 机械AI龙·电钻火花：弹窗展示骰子点数
+    if (!state.battle) return;
+    state.battle.dice = evt; renderStep();
+    await wait(DICE_WAIT_MS);
+    if (!active()) return;
+    if (state.battle?.dice?.id === evt.id) state.battle.dice = null;
+    renderStep();
   }
   async function response(state, evt, renderStep, active = () => true) {
     const actor = state.battle?.allies?.concat(state.battle?.enemies || [])
@@ -158,5 +167,5 @@ window.BattleEffectHandlers = (() => {
   function clearVisuals(state) {
     state.battle?.allies?.concat(state.battle?.enemies || []).forEach(u => { delete u.visualHp; delete u.visualBlock; delete u.visualDefense; delete u.visualHandCount; });
   }
-  return { DEATH_ANIM_MS, ...cards, clash, judgement, revealCards, response, slashText, applyVisual, clearVisuals };
+  return { DEATH_ANIM_MS, ...cards, clash, judgement, dice, revealCards, response, slashText, applyVisual, clearVisuals };
 })();
