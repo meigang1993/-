@@ -27,7 +27,7 @@ window.CharacterProgression = (() => {
     elrana: { maxHp: 134.4, attack: 8.19, magic: 27.3, speed: 15.75 },
     little_elrana: { maxHp: 109.2, attack: 13.65, magic: 21.84, speed: 14 },
     ace: { maxHp: 117.6, attack: 13.65, magic: 8.19, speed: 19.25 },
-    nanali: { maxHp: 100.8, attack: 19.11, magic: 8.19, speed: 14 },
+    nanali: { maxHp: 92.4, attack: 24.57, magic: 8.19, speed: 15.75 },
     ophelia: { maxHp: 100.8, attack: 5.46, magic: 27.3, speed: 17.5 },
     aileng: { maxHp: 117.6, attack: 19.11, magic: 16.38, speed: 21 },
     besta: { maxHp: 84, attack: 8.19, magic: 27.3, speed: 7 },
