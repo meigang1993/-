@@ -4,8 +4,14 @@ window.GuestOpheliaGuard = (deps) => {
     window.BattleLines?.promptVisible?.(battle, "opheliaGuard")
     ?? !!(battle?.opheliaGuard && !battle.animQueue?.length
       && !window.BattleEffects?.animating && !window.BattleEffects?.draining);
+  // 转移目标必须是存活友方：避免残留或异常值把连击剩余段指向错误单位（打错人）
+  const validRedirect = (b, uid) => (!!uid
+    && (b.allies || []).some(u => u.uid === uid && u.hp > 0) ? uid : null);
   function guardOphelia(state, actor, target, amount, source, card, api) {
     if (target?.ref !== "ophelia" || actor?.side !== "enemy" || !isSlash(card) || (!card?.ignoreResponse && visible(target).some(c => api.canDodge(card, c)))) return null;
+    // 护驾只在整张杀的第 1 段触发：追加段（连击多段）直接结算给护驾者，不再弹窗。
+    // 否则每段都弹一次护驾，与半魅魔血等受击弹窗交替，剩余段极易丢失。
+    if (card?._opheliaGuardDone) return null;
     const allies = state.battle.allies.filter(u => u.uid !== target.uid && alive(u));
     if (!allies.length) return null;
     const guard = target.side === "ally" && !card?.forceAutoResponse ? pickManualGuard(state, target, allies, actor, amount, source, card) : autoGuard(allies, amount, card, api);
@@ -40,7 +46,18 @@ window.GuestOpheliaGuard = (deps) => {
         + `${dodge.length > 1 ? "两张闪" : dodge[0].name}抵消杀。`);
       return { dodged: true, hpLoss: 0 };
     }
-    window.BattleLog.add(state, `${guard.name} 为${target.name}护驾，改为承受本次伤害。`); return api.hitWithoutDodge(state, actor, guard, amount, source, card);
+    window.BattleLog.add(state, `${guard.name} 为${target.name}护驾，改为承受本次伤害。`);
+    // 护驾把伤害从奥菲莉亚转移到护驾者身上。此后本张牌的连击追加段必须继续打护驾者，
+    // 否则剩余段仍以奥菲莉亚为目标，会反复触发护驾弹窗（表现为追加攻击丢失）。
+    state.battle.opheliaGuardRedirectUid = guard.uid;
+    const guardResult = api.hitWithoutDodge(state, actor, guard, amount, source, card);
+    // 护驾者承担第 1 段伤害后，电钻火花等「造成伤害后再追加次数」的技能才摇骰，
+    // 此时总段数才最终确定；记下来供 resolveOpheliaGuard 重新计算追加段，
+    // 否则剩余段沿用护驾弹窗时的旧值（1 段→剩余 0），追加攻击会全部丢失。
+    state.battle.opheliaGuardRepeats = Math.max(1, card?.gatlingRepeats || 1);
+    // 本张牌已护驾过，后续追加段不再触发护驾。
+    card._opheliaGuardDone = true;
+    return guardResult;
   }
   function autoGuard(allies, amount, card, api) {
     // 双闪杀：只有凑得出 2 张闪的友方才算"能护驾"，否则会选一个
@@ -80,9 +97,23 @@ window.GuestOpheliaGuard = (deps) => {
     const groupCard = p.groupCard || p.card;
     const settling = b.pendingVictory || b.pendingDefeat || b.victoryScreen
       || b.defeat || b.testComplete;
-    if (!settling && p.remainingHits > 0) b.manualDodgeResume = { ...p, remainingHits: p.remainingHits };
+    // 护驾把伤害转移到了护驾者身上，连击追加段必须继续打护驾者；
+    // 若沿用 p.targetUid（奥菲莉亚），剩余段会重新触发护驾弹窗，表现为追加攻击丢失。
+    // 追加段继续打护驾者（本张牌只护驾一次，不再弹窗）。
+    // 段数须取护驾承担伤害后的最新总段数：护驾弹窗打断时电钻火花尚未摇骰，
+    // p.remainingHits 是旧值（常为 0），直接沿用会让追加攻击全部丢失。
+    const repeats = Math.max(b.opheliaGuardRepeats || 0, p.card?.gatlingRepeats || 1);
+    const remaining = Math.max(p.remainingHits || 0, repeats - 1);
+    if (!settling && remaining > 0) b.manualDodgeResume = {
+      ...p,
+      targetUid: validRedirect(b, b.opheliaGuardRedirectUid) || p.targetUid,
+      remainingHits: remaining,
+    };
     if (!settling && groupCard?.targetUids?.length && groupCard.nextTargetIndex != null) b.demonInvasionResume = { ...p, card: groupCard, targetUids: groupCard.targetUids, nextTargetIndex: groupCard.nextTargetIndex };
     delete b.opheliaGuardUid;
+    // 一次性消费：转移目标与段数只在本次护驾挂起剩余段时有效，用完即清。
+    b.opheliaGuardRedirectUid = null;
+    b.opheliaGuardRepeats = 0;
     return true;
   }
   return { guardOphelia, guardVisible, resolveOpheliaGuard };
