@@ -42,7 +42,10 @@ window.BountyRewards = (() => {
     if (task.type !== "hunt") return !!reward.type;
     if (!task.targetId) return false;
     if (reward.type === "card") return (GameData.eliteUnlocks?.[task.targetId] || []).includes(reward.card?.name);
-    if (reward.type === "relic") return RelicSystem.data?.(reward.relic)?.enemy === task.targetId;
+    if (reward.type === "relic") {
+      const src = RelicSystem.data?.(reward.relic)?.enemy;
+      return Array.isArray(src) ? src.includes(task.targetId) : src === task.targetId;
+    }
     return false;
   }
   async function claimPending(state) {
