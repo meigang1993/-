@@ -43,6 +43,16 @@ window.GameUIInfo = (U) => {
       ? `<span class="green-hat-badge dome-suit-badge" title="蓄力子弹：已记录${suits.join("、")}，下一张实体单体【杀】伤害×${1 + suits.length}">蓄力 ${suits.join("")}</span>`
       : "";
   }
+  function deathWaveSuitMark(u) {
+    // 机械AI龙：死亡音波记录的花色，显示在头像上
+    if (u?.ai !== "ruins_dragon") return "";
+    const recorded = Array.isArray(u?.ruinsDeathWaveSuits)
+      ? u.ruinsDeathWaveSuits : [u?.ruinsDeathWaveSuit];
+    const list = ["♥", "♦", "♠", "♣"].filter(suit => recorded.includes(suit));
+    return list.length
+      ? `<span class="green-hat-badge death-wave-badge" title="死亡音波：已记录${list.join("、")}花色；敌方角色回合内未使用其中任一花色，回合结束时受到等同于攻击力的伤害">音波 ${list.join("")}</span>`
+      : "";
+  }
   function vulnerableMark(u) {
     return u?.vulnerable
       ? `<span class="green-hat-badge vulnerable-badge" title="脆弱标记：受到的伤害提升50%">脆弱</span>`
@@ -182,5 +192,5 @@ window.GameUIInfo = (U) => {
     const stats = u?.id && window.RelicSystem ? RelicSystem.statsOf(state, u.id) : null;
     return infoPanel(u, state.infoTab, stats);
   }
-  return { greenHatMark, foodMark, rageMark, tankShellMark, vulnerableMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, mariaNumberMark, mariaBlessingMark, findInfoUnit, infoPanel, infoPanelForState };
+  return { greenHatMark, foodMark, rageMark, tankShellMark, vulnerableMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, deathWaveSuitMark, mariaNumberMark, mariaBlessingMark, findInfoUnit, infoPanel, infoPanelForState };
 };
