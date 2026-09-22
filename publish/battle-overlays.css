@@ -173,3 +173,8 @@
 @media (prefers-reduced-motion: reduce) {
   .manual-dodge-card { animation: none !important; }
 }
+
+.dice-popup { position: absolute; left: 50%; top: 20%; z-index: 19; transform: translateX(-50%); display: grid; justify-items: center; gap: 8px; padding: 14px 22px; border-radius: 18px; background: rgba(60,120,255,.28); border: 2px solid #5d3a12; box-shadow: 0 20px 70px rgba(0,0,0,.5), inset 0 0 24px rgba(190,220,255,.16); backdrop-filter: blur(8px); animation: judgePop var(--battle-ms-240, .24s) ease-out both; }
+.dice-popup b { color: #ffe1a8; letter-spacing: 1px; font-size: 15px; }
+.dice-popup .dice-face { width: 64px; height: 64px; display: grid; place-items: center; border-radius: 14px; font-size: 30px; font-weight: 700; color: #23180a; background: linear-gradient(180deg, #fff4d0, #ffd45f); box-shadow: 0 0 22px rgba(255,212,95,.9), inset 0 -3px 0 rgba(0,0,0,.18); }
+.dice-popup span { color: #ffe1a8; font-size: 13px; opacity: .9; }
