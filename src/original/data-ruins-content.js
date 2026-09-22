@@ -12,8 +12,8 @@ window.GameDataRuinsContent = {
     { name: "枪林弹雨", enemy: "armored_carrier", price: 1400, type: "tactic", power: 1, hybridAttack: true, sweep: true, targetless: true, responseKind: "dodge", suits: { "♠": 1, "♦": 1 }, text: "对所有敌方角色造成基础1点加攻击力与魔力的复合伤害；敌方可用【闪】抵消。" },
   ],
   relics: {
-    "推进器": { icon: "推", stats: {}, effect: "根据你使用牌指定的目标数摸等量牌。", lore: "世界贵族军的推进设备。", source: "废墟沙城普通怪物", enemy: "noble_soldier" },
-    "智能大脑": { icon: "脑", stats: {}, effect: "战术牌造成的伤害翻倍。", lore: "机械AI龙的战术核心。", source: "废墟沙城机械AI龙", enemy: "mech_ai_dragon" },
+    "推进器": { icon: "推", stats: {}, effect: "根据你使用牌指定的目标数，你摸等量牌。", lore: "世界贵族为了占领这个国家，出动了几十万军队，反抗军奋力抵抗。", source: "机械AI龙", enemy: "mech_ai_dragon" },
+    "智能大脑": { icon: "脑", stats: {}, effect: "战术牌造成的伤害翻倍。", lore: "机械龙是天界国提供的杀人AI，见活物就袭击，会造成大量平民伤亡。", source: "机械AI龙", enemy: "mech_ai_dragon" },
     "魅魔钢叉": { icon: "叉", skillType: "active", stats: {}, effect: "出牌阶段限一次，将一张红桃牌当【魅杀】使用且不消耗杀意。", lore: "外神之眼的邪异武器。", source: "废墟沙城XX型凋零者1312号", enemy: "witherer_1312", activeCard: { name: "魅魔钢叉", type: "tactic", succubusFork: true } },
     "粉色魅魔装": { icon: "装", stats: {}, effect: "红色牌对你无效；你使用的红色牌不可响应。", lore: "1312号的魅魔血脉。", source: "废墟沙城XX型凋零者1312号", enemy: "witherer_1312" },
     "冰心双刺剑": { icon: "刺", stats: {}, effect: "你获得的单体【杀】牌转换为不消耗杀意的【刺杀】。", lore: "希尔德的双刃。", source: "废墟沙城内英组杀手希尔德", enemy: "hilde" },
