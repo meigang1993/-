@@ -9,6 +9,10 @@ window.RuinsDragonSkills = (() => {
   function prepare(state, unit) {
     if (unit?.ai !== "ruins_dragon") return;
     unit.ruinsHitsThisTurn = 0;
+    // 死亡音波的记录仅在「龙结束阶段记录 → 我方角色回合内判定」这一轮内有效，
+    // 龙自己回合开始时清空，避免上一轮的花色残留到下一轮（头像徽章常驻）。
+    unit.ruinsDeathWaveSuits = [];
+    unit.ruinsDeathWaveSuit = null;
   }
 
   // 电钻火花：描述为「你使用单体【杀】牌造成伤害时」——须在真正造成生命值伤害之后
@@ -112,7 +116,10 @@ window.RuinsDragonSkills = (() => {
     const used = unit.suitsUsedThisTurn || {};
     // 「未能使用你记录的花色」：记录的花色里只要有没用上的，回合结束就受伤一次。
     const missing = recorded.filter(suit => !used[suit]);
-    if (!missing.length) return;
+    // 「未能使用你记录的花色」：用上记录的任一花色即视为已使用，不触发伤害；
+    // 仅当记录的花色全部未使用时才受伤。此前实现为「任一未使用即受伤」，记录 1-3 种
+    // 花色时，用掉其中一种仍会挨打，与描述不符（实战用例 C 复现）。
+    if (missing.length < recorded.length) return;
     const amount = stat(dragon, "attack");
     const before = unit.hp;
     unit.hp = Math.max(0, unit.hp - amount);
