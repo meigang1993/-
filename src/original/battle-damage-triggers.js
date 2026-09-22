@@ -39,11 +39,16 @@ window.BattleDamageTriggers = (api) => {
     window.MannySkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, directDamage);
     window.FloraCarlosSkills?.afterSlashDamage?.(state, actor, target, card, hpLoss, { damage, directDamage });
     window.EdisSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, blockLoss);
-    window.BertisGerlotSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage });
-    window.AngelicaLukaSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
-    window.ElranaAceNanaliSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
-    window.GuestCharacterSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
+    // 电钻火花追加段（_drillExtraHit）不触发反击：连击多段属同一次攻击，
+    // 反击只在第一段入队，否则骰子点数会线性放大反击次数。
+    if (!card?._drillExtraHit) {
+      window.BertisGerlotSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage });
+    }
+    // 受击触发类（受伤后摸牌/交牌）按设计逐段结算：半魅魔血每段各摸2张并各弹一次
+    // 交牌选择是预期行为，不做合并。
     window.HoshinoSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
+    window.AngelicaLukaSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
+    window.GuestCharacterSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
     window.WithererSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, deps.draw, ctx.pushFloat);
     window.BondiSkills?.afterDamage?.(state, actor, target, card, hpLoss);
     window.BakarSkills?.afterDamage?.(state, actor, target, card, hpLoss);
