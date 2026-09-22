@@ -41,8 +41,7 @@ window.BattleDamageResolution = ({
     }
     window.ElranaAceNanaliSkills?.beforeKillTargeted?.(
       state, actor, target, effectiveCard, deps);
-    if (effectiveCard?.virtual && !effectiveCard._countAsPlayed
-      && !effectiveCard._nanaliDamagePrepared) {
+    if (effectiveCard?.virtual && !effectiveCard._countAsPlayed) {
       amount = window.ElranaAceNanaliSkills?.modifySlashDamage?.(
         state, actor, target, amount, effectiveCard) ?? amount;
     }
