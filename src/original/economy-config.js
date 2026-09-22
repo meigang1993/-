@@ -34,5 +34,15 @@ window.GameEconomy = Object.freeze({
         Object.freeze([7000, 12000]),
       ]),
     }),
+    // 废墟沙城：排在兽人地下城之后的更后期副本（进度权重 4 > 兽人 3），
+    // 金币倍率按 1 → 1.25 → 1.7 → 2.3 递增。
+    // bountyLegacyGoldRanges 保留曾与兽人相同的 [1200,2000]，用于旧存档兼容。
+    ruins_sand_city: Object.freeze({
+      goldMultiplier: 2.3,
+      bountyGoldRange: Object.freeze([1600, 2600]),
+      bountyLegacyGoldRanges: Object.freeze([
+        Object.freeze([1200, 2000]),
+      ]),
+    }),
   }),
 });
