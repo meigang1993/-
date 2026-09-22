@@ -13,9 +13,6 @@ window.AceNanaliSkills = deps => {
     beforeKillTargeted,
     afterResponse: ace.afterResponse,
     modifySlashDamage: nanali.modifySlashDamage,
-    afterDamage: nanali.afterDamage,
-    resolveRevenge: nanali.resolveRevenge,
-    resolveRevengeTrigger: nanali.resolveRevengeTrigger,
     endTurn: nanali.endTurn,
   };
 };
