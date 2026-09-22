@@ -69,7 +69,53 @@ window.RuinsRelicEffects = (() => {
     else window.BattleCombat?.useVirtualKill?.(state, unit, target, virtual);
   }
 
+  // 推进器（被动）：根据你使用牌指定的目标数摸等量牌。
+  // 目标数口径与牌型一致：群体/无目标牌按敌方存活数计，单体牌按 1 计。
+  function thrusterTargetCount(state, actor, card, target) {
+    const battle = state?.battle;
+    if (!battle) return 0;
+    if (card?.sweep || card?.targetless || card?.allTargets) {
+      const foes = alive(actor?.side === "ally" ? battle.enemies : battle.allies);
+      return foes.length;
+    }
+    return target ? 1 : 0;
+  }
+
+  function afterCardPlayed(state, actor, target, card, draw) {
+    if (!actor || !card || card._thrusterApplied) return;
+    if (card.virtual || card._skill) return;
+    if (!window.RelicSystem?.hasEquipped?.(state, actor, "推进器")) return;
+    const count = thrusterTargetCount(state, actor, card, target);
+    if (count <= 0) return;
+    card._thrusterApplied = true;
+    if (typeof draw !== "function") return;
+    const cards = draw(actor, count, state.battle) || [];
+    if (!cards.length) return;
+    state.battle.animQueue?.push({
+      id: window.GameRandom?.id?.("th"),
+      type: "drawBatch",
+      uid: actor.uid,
+      side: actor.side,
+      count: cards.length,
+      cards,
+    });
+    window.BattleLines?.skill?.(state, actor, "推进器");
+    log(state, `${actor.name} 的推进器触发，本牌指定${count}个目标，摸${cards.length}张牌。`);
+  }
+
+  // 智能大脑（被动）：战术牌造成的伤害翻倍。
+  function tacticDamage(state, actor, card, amount) {
+    if (card?.type !== "tactic" || card._skill) return amount;
+    if (!window.RelicSystem?.hasEquipped?.(state, actor, "智能大脑")) return amount;
+    if (!card._smartBrainLogged) {
+      card._smartBrainLogged = true;
+      window.BattleLines?.skill?.(state, actor, "智能大脑");
+      log(state, `${actor.name} 的智能大脑触发，战术牌${card.name}造成的伤害翻倍。`);
+    }
+    return amount * 2;
+  }
+
   return {
-    missileLauncherBlock, afterDraw,
+    missileLauncherBlock, afterDraw, afterCardPlayed, tacticDamage,
   };
 })();
