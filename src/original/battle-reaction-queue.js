@@ -100,10 +100,6 @@ window.BattleReactionQueue = (() => {
     }
     if (window.EnemySkills?.resolveReactionAction?.(state, action, damage)) return;
     if (window.AngelicaLukaSkills?.resolveReactionAction?.(state, action, damage)) return;
-    if (action.kind === "nanaliRevenge") {
-      window.ElranaAceNanaliSkills?.resolveRevenge?.(state, action, damage);
-      return;
-    }
     if (action.kind === "kaiichiBloodHeal") {
       window.HoshinoSkills?.resolveBloodHeal?.(state, action, {
         damage,
