@@ -97,4 +97,4 @@
 .active-portrait-shell .vulnerable-badge { right: 5px; top: 5px; font-size: 12px; }
 .active-portrait-shell .rage-mark-badge { right: 5px; top: 5px; font-size: 12px; }
 
-.death-wave-badge { left: 4px; bottom: 4px; background: rgba(80,140,255,.92); border-color: #1c3f8f; color: #fff; }
+.death-wave-badge { left: 4px; right: auto; bottom: 4px; top: auto; background: rgba(80,140,255,.92); border-color: #1c3f8f; color: #fff; }
