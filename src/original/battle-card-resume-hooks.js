@@ -24,6 +24,8 @@ window.BattleCardResumeHooks = (api, stateApi) => {
       window.HoshinoSkills?.afterCardPlayed?.(
         state, actor, target, card,
         { ...deps, damage, pushFloat: api.pushFloat }),
+    (state, actor, target, card) =>
+      window.RuinsRelicEffects?.afterCardPlayed?.(state, actor, target, card, deps.draw),
   ];
 
   function cleanup(card) {
