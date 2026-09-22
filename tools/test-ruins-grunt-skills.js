@@ -15,6 +15,9 @@ loadRuntime();
   "battle-status-card-triggers.js",
   "battle-status-cards.js",
   "data-ruins-sand-city-enemies.js",
+  "ruins-grunt-common.js",
+  "ruins-grunt-landmine.js",
+  "ruins-grunt-rps.js",
   "ruins-grunt-skills.js",
   "ruins-enemy-skills.js",
 ].forEach(file => vm.runInThisContext(
