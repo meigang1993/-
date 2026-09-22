@@ -5,6 +5,14 @@ window.BattleCombatAttackFlow = (api, values) => {
   } = api;
 
   function resolve(state, actor, target, card) {
+    // 每次攻击结算前无条件清空上一次护驾的转移目标与段数：
+    // 原清理点在 spendIntent 内，而它仅在「非虚拟杀牌」时执行，
+    // 虚拟杀/技能牌不会经过 → 残留的 redirectUid 会把后续连击剩余段
+    // 指向上一次的护驾者（打错人），repeats 残留则会凭空多出追加段。
+    if (state?.battle) {
+      state.battle.opheliaGuardRedirectUid = null;
+      state.battle.opheliaGuardRepeats = 0;
+    }
     let base = values.cardPower(card);
     const attacks = deps.isKillCard(card) || base > 0;
     if (!target && !card.sweep && !card.targetless && attacks) {
@@ -53,6 +61,9 @@ window.BattleCombatAttackFlow = (api, values) => {
     const noCost = noIntent || ragePaid;
     const spent = noCost ? 0 : 1;
     actor.intent = Math.max(0, (actor.intent || 0) - spent);
+    // 每张牌结算前清空上一张牌的护驾转移目标，避免残留影响本次攻击。
+    state.battle.opheliaGuardRedirectUid = null;
+    state.battle.opheliaGuardRepeats = 0;
     card.gatlingRepeats = card.gatlingRepeats || card.fixedRepeats || 1;
     state.battle.combo += card.gatlingRepeats;
     if (actor.ai === "abe_mike") {
