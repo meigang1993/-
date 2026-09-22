@@ -96,3 +96,5 @@
 .vulnerable-badge { background: rgba(198,120,255,.94); color: #2a0b3a; border: 1px solid rgba(255,255,255,.72); box-shadow: 0 0 12px rgba(180,70,255,.62), 0 2px 6px rgba(0,0,0,.28); }
 .active-portrait-shell .vulnerable-badge { right: 5px; top: 5px; font-size: 12px; }
 .active-portrait-shell .rage-mark-badge { right: 5px; top: 5px; font-size: 12px; }
+
+.death-wave-badge { left: 4px; bottom: 4px; background: rgba(80,140,255,.92); border-color: #1c3f8f; color: #fff; }
