@@ -103,6 +103,8 @@ window.BattleEffectEventRunner = handlers => {
       await handlers.clash(state, event, renderStep, active);
     } else if (event.type === "judgement") {
       await handlers.judgement(state, event, renderStep, active);
+    } else if (event.type === "dice") {
+      await handlers.dice(state, event, renderStep, active);
     } else if (event.type === "revealCards") {
       await handlers.revealCards(state, event, renderStep, active);
     } else if (event.type === "response") {
