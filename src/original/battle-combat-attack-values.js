@@ -58,6 +58,8 @@ window.BattleCombatAttackValues = api => {
       state, actor, amount, card) ?? amount;
     amount = window.SakuraRisaSkills?.modifyRevengeDamage?.(
       state, actor, amount, card) ?? amount;
+    amount = window.RuinsRelicEffects?.tacticDamage?.(
+      state, actor, card, amount) ?? amount;
     return card.mannyDouble ? amount * 2 : amount;
   }
 
@@ -81,16 +83,22 @@ window.BattleCombatAttackValues = api => {
   }
 
   function hitTarget(state, actor, target, card, amount) {
-    const times = card.gatlingRepeats || 1;
     let hit = false;
-    for (let index = 0; index < times && target.hp > 0; index += 1) {
+    // 结算次数动态读取：电钻火花等「造成伤害后再追加次数」的技能需要让循环感知新增次数；
+    // 其余技能在循环内不改 gatlingRepeats，行为与原先取常量完全一致。
+    for (let index = 0; index < (card.gatlingRepeats || 1) && target.hp > 0; index += 1) {
+      // 电钻火花的追加段：整张杀仍属「一次攻击」，反击只应在第一段触发。
+      // 此前每段各触发一次，骰子 6 时贝尔蒂丝一格洛特可打出 14 次反击杀。
+      // 仅对龙的杀（_dragonDrillApplied）生效，其余连击技能行为不变。
+      card._drillExtraHit = index > 0 && !!card._dragonDrillApplied;
       const result = damage(state, target, amount, card.name, actor, card);
       if (result?.hpLoss > 0) hit = true;
       if (window.BattleReactionQueue?.captureHitContinuation?.(
         state.battle, actor, target, amount, card.name, card,
-        times - index - 1
+        (card.gatlingRepeats || 1) - index - 1
       )) break;
     }
+    delete card._drillExtraHit;
     return hit;
   }
 
