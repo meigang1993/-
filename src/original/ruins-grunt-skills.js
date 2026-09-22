@@ -1,205 +1,18 @@
+// 废墟沙城普通怪技能 · 狙击目标 / 麻痹毒子弹 / 坦克炮弹
+// 地雷与猜拳已拆至 ruins-grunt-landmine.js（原文件 350 行，超出 200 行硬约束）。
+// window.RuinsGruntSkills 仍导出全部函数（含地雷的转发），调用方无需改动。
 window.RuinsGruntSkills = (() => {
-  const alive = units => (units || []).filter(unit => unit.hp > 0);
-  const visible = unit => (unit?.hand || []).filter(card => !card._pendingDraw);
-  const isResponse = card => card?.type === "response" || card?.name === "闪";
-  const isStatus = card => window.BattleStatusCards?.isStatus?.(card);
-  const isSlash = card => window.CardUtils?.isKillCard?.(card) || card?.type === "slash";
-  const isSingleSlash = card => isSlash(card) && !card?.sweep;
-  const log = (state, text) => window.BattleLog?.add?.(state, text);
-  const attackOf = unit => unit?.stats?.attack ?? unit?.attack ?? 0;
-  const unitByUid = (battle, uid) => (battle?.allies || []).concat(battle?.enemies || [])
-    .find(unit => unit.uid === uid);
-  const RPS = ["石头", "剪刀", "布"];
-  const beats = (a, b) => a === "石头" && b === "剪刀"
-    || a === "剪刀" && b === "布" || a === "布" && b === "石头";
-
-  function landmineMove(state, actor) {
-    if (actor?.ai !== "ruins_soldier" || actor.usedRuinsLandmine) return null;
-    const targets = alive(state.battle.allies).filter(unit => visible(unit).length);
-    if (!targets.length) return null;
-    // 目标选择：响应牌最多者优先；数量相同时血量低者优先。
-    // 不设「目标须持有响应牌」的限制：地雷持续存在，等对方之后摸到闪时仍会触发。
-    const target = targets.sort((left, right) =>
-      visible(right).filter(isResponse).length
-      - visible(left).filter(isResponse).length || left.hp - right.hp)[0];
-    return { card: { name: "放置地雷", _skill: true, ruinsPlaceLandmine: true }, target };
-  }
-
-  function usePlaceLandmine(state, actor, target) {
-    // 出牌阶段限一次：AI 决策入口（landmineMove）已校验，但技能卡还可通过
-    // useSkillCard 直接打出，该路径不经过决策校验。守卫放在这里才对任何调用路径生效。
-    if (actor?.usedRuinsLandmine) return false;
-    actor.usedRuinsLandmine = true;
-    // 实现（对齐 baseline）：弃置自己一张非状态牌，在目标手牌区【新增】一颗地雷（目标手牌数 +1）
-    const fodder = visible(actor).find(card => !isStatus(card));
-    if (fodder) {
-      const index = actor.hand.indexOf(fodder);
-      if (index >= 0) actor.hand.splice(index, 1);
-      window.BattleCards?.put?.(state.battle, actor, fodder, "discard", { showDiscard: true });
-    }
-    const landmine = window.BattleStatusCardRegistry?.create?.("landmine", actor);
-    if (landmine) window.BattleStatusCards?.add?.(state, target, landmine, actor.name);
-    window.BattleLines?.skill?.(state, actor, "放置地雷", target);
-    log(state, `${actor.name} 对${target.name}发动放置地雷，在其手牌区埋设一颗地雷。`);
-    return true;
-  }
-
-  // ---------- 地雷：猜拳小游戏（参考樱羽丽莎·吸魔邪眼） ----------
-  function landmineOf(unit) {
-    return (unit?.hand || []).find(card =>
-      window.BattleStatusCardRegistry?.keyOf?.(card) === "landmine");
-  }
-
-  function consumeLandmine(state, holder) {
-    const mine = landmineOf(holder);
-    if (!mine) return null;
-    const index = holder.hand.indexOf(mine);
-    if (index >= 0) holder.hand.splice(index, 1);
-    window.BattleCards?.put?.(state.battle, holder, mine, "consumed");
-    return mine;
-  }
-
-  // 持有者赢 → 地雷直接消耗，不受伤；来源赢 → 持有者受伤，地雷消耗
-  function settleLandmineRps(state, holder, mine, holderWon) {
-    const source = unitByUid(state.battle, mine?.landmineSourceUid);
-    consumeLandmine(state, holder);
-    if (holderWon) {
-      window.BattleLines?.skill?.(state, holder, "地雷");
-      log(state, `${holder.name} 猜拳获胜，拆除地雷。`);
-      return;
-    }
-    const amount = mine?.landmineAttack || 0;
-    if (amount > 0) {
-      const before = holder.hp;
-      holder.hp = Math.max(0, holder.hp - amount);
-      const loss = before - holder.hp;
-      if (loss > 0) {
-        window.BattleSystem?.pushFloat?.(state.battle, holder.uid, "hp-loss", loss);
-        log(state, `${holder.name} 猜拳落败，地雷引爆，受到${amount}点伤害。`);
-      }
-    }
-    window.BattleStatusCardRegistry?.sync?.(holder, state.battle);
-  }
-
-  // AI 持有地雷时主动发起猜拳
-  function landmineRpsMove(state, actor) {
-    if (!actor || actor.usedRuinsLandmineRps) return null;
-    if (!landmineOf(actor)) return null;
-    // target 用 actor 占位：自动出牌循环要求 target 非空，否则该 move 会被直接跳过
-    return { card: { name: "地雷猜拳", _skill: true, ruinsLandmineRps: true, targetless: true }, target: actor };
-  }
-
-  function useLandmineRps(state, actor) {
-    if (actor?.usedRuinsLandmineRps) return true;
-    actor.usedRuinsLandmineRps = true;
-    const mine = landmineOf(actor);
-    if (!mine) return true;
-    const source = unitByUid(state.battle, mine.landmineSourceUid);
-    window.BattleLines?.skill?.(state, actor, "地雷");
-    for (let attempt = 0; attempt < 32; attempt += 1) {
-      const mineChoice = RPS[Math.floor(window.GameRandom.value(state) * RPS.length)];
-      const holderChoice = RPS[Math.floor(window.GameRandom.value(state) * RPS.length)];
-      if (mineChoice === holderChoice) {
-        log(state, `${actor.name} 与${source?.name || "地雷"}猜拳：${mineChoice}对${holderChoice}，平局，继续猜拳。`);
-        continue;
-      }
-      // mineChoice 代表地雷（来源方）出手
-      const holderWon = beats(holderChoice, mineChoice);
-      log(state, `${actor.name} 与${source?.name || "地雷"}猜拳：${holderChoice}对${mineChoice}，${holderWon ? `${actor.name}获胜` : `${source?.name || "地雷"}获胜`}。`);
-      settleLandmineRps(state, actor, mine, holderWon);
-      return true;
-    }
-    return true;
-  }
-
-  // 打开猜拳窗口（点击手牌区的地雷牌触发）
-  function openLandmineRps(state, unit) {
-    if (!unit || unit.hp <= 0) return false;
-    const battle = state?.battle;
-    if (!battle || battle.landmineRpsPrompt) return false;
-    const mine = landmineOf(unit);
-    if (!mine) return false;
-    const source = unitByUid(battle, mine.landmineSourceUid);
-    battle.landmineRpsPrompt = {
-      holderUid: unit.uid,
-      sourceUid: source?.uid || "",
-      amount: mine.landmineAttack || 0,
-      tied: false,
-      result: null,
-    };
-    battle.locked = true;
-    battle.selectedCardIndex = null;
-    battle.selectedCostCardIndex = null;
-    battle.selectedSkillCard = null;
-    battle.pendingTargetUid = null;
-    return true;
-  }
-
-  // 出牌阶段：不自动弹窗（避免打断出牌），只提示可点击地雷发起猜拳
-  function playPhaseStart(state, unit) {
-    if (!unit || unit.hp <= 0 || unit.side === "enemy") return null;
-    const mine = landmineOf(unit);
-    if (!mine) return null;
-    if (state?.battle?.landmineRpsPrompt) return null;
-    log(state, `${unit.name} 手牌区的【地雷】可以点击发起猜拳：赢了直接拆除，输了受到 ${mine.landmineAttack || 0} 点伤害。`);
-    return null;
-  }
-
-  function resolveLandmineRpsChoice(state, holderChoice) {
-    const battle = state?.battle;
-    const prompt = battle?.landmineRpsPrompt;
-    if (!prompt || prompt.result || !RPS.includes(holderChoice)) return false;
-    const holder = unitByUid(battle, prompt.holderUid);
-    const source = unitByUid(battle, prompt.sourceUid);
-    if (!holder || holder.hp <= 0) { battle.landmineRpsPrompt = null; battle.locked = false; return false; }
-    // sourceChoice/eyeChoice 代表地雷（来源方）出手
-    let sourceChoice = RPS[Math.floor(window.GameRandom.value(state) * RPS.length)];
-    if (sourceChoice === holderChoice) {
-      window.BattleLines?.skill?.(state, holder, "地雷");
-      log(state, `${holder.name} 与${source?.name || "地雷"}猜拳：${holderChoice}对${sourceChoice}，平局，继续猜拳。`);
-      prompt.result = { holderChoice, sourceChoice, outcome: "tie" };
-      prompt.tied = false;
-      return true;
-    }
-    const holderWon = beats(holderChoice, sourceChoice);
-    window.BattleLines?.skill?.(state, holder, "地雷");
-    log(state, `${holder.name} 与${source?.name || "地雷"}猜拳：${holderChoice}对${sourceChoice}，${holderWon ? `${holder.name}获胜` : `${source?.name || "地雷"}获胜`}。`);
-    prompt.result = { holderChoice, sourceChoice, outcome: holderWon ? "holder" : "source" };
-    return true;
-  }
-
-  function confirmLandmineRps(state) {
-    const battle = state?.battle;
-    const prompt = battle?.landmineRpsPrompt;
-    const result = prompt?.result;
-    if (!prompt || !result) return false;
-    const holder = unitByUid(battle, prompt.holderUid);
-    if (result.outcome === "tie") {
-      prompt.result = null;
-      prompt.tied = true;
-      return true;
-    }
-    const mine = holder ? landmineOf(holder) : null;
-    if (holder && mine) settleLandmineRps(state, holder, mine, result.outcome === "holder");
-    battle.landmineRpsPrompt = null;
-    battle.locked = false;
-    return true;
-  }
-
-  function skipLandmineRps(state) {
-    const battle = state?.battle;
-    if (!battle?.landmineRpsPrompt) return false;
-    battle.landmineRpsPrompt = null;
-    battle.locked = false;
-    return true;
-  }
+  // 惰性解析：加载顺序变化时直接取值会静默拿到 undefined，Proxy 可规避。
+  const C = new Proxy({}, { get: (_, key) => window.RuinsGruntCommon?.[key] });
+  const LM = new Proxy({}, { get: (_, key) => window.RuinsGruntLandmine?.[key] });
+  const RP = new Proxy({}, { get: (_, key) => window.RuinsGruntRPS?.[key] });
 
   function sniperMove(state, actor) {
     if (actor?.ai !== "ruins_sniper" || actor.usedRuinsSnipe) return null;
-    const targets = alive(state.battle.allies).filter(unit => visible(unit).length);
+    const targets = C.alive(state.battle.allies).filter(unit => C.visible(unit).length);
     if (!targets.length) return null;
     const target = targets.sort((left, right) =>
-      visible(right).filter(isSlash).length - visible(left).filter(isSlash).length
+      C.visible(right).filter(C.isSlash).length - C.visible(left).filter(C.isSlash).length
       || left.hp - right.hp)[0];
     return { card: { name: "狙击目标", _skill: true, ruinsSnipe: true }, target };
   }
@@ -208,14 +21,14 @@ window.RuinsGruntSkills = (() => {
     // 同 usePlaceLandmine：限一次守卫必须对 useSkillCard 的直接调用路径也生效。
     if (actor?.usedRuinsSnipe) return false;
     actor.usedRuinsSnipe = true;
-    const shown = visible(target)[0];
+    const shown = C.visible(target)[0];
     if (!shown) {
-      log(state, `${actor.name} 发动狙击目标失败：${target.name}没有可展示的手牌。`);
+      C.log(state, `${actor.name} 发动狙击目标失败：${target.name}没有可展示的手牌。`);
       return true;
     }
     const suit = shown.suit;
-    const own = visible(actor).filter(card => card.suit === suit).length;
-    const foe = visible(target).filter(card => card.suit === suit).length;
+    const own = C.visible(actor).filter(card => card.suit === suit).length;
+    const foe = C.visible(target).filter(card => card.suit === suit).length;
     actor.ruinsSniperTargetUid = target.uid;
     actor.ruinsSniperSuit = suit;
     actor.ruinsSniperLocked = own > foe;
@@ -224,7 +37,7 @@ window.RuinsGruntSkills = (() => {
       title: "狙击目标", cards: [{ ...shown }],
     });
     window.BattleLines?.skill?.(state, actor, "狙击目标", target);
-    log(state, `${actor.name} 展示${target.name}的${suit}${shown.name}，双方${suit}花色手牌为${own}/${foe}，${actor.ruinsSniperLocked ? "锁定成立" : "未取得优势"}。`);
+    C.log(state, `${actor.name} 展示${target.name}的${suit}${shown.name}，双方${suit}花色手牌为${own}/${foe}，${actor.ruinsSniperLocked ? "锁定成立" : "未取得优势"}。`);
     return true;
   }
 
@@ -232,26 +45,26 @@ window.RuinsGruntSkills = (() => {
     if (actor?.ai !== "ruins_sniper" || !actor.ruinsSniperLocked) return;
     if (!target || target.uid !== actor.ruinsSniperTargetUid) return;
     const isEntitySingle = window.CardUtils?.isEntitySingleKill?.(card)
-      || (isSlash(card) && !card?.virtual && !card?.sweep);
+      || (C.isSlash(card) && !card?.virtual && !card?.sweep);
     if (!isEntitySingle) return;
     if (!card.ignoreResponse) card._tempIgnoreResponse = true;
     card.ignoreResponse = true;
     // 与亚缇娜【狙击目标】一致：锁定是一次性的，命中一张实体单体【杀】后立即失效，
     // 不再覆盖本回合后续的杀（此前为「本回合持续」，与描述「下一张」不符）。
     actor.ruinsSniperLocked = false;
-    log(state, `${actor.name} 的狙击目标触发，对${target.name}的实体单体杀不可响应。`);
+    C.log(state, `${actor.name} 的狙击目标触发，对${target.name}的实体单体杀不可响应。`);
   }
 
   // 锁定技：攻击型无人机单体【杀】转为毒属性
   function beforeKillUsed(state, actor, card) {
     if (actor?.ai !== "ruins_drone") return;
-    if (!isSingleSlash(card)) return;
+    if (!C.isSingleSlash(card)) return;
     card.poison = true;
   }
 
   function afterDamage(state, actor, target, card, hpLoss) {
     if (!hpLoss || !actor) return;
-    if (actor.ai === "ruins_drone" && isSlash(card) && !card?._soulChain) {
+    if (actor.ai === "ruins_drone" && C.isSlash(card) && !card?._soulChain) {
       const paralyze = () => window.BattleStatusCards?.add?.(state, target,
         window.BattleStatusCardRegistry?.create("paralysis"), actor.name);
       const poison = () => {
@@ -268,7 +81,7 @@ window.RuinsGruntSkills = (() => {
   // ---------- 梅尔卡坦克 · 坦克炮弹 ----------
   function tankMove(state, actor) {
     if (actor?.ai !== "ruins_tank" || actor.usedRuinsTankShell) return null;
-    const singles = visible(actor).filter(isSingleSlash);
+    const singles = C.visible(actor).filter(C.isSingleSlash);
     if (singles.length < 2) return null;
     // target 用 actor 占位：自动出牌循环要求 target 非空，否则该 move 会被直接跳过
     return { card: { name: "坦克炮弹", _skill: true, ruinsTankShell: true, targetless: true }, target: actor };
@@ -277,7 +90,7 @@ window.RuinsGruntSkills = (() => {
   function useTankShell(state, actor) {
     if (actor?.usedRuinsTankShell) return false;
     actor.usedRuinsTankShell = true;
-    const singles = visible(actor).filter(isSingleSlash).slice(0, 2);
+    const singles = C.visible(actor).filter(C.isSingleSlash).slice(0, 2);
     singles.forEach(card => {
       const index = actor.hand.indexOf(card);
       if (index >= 0) actor.hand.splice(index, 1);
@@ -289,7 +102,7 @@ window.RuinsGruntSkills = (() => {
     }
     actor.ruinsTankShellReady = true;
     window.BattleLines?.skill?.(state, actor, "坦克炮弹");
-    log(state, `${actor.name} 弃置${singles.map(card => card.name).join("、")}装填坦克炮弹，下回合准备阶段发射。`);
+    C.log(state, `${actor.name} 弃置${singles.map(card => card.name).join("、")}装填坦克炮弹，下回合准备阶段发射。`);
     return true;
   }
 
@@ -297,11 +110,11 @@ window.RuinsGruntSkills = (() => {
   function tankPrepare(state, unit, damage) {
     if (unit?.ai !== "ruins_tank" || !unit.ruinsTankShellReady) return;
     unit.ruinsTankShellReady = false;
-    const amount = attackOf(unit) * 2;
-    const targets = alive(state.battle.allies);
+    const amount = C.attackOf(unit) * 2;
+    const targets = C.alive(state.battle.allies);
     if (!targets.length) return;
     window.BattleLines?.skill?.(state, unit, "坦克炮弹");
-    log(state, `${unit.name} 发射坦克炮弹，对所有敌方角色各造成${amount}点伤害，每名角色需打出2张【闪】才能抵消。`);
+    C.log(state, `${unit.name} 发射坦克炮弹，对所有敌方角色各造成${amount}点伤害，每名角色需打出2张【闪】才能抵消。`);
     const card = {
       name: "坦克炮弹", type: "skill", sweep: true, targetless: true,
       virtual: true, scale: "attack",
@@ -340,10 +153,18 @@ window.RuinsGruntSkills = (() => {
   }
 
   return {
-    landmineMove, usePlaceLandmine, sniperMove, useSnipe,
+    sniperMove, useSnipe,
     beforeKillTargeted, beforeKillUsed, afterDamage, endTurn,
-    landmineRpsMove, useLandmineRps, playPhaseStart, openLandmineRps,
-    resolveLandmineRpsChoice, confirmLandmineRps, skipLandmineRps,
     tankMove, useTankShell, tankPrepare,
+    // 地雷放置转自 ruins-grunt-landmine.js；猜拳小游戏转自 ruins-grunt-rps.js：对外接口保持不变
+    landmineMove: (...args) => LM.landmineMove(...args),
+    usePlaceLandmine: (...args) => LM.usePlaceLandmine(...args),
+    landmineRpsMove: (...args) => RP.landmineRpsMove(...args),
+    useLandmineRps: (...args) => RP.useLandmineRps(...args),
+    playPhaseStart: (...args) => RP.playPhaseStart(...args),
+    openLandmineRps: (...args) => RP.openLandmineRps(...args),
+    resolveLandmineRpsChoice: (...args) => RP.resolveLandmineRpsChoice(...args),
+    confirmLandmineRps: (...args) => RP.confirmLandmineRps(...args),
+    skipLandmineRps: (...args) => RP.skipLandmineRps(...args),
   };
 })();
