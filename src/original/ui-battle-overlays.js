@@ -28,6 +28,11 @@ window.GameUIBattleOverlays = U => {
     return `<div class="judgement-popup ${result.success ? "success" : "fail"}"><b>${U.esc(result.skill)}<span>${result.success ? "成功" : "失败"}</span></b><div class="judge-card-wrap">${U.card(card, false)}</div></div>`;
   }
 
+  function dice(battle) {
+    if (!battle.dice) return "";
+    const roll = battle.dice;
+    return `<div class="dice-popup"><b>${U.esc(roll.skill || "骰子")}</b><div class="dice-face">${roll.value}</div><span>点数 ${roll.value}</span></div>`;
+  }
   function clash(battle) {
     if (!battle.lastClash) return "";
     const result = battle.lastClash;
@@ -48,7 +53,7 @@ window.GameUIBattleOverlays = U => {
   }
 
   function render(state, battle, P) {
-    return `${judgement(battle)}${clash(battle)}${revealCards(battle)}${P.armoryPicker(battle)}${P.wendyTutorPicker(battle)}${P.ailengDrillPicker(battle)}${P.cadicisResponsibilityPicker(battle)}${P.dimensionPicker(battle)}${P.opheliaGuardPicker(battle)}${P.newMoonPicker(battle)}${P.gerdaComfortPicker(battle)}${P.kaiichiSharePicker(battle)}${P.millerSlot(battle)}${window.BattleResponseUI.handReveal(battle)}${window.BattleResponseUI.manualDodgePrompt(battle)}${window.BattleResponseUI.manualCounterPrompt(battle)}${window.BattleResponseUI.recklessPrompt(battle)}${window.BattleResponseUI.evilEyePrompt(battle)}${window.BattleResponseUI.landmineRpsPrompt(battle)}${battle.speech?.global ? speech(battle.speech) : ""}${battle.testRecovery ? `<div class="test-toast">测试模式·生命恢复</div>` : ""}${battle.testComplete ? testComplete() : ""}${battle.defeat ? defeatPopup() : ""}${state.explore?.rewardPopup?.battleOverlay ? DungeonSystem.rewardPopup(state.explore) : ""}`;
+    return `${judgement(battle)}${dice(battle)}${clash(battle)}${revealCards(battle)}${P.armoryPicker(battle)}${P.wendyTutorPicker(battle)}${P.ailengDrillPicker(battle)}${P.cadicisResponsibilityPicker(battle)}${P.dimensionPicker(battle)}${P.opheliaGuardPicker(battle)}${P.newMoonPicker(battle)}${P.gerdaComfortPicker(battle)}${P.kaiichiSharePicker(battle)}${P.millerSlot(battle)}${window.BattleResponseUI.handReveal(battle)}${window.BattleResponseUI.manualDodgePrompt(battle)}${window.BattleResponseUI.manualCounterPrompt(battle)}${window.BattleResponseUI.recklessPrompt(battle)}${window.BattleResponseUI.evilEyePrompt(battle)}${window.BattleResponseUI.landmineRpsPrompt(battle)}${battle.speech?.global ? speech(battle.speech) : ""}${battle.testRecovery ? `<div class="test-toast">测试模式·生命恢复</div>` : ""}${battle.testComplete ? testComplete() : ""}${battle.defeat ? defeatPopup() : ""}${state.explore?.rewardPopup?.battleOverlay ? DungeonSystem.rewardPopup(state.explore) : ""}`;
   }
 
   return { render };
