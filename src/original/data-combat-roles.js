@@ -24,7 +24,7 @@ window.GameCombatRoles = (() => {
     elrana: ["辅助/续航"],
     little_elrana: ["输出"],
     ace: ["辅助/续航"],
-    nanali: ["控制"],
+    nanali: ["输出"],
     ophelia: ["防御/嘲讽"],
     aileng: ["成长/资源"],
     besta: ["输出"],
