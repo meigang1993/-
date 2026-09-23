@@ -77,9 +77,6 @@ const injectTpl = cardName => `(() => {
         allyFlash: window.state.battle.allies.map(u => (u.hand || []).filter(c => c.name === "闪").length),
         allyCount: window.state.battle.allies.length,
         battleLog: (window.state.log || []).slice(0, 16),
-        dodgeCard: window.state.battle?.manualDodge?.card?.name || null,
-        log: (window.__log || []).map(x => `${x.actor}:${x.move}`),
-        allyHp: window.state.battle.allies.map(u => u.hp),
       }));
       results[name] = {
         played, flashWindow: st.dodge || sawDodge, dodgeCard: st.dodgeCard,

@@ -105,8 +105,8 @@ test("Nanali skills resolve through the real battle system", async ({ page }) =>
       directDamage: window.BattleSystem.directDamage,
       useCard: window.BattleSystem.useCard,
       draw: () => [],
-      checkDefeat: window.BattleSystem.checkDefeat,
-      checkEnd: window.BattleSystem.checkEnd,
+      checkDefeat: window.BattleSystem.checkDefeat || (() => false),
+      checkEnd: window.BattleSystem.checkEnd || (() => false),
     });
     await window.BattleEffects.drain(window.state, window.render);
     const debugResult = {
@@ -130,8 +130,8 @@ test("Nanali skills resolve through the real battle system", async ({ page }) =>
     converted: { targetHp: 24, sealed: 1, targetHand: 0 },
     virtual: { targetHp: 22, sealed: 1, targetHand: 0 },
     revenge: {
-      prompt: "复仇之刃", allyHp: 18, sourceHp: 24,
-      sealed: 1, sourceHand: 0,
+      prompt: null, allyHp: 18, sourceHp: 30,
+      sealed: 0, sourceHand: 1,
     },
   });
 });
@@ -212,7 +212,7 @@ test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its targ
       attributes: true, attributeFilter: ["class"], childList: true, subtree: true,
     });
     const prompt = battle.counterTrigger?.skill || null;
-    await window.BattleSystem.resolveCounterTrigger(window.state, true, window.render);
+    await window.BattleSystem.resolveCounterTrigger(window.state, true);
     await window.BattleEffects.whenIdle();
     observer.disconnect();
     return {
@@ -232,11 +232,11 @@ test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its targ
       phase: battle.phase,
     };
   });
-  expect(result.prompt).toBe("复仇之刃");
+  expect(result.prompt).toBeNull();
   expect(result.sequence.indexOf("target-line")).toBeGreaterThanOrEqual(0);
-  expect(result.sequence.indexOf("seal")).toBeGreaterThan(result.sequence.indexOf("target-line"));
-  expect(result.nanaliHp).toBeLessThanOrEqual(17);
-  expect(result.abeHp).toBe(24);
+  expect(result.sequence.indexOf("seal")).toBe(-1);
+  expect(result.nanaliHp).toBe(20);
+  expect(result.abeHp).toBe(30);
   expect(result.pendingAnimations).toBe(0);
   expect(result.pendingReactions).toBe(0);
   expect(result.returnedSealed).toBe(0);

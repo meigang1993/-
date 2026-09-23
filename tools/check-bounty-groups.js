@@ -1,3 +1,5 @@
+/* global GameData */
+
 // 赏金任务路径（bossGroup / eliteGroup）与正常路径（enemiesFor）的组合一致性对比。
 // dungeon-events.js 的 forceBossNode / forceEliteNode 走的是 bossGroup / eliteGroup，
 // 与 enemyGroups.enemiesFor 是【两套独立映射】，enemiesFor 正确不代表赏金路径正确。

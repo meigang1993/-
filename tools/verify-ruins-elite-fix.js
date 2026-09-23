@@ -1,3 +1,5 @@
+/* global GameData */
+
 // 验证：1) 用户描述的 5 条规则仍成立  2) 3 个精英怪会出现 → 6 张卡可解锁
 const fs = require("fs");
 const vm = require("vm");

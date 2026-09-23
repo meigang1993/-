@@ -48,6 +48,11 @@ window.GameBGM = (() => {
     enabled = true;
     document.removeEventListener("pointerdown", unlock);
     document.removeEventListener("click", unlock);
+    if (!current && pending) {
+      current = pending; pending = "";
+      loadSrc(tracks[current] || current);
+      audio.currentTime = 0;
+    }
     playCurrent();
   }
   function setVolume(value) {
@@ -80,6 +85,10 @@ window.GameBGM = (() => {
     const targetVolume = clampVolume((Number(state?.settings?.musicVolume ?? 80) || 0) / 100 * .9);
     const key = keyFor(state), src = tracks[key] || key;
     if (!src) return stopCurrent();
+    if (!enabled) {
+      pending = key;
+      return;
+    }
     if (state?.battle?.introSfxPending) {
       if (key !== current) { current = key; pending = ""; loadSrc(src); audio.currentTime = 0; }
       audio.volume = 0; playCurrent(); return;

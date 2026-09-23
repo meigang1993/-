@@ -13,6 +13,15 @@ window.BattleManualContinuation = deps => {
   const resume = window.BattleManualContinuationResume({
     allUnits, combat, waitEffects, actionGuard, hitResume, record,
   });
+  async function finishSkippedPlayPhase(state, unit, onStep, current) {
+    record(state, `${unit.name} 因${unit.skipPlayReason || "状态牌"}跳过出牌阶段。`);
+    const done = finishTurn(state);
+    combat.checkEnd(state);
+    onStep?.();
+    if (done && state.battle && !state.battle.locked) {
+      await advanceToInput(state, onStep, current);
+    }
+  }
   async function resumeAfterManualResponse(state, onStep, inherited) {
     const current = actionGuard(state, inherited);
     if (!current()) return;
@@ -37,13 +46,7 @@ window.BattleManualContinuation = deps => {
         || state.battle.awaitingMimicUid === unit.uid
         || state.battle.awaitingSpeedAssaultUid === unit.uid) return;
       if (unit.skipPlayPhase) {
-        record(state, `${unit.name} 因${unit.skipPlayReason || "状态牌"}跳过出牌阶段。`);
-        const done = finishTurn(state);
-        combat.checkEnd(state);
-        onStep?.();
-        if (done && state.battle && !state.battle.locked) {
-          await advanceToInput(state, onStep, current);
-        }
+        await finishSkippedPlayPhase(state, unit, onStep, current);
         return;
       }
       state.battle.phase = 4;
@@ -78,13 +81,7 @@ window.BattleManualContinuation = deps => {
         || state.battle.awaitingSpeedAssaultUid === unit.uid
         || state.battle.recklessPrompt) return;
       if (unit.skipPlayPhase) {
-        record(state, `${unit.name} 因${unit.skipPlayReason || "状态牌"}跳过出牌阶段。`);
-        const done = finishTurn(state);
-        combat.checkEnd(state);
-        onStep?.();
-        if (done && state.battle && !state.battle.locked) {
-          await advanceToInput(state, onStep, current);
-        }
+        await finishSkippedPlayPhase(state, unit, onStep, current);
         return;
       }
       state.battle.phase = 4;

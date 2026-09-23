@@ -80,11 +80,9 @@ async function equipBattleSkin(button) {
     actionBattle._skinSwitching = true;
     actionState.appearanceSaving = !trial;
     render();
+    const appearanceSave = !trial ? persistAppearanceNow(actionState) : null;
     await revealBattleSkinArt(actionUnit, previousArt, isCurrent);
-    if (isCurrent() && skin.dynamicEffect === "angelica-berserker") {
-      window.AngelicaBerserkerSkinFX?.queueEntry?.(actionState, actionUnit);
-    }
-    if (!trial) await persistAppearanceNow(actionState);
+    if (appearanceSave) await appearanceSave;
   } catch (err) {
     if (!isCurrent()) return;
     console.error("battle skin style load failed:", err.code, err.message, err.stack);

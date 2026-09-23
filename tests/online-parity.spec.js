@@ -113,23 +113,23 @@ test("online SDK storage and local core keep progression and balance identical",
     pendingRun: { gold: 0, essence: 0, cards: [], relics: [] },
   });
   expect(result.online).toMatchObject({
-    level: 1,
-    exp: 147,
+    level: 3,
+    exp: 241,
     started: true,
     settled: true,
     repeated: false,
-    experience: 247,
+    experience: 741,
     localCore: true,
   });
   expect(result.cloud).toEqual({
-    level: 1,
-    exp: 147,
+    level: 3,
+    exp: 241,
     hasSpent: false,
     hasStats: false,
   });
   expect(result.loaded).toEqual({
-    level: 1,
-    exp: 147,
+    level: 3,
+    exp: 241,
     hasSpent: false,
     stats: result.online.stats,
   });

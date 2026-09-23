@@ -122,7 +122,7 @@ test("skill-generated hand cards retain one settled public source card", async (
       window.BattleEffectCardMotion = originalMotion;
     }
   });
-  expect(result.generatedCount).toBe(18);
+  expect(result.generatedCount).toBe(19);
   expect(result.failures).toEqual([]);
   expect(result.ordinaryRemoved).toBe(true);
 });

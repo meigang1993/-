@@ -99,13 +99,13 @@ test("fresh games guide the first expedition and retire the hint after entry", a
   await expect(page.locator("[data-open-modal='team']")).toHaveText("准备启程");
 });
 
-test("update notice shows the September 11 Angelica update", async ({ page }) => {
+test("update notice shows the September 18 latest update", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
-  await expect(page.locator(".hall-update-button small")).toHaveText("2026.09.11");
+  await expect(page.locator(".hall-update-button small")).toHaveText("2026.09.18");
   await page.locator(".hall-update-button").click();
   const notice = page.locator(".update-notice");
-  await expect(notice.locator("time")).toHaveAttribute("datetime", "2026-09-11");
+  await expect(notice.locator("time")).toHaveAttribute("datetime", "2026-09-18");
   await expect(notice).toContainText("力大无穷");
   await expect(notice).toContainText("狂战意志");
   await expect(notice).toContainText("帝血弑天");

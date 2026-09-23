@@ -1,4 +1,4 @@
-/* global BattleCards, BattleRelicTurns, BondiSkills, EnemySkills, GuardKellySkills, UnderwaterTrainSkills */
+/* global BattleCards, BattleRelicTurns, BattleStatusCards, BondiSkills, EnemySkills, GuardKellySkills, UnderwaterTrainSkills */
 const {
   assert, combat, card, scenario, contract, equip,
   isKill, allUnits, unit, stateOf, activeHarness,

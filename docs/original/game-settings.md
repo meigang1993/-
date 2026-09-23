@@ -762,7 +762,7 @@ gameplay values and behavior remain here rather than being duplicated in
 
 ### 芙萝娅皮肤：音速刺客
 
-- 默认皮肤 ID `flora_default`固定使用上传的方形素材`publish/assets/images/flora-portrait.71c5d516.71c5d516.webp`并允许随时切回。`flora_sonic_assassin`品质固定为史诗，兑换价格固定为10精华宝珠，仅属于芙萝娅；正式素材固定为`publish/assets/generated/flora-sonic-assassin.8543df2c.webp`，胜利素材固定为`publish/assets/generated/flora-sonic-assassin-victory.7ab2b6cd.webp`，专属动态特效标识固定为`flora-sonic`。
+- 默认皮肤 ID `flora_default`固定使用上传的方形素材`publish/assets/images/flora-portrait.71c5d516.webp`并允许随时切回。`flora_sonic_assassin`品质固定为史诗，兑换价格固定为10精华宝珠，仅属于芙萝娅；正式素材固定为`publish/assets/generated/flora-sonic-assassin.8543df2c.webp`，胜利素材固定为`publish/assets/generated/flora-sonic-assassin-victory.7ab2b6cd.webp`，专属动态特效标识固定为`flora-sonic`。
 - 芙萝娅等级特殊立绘 ID 固定为`flora_level_10_special`，素材固定为`publish/assets/generated/flora-level-10-special.075896ea.webp`。达到`Lv.10`后按统一等级特殊立绘机制自动解锁；其与“音速刺客”的购买、装备和专属特效互相独立。
 - 形象必须保留芙萝娅的成年绿色长发魅魔身份、向后弯曲的恶魔角、黑红蝠翼、心形尾刺和双匕首战斗轮廓。音速刺客造型固定为高马尾、荧光翠绿渐变发梢、紫色眼眸、深色半面罩、眼角绿色斜纹油彩与深墨绿色哑光夜行装；肩胛骨处固定延伸两道半透明绿色音波光刃，腕部和小腿护具刻有消音符文，双匕首使用无实体刀身的高频绿色声波刃口。
 - 背景固定为月夜下的黑暗哥特工业战场，并以少量绿色残影提示高速移动轨迹。不得改成无角无翼、无尾、短发、无面罩、普通实体匕首、明亮日间环境或不具音波光刃的普通忍者形象。

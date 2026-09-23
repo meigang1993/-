@@ -1,3 +1,5 @@
+/* global GameData */
+
 // 端到端：模拟玩家接受了"讨伐废墟沙城 BOSS"的赏金后进入副本，
 // 检查最终 boss 节点实际生成了哪些敌人。
 // 路径：DungeonEvents.start -> applyBountyTargets -> forceBossNode -> bossGroup

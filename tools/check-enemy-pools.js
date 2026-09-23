@@ -1,3 +1,5 @@
+/* global GameData */
+
 // 检查所有副本的精英怪 / BOSS 怪物池（怪物组合）是否生效
 // 核心风险点：dungeon-enemies.js 的 fixedGroup 使用
 //   pool.find(e => e.id === id) || sample(pool, state)

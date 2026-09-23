@@ -1,3 +1,5 @@
+/* global GameData */
+
 // 量化 4 个副本每次生成的精英节点数（修复前基线）
 const fs = require("fs");
 const vm = require("vm");

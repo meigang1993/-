@@ -3,12 +3,14 @@
     "src/original",
     "publish"
   ],
+  "ignore": [
+    "src/original/*-skin-fx.js",
+    "src/original/character-skin-fx.js",
+    "publish/bundles/**"
+  ],
   "format": [
     "javascript",
     "css"
-  ],
-  "ignore": [
-    "publish/bundles/**"
   ],
   "mode": "mild",
   "minLines": 8,

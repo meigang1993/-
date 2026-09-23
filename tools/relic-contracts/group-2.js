@@ -1,4 +1,4 @@
-/* global BattleDamage, BattleDiscardFlow, UnderwaterTrainSkills */
+/* global BattleCardActiveRelics, BattleDamage, BattleDiscardFlow, GameDataRelics, UnderwaterTrainSkills */
 const {
   assert, combat, card, scenario, contract, equip,
   isKill, allUnits, unit, stateOf, activeHarness,

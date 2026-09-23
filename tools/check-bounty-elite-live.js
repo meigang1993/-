@@ -1,3 +1,5 @@
+/* global GameData */
+
 // 端到端：模拟玩家接受了"讨伐精英怪"的赏金后进入副本，
 // 检查被强制安排的精英节点实际生成了哪些敌人。
 // 路径：DungeonEvents.start -> applyBountyTargets -> forceEliteNode -> eliteGroup

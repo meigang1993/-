@@ -9,7 +9,7 @@ require("../src/original/flora-sonic-skin-fx.js");
 
 const base = SkinSystem.byId("flora_default");
 const sonic = SkinSystem.byId("flora_sonic_assassin");
-assert(base?.initial && base.art === "./assets/images/flora-portrait.71c5d516.71c5d516.webp"
+assert(base?.initial && base.art === "./assets/images/flora-portrait.71c5d516.webp"
   && fs.existsSync(`./publish/${base.art.slice(2)}`),
   "Flora must retain a selectable default skin");
 assert(sonic?.charId === "flora" && sonic.quality === "epic"

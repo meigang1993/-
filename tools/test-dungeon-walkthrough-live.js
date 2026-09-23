@@ -98,7 +98,6 @@ const DUNGEONS = [
         current: window.state.explore?.current,
       }));
 
-      let note = "";
       if (after.hasBattle) {
         // 战斗已开始：读取敌人信息（含 ABCD 编号）
         const battleInfo = await page.evaluate(() => {

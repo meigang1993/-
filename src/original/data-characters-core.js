@@ -58,7 +58,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "flora", name: "芙萝娅", gender: "female", face: "芙", art: "./assets/images/flora-portrait.71c5d516.71c5d516.webp", avatar: "./assets/images/flora-portrait.71c5d516.71c5d516.webp", role: "音速公主", locked: true, unlockCost: 8,
+    id: "flora", name: "芙萝娅", gender: "female", face: "芙", art: "./assets/images/flora-portrait.71c5d516.webp", avatar: "./assets/images/flora-portrait.71c5d516.webp", role: "音速公主", locked: true, unlockCost: 8,
     twinWith: "wendy",
     stats: { attack: 3, magic: 1, speed: 5, maxHp: 28, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 3 },
     evaluation: "高速刺杀与协同追击角色。神速之袭可在准备和结束阶段各突袭一次，准备阶段发动时跳过判定和摸牌，结束阶段发动后自身翻面；神速之翼提供稳定闪避，神速飞剑每回合对同一目标最多追加一次弃牌与刺杀。",
