@@ -49,6 +49,10 @@ window.BattleDamageResolution = ({
       window.NonokaLokiSkills?.sourceActor?.(state.battle, actor) || actor;
     amount = window.WendyCadicisSkills?.modifyTacticDamage?.(
       state, effectiveActor, target, amount, effectiveCard) ?? amount;
+    // 智能大脑（战术牌造成的伤害翻倍）：放在统一伤害结算链里，
+    // 才能覆盖与我一战 / 魔法对决 / 魔弹特攻 / 魔王军入侵等不走攻击流程的战术牌。
+    amount = window.RuinsRelicEffects?.tacticDamage?.(
+      state, actor, effectiveCard, amount) ?? amount;
     amount = window.BakarSkills?.modifyOutgoingDamage?.(
       state, actor, amount, effectiveCard, effectiveActor) ?? amount;
     amount = window.BondiSkills?.modifyOutgoingDamage?.(
