@@ -286,8 +286,7 @@ test("Borrowed Blade fallback selects the exact card handed over", async ({ page
     actorHand: ["愈魔瓶"],
     partnerHand: ["闪"],
   });
-  expect(await page.evaluate(() => {
-    window.__borrowedBladeObserver?.disconnect();
-    return window.__borrowedBladeTransferStarted;
-  })).toBe(true);
+  await expect.poll(() => page.evaluate(() =>
+    window.__borrowedBladeTransferStarted)).toBe(true);
+  await page.evaluate(() => window.__borrowedBladeObserver?.disconnect());
 });
