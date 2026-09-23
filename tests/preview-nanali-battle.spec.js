@@ -136,7 +136,7 @@ test("Nanali skills resolve through the real battle system", async ({ page }) =>
   });
 });
 
-test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its target line", async ({ page }) => {
+test("Abe Mike's Starlight Drawslash settles without a Nanali counter line", async ({ page }) => {
   await startRegressionBattle(page);
   const result = await page.evaluate(async () => {
     const battle = window.state.battle;
@@ -169,7 +169,7 @@ test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its targ
       ref: "nanali", name: "娜娜莉", side: "ally", hp: 20, maxHp: 20,
       block: 0, defenseSystem: 0, stats: { ...nanali.stats, attack: 3 },
       hand: [
-        { name: "复仇费用", suit: "♦", type: "tactic" },
+        { name: "补牌演练", suit: "♦", type: "tactic" },
         { name: "保留手牌", suit: "♣", type: "tactic" },
       ],
       discard: [], consumed: [], nanaliSealed: [],
@@ -184,15 +184,21 @@ test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its targ
     });
     window.render();
     window.BattlePrepareSequence({
-      combat: { damage: window.BattleSystem.damage },
+      combat: {
+        damage: window.BattleSystem.damage,
+        checkDefeat: window.BattleSystem.checkDefeat || (() => false),
+        checkEnd: window.BattleSystem.checkEnd || (() => false),
+      },
       draw: window.BattleSystem.draw,
       intentMax: unit => unit.stats.bloodlust,
       nextAnim: () => 1,
       record: (state, text) => window.BattleLog.add(state, text),
       relicPrepare: () => {},
     }).resolve(window.state, abe);
-    await window.BattleEffects.drain(window.state, window.render);
+    // 准备阶段结算已入队，立即清空 AI 标识：避免 drain 期间安倍麦克
+    // 顺带跑完出牌阶段（猛龙断空斩 + 实体杀/魔杀），给娜娜莉叠加额外伤害。
     abe.ai = null;
+    await window.BattleEffects.drain(window.state, window.render);
     const sequence = [];
     const observer = new MutationObserver(records => {
       records.forEach(record => {
@@ -211,12 +217,15 @@ test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its targ
     observer.observe(document.body, {
       attributes: true, attributeFilter: ["class"], childList: true, subtree: true,
     });
-    const prompt = battle.counterTrigger?.skill || null;
-    await window.BattleSystem.resolveCounterTrigger(window.state, true);
+    // 复仇之刃已删除：不存在反击提示，无需再显式结算反击触发器。
     await window.BattleEffects.whenIdle();
+    // 回合推进由战斗流程驱动，给队列一个短暂窗口完成交还行动权。
+    for (let i = 0; i < 30
+      && (battle.activeUid === abe.uid || battle.phase !== 4); i += 1) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
     observer.disconnect();
     return {
-      prompt,
       sequence,
       nanaliHp: nanali.hp,
       abeHp: abe.hp,
@@ -232,10 +241,10 @@ test("Nanali revenge after Abe Mike's Starlight Drawslash settles after its targ
       phase: battle.phase,
     };
   });
-  expect(result.prompt).toBeNull();
-  expect(result.sequence.indexOf("target-line")).toBeGreaterThanOrEqual(0);
+  // 复仇之刃已删除：不再产生反击提示，因此也不会出现封牌/反击目标线。
   expect(result.sequence.indexOf("seal")).toBe(-1);
-  expect(result.nanaliHp).toBe(20);
+  // 星光拔刀斩：展示牌后娜娜莉弃置一张，牌名不同 → 承受等同于攻击力(3)的伤害。
+  expect(result.nanaliHp).toBe(17);
   expect(result.abeHp).toBe(30);
   expect(result.pendingAnimations).toBe(0);
   expect(result.pendingReactions).toBe(0);
