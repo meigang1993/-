@@ -154,8 +154,11 @@ module.exports = ({
     && !info.domeSuitMark(pendingYi).includes("本回合"),
   "Dome Performance must display its current-turn suit set without stale persistence wording");
   const battleUiSource = fs.readFileSync("./src/original/ui-battle-units.js", "utf8");
-  assert((battleUiSource.match(/I\.domeSuitMark/g) || []).length === 2,
-    "Both the battlefield portrait and active portrait must render Dome Performance suits");
+  // 标记徽章已统一收进 badgeStack 容器（避免多标记互相重叠），
+  // 因此改判：badgeStack 内渲染巨蛋标记，且战场头像与大头像各调用一次。
+  assert(/I\.domeSuitMark/.test(battleUiSource)
+    && (battleUiSource.match(/badgeStack\(/g) || []).length === 3,
+  "Both the battlefield portrait and active portrait must render Dome Performance suits");
   pendingYi.hoshinoMissionCards = 7;
   assert(info.missionMark(pendingYi).includes("使命 7/20"),
     "Hoshino Yi mission progress must display the used-card count");
