@@ -1,0 +1,68 @@
+.skin-effect-bertis-queen { position: relative; }
+.skin-effect-bertis-queen::before { content: ""; position: absolute; inset: 7%; z-index: 2; border: 1px solid rgba(128,55,176,.6); border-radius: 50%; pointer-events: none; }
+.skin-effect-bertis-queen::after { content: ""; position: absolute; left: 18%; right: 18%; bottom: 3%; z-index: 2; height: 16%; background: radial-gradient(ellipse,rgba(116,31,142,.48),transparent 70%); opacity: .58; pointer-events: none; }
+.unit:not(.dead) .unit-art.skin-effect-bertis-queen > img { transform-origin: 50% 72%; }
+.bertis-queen-entering { animation: bertisQueenEnter .98s cubic-bezier(.18,.85,.22,1) both !important; }
+.bertis-queen-angry > img { animation: bertisQueenAngry .58s ease-in-out both !important; }
+.bertis-queen-arrogant::before { border-color: #d7ac45; }
+.bertis-queen-arrogant::after { content: "♛"; left: 54%; right: auto; bottom: auto; top: -7%; width: auto; height: auto; color: #d7af4d; background: none; font-size: 20px; transform: rotate(-16deg); }
+.bertis-queen-fx { position: fixed; z-index: 48; pointer-events: none; overflow: visible; transform: translateZ(0); }
+.bertis-queen-line { position: fixed; z-index: 49; height: 5px; transform-origin: 0 50%; transform: rotate(var(--line-angle)); pointer-events: none; }
+.bertis-queen-entry b { position: absolute; inset: 5%; border: 6px double rgba(91,29,129,.78); border-radius: 50%; box-shadow: 0 0 24px #7d2c9f,inset 0 0 20px #1a061f; animation: bertisEntryLace .95s ease-out both; }
+.bertis-queen-entry i { position: absolute; left: 50%; top: 55%; width: 13px; height: 13px; border-radius: 55% 45% 55% 20%; background: #5b183f; box-shadow: 0 0 8px #b04aa1; animation: bertisRoseScatter .9s ease-out both; }
+.bertis-queen-entry i:nth-of-type(2) { animation-delay: .1s; }.bertis-queen-entry i:nth-of-type(3) { animation-delay: .2s; }
+.bertis-queen-entry span { position: absolute; left: 28%; right: 28%; bottom: 7%; height: 48%; border: 4px solid #33133e; border-bottom: 0; border-radius: 44% 44% 0 0; box-shadow: 0 0 14px #64247d; animation: bertisThroneBreak .9s ease-in both; }
+.bertis-queen-arrogance b { position: absolute; left: 51%; top: -10%; width: 32%; height: 23%; border: 4px solid #d0a13d; border-top: 0; clip-path: polygon(0 0,25% 45%,50% 0,75% 45%,100% 0,88% 100%,12% 100%); background: #181019; transform: rotate(-15deg); box-shadow: 0 0 12px #9a5cc0; animation: bertisCrownPop .72s ease-out both; }
+.bertis-queen-arrogance i { position: absolute; left: 50%; top: 46%; width: 10px; height: 10px; border-radius: 60% 40% 60% 20%; background: #711d51; box-shadow: 0 0 9px #bc65be; animation: bertisRoseScatter .8s ease-out both; }
+.bertis-queen-arrogance.disabled { filter: grayscale(.8); }.bertis-queen-arrogance.disabled b { animation-direction: reverse; }
+.bertis-queen-angry-fx b { position: absolute; left: 34%; top: 28%; width: 32%; height: 20%; border-bottom: 5px solid #d24869; border-radius: 50%; filter: drop-shadow(0 0 7px #bf4165); animation: bertisPout .6s ease-out both; }
+.bertis-queen-angry-fx i { position: absolute; top: 17%; width: 18%; height: 5px; background: #ef5173; box-shadow: 0 0 8px #d8335d; }.bertis-queen-angry-fx i:nth-of-type(1) { left: 23%; transform: rotate(18deg); }.bertis-queen-angry-fx i:nth-of-type(2) { right: 23%; transform: rotate(-18deg); }
+.bertis-queen-angry-point { height: 3px; background: linear-gradient(90deg,#f15a79,#702160,transparent); box-shadow: 0 0 9px #cb3f75; animation: bertisWhipArc .58s ease-out both; }
+.bertis-queen-whip-line { height: 7px; border-top: 3px solid #b154d0; border-radius: 50%; box-shadow: 0 -3px 10px #742692; animation: bertisWhipArc .72s cubic-bezier(.2,.8,.3,1) both; }
+.bertis-queen-whip-line.doubled i:nth-child(2) { display: block; transform: scaleY(-1); }.bertis-queen-whip-line:not(.doubled) i:nth-child(2) { display: none; }
+.bertis-queen-whip-hit b { position: absolute; inset: 16%; border: 3px dashed #82389f; border-radius: 45%; box-shadow: inset 0 0 15px #39103f,0 0 14px #8e3cb0; animation: bertisThornBind .9s ease-out both; }
+.bertis-queen-whip-hit i { position: absolute; left: 18%; top: 49%; width: 64%; height: 3px; background: #ba55d0; box-shadow: 0 0 10px #8b2ca8; transform: rotate(24deg); animation: bertisWhipMark .92s ease-out both; }
+.bertis-queen-whip-hit.doubled i:nth-of-type(2) { transform: rotate(-24deg); }.bertis-queen-whip-hit:not(.doubled) i:nth-of-type(2) { display: none; }
+.bertis-queen-whip-hit span { position: absolute; inset: 2%; background: repeating-conic-gradient(transparent 0 19deg,rgba(126,47,151,.48) 20deg 22deg,transparent 23deg 42deg); animation: bertisThornBind .95s ease-out both; }
+.bertis-queen-card-flight,.bertis-queen-food-flight { background: linear-gradient(90deg,transparent,#a84fca 45%,transparent); animation: bertisCardTrail .9s ease-out both; }
+.bertis-queen-card-flight i,.bertis-queen-food-flight i { position: absolute; left: calc(var(--i,0) * 9px); top: -12px; width: 14px; height: 20px; border: 1px solid #d9b7e6; border-radius: 2px; background: linear-gradient(145deg,#2a1035,#8a3c91); box-shadow: 0 0 9px #9b4dba; animation: bertisCardFly .86s ease-out both; animation-delay: calc(var(--i,0) * 45ms); }
+.bertis-queen-growth b,.bertis-queen-take-food b { position: absolute; left: 48%; bottom: 8%; width: 5%; height: 46%; background: linear-gradient(#dcae43,#4f9f4c); transform-origin: 50% 100%; animation: bertisPlantGrow .9s ease-out both; }
+.bertis-queen-growth.growth-one i,.bertis-queen-take-food i { position: absolute; left: 42%; top: 22%; width: 17%; height: 28%; background: repeating-linear-gradient(110deg,#e5bd53 0 4px,#936121 5px 7px); border-radius: 65% 20%; animation: bertisWheatRise .9s ease-out both; }
+.bertis-queen-growth.growth-three b { inset: 8%; width: auto; height: auto; background: repeating-conic-gradient(transparent 0 15deg,#32113d 16deg 19deg,transparent 20deg 34deg); border-radius: 50%; animation: bertisThornBind 1s ease-out both; }
+.bertis-queen-growth.growth-three i { position: absolute; left: 45%; top: 42%; width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 30%,#e86772,#64142a 62%,#250611); box-shadow: 0 0 10px #a72c54; animation: bertisFruitPop .95s ease-out both; }
+.bertis-queen-growth.growth-three i:nth-of-type(2) { margin-left: -30px; animation-delay: .08s; }.bertis-queen-growth.growth-three i:nth-of-type(3) { margin-left: 30px; animation-delay: .16s; }
+.bertis-queen-growth span { position: absolute; inset: 0; border-bottom: 5px solid rgba(83,36,100,.7); border-radius: 50%; animation: bertisGroundCrack .9s ease-out both; }
+.bertis-queen-food-flight { height: 6px; background: linear-gradient(90deg,#dcb543,#913dab,transparent); }.bertis-queen-food-flight i:nth-child(2) { --i: 1; }
+.victory-screen.bertis-queen-victory { background: radial-gradient(circle at 19% 31%,rgba(117,43,146,.4),transparent 36%),linear-gradient(120deg,#09070d,#24102d 58%,#4d173f); }
+.bertis-queen-victory-show { position: absolute; inset: 0 auto 0 0; z-index: 1; width: 43%; overflow: hidden; pointer-events: none; }
+.bertis-queen-victory-art { position: absolute; inset: 0; overflow: hidden; mask-image: linear-gradient(90deg,#000 68%,transparent 100%); }
+.bertis-queen-victory-art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 29%; animation: bertisVictoryCurtsey 3.8s ease-in-out infinite; }
+.bertis-victory-crown { position: absolute; left: 44%; top: 12%; z-index: 4; width: 52px; height: 32px; border: 5px solid #d3a843; border-top: 0; clip-path: polygon(0 0,25% 48%,50% 0,75% 48%,100% 0,88% 100%,12% 100%); background: #171019; filter: drop-shadow(0 0 9px #a14fbc); transform: rotate(-15deg); animation: bertisVictoryCrown 2.2s ease-in-out infinite; }
+.bertis-victory-roses i { position: absolute; z-index: 3; width: 14px; height: 14px; border-radius: 60% 40% 60% 20%; background: #68183f; box-shadow: 0 0 9px #a95099; animation: bertisVictoryRose 2.8s ease-in-out infinite; }
+.bertis-victory-roses i:nth-child(1) { left: 12%; top: 18%; }.bertis-victory-roses i:nth-child(2) { left: 68%; top: 27%; animation-delay: .4s; }.bertis-victory-roses i:nth-child(3) { left: 22%; top: 62%; animation-delay: .8s; }.bertis-victory-roses i:nth-child(4) { left: 76%; top: 70%; animation-delay: 1.2s; }.bertis-victory-roses i:nth-child(5) { left: 48%; top: 44%; animation-delay: 1.6s; }
+.bertis-victory-whip { position: absolute; left: 10%; right: 8%; bottom: 11%; z-index: 4; height: 34%; border: 5px solid #32132d; border-left-color: transparent; border-radius: 50%; filter: drop-shadow(0 0 7px #8c3a85); animation: bertisVictoryWhip 3.8s ease-in-out infinite; }
+.victory-screen.bertis-queen-victory .victory-stats { z-index: 5; width: 64%; margin-left: auto; background: rgba(9,5,12,.78); backdrop-filter: blur(8px); }
+@keyframes bertisQueenEnter { 0% { opacity: 0; transform: translateY(-30px) scale(.76); } 66% { opacity: 1; transform: translateY(4px) scale(1.07); } 100% { transform: none; } }
+@keyframes bertisEntryLace { from { opacity: 0; scale: .2; rotate: -90deg; } 45% { opacity: 1; } to { opacity: 0; scale: 1.35; rotate: 80deg; } }
+@keyframes bertisRoseScatter { from { opacity: 0; transform: translate(-50%,0) scale(.2); } 40% { opacity: 1; } to { opacity: 0; transform: translate(calc(-60px + 120px * var(--i,1)), -78px) rotate(160deg); } }
+@keyframes bertisThroneBreak { from { opacity: 0; scale: .4; } 45% { opacity: .9; } to { opacity: 0; scale: 1.08; filter: blur(3px); } }
+@keyframes bertisCrownPop { from { opacity: 0; transform: translateY(18px) rotate(-35deg) scale(.2); } 52% { opacity: 1; } to { opacity: 0; transform: translateY(-8px) rotate(-15deg) scale(1.1); } }
+@keyframes bertisQueenAngry { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px) rotate(-1deg); } 65% { transform: translateX(4px) rotate(1deg); } }
+@keyframes bertisPout { from { opacity: 0; scale: .3; } 45% { opacity: 1; } to { opacity: 0; scale: 1.2; } }
+@keyframes bertisWhipArc { from { opacity: 0; transform: rotate(var(--line-angle)) scaleX(.05) scaleY(.4); } 38% { opacity: 1; } to { opacity: 0; transform: rotate(var(--line-angle)) scaleX(1) scaleY(1.5); } }
+@keyframes bertisThornBind { from { opacity: 0; scale: 1.5; rotate: -50deg; } 46% { opacity: 1; } to { opacity: 0; scale: .82; rotate: 20deg; } }
+@keyframes bertisWhipMark { from { opacity: 0; scale: .2; } 45% { opacity: 1; } to { opacity: 0; scale: 1.1; } }
+@keyframes bertisCardTrail { from { opacity: 0; transform: rotate(var(--line-angle)) scaleX(.05); } 35% { opacity: .9; } to { opacity: 0; transform: rotate(var(--line-angle)) scaleX(1); } }
+@keyframes bertisCardFly { from { opacity: 0; transform: translateX(0) rotate(-30deg) scale(.4); } 35% { opacity: 1; } to { opacity: 0; transform: translateX(calc(100% + 80px)) rotate(25deg) scale(1.1); } }
+@keyframes bertisPlantGrow { from { opacity: 0; transform: scaleY(.05); } 50% { opacity: 1; } to { opacity: 0; transform: scaleY(1.15); } }
+@keyframes bertisWheatRise { from { opacity: 0; transform: translateY(28px) scale(.2); } 45% { opacity: 1; } to { opacity: 0; transform: translateY(-18px) scale(1.25); } }
+@keyframes bertisFruitPop { from { opacity: 0; transform: translateY(20px) scale(.2); } 48% { opacity: 1; } to { opacity: 0; transform: translateY(-34px) scale(1.2); } }
+@keyframes bertisGroundCrack { from { opacity: 0; scale: .2; } 45% { opacity: 1; } to { opacity: 0; scale: 1.25; } }
+@keyframes bertisVictoryCurtsey { 0%,100% { transform: scale(1.03) translateY(0) rotate(0); } 42% { transform: scale(1.045) translateY(5px) rotate(-1deg); } 66% { transform: scale(1.055) translateY(-3px) rotate(.6deg); } }
+@keyframes bertisVictoryCrown { 0%,60%,100% { transform: rotate(-15deg) translateY(0); } 72% { transform: rotate(-10deg) translateY(-5px); } }
+@keyframes bertisVictoryRose { 0%,100% { opacity: 0; transform: translateY(16px) rotate(0); } 35% { opacity: .9; } 75% { opacity: .35; transform: translateY(-38px) rotate(180deg); } }
+@keyframes bertisVictoryWhip { 0%,100% { transform: rotate(-3deg) scale(.92); opacity: .55; } 52% { transform: rotate(4deg) scale(1.03); opacity: .9; } }
+@media (max-height:520px) { .bertis-queen-victory-show { width: 35%; } .victory-screen.bertis-queen-victory .victory-stats { width: 70%; } }
+@media (prefers-reduced-motion:reduce) {
+  .skin-effect-bertis-queen::before, .skin-effect-bertis-queen::after, .unit:not(.dead) .unit-art.skin-effect-bertis-queen > img, .bertis-queen-arrogant::after, .bertis-queen-victory-art img, .bertis-victory-crown, .bertis-victory-roses i, .bertis-victory-whip { animation: none !important; }
+}

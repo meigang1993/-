@@ -1,0 +1,55 @@
+.damage-attribute-fx { position: fixed; z-index: 15; transform: translate(-50%, -50%); pointer-events: none; overflow: visible; isolation: isolate; }
+.damage-attribute-fx.critical { transform: translate(-50%, -50%) scale(1.3); filter: drop-shadow(0 0 10px #ffd45f); }
+.damage-attribute-fx > i { position: absolute; z-index: 1; display: block; pointer-events: none; }
+.damage-attribute-poison::before, .damage-attribute-dark::before { content: ""; position: absolute; inset: 7%; z-index: 0; border-radius: 14px; pointer-events: none; animation: damageTint var(--battle-ms-300, .3s) ease-out both; }
+.damage-attribute-poison::before { background: rgba(44,222,78,.38); box-shadow: inset 0 0 20px #31ef65; mix-blend-mode: color; }
+.damage-attribute-dark::before { background: rgba(18,0,28,.58); box-shadow: inset 0 0 24px #000, 0 0 18px rgba(42,0,58,.9); }
+.damage-slash-arc { left: -8%; top: var(--y); width: 116%; height: 15%; border-top: 5px solid rgba(255,255,255,.96); border-radius: 50%; box-shadow: 0 -2px 5px rgba(255,255,255,.72); transform: rotate(var(--arc-angle)); animation: damageSlashArc var(--battle-ms-500, .5s) ease-out both; }
+.damage-poison-drop { left: var(--x); top: var(--y); width: var(--size); height: calc(var(--size) + 3px); border-radius: 50% 50% 55% 45%; background: #58f26d; box-shadow: 0 0 9px #1ddd52; animation: damagePoisonDrop var(--battle-ms-520, .52s) ease-out both; }
+.damage-lightning-bolt { inset: -28% 35% 15%; background: #eaffff; clip-path: polygon(54% 0, 30% 43%, 53% 43%, 31% 100%, 76% 37%, 52% 37%); filter: drop-shadow(0 0 5px #77ddff) drop-shadow(0 0 12px #168dff); animation: damageBolt var(--battle-ms-500, .5s) steps(2, end) both; }
+.damage-electric-spark { left: 48%; top: 58%; width: 34%; height: 3px; transform-origin: 0 50%; transform: rotate(var(--angle)); background: linear-gradient(90deg, #fff, #5ed8ff, transparent); box-shadow: 0 0 6px #5ed8ff; animation: damageSpark var(--battle-ms-480, .48s) ease-out both; }
+.damage-flame { left: var(--x); bottom: -4%; width: 18%; height: var(--height); border-radius: 55% 45% 38% 62%; transform-origin: 50% 100%; background: radial-gradient(circle at 52% 72%, #fff7a1 0 9%, #ffad32 28%, #f04420 66%, transparent 70%); animation: damageFlame var(--battle-ms-520, .52s) ease-out both; }
+.damage-holy-pillar { left: 25%; top: -35%; width: 50%; height: 145%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.94), #ffe082, rgba(255,255,255,.94), transparent); filter: blur(1px) drop-shadow(0 0 12px #ffd45f); animation: damageHolyPillar var(--battle-ms-520, .52s) ease-out both; }
+.damage-feather { left: var(--x); top: var(--y); width: 10px; height: 18px; border-radius: 100% 0 100% 0; background: #fff; box-shadow: 0 0 7px #fff; animation: damageFeather var(--battle-ms-580, .58s) ease-out both; }
+.damage-dark-mist { left: calc(50% + var(--spread-x)); top: calc(48% + var(--spread-y)); width: 44%; height: 38%; border-radius: 50%; background: radial-gradient(circle, rgba(112,36,145,.84), rgba(25,4,38,.74) 48%, transparent 72%); filter: blur(5px); animation: damageDarkMist var(--battle-ms-550, .55s) ease-out both; }
+.damage-ice-core { left: 28%; top: 20%; width: 44%; height: 64%; background: linear-gradient(135deg, rgba(255,255,255,.94), #7fe4ff 42%, #247bd7 72%, transparent 74%); clip-path: polygon(50% 0, 74% 35%, 100% 54%, 68% 67%, 51% 100%, 34% 68%, 0 55%, 28% 35%); filter: drop-shadow(0 0 9px #78dfff); animation: damageIceCore var(--battle-ms-480, .48s) ease-out both; }
+.damage-ice-shard { left: 47%; top: 52%; width: 12%; height: 38%; transform-origin: 50% 0; transform: rotate(var(--angle)); background: linear-gradient(#eaffff, #54cfff 58%, transparent); clip-path: polygon(50% 0, 100% 100%, 0 100%); animation: damageIceShard var(--battle-ms-520, .52s) ease-out both; }
+.damage-magic-fx { filter: drop-shadow(0 0 8px rgba(190,92,255,.74)); }
+.damage-magic-fx.critical { filter: drop-shadow(0 0 12px #ffd45f) drop-shadow(0 0 14px #c86cff); }
+.damage-magic-circle { left: 5%; top: 43%; width: 90%; height: 48%; border: 2px solid rgba(228,171,255,.92); border-radius: 50%; background: repeating-conic-gradient(from 0deg, rgba(229,174,255,.92) 0 2deg, transparent 2deg 24deg), radial-gradient(circle, transparent 0 28%, rgba(181,76,255,.6) 29% 32%, transparent 33% 48%, rgba(217,143,255,.8) 49% 52%, transparent 53%); box-shadow: inset 0 0 12px #9f3eff, 0 0 15px rgba(195,96,255,.9); animation: damageMagicCircle var(--battle-ms-340, .34s) ease-out both; }
+.damage-magic-circle::after { content: ""; position: absolute; inset: 19%; border: 1px solid rgba(244,210,255,.9); border-radius: 50%; box-shadow: 0 0 9px #c978ff; }
+.damage-magic-beam { left: 50%; bottom: 43%; width: 3px; height: var(--height); border-radius: 50%; transform-origin: 50% 100%; background: linear-gradient(transparent, #f6d9ff 18%, #c56bff 66%, transparent); box-shadow: 0 0 7px #df9cff, 0 0 13px #8e35dc; animation: damageMagicBeam var(--battle-ms-480, .48s) ease-out both; }
+.damage-magic-star { left: 50%; bottom: 76%; width: var(--size); height: var(--size); background: #f9e9ff; clip-path: polygon(50% 0, 60% 39%, 100% 50%, 60% 61%, 50% 100%, 40% 61%, 0 50%, 40% 39%); box-shadow: 0 0 8px #e7adff; animation: damageMagicStar var(--battle-ms-520, .52s) ease-out both; }
+.unit-art.damage-tint-poison::after, .unit-art.damage-tint-dark::after { content: ""; position: absolute; inset: 0; z-index: 8; border-radius: inherit; pointer-events: none; animation: damageTint var(--battle-ms-300, .3s) ease-out both; }
+.unit-art.damage-tint-poison, .unit-art.damage-tint-dark { position: relative; }
+.unit-art.damage-tint-poison::after { background: rgba(44,222,78,.38); box-shadow: inset 0 0 20px #31ef65; }
+.unit-art.damage-tint-dark::after { background: rgba(18,0,28,.62); box-shadow: inset 0 0 24px #000, 0 0 18px rgba(42,0,58,.9); }
+.float-num.damage-type-physical, .float-num.hp-loss { color: #ff355f; }
+.float-num.damage-type-poison { color: #58e86c; }
+.float-num.damage-type-thunder { color: #4fd9ff; }
+.float-num.damage-type-fire { color: #ff633d; }
+.float-num.damage-type-holy { color: #ffd45f; }
+.float-num.damage-type-dark { color: #8e48bf; }
+.float-num.damage-type-ice { color: #79e4ff; }
+.float-num.damage-magic { color: #d98cff; text-shadow: 0 0 6px #f0c5ff, 0 0 14px #a63dff, 0 2px 4px #21002e; }
+.float-num.damage-magic.critical { color: #efc4ff; text-shadow: 0 0 8px #fff, 0 0 17px #cf74ff, 0 0 28px #ffd45f, 0 2px 4px #21002e; }
+.float-num.critical { font-size: 45px; text-shadow: 0 0 7px #fff, 0 0 15px #ffd45f, 0 0 28px #ffb52e, 0 2px 4px #000; }
+.float-num.critical::after { content: ""; position: absolute; left: 50%; top: 50%; width: 72px; height: 72px; transform: translate(-50%, -50%); background: conic-gradient(from 0deg, transparent, #ffd45f, transparent 12%, transparent 38%, #fff2a3, transparent 50%); clip-path: polygon(48% 0, 55% 39%, 100% 48%, 58% 55%, 50% 100%, 42% 58%, 0 50%, 39% 42%); animation: damageCriticalFlash var(--battle-ms-500, .5s) ease-out both; z-index: -1; }
+@keyframes damageSlashArc { 0% { opacity: 0; transform: translateX(-55%) rotate(var(--arc-angle)) scaleX(.35); } 35% { opacity: 1; } 100% { opacity: 0; transform: translateX(45%) rotate(var(--arc-angle)) scaleX(1.05); } }
+@keyframes damagePoisonDrop { 0% { opacity: 0; transform: translate(0, -18px) scale(.3); } 35% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--spread-x), 44px) scale(1.2); } }
+@keyframes damageBolt { 0%, 18%, 38% { opacity: 0; } 8%, 28%, 52% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes damageSpark { 0% { opacity: 0; width: 5%; } 35% { opacity: 1; } 100% { opacity: 0; width: 46%; } }
+@keyframes damageFlame { 0% { opacity: 0; transform: translateY(30%) scale(.4); } 36% { opacity: 1; } 100% { opacity: 0; transform: translateY(-38%) scale(1.15); } }
+@keyframes damageHolyPillar { 0% { opacity: 0; transform: scaleY(.25); } 24% { opacity: 1; } 100% { opacity: 0; transform: scaleY(1); } }
+@keyframes damageFeather { 0% { opacity: 0; transform: translateY(-18px) rotate(0); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--spread-x), 58px) rotate(140deg); } }
+@keyframes damageDarkMist { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.25); } 42% { opacity: .95; } 100% { opacity: 0; transform: translate(var(--spread-x), var(--spread-y)) scale(1.45); } }
+@keyframes damageIceCore { 0% { opacity: 0; transform: scale(.25); } 55% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.08); } }
+@keyframes damageIceShard { 0%, 45% { opacity: 0; height: 8%; } 62% { opacity: 1; } 100% { opacity: 0; height: 52%; transform: rotate(var(--angle)) translateY(18px); } }
+@keyframes damageMagicCircle { 0% { opacity: 0; transform: scale(.3) rotate(0); } 42% { opacity: 1; } 100% { opacity: 0; transform: scale(1.18) rotate(92deg); } }
+@keyframes damageMagicBeam { 0% { opacity: 0; transform: translateX(var(--spread-x)) scaleY(.12); } 28% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--spread-x), -44px) scaleY(1.15); } }
+@keyframes damageMagicStar { 0%, 22% { opacity: 0; transform: translate(var(--spread-x), 15px) scale(.2) rotate(0); } 48% { opacity: 1; transform: translate(var(--spread-x), -31px) scale(1); } 100% { opacity: 0; transform: translate(calc(var(--spread-x) * 1.35), 23px) scale(.55) rotate(120deg); } }
+@keyframes damageTint { 0% { opacity: 0; } 28% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes damageCriticalFlash { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.25) rotate(0); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.35) rotate(45deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .damage-attribute-fx > i, .float-num.critical::after, .unit-art.damage-tint-poison::after, .unit-art.damage-tint-dark::after { animation-duration: var(--battle-ms-500, .5s) !important; }
+}

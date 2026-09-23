@@ -1,0 +1,27 @@
+{
+  "path": [
+    "src/original",
+    "publish"
+  ],
+  "format": [
+    "javascript",
+    "css"
+  ],
+  "ignore": [
+    "publish/bundles/**"
+  ],
+  "mode": "mild",
+  "minLines": 8,
+  "minTokens": 80,
+  "maxLines": 500,
+  "threshold": 0.35,
+  "reporters": [
+    "console",
+    "json",
+    "threshold"
+  ],
+  "output": ".qa-artifacts/duplicates",
+  "noSymlinks": true,
+  "noGitignore": false,
+  "silent": false
+}

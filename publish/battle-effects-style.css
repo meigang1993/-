@@ -1,0 +1,41 @@
+.slash-fx { position: fixed; z-index: 40; height: 5px; pointer-events: none; transform: translate(-50%, -50%) rotate(-18deg); background: linear-gradient(90deg, transparent, #fff, #ff3c71, transparent); box-shadow: 0 0 18px #fff, 0 0 26px rgba(255,60,113,.7); animation: slashLine var(--battle-ms-600, .6s) ease-out forwards; }
+.unit.armor-broken .combat-bar, .unit.defense-broken .combat-bar { animation: armorBreak var(--battle-ms-300, .3s) ease-out; }
+.unit.armor-broken::after, .unit.defense-broken::after { content: "护甲破碎"; position: absolute; left: 50%; top: -18px; transform: translateX(-50%); color: #75d9ff; font-size: 12px; text-shadow: 0 0 10px #4cb8ff; animation: breakPop var(--battle-ms-600, .6s) ease-out; }
+.unit.defense-broken::after { content: "防御系统崩溃"; color: #ffe85a; text-shadow: 0 0 10px #ffb22e; }
+
+.target-line { position: fixed; z-index: 12; height: 2px; width: 0; opacity: 0; background: rgba(255,255,255,.78); transform-origin: left center; box-shadow: 0 0 10px #fff, 0 0 18px rgba(255,92,171,.45); pointer-events: none; transition: opacity .08s; }
+.target-line.enemy-line { background: rgba(255,64,92,.78); box-shadow: 0 0 10px rgba(255,64,92,.9), 0 0 18px rgba(255,92,171,.45); }
+.target-line.combo-sub { height: 3px; background: rgba(255,212,95,.9); box-shadow: 0 0 12px rgba(255,212,95,.95), 0 0 24px rgba(255,184,61,.7); }
+.unit.combo-partner-flash .unit-art { animation: comboPartnerFlash var(--battle-ms-580, .58s) ease-in-out; box-shadow: 0 0 22px rgba(255,212,95,.9), inset 0 0 14px rgba(255,212,95,.32); }
+.target-line.show { opacity: 1; }
+.target-line.flash { animation: lineFlash var(--battle-ms-200, .2s) ease-out; }
+.drag-ghost { position: fixed; z-index: 50; width: 86px; min-height: 122px; margin: -61px 0 0 -43px; pointer-events: none; opacity: .82; transform: scale(1.08) rotate(3deg); box-shadow: 0 0 28px rgba(255,255,255,.72), 0 18px 32px rgba(0,0,0,.45); }
+.card-dragging { cursor: grabbing; user-select: none; }
+.float-num { position: fixed; z-index: 42; pointer-events: none; transform: translate(-50%, -50%); font-weight: 1000; letter-spacing: 1px; animation: floatNum var(--battle-ms-1200, 1.2s) ease-out forwards; text-shadow: 0 2px 4px #000, 0 0 6px currentColor; }
+.float-num.damage, .float-num.hp-loss { color: #ff355f; font-size: 30px; }
+.float-num.heal { color: #55f28a; font-size: 24px; }
+.float-num.armor, .float-num.armor-gain, .float-num.armor-break { color: #55c9ff; font-size: 24px; }
+.float-num.defense, .float-num.defense-break { color: #ffe85a; font-size: 24px; }
+.float-num.critical { font-size: 45px; text-shadow: 0 0 10px #fff, 0 0 22px #ffd45f, 0 2px 4px #000; }
+.armor-shard { position: fixed; z-index: 42; width: 6px; height: 8px; pointer-events: none; background: #7fe5ff; box-shadow: 0 0 10px #7fe5ff; animation: armorShard var(--battle-ms-500, .5s) ease-out forwards; }
+.card-trail.enemy-played { box-shadow: 0 0 24px rgba(255,255,255,.75), 0 0 28px rgba(188,122,255,.48); }
+.burning-card { overflow: hidden; }
+.burning-card::before { content: ""; position: absolute; inset: auto -12% -18% -12%; height: 22%; opacity: 0; background: radial-gradient(circle at 20% 70%, #fff6a8 0 8%, #ff7b22 16%, transparent 32%), radial-gradient(circle at 58% 80%, #ffd45f 0 7%, #ff3c00 15%, transparent 30%), linear-gradient(180deg, transparent, rgba(255,77,0,.9)); filter: blur(.3px); pointer-events: none; }
+.burning-card::after { content: ""; position: absolute; inset: 0; opacity: 0; background: linear-gradient(0deg, rgba(12,8,8,.88), rgba(74,29,16,.55) 42%, transparent 78%); clip-path: polygon(0 62%, 16% 70%, 29% 58%, 44% 74%, 56% 60%, 70% 76%, 84% 58%, 100% 72%, 100% 100%, 0 100%); pointer-events: none; }
+.burning-active { animation: burnCurl var(--battle-ms-820, .82s) ease-in forwards; }
+.burning-active::before { animation: burnFlame var(--battle-ms-820, .82s) ease-in forwards; }
+.burning-active::after { animation: burnChar var(--battle-ms-820, .82s) ease-in forwards; }
+.burning-active .card-title, .burning-active > span { animation: burnFade var(--battle-ms-700, .7s) ease-in forwards; }
+
+.battle-screen.clash-shake { animation: clashShake var(--battle-ms-300, .3s) ease-in-out; }
+.unit.clash-resisted .unit-art { animation: clashRed var(--battle-ms-450, .45s) ease-in-out 3; }
+@media (prefers-reduced-motion: reduce) {
+  .slash-fx { animation-duration: var(--battle-ms-600, .6s) !important; }
+  .float-num { animation-duration: var(--battle-ms-1200, 1.2s) !important; }
+  .armor-shard { animation-duration: var(--battle-ms-500, .5s) !important; }
+  .unit.hit-bump .unit-art, .unit.hit-bump .unit-main::before { animation-duration: var(--battle-ms-340, .34s) !important; }
+  .unit.heal-bump .unit-art, .unit.armor-bump .unit-art { animation-duration: var(--battle-ms-450, .45s) !important; }
+  .unit.armor-broken .combat-bar, .unit.defense-broken .combat-bar { animation-duration: var(--battle-ms-300, .3s) !important; }
+  .unit.armor-broken::after, .unit.defense-broken::after { animation-duration: var(--battle-ms-600, .6s) !important; }
+}
+.test-toast { position: absolute; left: 50%; top: 36%; z-index: 8; transform: translate(-50%, -50%); padding: 8px 18px; border-radius: 999px; background: rgba(255,209,250,.94); color: #5d1d62; font-weight: 900; box-shadow: 0 0 26px rgba(255,92,171,.6); pointer-events: none; animation: toastFade 1.2s ease-out both; }

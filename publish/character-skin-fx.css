@@ -1,0 +1,90 @@
+.skin-effect-lokar-motherbound, .skin-effect-besta-mecha { position: relative; isolation: isolate; }
+.skin-effect-lokar-motherbound::after, .skin-effect-besta-mecha::after { content: ""; position: absolute; inset: 4%; z-index: 3; border-radius: 14px; pointer-events: none; opacity: .48; }
+.skin-effect-lokar-motherbound::after { border: 1px solid rgba(180,24,40,.62); box-shadow: inset 0 0 18px rgba(152,10,26,.34), 0 0 12px rgba(218,40,55,.28); }
+.skin-effect-besta-mecha::after { border: 1px solid rgba(255,73,166,.58); box-shadow: inset 0 0 17px rgba(204,36,132,.34), 0 0 12px rgba(255,62,166,.28); }
+.character-skin-fx { position: fixed; z-index: 47; pointer-events: none; overflow: visible; transform: translateZ(0); }
+.character-skin-line { position: fixed; z-index: 48; height: 1px; transform-origin: 0 50%; transform: rotate(var(--line-angle)); pointer-events: none; }
+.skinfx-courage::before { content: ""; position: absolute; left: 12%; right: 12%; bottom: -8%; height: 105%; background: radial-gradient(ellipse at 50% 100%, rgba(255,206,96,.82) 0 4%, #a71429 18%, rgba(86,0,16,.84) 42%, transparent 70%); filter: blur(3px); animation: skinCourageFlame .72s ease-out both; }
+.skinfx-courage i { position: absolute; left: calc(25% + var(--i, 0) * 24%); bottom: 3%; width: 15%; height: 65%; border-radius: 60% 40% 55% 45%; background: linear-gradient(transparent, #ffb44d 68%, #8d0e25); filter: drop-shadow(0 0 8px #bd1830); animation: skinCourageTongue .64s ease-out both; }
+.skinfx-courage i:nth-child(2) { --i: 1; animation-delay: .06s; }.skinfx-courage i:nth-child(3) { --i: 2; animation-delay: .12s; }
+.skinfx-courage b { position: absolute; left: -52%; top: 8%; width: 28px; height: 40px; border: 2px solid #ffdce9; border-radius: 4px; background: linear-gradient(145deg, #fff, #d34a74); box-shadow: 0 0 14px #ff6b9f; animation: skinCourageCard .76s cubic-bezier(.2,.8,.3,1) both; }
+.skinfx-courage-restored i { position: absolute; left: 50%; top: 62%; width: 5px; height: 5px; border-radius: 50%; background: #ffd96e; box-shadow: 0 0 9px #ffd45f; transform: rotate(calc(var(--i, 0) * 72deg)) translateY(-42px); animation: skinGoldRise .68s ease-out both; }
+.skinfx-courage-restored i:nth-child(2) { --i: 1; }.skinfx-courage-restored i:nth-child(3) { --i: 2; }.skinfx-courage-restored i:nth-child(4) { --i: 3; }.skinfx-courage-restored i:nth-child(5) { --i: 4; }
+.skinfx-courage-restored span { position: absolute; left: 37%; right: 37%; top: 30%; height: 4px; border-radius: 50%; background: #fff; box-shadow: 0 0 7px 3px #ff263f, 0 0 18px #ff263f; animation: skinEyeFlash .65s ease-out both; }
+.skinfx-blood-pact::before { content: ""; position: absolute; inset: -8%; background: radial-gradient(ellipse at 50% 80%, rgba(255,169,59,.55), rgba(164,23,29,.36) 38%, transparent 68%); animation: skinPactFlare .9s ease-out both; }
+.skinfx-blood-pact b { position: absolute; left: 40%; top: 28%; width: 22%; height: 31%; border: 2px solid #ffd35f; border-radius: 4px; background: #8e1c25; box-shadow: 0 0 16px #ff5a2a; animation: skinPactCardBurn .72s ease-in both; }
+.skinfx-blood-pact i { position: absolute; left: 7%; right: 7%; bottom: -2%; height: 116%; opacity: calc(.48 + var(--pact-power) * .07); background: radial-gradient(ellipse at 50% 78%, #ff9b34 0 6%, #9f1023 24%, transparent 62%); filter: blur(2px); animation: skinPactBodyFire .88s ease-out both; }
+.skinfx-blood-pact span { position: absolute; left: 27%; top: -18%; width: 46%; height: 112%; border: 3px solid rgba(110,8,23,.72); border-radius: 45% 45% 32% 32%; filter: drop-shadow(0 0 12px #b9152c); opacity: 0; animation: skinPactPhantom .9s ease-out both; }
+.skinfx-blood-pact span::after { content: ""; position: absolute; left: 74%; top: 28%; width: 4px; height: 78%; background: linear-gradient(#ffac57, #5d0715); transform: rotate(-24deg); transform-origin: 50% 100%; box-shadow: 0 0 8px #ff4a35; }
+.skinfx-blood-pact span:nth-of-type(2) { transform: translateX(-3px); animation-delay: .08s; }.skinfx-blood-pact span:nth-of-type(3) { transform: translateX(3px); animation-delay: .16s; }
+.skin-blood-pact-active::before { content: ""; position: absolute; inset: -6%; z-index: 4; border-radius: inherit; background: radial-gradient(ellipse at 50% 92%, rgba(255,149,42,.48), rgba(151,8,29,.24) 42%, transparent 70%); box-shadow: inset 0 -12px 18px rgba(255,70,35,.24), 0 0 14px rgba(190,18,35,.65); pointer-events: none; animation: skinPersistentFire 1.2s ease-in-out infinite alternate; }
+.skinfx-pact-trail { height: 7px; background: linear-gradient(90deg, #fff1ab, #e52032 24%, rgba(118,5,25,.9) 70%, transparent); box-shadow: 0 0 9px #ffb338, 0 0 18px #d2112a; animation: skinTrail .46s ease-out both; }
+.skinfx-pact-trail i { position: absolute; left: 30%; width: 24%; height: 3px; background: #ff6b47; transform: translateY(calc(var(--i, 0) * 7px - 7px)); }
+.skinfx-pact-trail i:nth-child(2) { --i: 1; }.skinfx-pact-trail i:nth-child(3) { --i: 2; }
+.skinfx-wind-start b { position: absolute; inset: -20%; border: 5px solid rgba(255,255,255,.82); border-left-color: #8d173a; border-radius: 50%; box-shadow: 0 0 18px #fff, inset 0 0 22px rgba(109,18,56,.82); animation: skinWindStorm .96s ease-out both; }
+.skinfx-wind-start i { position: absolute; left: 44%; top: 42%; width: 28px; height: 40px; border: 2px solid #fff; border-radius: 4px; background: linear-gradient(145deg, #faf1ff, #571a59); box-shadow: 0 0 10px #fff; animation: skinWindCard 1s linear both; animation-delay: calc(var(--i) * 35ms); }
+.skinfx-wind-start span { position: absolute; left: -35%; top: calc(20% + var(--wave, 0) * 24%); width: 170%; height: 22%; border-top: 3px solid rgba(255,255,255,.82); border-radius: 50%; animation: skinWindWave .9s ease-out both; }
+.skinfx-wind-start span:nth-of-type(2) { --wave: 1; animation-delay: .1s; }.skinfx-wind-start span:nth-of-type(3) { --wave: 2; animation-delay: .2s; }
+.skinfx-wind-card { height: 10px; background: linear-gradient(90deg, #fff, #54204f 55%, transparent); box-shadow: 0 0 13px #fff, 0 0 20px #602561; animation: skinWindShot .58s ease-out both; }
+.skinfx-wind-card::after { content: ""; position: absolute; left: 45%; top: -18px; width: 24px; height: 35px; border: 2px solid #f8eaff; border-radius: 3px; background: #5f245f; transform: rotate(calc(15deg + var(--hit-index) * 9deg)); }
+.skinfx-wind-land b { position: absolute; left: 50%; bottom: -12%; width: 150%; height: 48%; transform: translateX(-50%); background: repeating-conic-gradient(from 0deg, transparent 0 7deg, #61174d 8deg 10deg, transparent 11deg 28deg); clip-path: polygon(0 48%,18% 44%,28% 25%,42% 48%,50% 0,58% 48%,72% 22%,82% 46%,100% 52%,100% 100%,0 100%); animation: skinGroundCrack .78s ease-out both; }
+.skinfx-wind-land i { position: absolute; left: 50%; bottom: 0; width: 4px; height: 66%; background: linear-gradient(transparent, #b54cff); box-shadow: 0 0 8px #9b37e5; transform: rotate(calc(var(--i, 0) * 120deg)) translateY(25px); animation: skinArcFade .8s ease-out both; }
+.skinfx-wind-land i:nth-child(2) { --i: 1; }.skinfx-wind-land i:nth-child(3) { --i: 2; }
+.skinfx-wind-land.defeated span { position: absolute; inset: -15%; background: repeating-conic-gradient(from 0deg, transparent 0 18deg, #9f55f4 20deg 21deg, transparent 22deg 42deg); animation: skinArcFade .85s ease-out both; }
+.skinfx-soul-core b, .skinfx-extract-core b { position: absolute; left: 42%; top: 42%; width: 16%; aspect-ratio: 1; border-radius: 50%; background: #fff; box-shadow: 0 0 9px #fff, 0 0 18px 7px #ff3aa4; animation: skinCoreFlash .68s ease-out both; }
+.skinfx-soul-core i { position: absolute; left: 38%; top: 30%; width: 24%; height: 38%; border: 2px solid #ffc1ec; border-radius: 4px; background: rgba(147,37,160,.48); box-shadow: 0 0 14px #d643c8; animation: skinVirtualCardForm .7s ease-out both; }
+.skinfx-soul-card { height: 4px; background: linear-gradient(90deg, #fff, #dc4ad2 32%, transparent); box-shadow: 0 0 12px #ee5dcf; animation: skinSoulCard .7s ease-out both; }
+.skinfx-soul-card::after { content: "杀"; position: absolute; left: 48%; top: -16px; padding: 3px 7px; border: 1px solid #f8c6ff; border-radius: 3px; color: #fff; background: rgba(89,19,111,.82); box-shadow: 0 0 11px #d847d1; }
+.skinfx-soul-bind i, .skinfx-extract-target i { position: absolute; left: -5%; width: 110%; height: 22%; border: 3px solid #cf53cf; border-radius: 50%; box-shadow: 0 0 9px #e84bd1; transform: rotate(calc(var(--i, 0) * 18deg)); animation: skinChainBind .78s ease-in-out both; }
+.skinfx-soul-bind i:nth-child(2), .skinfx-extract-target i:nth-child(2) { --i: 1; top: 32%; }.skinfx-soul-bind i:nth-child(3), .skinfx-extract-target i:nth-child(3) { --i: 2; top: 60%; }
+.skinfx-scythe b { position: absolute; left: 42%; top: -52%; width: 15%; height: 118%; border-radius: 50% 50% 0 0; border-top: 12px solid hsl(calc(318deg - var(--chain-depth) * 8deg) 78% calc(65% - var(--chain-depth) * 7%)); border-right: 5px solid rgba(255,157,224,.72); transform: rotate(36deg); transform-origin: 50% 100%; filter: drop-shadow(0 0 12px #e339b3); animation: skinScytheSweep .82s ease-out both; }
+.skinfx-scythe i { position: absolute; left: -170%; top: 35%; width: 440%; height: 45%; border-top: 8px solid hsl(calc(326deg - var(--chain-depth) * 8deg) 82% calc(66% - var(--chain-depth) * 7%)); border-radius: 50%; filter: drop-shadow(0 0 12px #e833b1); animation: skinScytheRing .82s ease-out both; }
+.skinfx-scythe-hit { animation-delay: var(--hit-delay); }
+.skinfx-scythe-hit i { position: absolute; left: 4%; top: 48%; width: 92%; height: 4px; background: hsl(calc(324deg - var(--chain-depth) * 9deg) 86% calc(70% - var(--chain-depth) * 8%)); box-shadow: 0 0 9px #ed4fbd; transform: rotate(25deg); animation: skinCrack .72s ease-out both; animation-delay: var(--hit-delay); }
+.skinfx-scythe-hit i:nth-child(2) { transform: rotate(-34deg); }
+.skinfx-extract-line { height: 8px; background: repeating-linear-gradient(90deg, #ffddf6 0 8px, #d83ba9 9px 18px, transparent 19px 28px); box-shadow: 0 0 10px #e843bd; animation: skinExtractFlow .9s linear both; }
+.skinfx-extract-line.strong { height: 12px; filter: saturate(1.35) brightness(.82); }
+.skinfx-extract-target i:nth-child(4) { --i: 3; top: 76%; }
+.skinfx-extract-target.strong i { border-width: 5px; border-color: #9d165f; box-shadow: 0 0 12px #b91d75; }
+.skinfx-extract-core i { position: absolute; inset: 18%; border: 3px solid #ff68c5; border-radius: 50%; box-shadow: 0 0 calc(8px + var(--extract-power) * 2px) #ff42b7; animation: skinCoreCharge .9s ease-out both; }
+.skinfx-extract-core span { position: absolute; left: -42%; top: 47%; width: 86%; height: 4px; background: linear-gradient(90deg, transparent, #ff8bd5); box-shadow: 0 0 9px #f047b8; animation: skinExtractCard .9s ease-out both; }
+.skin-extract-active::before { content: ""; position: absolute; inset: 12%; z-index: 5; border: 2px solid rgba(255,74,183,.72); border-radius: 50%; box-shadow: 0 0 13px #f43caf, inset 0 0 14px rgba(255,67,180,.48); pointer-events: none; animation: skinCorePulse .9s ease-in-out infinite alternate; }
+.skin-extract-active { box-shadow: 0 0 16px rgba(255,56,173,.76), inset 0 0 15px rgba(255,56,173,.25) !important; }
+.skin-extract-strong::before { border-color: #9f185f; box-shadow: 0 0 16px #b21c72, inset 0 0 14px rgba(124,10,70,.62); }
+.skinfx-pact-end i { position: absolute; left: 50%; bottom: 18%; width: 5px; height: 8px; background: #ff8b35; box-shadow: 0 0 8px #ff5529; transform: rotate(calc(var(--i, 0) * 72deg)) translateY(-30px); animation: skinEmberFall .78s ease-out both; }
+.skinfx-pact-end i:nth-child(2) { --i: 1; }.skinfx-pact-end i:nth-child(3) { --i: 2; }.skinfx-pact-end i:nth-child(4) { --i: 3; }.skinfx-pact-end i:nth-child(5) { --i: 4; }
+.skinfx-extract-end i { position: absolute; inset: 20%; border: 3px solid #f146b2; border-radius: 50%; animation: skinCoreOff .65s ease-out both; }
+.skinfx-extract-end span { position: absolute; inset: -8%; background: radial-gradient(circle, rgba(241,70,178,.42), transparent 68%); animation: skinCoreOff .65s ease-out both; }
+@keyframes skinCourageFlame { 0% { opacity: 0; transform: scaleY(.2); } 38% { opacity: 1; } 100% { opacity: 0; transform: scaleY(1.15) translateY(-12%); } }
+@keyframes skinCourageTongue { 0% { opacity: 0; transform: scaleY(.2); } 35% { opacity: 1; } 100% { opacity: 0; transform: scaleY(1.2) translateY(-20%); } }
+@keyframes skinCourageCard { 0% { opacity: 0; transform: translate(-25px,-18px) rotate(-25deg) scale(.5); } 55% { opacity: 1; } 100% { opacity: 0; transform: translate(88px,32px) rotate(340deg) scale(.72); } }
+@keyframes skinGoldRise { 0% { opacity: 0; scale: .2; } 38% { opacity: 1; } 100% { opacity: 0; transform: translateY(-45px); scale: 1.4; } }
+@keyframes skinEyeFlash { 0%,100% { opacity: 0; } 28%,62% { opacity: 1; } }
+@keyframes skinPactFlare { 0% { opacity: 0; scale: .4; } 42% { opacity: 1; } 100% { opacity: 0; scale: 1.18; } }
+@keyframes skinPactCardBurn { 0% { opacity: 0; transform: scale(.55); } 35% { opacity: 1; } 100% { opacity: 0; transform: translateY(-22px) scale(.3) rotate(18deg); filter: brightness(2); } }
+@keyframes skinPactBodyFire { 0% { opacity: 0; scale: .4; } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-18%); scale: 1.08; } }
+@keyframes skinPactPhantom { 0% { opacity: 0; transform: scale(.7); } 48% { opacity: .8; } 100% { opacity: 0; transform: scale(1.05); } }
+@keyframes skinPersistentFire { from { opacity: .55; } to { opacity: .9; } }
+@keyframes skinTrail { 0% { opacity: 0; transform: rotate(var(--line-angle)) scaleX(.1); } 32% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--line-angle)) scaleX(1); } }
+@keyframes skinWindStorm { 0% { opacity: 0; transform: scale(.2) rotate(0); } 45% { opacity: 1; } 100% { opacity: 0; transform: scale(1.25) rotate(420deg); } }
+@keyframes skinWindCard { from { opacity: 0; transform: rotate(0) translateX(8px) scale(.45); } 30% { opacity: 1; } to { opacity: 0; transform: rotate(540deg) translateX(78px) scale(.82); } }
+@keyframes skinWindWave { 0% { opacity: 0; transform: scaleX(.2); } 34% { opacity: 1; } 100% { opacity: 0; transform: scaleX(1.12); } }
+@keyframes skinWindShot { 0% { opacity: 0; transform: rotate(var(--line-angle)) scaleX(.08); } 28% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--line-angle)) scaleX(1); } }
+@keyframes skinGroundCrack { 0% { opacity: 0; scale: .2; } 35% { opacity: 1; } 100% { opacity: 0; scale: 1.25; } }
+@keyframes skinArcFade { 0% { opacity: 0; } 38% { opacity: 1; } 100% { opacity: 0; scale: 1.25; } }
+@keyframes skinCoreFlash { 0%,100% { opacity: 0; scale: .25; } 38%,62% { opacity: 1; scale: 1.2; } }
+@keyframes skinVirtualCardForm { 0% { opacity: 0; transform: scale(.2); } 45% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: translateX(35px) scale(.7); } }
+@keyframes skinSoulCard { 0% { opacity: 0; transform: rotate(var(--line-angle)) scaleX(.06); } 35% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--line-angle)) scaleX(1); } }
+@keyframes skinChainBind { 0% { opacity: 0; transform: scale(1.35) rotate(calc(var(--i, 0) * 18deg)); } 48% { opacity: 1; } 100% { opacity: 0; transform: scale(.72) rotate(calc(var(--i, 0) * 18deg)); } }
+@keyframes skinScytheSweep { 0% { opacity: 0; transform: rotate(-45deg) scale(.45); } 38% { opacity: 1; } 100% { opacity: 0; transform: rotate(125deg) scale(1.12); } }
+@keyframes skinScytheRing { 0% { opacity: 0; transform: scaleX(.15); } 42% { opacity: 1; } 100% { opacity: 0; transform: scaleX(1.15); } }
+@keyframes skinCrack { 0% { opacity: 0; transform: scaleX(.15) rotate(25deg); } 40% { opacity: 1; } 100% { opacity: 0; transform: scaleX(1.12) rotate(25deg); } }
+@keyframes skinExtractFlow { 0% { opacity: 0; background-position: 0 0; } 32% { opacity: 1; } 100% { opacity: 0; background-position: 100px 0; } }
+@keyframes skinCoreCharge { 0% { opacity: 0; scale: .3; } 45% { opacity: 1; } 100% { opacity: 0; scale: 1.35; } }
+@keyframes skinExtractCard { 0% { opacity: 0; transform: translateX(-38px); } 42% { opacity: 1; } 100% { opacity: 0; transform: translateX(58px); } }
+@keyframes skinCorePulse { from { opacity: .45; transform: scale(.9); } to { opacity: .95; transform: scale(1.08); } }
+@keyframes skinEmberFall { 0% { opacity: 1; } 100% { opacity: 0; transform: translate(18px,48px) rotate(160deg); } }
+@keyframes skinCoreOff { 0% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: .2; } }
+@media (prefers-reduced-motion: reduce) {
+  .skin-blood-pact-active::before, .skin-extract-active::before { animation: none !important; }
+}

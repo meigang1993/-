@@ -1,0 +1,291 @@
+===============================================================
+  魅魔杀 - 开发规则与DZMM平台规则
+  交接对象：DeepSeek 重制
+===============================================================
+
+【一、静态前端规则】
+
+1. 游戏必须是纯静态网站
+2. 入口：publish/index.html
+3. 允许：HTML、CSS、JavaScript、Canvas、Web Audio、静态资源、客户端库
+4. 禁止：任何服务器、端口监听、Node/Express/Python/Flask
+5. 所有资源使用相对路径
+6. publish/ 下所有路径只能包含ASCII字母、数字、_、-、.
+7. 禁止中文、空格、emoji、非拉丁字符的文件/文件夹名
+8. 单个JS文件不得超过200行，接近150行时拆分
+9. CSS超过500行时按功能拆分
+10. 不使用ES Module import，使用有顺序的classic script和全局命名空间
+
+【二、沙箱iframe环境】
+
+游戏运行在没有 allow-same-origin 的沙箱iframe中：
+- iframe origin 为 null，与父页面完全跨域隔离
+- window.dzmm 在运行前由宿主注入到 <head>
+- 禁止访问：parent.document、top.location、window.opener、cookie
+- 禁止依赖：localStorage、sessionStorage、IndexedDB（生产环境会SecurityError）
+- 生产禁止：window.open、表单提交
+- 使用相对路径，宿主提供的 <base href> 解析静态文件
+- Workbench可能从blob: URL执行，资源解析使用document.baseURI
+
+Workbench预览与生产差异：
+- 预览sandbox额外包含 allow-forms allow-popups
+- 预览KV由PostgreSQL管理（开发者数据，与生产隔离）
+- 生产数据持久化到数据库
+
+判断环境：
+- 使用 dzmm.capabilities.get().environment 或 user.info().environment
+- 不要用 token === null 判断
+
+【三、DZMM SDK 能力】
+
+先检查 dzmm.capabilities.get()：
+- caps.kv：基础KV（get/put/delete）
+- caps.kvBatch：批量KV
+- caps.kvList：列表KV
+- caps.workshop：创意工坊
+- caps.loading：加载状态上报
+- caps.chatStableIds：稳定聊天ID
+- caps.drawStatus：图片状态查询
+
+不能先调用不支持的接口再catch探测。
+旧Host可能保守报false，游戏必须保留有效的降级路径。
+
+【四、存档系统】
+
+dzmm.kv 是正式权威存档API。
+
+正确存档写入模式：
+  async function kvPut(key, value) {
+    let remoteError;
+    try {
+      await window.dzmm.kv.put(key, value);
+      return { ok: true, backend: "remote" };
+    } catch (error) {
+      remoteError = error;
+    }
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return { ok: true, backend: "local" };
+    } catch (localError) {
+      throw new AggregateError([remoteError, localError], "存档写入失败");
+    }
+  }
+
+规则：
+1. 远端和本地都失败必须报失败，不能伪装成功
+2. 读取失败不同于空值，不能初始化或隐式覆盖进度
+3. 按里程碑写（通关、选分支、获得道具），不按帧/定时器/拖动写
+4. 高频变化（血条、坐标、计时、分数滚动）只在内存更新
+5. 必须随高频变化持久化时自己做防抖：停手1-2s后写一次，设maxWait约10s
+6. 关键节点用 dzmm.kv.put(key, value, { flush: true }) 同步落盘
+7. 注册 window.dzmm?.save?.onAction?.(handler)
+8. 处理 reset 和 prepareDeleteRecord
+9. 先停autosave，再清理全部自有KV/local fallback/内存状态
+10. 删除失败恢复autosave并阻止宿主继续
+11. 不通过不存在的 capabilities.get().save 做gating
+
+存档KV限制：
+- 单key值256字符限制用于新的batch/list/namespace key/prefix
+- kv.put(key, null) 保存JSON null，不是删除；删除用 kv.delete(key)
+- batchPut顶层entry value禁止null/undefined
+
+【五、启动加载状态】
+
+资源较多时必须使用 dzmm.loading：
+1. 尽早调用 dzmm.loading.progress({ phase: "start", message: "..." })
+2. 资源加载中报告 resource_loading 和进度
+3. 首个可交互画面渲染后调用 dzmm.loading.ready()
+4. 启动失败调用 dzmm.loading.error(code, message)
+5. 在游戏内显示失败/重试UI
+6. progress不要高频刷，按资源完成或约500ms上报
+7. payload必须小且JSON-safe
+
+启动独立性：
+- 核心单玩家启动不依赖SDK可用性、KV、在线服务
+- 必需规则和数据在发布的启动artifacts中
+- 可选静态内容可稍后加载，不禁用新游戏/读档
+- 启动后的可选fetch失败留在游戏内，有明确重试
+- 不在首帧后发回阻塞启动或启动失败
+
+【六、AI对话（completions）】
+
+调用方式：
+  await dzmm.completions({
+    model: "default",
+    messages: [{ role: "user", content: prompt }],
+    maxTokens: 1000,
+  }, (content, done) => {
+    // content是累计全文，不是delta
+    // done=true时是完整内容
+  });
+
+规则：
+1. model默认用"default"，由玩家当前GameFy Chat模型设置决定
+2. messages的role只能是"user"/"assistant"，不支持"system"
+3. 系统设定折叠进user消息
+4. 流式回调给出累计全文，不是增量delta
+5. 解析JSON只在流完成后，必须try-catch
+6. 解析失败必须有文本fallback
+7. 每次调用消耗玩家积分+占配额
+8. 不放进每帧循环/setInterval/pointermove/自触发回调
+9. 一次玩家动作最多一次调用
+10. 失败不自动重试
+
+速率限制：60次/分 + 2000次/天（前端与服务端共用）
+
+【七、绘图（draw）】
+
+dzmm.draw.generate() 和 dzmm.draw.edit() 生成图片。
+返回的图片URL带签名，一小时后失效。
+
+规则：
+1. 长任务需要busy锁定、等待提示、stale-response守卫和明确重试
+2. 一次玩家动作最多一次调用
+3. 失败不自动重试
+4. 参考图限制：<=10MB / <=8192px / 格式白名单（jpg/png/webp）
+5. 前端先校验参考图再请求
+6. 多图编辑用"图1""图2"引用数组下标
+7. 绝不能把URL写进KV/聊天存档/资源清单
+8. 存 { taskId, index }，渲染时用 draw.status(taskId) 现取地址
+9. draw.status不扣配额/积分，只能读当前玩家自己的任务
+
+模型：
+- generate默认"anime"，也支持"iroha"
+- edit默认"lite"，可选"pro"
+- 不要使用"纳兰梦"模型（已废弃的试验，需明确用户授权才能使用）
+
+【八、SDK错误处理】
+
+优先用 error.code 分支处理，不用字符串匹配：
+
+常用错误码：
+- IMAGE_TOO_LARGE / IMAGE_DIMENSION_EXCEEDED：参考图过大
+- UNSUPPORTED_IMAGE_FORMAT：格式不支持
+- IMAGE_NOT_FOUND：参考图URL已失效
+- INVALID_REQUEST：上游4xx兜底
+- SENSITIVE_CONTENT_DETECTED / NON_ANIME_IMAGE_DETECTED：内容审查
+- RATE_LIMITED：结束当前动作，提示稍后重试
+- QUOTA_EXHAUSTED：积分不足，弹充值引导
+- VIP_REQUIRED：弹VIP引导
+- UNAUTHORIZED / TOKEN_EXPIRED / FORBIDDEN：提示重新进入游戏
+- NETWORK_ERROR / TIMEOUT：恢复显式重试
+- CREATE_TASK_FAILED / NO_OUTPUT_IMAGES / INTERNAL_ERROR：服务端错误
+
+catch中记录 error.code、error.message、error.stack，不要只打印Error对象。
+error还有 category 和 retryable(boolean) 字段。
+
+不要把RATE_LIMITED/QUOTA_EXHAUSTED/VIP_REQUIRED当一类处理。
+
+【九、Serverless函数（functions/*.ts）】
+
+适用场景：
+- 隐藏提示词/判分规则
+- 防作弊分数校验
+- 全局排行榜/公告/跨玩家共享状态
+- 多步AI链
+
+不适用场景（用浏览器SDK即可）：
+- 玩家自己跟AI聊天
+- 玩家自己的存档/关卡进度
+- 单玩家剧情分支
+- 同游戏玩家主动分享生成角色（用workshop）
+
+浏览器调用：
+  await dzmm.fn.invoke("function-name", body);
+
+规则：
+1. 函数不是密钥保险箱，owner/平台/源码访问者可能看到
+2. completions只收user/assistant角色
+3. 有副作用的函数必须接收稳定actionId
+4. 服务端用reservation/completed状态防重复奖励
+5. 新函数保存游戏发布后真实玩家才能调用
+6. 未发布会出现 function_not_published
+7. 默认只调用一次，不包重试循环
+8. 只有幂等读取或带stable actionId才允许 { retry: true }
+
+调用预算：
+- 单次fn内ctx.completions <= 3次
+- 单次fn内ctx.draw <= 3次
+- 同游戏并发fn 5个in-flight
+- 同玩家并发fn 3个in-flight
+
+【十、音频系统】
+
+运行时使用 dzmm.audio.play(key)，禁止 new Audio()。
+
+- BGM在玩家第一次点击后启动
+- 平台已有全局音量和静音控制
+- key来自 publish/assets/audio/manifest.json
+- 不使用随机CDN音频
+- 音效区分飞牌、伤害、掉血、治疗、护甲和胜利
+- 卡牌移动声音不是伤害声音
+- AudioContext需resume后才能调度音效
+- 零SFX音量下不分配合成效果节点
+
+BGM角色：
+- 标题：op.ogg
+- 殿堂：villa.ogg
+- 副本地图：dungeon-map.ogg
+- 机械工厂战斗：machine-factory-battle.ogg
+- 水下列车战斗：underwater-train-battle.ogg
+- 各精英/Boss有专属BGM覆盖
+
+【十一、分享与创意工坊】
+
+分享：
+  const { url, shared } = await dzmm.share({ params?, text?, mode? });
+- mode: "sheet"（默认）弹分享面板
+- mode: "url" 不弹面板，返回url
+- params是不透明载荷（上限1024字符），对方用getLaunchParams()读回
+- 别人点链接回到他自己在这张卡的同一个存档
+
+创意工坊：
+- 只有 caps.workshop === true 才展示UI
+- dzmm.workshop.publish() / .list() / .setLiked() / .unpublish()
+- 用于同游戏玩家主动分享生成角色
+
+【十二、用户信息】
+
+dzmm.user.info() 返回：
+- id：玩家ID
+- name：名称
+- avatar：头像
+- token：JWT token（不要console.log，不要写进KV/chat）
+- environment：dev 或 prod
+
+dzmm.getLaunchParams() 返回 { from, gp }：
+- from：邀请人id
+- gp：游戏自定义载荷
+- 只在启动时读一次并落到kv，平台读后清掉URL参数
+
+【十三、代码质量要求】
+
+1. 关键逻辑添加注释
+2. 做好错误处理，避免白屏
+3. 玩家操作要有即时反馈（加载提示、按钮状态等）
+4. 避免访问parent/top，改用dzmm API
+5. catch中输出 err.message 而非 err 对象
+6. console.error("失败:", err.code, err.message, err.stack)
+7. 不泄漏敏感字段（token、id）
+8. 给玩家可视的"取消/离开"路径
+9. 移动端首屏避免大文件（参考图/bgm/cover合计<2MB）
+
+【十四、构建版本管理】
+
+1. 使用 meta[name="game-build"] 管理缓存版本
+2. 所有脚本和样式URL带版本号参数
+3. CSS/JS变更后必须推进版本号
+4. 确保浏览器不会混用旧缓存和新runtime
+
+【十五、文件大小与拆分】
+
+1. 单个JS文件不超过200行
+2. 接近150行时开始拆分
+3. CSS超过500行按功能拆分
+4. 新增独立功能模块应新建文件
+5. 大段配置/数据应独立文件
+6. 可复用工具函数应独立文件
+7. 使用全局命名空间模式：
+   window.GameModules = window.GameModules || {};
+   window.GameModules.config = { ... };
+8. 在index.html中按依赖顺序用script标签加载

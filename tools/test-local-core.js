@@ -1,0 +1,41 @@
+const dungeon = require("./local-core-dungeon-tests");
+const inventory = require("./local-core-inventory-tests");
+const progression = require("./local-core-progression-tests");
+const rewards = require("./local-core-reward-tests");
+const shop = require("./local-core-shop-tests");
+
+(async () => {
+  await progression.testExplicitChangeTracking();
+  await progression.testProgressionSettlement();
+  await progression.testSyncDefaults();
+  await progression.testDefeatReceipts();
+  await progression.testUnlockPrerequisites();
+  await inventory.testConcurrentDeletes();
+  await inventory.testRepeatedDelete();
+  await inventory.testConcurrentSmelts();
+  await inventory.testRepeatedSmelt();
+  await inventory.testRepeatedSmeltUiReplay();
+  await inventory.testSmeltPreservesEquipmentSlots();
+  await inventory.testRejectedUiOperationReleasesSequence();
+  await shop.testShopRefreshFailsClosed();
+  await shop.testShopRequiresCoreConfirmedStock();
+  await shop.testShopBuyRejectsStaleRefreshIndex();
+  await shop.testShopBuyUsesCanonicalPrice();
+  await shop.testLargeShopBuyUsesDeckPatch();
+  await inventory.testLegacyInventoryReceiptCompression();
+  await rewards.testResourceCaps();
+  await rewards.testBountyReceipts();
+  await rewards.testBountyInventoryCapacity();
+  await rewards.testUnknownRelicRewardsRejected();
+  await rewards.testLegacyPendingRewardId();
+  rewards.testFailedRunRewardCleanup();
+  await rewards.testDistinctLegacyRewards();
+  await dungeon.testDungeonSettlementReceipts();
+  await dungeon.testRewardAndShopCardsReachDeck();
+  await dungeon.testShopAndDungeonInventoryCapacity();
+  await dungeon.testSkinPurchase();
+  console.log("Local core offline regression tests passed");
+})().catch(error => {
+  console.error(error.stack);
+  process.exit(1);
+});

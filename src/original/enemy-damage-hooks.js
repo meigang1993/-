@@ -1,0 +1,75 @@
+window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
+  function modifyDamage(state, target, amount, card) {
+    const isKill = card?.type === "slash" || /杀(?:（[^）]*）)?$/.test(card?.name || "");
+    let result = amount;
+    if (card?.krowFemaleTarget) {
+      result *= 2;
+      window.BattleLog.add(state, "克罗博士的肉欲之欢触发，对女性目标伤害翻倍。");
+    }
+    if (card?.holy && target.holyScar) {
+      result *= 2;
+      window.BattleLog.add(state, `${target.name} 的圣痕触发，受到圣属性伤害翻倍。`);
+    }
+    if (isKill && (card?._minotaurPreventUids
+      || card?._entitySourceCard?._minotaurPreventUids)?.includes(target.uid)) return 0;
+    if (isKill && target.lockSuit && card?.suit && target.lockSuit === card.suit) {
+      const root = card._entitySourceCard || card;
+      if (!card.ignoreResponse) card._tempIgnoreResponse = true;
+      card.ignoreResponse = true;
+      card.lockSuitResponse = true;
+      result *= 2;
+      if (!root.lockSuitApplied) {
+        root.lockSuitApplied = true;
+        window.BattleLog.add(state,
+          `${target.name} 的${target.lockSuit}锁定标记触发，伤害翻倍且不可响应。`);
+      }
+    }
+    result = window.RuinsEnemySkills?.modifyDamage?.(state, target, result, card) ?? result;
+    return result;
+  }
+
+  // 伤害后获得的状态标记会立刻显示在单位卡的状态图标上，但受击动画此时还没播。
+  // 挂到本段受击浮字动画播完后再发放，多段/连击时每段各挂一次，
+  // 状态才会一段一跳而不是提前跳满。仅用于不参与本次伤害链结算的标记(如毒)。
+  function settleStatus(state, apply) {
+    if (typeof apply !== "function") return;
+    if (window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, apply)) return;
+    apply();
+  }
+
+  function afterDamage(state, actor, target, card, hpLoss, damage, cardUser = actor) {
+    // 精灵守护属受击触发（其他友方受伤后给护甲），按设计逐段结算。
+    window.GuardKellySkills?.afterDamage?.(state, actor, target, card, hpLoss, cardUser);
+    if (hpLoss && target.shock && !card?.shockBonus) {
+      damage(state, target, target.shock, "感电", actor, {
+        name: "感电", type: "skill", shockBonus: true, ignoreResponse: true,
+        ignoreBlock: true, skipDamageModify: true,
+      });
+      if (target.hp <= 0) return;
+    }
+    // 感电/圣痕会参与同一伤害链内后续段的结算(感电在下次受伤时立刻追加伤害、
+    // 圣痕让后续圣属性伤害翻倍)，延后会改变伤害结果，故保持同步发放。
+    if (hpLoss && card?.shock && !card?._soulChain) status.addShock(state, target, 1);
+    if (hpLoss && card?.holy && !card?._soulChain) status.addHolyScar(state, target);
+    if (hpLoss && card?.poison && !card?.poisonTick && !card?._soulChain) {
+      settleStatus(state, () => status.addPoison(state, target, 1, actor));
+    }
+    if (hpLoss && card?.type === "slash" && hasSkill(actor, "毒针") && !card?.poison) {
+      settleStatus(state, () => {
+        window.BattleLines?.skill(state, actor, "毒针");
+        status.addPoison(state, target, 1, actor);
+      });
+    }
+    machine.afterDamage(state, actor, target, hpLoss, damage);
+    window.UnderwaterTrainSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage);
+    window.RuinsEnemySkills?.afterDamage?.(state, actor, target, card, hpLoss, damage);
+    if (!hpLoss || actor.ai !== "goblin" || !card || card.type !== "slash") return;
+    const discarded = discardOne(target);
+    if (!discarded) return;
+    window.BattleCards?.put(state.battle, target, discarded, "consumed");
+    window.BattleLines?.skill(state, actor, "激光射线");
+    window.BattleLog.add(state, `${actor.name} 触发激光射线，消耗${target.name}一张手牌。`);
+  }
+
+  return { modifyDamage, afterDamage };
+};
