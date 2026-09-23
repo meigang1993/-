@@ -33,6 +33,7 @@ const standalone = Object.freeze([
   "test-smart-brain-tactic-live.js",
   "test-mark-badges-stack-live.js",
   "test-ruins-relics-aoe-4live.js",
+  "test-thruster-draw-anim-live.js",
   "test-ruins-gold-difficulty.js",
   "test-ruins-gold-difficulty-live.js",
   "test-ruins-dragon-heroic-relics-live.js",
