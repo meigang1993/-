@@ -39,6 +39,25 @@ const setupTpl = `(() => {
   }
   window.__shares = [];   // 每次交牌弹窗时记录：当前HP / 挂起段数
   window.__hpTrack = [];
+  // 日志改为写入即捕获：电钻火花日志在循环早期产生，等到第一次采样可能已被
+  // 后续交牌日志挤出 state.log 窗口，仅靠采样累积会漏抓。
+  window.__logAcc = [];
+  const __pushLog = text => { window.__logAcc.push(String(text)); };
+  if (window.BattleLog && !window.__logHooked) {
+    const origAdd = window.BattleLog.add.bind(window.BattleLog);
+    window.BattleLog.add = (st, text, ...rest) => {
+      __pushLog(text); return origAdd(st, text, ...rest);
+    };
+    window.__logHooked = true;
+  }
+  const __logArr = window.state.log;
+  if (Array.isArray(__logArr) && !__logArr.__hooked) {
+    const origPush = __logArr.push.bind(__logArr);
+    __logArr.push = (...items) => {
+      items.forEach(__pushLog); return origPush(...items);
+    };
+    __logArr.__hooked = true;
+  }
   if (window.__sampler) clearInterval(window.__sampler);
   window.__sampler = setInterval(() => {
     const bb = window.state && window.state.battle;
