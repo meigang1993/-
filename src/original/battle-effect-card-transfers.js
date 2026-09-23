@@ -10,6 +10,11 @@ window.BattleEffectCardTransfers = U => {
     }
     return unitArt(event.fromUid) || publicZone() || drawOrigin(event.side);
   }
+  // 起终点取不到时回退到公共区/摸牌堆：保证转移动画必定播放，
+  // 避免手牌已转移但动画静默跳过（视觉与手牌数脱节）。
+  function unitEnd(spot, uid, side) {
+    return spot || unitArt(uid) || publicZone() || drawOrigin(side);
+  }
   function syncIncomingHand(event, uid = event.uid) {
     const battle = window.state?.battle;
     const unit = battle?.allies?.concat(battle.enemies || [])
@@ -31,8 +36,9 @@ window.BattleEffectCardTransfers = U => {
   }
   async function giveCards(event, renderStep, active) {
     await flight.transfer(event,
-      handSpot(event.fromUid, event.fromSide) || unitArt(event.fromUid),
-      handSpot(event.toUid, event.toSide) || unitArt(event.toUid),
+      unitEnd(handSpot(event.fromUid, event.fromSide),
+        event.fromUid, event.fromSide),
+      unitEnd(handSpot(event.toUid, event.toSide), event.toUid, event.toSide),
       "draw-card-fly give-card-fly", renderStep, true, active, {
         revealFace: event.toSide !== "enemy",
         enemy: event.toSide === "enemy",
@@ -41,8 +47,9 @@ window.BattleEffectCardTransfers = U => {
   }
   async function stealCard(event, renderStep, active) {
     await flight.transfer(event,
-      handSpot(event.fromUid, event.fromSide) || unitArt(event.fromUid),
-      handSpot(event.toUid, event.toSide) || unitArt(event.toUid),
+      unitEnd(handSpot(event.fromUid, event.fromSide),
+        event.fromUid, event.fromSide),
+      unitEnd(handSpot(event.toUid, event.toSide), event.toUid, event.toSide),
       "draw-card-fly steal-card-fly", renderStep, true, active, {
         revealFace: event.toSide !== "enemy",
         enemy: event.toSide === "enemy",
