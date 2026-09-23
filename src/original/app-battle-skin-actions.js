@@ -82,6 +82,9 @@ async function equipBattleSkin(button) {
     render();
     const appearanceSave = !trial ? persistAppearanceNow(actionState) : null;
     await revealBattleSkinArt(actionUnit, previousArt, isCurrent);
+    if (isCurrent() && skin.dynamicEffect === "angelica-berserker") {
+      window.AngelicaBerserkerSkinFX?.queueEntry?.(actionState, actionUnit);
+    }
     if (appearanceSave) await appearanceSave;
   } catch (err) {
     if (!isCurrent()) return;
