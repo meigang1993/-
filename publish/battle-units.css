@@ -87,7 +87,9 @@
 .joker-suit-badge.red { background: rgba(255,244,248,.97); color: #c8194f; box-shadow: 0 0 14px rgba(255,61,119,.82), 0 2px 6px rgba(0,0,0,.35); }
 .joker-suit-badge.black { background: rgba(24,18,31,.97); color: #f4eaff; border-color: rgba(255,218,145,.9); box-shadow: 0 0 14px rgba(129,82,178,.82), 0 2px 6px rgba(0,0,0,.48); }
 .active-portrait-shell .joker-suit-badge { top: 8px; width: 34px; height: 34px; font-size: 24px; }
-.tank-shell-badge, .active-portrait-shell .tank-shell-badge { left: 3px; right: auto; top: 70px; max-width: none; border-radius: 999px; background: rgba(255,206,138,.96); color: #4a2500; box-shadow: 0 0 12px rgba(255,150,60,.78), 0 2px 6px rgba(0,0,0,.3); }
+.tank-shell-badge { left: 3px; right: auto; top: -8px; bottom: auto; max-width: none; border-radius: 999px; background: rgba(255,206,138,.96); color: #4a2500; box-shadow: 0 0 12px rgba(255,150,60,.78), 0 2px 6px rgba(0,0,0,.3); }
+/* 大头像面板 overflow:hidden，负 top 会被裁剪，改到面板内顶部 */
+.active-portrait-shell .tank-shell-badge { top: 3px; bottom: auto; }
 .tank-shell-badge::after, .active-portrait-shell .tank-shell-badge::after { content: "💥"; margin-left: 3px; }
 .asset-fallback-art { display: grid; place-items: center; align-content: center; gap: 4px; background: radial-gradient(circle at 50% 36%, rgba(255,214,154,.18), transparent 28%), linear-gradient(160deg, rgba(66,26,67,.96), rgba(20,8,27,.98)); color: #ffe0ad; box-shadow: inset 0 0 0 1px rgba(255,215,166,.28); }
 .asset-fallback-face { font-size: clamp(24px, 5vh, 44px); font-weight: 900; text-shadow: 0 0 16px rgba(255,170,215,.5); }
@@ -97,4 +99,15 @@
 .active-portrait-shell .vulnerable-badge { right: 5px; top: 5px; font-size: 12px; }
 .active-portrait-shell .rage-mark-badge { right: 5px; top: 5px; font-size: 12px; }
 
-.death-wave-badge { left: 4px; right: auto; bottom: 4px; top: auto; background: rgba(80,140,255,.92); border-color: #1c3f8f; color: #fff; }
+/* 死亡音波 / 炮弹标记统一置于头像上方：原在左下角，会盖住「手牌数/手牌上限」 */
+.death-wave-badge { left: 3px; right: auto; top: -8px; bottom: auto; background: rgba(80,140,255,.92); border-color: #1c3f8f; color: #fff; }
+.active-portrait-shell .death-wave-badge { top: 3px; bottom: auto; }
+
+/* 标记徽章堆叠容器：此前每个徽章各自 absolute 定位于固定角落，
+   多个标记同时出现时会完全重叠（绿帽/粮食同位、炮弹/音波同位、偶像/巨蛋/蓄力同位）。
+   改为装入纵向弹性容器，按顺序排列且互不遮挡。 */
+.mark-badges { position: absolute; right: -5px; top: -8px; z-index: 4; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; max-width: 92px; pointer-events: none; }
+.active-portrait-shell .mark-badges { right: 5px; top: 5px; }
+.unit-main .mark-badges > .green-hat-badge,
+.active-portrait-shell .mark-badges > .green-hat-badge { position: static; left: auto; right: auto; top: auto; bottom: auto; transform: none; max-width: 92px; }
+.active-portrait-shell .mark-badges > .green-hat-badge { font-size: 12px; }
