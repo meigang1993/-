@@ -58,8 +58,9 @@ window.BattleCombatAttackValues = api => {
       state, actor, amount, card) ?? amount;
     amount = window.SakuraRisaSkills?.modifyRevengeDamage?.(
       state, actor, amount, card) ?? amount;
-    amount = window.RuinsRelicEffects?.tacticDamage?.(
-      state, actor, card, amount) ?? amount;
+    // 智能大脑此前挂在这里，但只有走攻击流程的战术牌（如带 sweep 的枪林弹雨）会经过本函数；
+    // 与我一战 / 魔法对决 / 魔弹特攻 / 魔王军入侵等直连 ctx.damage，完全绕过这里 → 饰品无效。
+    // 已改到 battle-damage-resolution.js 的统一伤害结算链，覆盖所有战术牌路径。
     return card.mannyDouble ? amount * 2 : amount;
   }
 
