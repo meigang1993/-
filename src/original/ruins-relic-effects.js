@@ -40,14 +40,8 @@ window.RuinsRelicEffects = (() => {
     others.forEach(ally => {
       const cards = draw(ally, count, battle);
       if (!cards.length) return;
-      battle.animQueue?.push({
-        id: window.GameRandom?.id?.("sc"),
-        type: "drawBatch",
-        uid: ally.uid,
-        side: ally.side,
-        count: cards.length,
-        cards,
-      });
+      // 同推进器：draw() 内部已为 recipient 推过 drawBatch，此处不可再推，
+      // 否则同一批牌会播两次飞入动画，且手牌数显示会被多加一次。
     });
     window.BattleLines?.skill?.(state, unit, "物资货物");
     log(state, `${unit.name} 的物资货物触发：友方${others.length}名角色各摸${count}张牌。`);
@@ -91,14 +85,9 @@ window.RuinsRelicEffects = (() => {
     if (typeof draw !== "function") return;
     const cards = draw(actor, count, state.battle) || [];
     if (!cards.length) return;
-    state.battle.animQueue?.push({
-      id: window.GameRandom?.id?.("th"),
-      type: "drawBatch",
-      uid: actor.uid,
-      side: actor.side,
-      count: cards.length,
-      cards,
-    });
+    // 注意：draw() 内部已经为 recipient 推过一次 drawBatch 动画，这里不能再推。
+    // 否则同一批牌会播两次飞入动画（表现为"多飞出一张"），且 syncIncomingHand
+    // 会被调用两次导致手牌数显示不同步。
     window.BattleLines?.skill?.(state, actor, "推进器");
     log(state, `${actor.name} 的推进器触发，本牌指定${count}个目标，摸${cards.length}张牌。`);
   }
