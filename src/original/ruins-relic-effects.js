@@ -60,7 +60,7 @@ window.RuinsRelicEffects = (() => {
     log(state, `${unit.name} 的螺旋桨触发，对${target.name}视为使用一张虚拟【杀】。`);
     const combat = ctx?.getCombat && ctx.getCombat();
     if (combat?.useVirtualKill) combat.useVirtualKill(state, unit, target, virtual);
-    else window.BattleCombat?.useVirtualKill?.(state, unit, target, virtual);
+    else window.BattleSystem?.useVirtualKill?.(state, unit, target, virtual);
   }
 
   // 推进器（被动）：根据你使用牌指定的目标数摸等量牌。
@@ -104,7 +104,35 @@ window.RuinsRelicEffects = (() => {
     return amount * 2;
   }
 
+  // 粉色魅魔装（被动）：红色牌对你无效；你使用的红色牌不可响应。
+  const RED_SUITS = new Set(["♥", "♦"]);
+  const isRed = card => RED_SUITS.has(card?.suit);
+
+  function modifyIncomingDamage(state, target, amount, card) {
+    if (amount <= 0 || !isRed(card) || card?._skill) return amount;
+    if (!window.RelicSystem?.hasEquipped?.(state, target, "粉色魅魔装")) return amount;
+    if (!card._pinkImmuneLogged) {
+      card._pinkImmuneLogged = true;
+      window.BattleLines?.skill?.(state, target, "粉色魅魔装");
+      log(state, `${target.name} 的粉色魅魔装触发，红色牌${card.suit}${card.name}对其无效。`);
+    }
+    return 0;
+  }
+
+  // 不可响应的标记必须在响应牌候选计算之前打上，故挂在响应检查前。
+  function beforeResponseCheck(state, actor, target, card) {
+    if (!isRed(card) || card?.ignoreResponse || card?._skill) return;
+    if (!window.RelicSystem?.hasEquipped?.(state, actor, "粉色魅魔装")) return;
+    card.ignoreResponse = true;
+    if (!card._pinkUnrespondableLogged) {
+      card._pinkUnrespondableLogged = true;
+      window.BattleLines?.skill?.(state, actor, "粉色魅魔装");
+      log(state, `${actor.name} 的粉色魅魔装触发，其使用的红色牌${card.suit}${card.name}不可被响应。`);
+    }
+  }
+
   return {
     missileLauncherBlock, afterDraw, afterCardPlayed, tacticDamage,
+    modifyIncomingDamage, beforeResponseCheck,
   };
 })();
