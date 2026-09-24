@@ -5,16 +5,31 @@ window.RuinsWithererSkills = (() => {
     + (key === "attack" ? unit.tempAttack || 0 : 0);
   const log = (state, text) => window.BattleLog?.add?.(state, text);
   const isTactic = card => card?.type === "tactic";
-  // 实体牌：非技能生成、非凭空虚拟。转换杀（由实体手牌转换而来，带 _entitySourceCard）仍算实体牌。
-  const isEntityCard = card => !!card && !card._skill
-    && !card.generatedBySkill && !(card.virtual && !card._entitySourceCard);
+  // 实体牌：非技能伤害、非技能生成、非虚拟牌。
+  // 判定必须与 CardUtils.isEntityKillCard（isKillCard && !card.virtual）保持一致：
+  // 只要带 virtual 就不是实体牌，没有任何例外。
+  // 转换杀走 CardUtils.convertAs 生成，带 convertedFrom 且不带 virtual，天然算实体牌；
+  // 而 CardUtils.fromEntity 生成的虚拟牌一律带 virtual:true——即便它额外挂了
+  // _entitySourceCard（如芙萝娅【神速之袭】的虚拟【刺杀】），也仍是虚拟牌，不能算实体。
+  // 注意：燃烧/毒/感电/勒脖/锁魂镰刀/机尾机枪等技能伤害传的是 type:"skill" 的
+  // 伤害载荷，既不带 _skill 也不带 virtual，必须按 type 排除，否则会被误判成实体牌。
+  // "skill" 不在卡牌类型（slash/response/tactic/consume/obstacle）之内，可安全排除。
+  // 饰品主动技把「实体手牌」转换而成的牌走 CardUtils.convertAs：带 convertedFrom、
+  // 不带 virtual，本质是实体牌，因此额外标了 _entityConversion，此处视为实体牌。
+  // 不能靠删掉 _skill 来实现：_skill 同时被伤害加成计算（battle-combat-attack-values.js）
+  // 等多个位置依赖，删除会改变伤害值。
+  // 已标注：魅魔钢叉、鬼王扑克。未标注：刺客胶衣（改造未完成，暂按技能效果处理）。
+  const isEntityCard = card => !!card && card?.type !== "skill"
+    && !card.generatedBySkill && !card.virtual
+    && (!card._skill || !!card._entityConversion);
 
   // 魅魔吸精术的「对无性别角色造成的伤害为2倍」：判断的是被打者的性别，
   // 不能放进 modifyDamage（那里 target 恒为凋零者本人，且她自己是女性，条件永不成立），
   // 故改走统一伤害结算链的 outgoing 钩子。
   function modifyOutgoingDamage(state, actor, target, amount, card) {
     if (amount <= 0 || !actor || actor.ai !== "ruins_witherer") return amount;
-    if (!isTactic(card) || card?._skill) return amount;
+    // 与外神之眼同一口径：技能伤害、技能生成牌、虚拟牌均不算「你使用的战术牌」。
+    if (!isTactic(card) || !isEntityCard(card)) return amount;
     if (target?.gender === "male" || target?.gender === "female") return amount;
     log(state, `${actor.name} 的魅魔吸精术触发，对无性别目标伤害翻倍。`);
     return amount * 2;
@@ -30,7 +45,7 @@ window.RuinsWithererSkills = (() => {
       if (!(damage?.delayUntilHitSettled?.(state, confuse)
         || window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, confuse))) confuse();
     }
-    if (actor?.ai === "ruins_witherer" && isTactic(card) && !card?._skill) {
+    if (actor?.ai === "ruins_witherer" && isTactic(card) && isEntityCard(card)) {
       succubusDrain(state, actor, target, damage);
     }
   }
