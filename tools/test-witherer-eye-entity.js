@@ -60,10 +60,19 @@ function run() {
   const tacticCard = { name: "火球", type: "tactic", suit: "♥" };
   const skillCard = { name: "猛龙断空斩", _skill: true, type: "slash" };
   const pureVirtual = { name: "杀（普攻）", type: "slash", virtual: true };
+  // 转换杀：CardUtils.convertAs 生成 —— 带 convertedFrom、不带 virtual，属实体牌
   const converted = {
-    name: "杀（普攻）", type: "slash", virtual: true,
-    _entitySourceCard: { name: "杀（普攻）", type: "slash", suit: "♠" },
+    name: "杀（普攻）", type: "slash", convertedFrom: "杀（普攻）", suit: "♠",
   };
+  // 神速之袭模式：CardUtils.fromEntity 生成 —— 强制 virtual:true，即便额外挂
+  // _entitySourceCard 也仍是虚拟牌。这正是此前外神之眼误触发的 BUG 根因，保留为回归防线。
+  const fromEntityVirtual = {
+    name: "刺杀", type: "slash", virtual: true,
+    _entitySourceCard: { name: "刺杀", type: "slash", suit: "♠" },
+  };
+  // 技能伤害载荷：type:"skill" 且不带 _skill / virtual（燃烧·毒·勒脖·机尾机枪等）
+  const skillPayload = { name: "燃烧", type: "skill", fire: true, burningTick: true };
+  const virtualTactic = { name: "与我一战", type: "tactic", virtual: true };
 
   const r1 = fire(state, entitySlash);
   const r2 = fire(state, tacticCard);
@@ -71,6 +80,9 @@ function run() {
   const r4 = fire(state, pureVirtual);
   const r5 = fire(state, converted);
   const r6 = fire(state, null);
+  const r7 = fire(state, skillPayload);
+  const r8 = fire(state, virtualTactic);
+  const r9 = fire(state, fromEntityVirtual);
 
   let pass = 0, fail = 0;
   const check = (cond, msg) => {
@@ -85,6 +97,9 @@ function run() {
   console.log("  纯虚拟杀触发=" + r4.triggered + "  ← 期望 false");
   console.log("  转换杀触发=" + r5.triggered + "  ← 期望 true");
   console.log("  无卡触发=" + r6.triggered);
+  console.log("  技能伤害载荷(type:skill)触发=" + r7.triggered + "  ← 期望 false");
+  console.log("  虚拟战术牌触发=" + r8.triggered + "  ← 期望 false");
+  console.log("  fromEntity虚拟杀(神速之袭模式)触发=" + r9.triggered + "  ← 期望 false");
 
   check(r1.triggered, "实体杀应触发外神之眼");
   check(r2.triggered, "实体战术牌应触发外神之眼");
@@ -92,6 +107,9 @@ function run() {
   check(!r4.triggered, "纯虚拟杀不应触发外神之眼（防自激循环）");
   check(r5.triggered, "转换杀（源自实体手牌）应触发外神之眼");
   check(!r6.triggered, "无卡（直接伤害）不应触发外神之眼");
+  check(!r7.triggered, "技能伤害载荷（type:skill，如燃烧/毒/勒脖）不应触发外神之眼");
+  check(!r8.triggered, "虚拟战术牌不应触发外神之眼");
+  check(!r9.triggered, "fromEntity 虚拟杀（带 _entitySourceCard）不应触发外神之眼");
 
   console.log(`结论 ${pass}/${pass + fail}`);
   if (fail > 0) process.exitCode = 1;
