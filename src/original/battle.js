@@ -121,6 +121,10 @@ window.BattleSystem = (() => {
     skipPrepareSkill: turnFlow.skipTimedSkill,
     playActiveCard: combat.playActiveCard,
     useCard: combat.useCard,
+    // window.BattleCombat 是工厂函数本身、不是实例，历史调用点写的
+    // window.BattleCombat.useVirtualKill 恒为 undefined，导致虚拟杀全部静默失效。
+    // 真实实例由此暴露。
+    useVirtualKill: combat.useVirtualKill,
     selectCard: combat.selectCard,
     selectSkill: combat.selectSkill,
     selectExtract: combat.selectExtract,
