@@ -128,7 +128,8 @@ test("Nanali skills resolve through the real battle system", async ({ page }) =>
     apollo: { targetHp: 24, sealed: 2, targetHand: 0, drewTactic: true },
     returned: { targetHand: 2, sealed: 0 },
     converted: { targetHp: 24, sealed: 1, targetHand: 0 },
-    virtual: { targetHp: 22, sealed: 1, targetHand: 0 },
+    // 实体口径：虚拟【杀】既不触发魔刀阿波罗（不扣牌），目标仍有手牌故虚弱斩杀也不翻倍
+    virtual: { targetHp: 26, sealed: 0, targetHand: 1 },
     revenge: {
       prompt: null, allyHp: 18, sourceHp: 30,
       sealed: 0, sourceHand: 1,
