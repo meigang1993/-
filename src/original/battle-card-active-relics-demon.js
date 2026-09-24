@@ -20,7 +20,7 @@ window.BattleCardActiveRelicsDemon = (deps, ctx, core) => {
     const converted = window.CardUtils.convertAs(template.name, selected, {
       type: "tactic", originalType: selected.type, convertedTactic: true,
       _skill: true, _relicSkill: true, _skipHandMove: true,
-      _playedTargetUid: target.uid, _entitySourceCard: selected,
+      _playedTargetUid: target.uid, _entitySourceCard: selected, _entityConversion: true,
     });
     ctx.moveHand(state, actor, i, "discard", { showDiscard: true });
     markUsed(actor, "usedDemonPoker", card);
