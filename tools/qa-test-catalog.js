@@ -25,6 +25,7 @@ const standalone = Object.freeze([
   "test-ruins-dragon-deathwave-live.js",
   "test-witherer1312-live.js",
   "test-witherer1312-hell-live.js",
+  "test-witherer-eye-entity.js",
   "test-relic-once-per-turn.js",
   "test-badge-hand-overlap-live.js",
   "test-dragon-drill-guard-live.js",
