@@ -1,9 +1,11 @@
 window.NanaliSkills = deps => {
   const { visible, takeVisible, singleKill, line } = deps;
+  // 实体单体杀：由手牌里的实体牌打出（含转换杀），不含技能生成的虚拟杀
+  const entitySingleKill = card => singleKill(card) && !card?.virtual;
 
   function beforeKillTargeted(state, actor, target, card, api) {
     if (actor?.ref === "nanali" && target?.side === "enemy"
-      && singleKill(card)) sealWithApollo(state, actor, target, api, card);
+      && entitySingleKill(card)) sealWithApollo(state, actor, target, api, card);
   }
 
   function sealWithApollo(state, actor, target, api, card = null) {
@@ -39,7 +41,7 @@ window.NanaliSkills = deps => {
   }
 
   function modifySlashDamage(state, actor, target, amount, card) {
-    if (actor?.ref !== "nanali" || !singleKill(card)
+    if (actor?.ref !== "nanali" || !entitySingleKill(card)
       || visible(target).length) return amount;
     line(state, actor, "虚弱斩杀", target);
     window.BattleLog.add(state,
