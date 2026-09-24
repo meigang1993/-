@@ -5,6 +5,9 @@ window.RuinsWithererSkills = (() => {
     + (key === "attack" ? unit.tempAttack || 0 : 0);
   const log = (state, text) => window.BattleLog?.add?.(state, text);
   const isTactic = card => card?.type === "tactic";
+  // 实体牌：非技能生成、非凭空虚拟。转换杀（由实体手牌转换而来，带 _entitySourceCard）仍算实体牌。
+  const isEntityCard = card => !!card && !card._skill
+    && !card.generatedBySkill && !(card.virtual && !card._entitySourceCard);
 
   // 魅魔吸精术的「对无性别角色造成的伤害为2倍」：判断的是被打者的性别，
   // 不能放进 modifyDamage（那里 target 恒为凋零者本人，且她自己是女性，条件永不成立），
@@ -19,7 +22,9 @@ window.RuinsWithererSkills = (() => {
 
   function afterDamage(state, actor, target, card, hpLoss, damage) {
     if (!hpLoss) return;
-    if (target?.ai === "ruins_witherer") {
+    // 外神之眼只响应实体牌伤害：技能卡、技能生成的虚拟杀、无卡直接伤害均不触发，
+    // 否则技能伤害会连锁触发，且与「实体牌」描述不符。
+    if (target?.ai === "ruins_witherer" && isEntityCard(card)) {
       // 等本段受击动画演完再驱动外神之眼，多段/连击时每段各挂一次。
       const confuse = () => eyeOfOuterGod(state, actor, target);
       if (!(damage?.delayUntilHitSettled?.(state, confuse)
