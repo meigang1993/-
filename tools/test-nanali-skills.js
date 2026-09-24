@@ -169,11 +169,21 @@ ElranaAceNanaliSkills.beforeKillTargeted(state, convertedNanali, convertedTarget
 ElranaAceNanaliSkills.beforeKillTargeted(state, convertedNanali, convertedTarget, convertedKill, { draw() {} });
 assert(convertedTarget.hand.length === 0 && convertedTarget.nanaliSealed.length === 1,
   "Converted Slash must count its consumed source card and seal only once per target");
+// 实体口径：技能生成的虚拟单体杀不再触发魔刀阿波罗 / 虚弱斩杀
 const virtualKill = { ...card("杀（普攻）", "slash"), virtual: true };
 const virtualTarget = { ...enemyA, uid: "e9", hand: [card("虚拟扣置牌", "response")], nanaliSealed: [] };
 ElranaAceNanaliSkills.beforeKillTargeted(state, nanali, virtualTarget, virtualKill, { draw() {} });
-assert(virtualTarget.hand.length === 0 && virtualTarget.nanaliSealed.length === 1,
-  "Virtual single Slash must trigger Apollo");
+assert(virtualTarget.hand.length === 1 && !virtualTarget.nanaliSealed.length,
+  "Virtual single Slash must not trigger Apollo (entity-only)");
+assert(ElranaAceNanaliSkills.modifySlashDamage(state, nanali, { ...virtualTarget, hand: [] }, 4, virtualKill) === 4,
+  "Virtual single Slash must not trigger Weak execution (entity-only)");
+
+// 实体转换杀（由实体牌转换而来，非虚拟）仍应触发
+const convertedKill2 = { ...card("杀（普攻）", "slash"), _skipHandMove: true, convertedFrom: "转换费用" };
+const convertedTarget2 = { ...enemyA, uid: "e11", hand: [card("转换扣置牌2", "tactic")], nanaliSealed: [] };
+ElranaAceNanaliSkills.beforeKillTargeted(state, nanali, convertedTarget2, convertedKill2, { draw() {} });
+assert(convertedTarget2.hand.length === 0 && convertedTarget2.nanaliSealed.length === 1,
+  "Converted (non-virtual) Slash must still trigger Apollo");
 
 const repeatedNanali = { ...nanali, uid: "a5", hp: 20, hand: [] };
 const repeatedTarget = {
