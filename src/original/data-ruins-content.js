@@ -14,8 +14,8 @@ window.GameDataRuinsContent = {
   relics: {
     "推进器": { icon: "推", stats: {}, effect: "根据你使用牌指定的目标数，你摸等量牌。", lore: "世界贵族为了占领这个国家，出动了几十万军队，反抗军奋力抵抗。", source: "机械AI龙", enemy: "mech_ai_dragon" },
     "智能大脑": { icon: "脑", stats: {}, effect: "战术牌造成的伤害翻倍。", lore: "机械龙是天界国提供的杀人AI，见活物就袭击，会造成大量平民伤亡。", source: "机械AI龙", enemy: "mech_ai_dragon" },
-    "魅魔钢叉": { icon: "叉", skillType: "active", stats: {}, effect: "出牌阶段限一次，将一张红桃牌当【魅杀】使用且不消耗杀意。", lore: "外神之眼的邪异武器。", source: "废墟沙城XX型凋零者1312号", enemy: "witherer_1312", activeCard: { name: "魅魔钢叉", type: "tactic", succubusFork: true } },
-    "粉色魅魔装": { icon: "装", stats: {}, effect: "红色牌对你无效；你使用的红色牌不可响应。", lore: "1312号的魅魔血脉。", source: "废墟沙城XX型凋零者1312号", enemy: "witherer_1312" },
+    "魅魔钢叉": { icon: "叉", skillType: "active", stats: {}, effect: "出牌阶段限一次，你可以将♥红桃牌当做【魅杀】使用，若如此做不消耗杀意。", lore: "1312号是魅魔型凋零者，没有头，身上有很多眼睛，看到她的任何生命都会发狂。", source: "XX型凋零者1312号", enemy: "witherer_1312", activeCard: { name: "魅魔钢叉", type: "tactic", succubusFork: true } },
+    "粉色魅魔装": { icon: "装", skillType: "passive", stats: {}, effect: "红色牌对你无效，你使用的红色牌不可响应。", lore: "1312号有着淫神莉莉丝血脉，混沌女神与自己女儿莉莉丝交合所生。", source: "XX型凋零者1312号", enemy: "witherer_1312" },
     "冰心双刺剑": { icon: "刺", stats: {}, effect: "你获得的单体【杀】牌转换为不消耗杀意的【刺杀】。", lore: "希尔德的双刃。", source: "废墟沙城内英组杀手希尔德", enemy: "hilde" },
     "刺客胶衣": { icon: "胶", skillType: "active", stats: {}, effect: "出牌阶段限一次，你可以将一张黑色牌当做【刺杀】使用，不消耗杀意。", lore: "希尔德的暗影修行成果。", source: "废墟沙城内英组杀手希尔德", enemy: "hilde", activeCard: { name: "刺客胶衣", type: "tactic", assassinLatex: true } },
     "螺旋桨": { icon: "旋", skillType: "trigger", stats: {}, effect: "出牌阶段，当你摸牌时，随机对敌方一名角色视为使用一张虚拟【杀（普攻）】。", lore: "贵族军武装直升机的旋翼。", source: "废墟沙城武装直升机", enemy: "attack_helicopter" },
