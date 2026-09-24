@@ -6,21 +6,22 @@ window.RuinsWithererSkills = (() => {
   const log = (state, text) => window.BattleLog?.add?.(state, text);
   const isTactic = card => card?.type === "tactic";
 
-  function modifyDamage(state, target, amount, card) {
-    if (!target || target.ai !== "ruins_witherer") return amount;
+  // 魅魔吸精术的「对无性别角色造成的伤害为2倍」：判断的是被打者的性别，
+  // 不能放进 modifyDamage（那里 target 恒为凋零者本人，且她自己是女性，条件永不成立），
+  // 故改走统一伤害结算链的 outgoing 钩子。
+  function modifyOutgoingDamage(state, actor, target, amount, card) {
+    if (amount <= 0 || !actor || actor.ai !== "ruins_witherer") return amount;
     if (!isTactic(card) || card?._skill) return amount;
-    if (target.gender !== "male" && target.gender !== "female") {
-      log(state, `${target.name} 的魅魔吸精术触发，对无性别目标伤害翻倍。`);
-      return amount * 2;
-    }
-    return amount;
+    if (target?.gender === "male" || target?.gender === "female") return amount;
+    log(state, `${actor.name} 的魅魔吸精术触发，对无性别目标伤害翻倍。`);
+    return amount * 2;
   }
 
   function afterDamage(state, actor, target, card, hpLoss, damage) {
     if (!hpLoss) return;
     if (target?.ai === "ruins_witherer") {
-      // 混乱状态牌会立刻进入目标手中并显示，等本段受击动画演完再发放
-      const confuse = () => giveEyeConfusion(state, actor, target);
+      // 等本段受击动画演完再驱动外神之眼，多段/连击时每段各挂一次。
+      const confuse = () => eyeOfOuterGod(state, actor, target);
       if (!(damage?.delayUntilHitSettled?.(state, confuse)
         || window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, confuse))) confuse();
     }
@@ -29,12 +30,31 @@ window.RuinsWithererSkills = (() => {
     }
   }
 
-  function giveEyeConfusion(state, attacker, witherer) {
+  // 外神之眼：受伤后令伤害来源对其同阵营其他存活角色视为使用一张虚拟【杀（普攻）】。
+  // 「其他敌方」沿用百眼魅魔的措辞口径——从凋零者视角看，其敌方阵营内的其余角色。
+  // 与半魅魔血等受击类一致：多段或连击伤害时逐段结算。
+  function eyeOfOuterGod(state, attacker, witherer) {
     if (!attacker || attacker.hp <= 0 || attacker === witherer) return;
-    const confusion = window.BattleStatusCardRegistry?.create?.("confusion");
-    if (confusion) window.BattleStatusCards?.add?.(state, attacker, confusion, witherer.name);
+    const mates = (attacker.side === "ally"
+      ? state.battle?.allies : state.battle?.enemies) || [];
+    const others = mates.filter(unit => unit !== attacker && unit.hp > 0);
     window.BattleLines?.skill?.(state, witherer, "外神之眼", attacker);
-    log(state, `${witherer.name} 的外神之眼触发，使${attacker.name}获得一张混乱状态牌。`);
+    if (!others.length) {
+      const amount = stat(attacker, "attack");
+      const before = attacker.hp;
+      attacker.hp = Math.max(0, attacker.hp - amount);
+      const loss = before - attacker.hp;
+      if (loss > 0) window.BattleSystem?.pushFloat?.(state.battle, attacker.uid, "hp-loss", loss);
+      log(state, `${witherer.name} 的外神之眼触发，${attacker.name}无其他敌方角色，对自己造成${amount}点伤害。`);
+      return;
+    }
+    const target = window.GameRandom?.sample?.(others, state) || others[0];
+    const virtual = window.CardUtils?.copyPlayable?.(
+      { name: "杀（普攻）", type: "slash", power: 0, scale: "attack", suit: "" },
+      { temporary: true, void: true, noIntentCost: true, generatedBySkill: "外神之眼" });
+    if (!virtual) return;
+    log(state, `${witherer.name} 的外神之眼触发，使${attacker.name}对${target.name}视为使用一张虚拟【杀】。`);
+    window.BattleSystem?.useVirtualKill?.(state, attacker, target, virtual);
   }
 
   function succubusDrain(state, actor, target, damage) {
@@ -84,7 +104,11 @@ window.RuinsWithererSkills = (() => {
     window.BattleLines?.skill?.(state, unit, "百眼魅魔");
     log(state, `${unit.name} 发动百眼魅魔，弃置${hearts.length}张红桃牌。`);
     const allies = alive(state.battle.allies);
-    allies.forEach(ally => fireHundredEyes(state, unit, ally, allies));
+    // 逐一驱动，中途被同伴打倒的角色不再行动（描述为「所有敌方角色」，阵亡者不算）。
+    allies.forEach(ally => {
+      if (ally.hp <= 0) return;
+      fireHundredEyes(state, unit, ally, allies);
+    });
   }
 
   function fireHundredEyes(state, witherer, ally, allies) {
@@ -105,8 +129,20 @@ window.RuinsWithererSkills = (() => {
       { temporary: true, void: true, noIntentCost: true, generatedBySkill: "百眼魅魔" });
     if (!virtual) return;
     log(state, `${witherer.name} 的百眼魅魔使${ally.name}对${target.name}视为使用一张虚拟【杀】。`);
-    window.BattleCombat?.useVirtualKill?.(state, ally, target, virtual);
+    window.BattleSystem?.useVirtualKill?.(state, ally, target, virtual);
   }
 
-  return { modifyDamage, afterDamage, endTurn };
+  // AI逻辑：出牌阶段优先使用战术牌对男性角色造成伤害。
+  // 只对 1312 本人生效，其余角色拿到的偏好为 null / 0，不影响通用 AI。
+  function aiTacticBonus(actor) {
+    return actor?.ai === "ruins_witherer" ? 12 : 0;
+  }
+  function aiTacticTarget(ctx, actor, foes) {
+    if (actor?.ai !== "ruins_witherer" || !ctx) return null;
+    const males = (ctx.alive?.(foes) || []).filter(unit => unit.gender === "male");
+    if (!males.length) return null;
+    return ctx.topBy?.(males, unit => -ctx.visible(unit)) || males[0];
+  }
+
+  return { modifyOutgoingDamage, afterDamage, endTurn, aiTacticBonus, aiTacticTarget };
 })();
