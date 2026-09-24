@@ -38,7 +38,6 @@ window.RuinsEnemySkills = (() => {
   function modifyDamage(state, target, amount, card) {
     let result = amount;
     if (isRuins(target)) {
-      result = witherer?.modifyDamage?.(state, target, result, card) ?? result;
       result = elite?.modifyDamage?.(state, target, result, card) ?? result;
     }
     return result;
