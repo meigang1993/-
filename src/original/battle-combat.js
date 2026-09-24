@@ -71,6 +71,20 @@ window.BattleCombat = (deps) => {
     }
   }
   deps.useCard = useCard;
+  // 虚拟【杀（普攻）】：技能/饰品/状态牌让某角色「视为使用一张杀」时的统一入口。
+  // 此前 6 处调用点写的都是 window.BattleCombat.useVirtualKill，而本对象从未导出过它，
+  // 于是百眼魅魔、外神之眼、螺旋桨、混乱状态牌、反击类的虚拟杀全部静默不生效
+  // （只有「无目标时对自己造成伤害」的兜底分支还会执行）。
+  // 走 useCard 而非直接扣血，才能保留【闪】响应判定。
+  function useVirtualKill(state, actor, target, card) {
+    if (!state?.battle || !actor || !target || !card) return false;
+    if (actor.hp <= 0 || target.hp <= 0) return false;
+    card.virtual = true;
+    const ok = useCard(state, actor, target, card);
+    checkDefeat(state);
+    checkEnd(state);
+    return ok;
+  }
   function resolveCard(state, actor, target, card) {
     if (state.battle?.locked) return;
     if (card?.withererTongueActive
@@ -150,5 +164,5 @@ window.BattleCombat = (deps) => {
   function resumeCardTail(state) { return cardResume.resume(state); }
   function recordDeferredHit(state, actor, target, card, result) { cardResume.recordHit(state, actor, target, card, result); }
   function resumeGroupHeal(state) { const b = state.battle; if (b) b._resumingCardTail = true; try { return specials.resumeTeamHeal?.(state); } finally { if (b) delete b._resumingCardTail; } }
-  return { selectCard, selectSkill, selectExtract, selectMimic, selectPrepareSkill, chooseTarget, cancelSelection, playSelectedCard, playActiveCard, canSelectHandCost, canPlay, checkDefeat, checkEnd, useCard, damage, directDamage, resolveThunderHammer, cancelThunderHammer, resolveManualDodge, confirmDeflectResult, resolveManualCounter, resolveCounterTrigger, resolveDimensionTransfer, resolveHandReveal, resumeGreenGatling, resumeComboAttack, resumeCardTail, recordDeferredHit, resumeGroupHeal, continueAfterCadicisResponsibility, resolveOpheliaGuard, holdVisual, pushFloat, triggerBattleCourage: specials.triggerBattleCourage };
+  return { selectCard, selectSkill, selectExtract, selectMimic, selectPrepareSkill, chooseTarget, cancelSelection, playSelectedCard, playActiveCard, canSelectHandCost, canPlay, checkDefeat, checkEnd, useCard, useVirtualKill, damage, directDamage, resolveThunderHammer, cancelThunderHammer, resolveManualDodge, confirmDeflectResult, resolveManualCounter, resolveCounterTrigger, resolveDimensionTransfer, resolveHandReveal, resumeGreenGatling, resumeComboAttack, resumeCardTail, recordDeferredHit, resumeGroupHeal, continueAfterCadicisResponsibility, resolveOpheliaGuard, holdVisual, pushFloat, triggerBattleCourage: specials.triggerBattleCourage };
 };
