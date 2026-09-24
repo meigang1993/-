@@ -57,7 +57,9 @@ window.BattleDamageTriggers = (api) => {
     window.RuinsCardSkills?.chainExtraTargets?.(state, actor, target, card, damage);
     window.BertisGerlotSkills?.refreshArrogance?.(state);
     window.BertisGerlotSkills?.afterAnyDeath?.(state);
-    if (!hpLoss || !window.CardUtils?.isSingleKill?.(card)
+    // 锁魂镰刀仅由实体单体【杀】触发：技能生成的虚拟【杀】不触发。
+    // 转换杀由手牌实体牌转换而来（convertedFrom，非 virtual），仍算实体牌。
+    if (!hpLoss || !window.CardUtils?.isEntitySingleKill?.(card)
       || card.soulScythe || !ctx.hasSkill(actor, "锁魂镰刀")) return;
     triggerSoulScythe(state, actor);
   }
