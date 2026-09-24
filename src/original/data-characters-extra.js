@@ -71,10 +71,10 @@ window.GameDataCharactersExtra = [
   {
     id: "nanali", name: "娜娜莉", gender: "female", face: "娜", art: "./assets/images/nanali-portrait.bcf85424.webp", avatar: "./assets/images/nanali-portrait.bcf85424.webp", role: "纯血公主", locked: true, unlockCost: 30,
     stats: { attack: 3, magic: 3, speed: 3, maxHp: 32, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
-    evaluation: "单体爆发与手牌封锁输出核心。魔刀阿波罗暂时扣置目标手牌并补充自身资源，虚弱斩杀惩罚空手目标，依靠高额攻击成长把单体【杀】打成一击斩杀。",
+    evaluation: "单体爆发与手牌封锁输出核心。魔刀阿波罗暂时扣置目标手牌并补充自身资源，虚弱斩杀惩罚空手目标，依靠高额攻击成长把实体单体【杀】打成一击斩杀。",
     skills: [
-      { name: "魔刀阿波罗", type: "passive", icon: "⭐", text: "锁定技，当你使用单体【杀】指定一名敌方角色为目标时，你扣置其X张手牌（X为你使用此【杀】前的手牌数）；每扣置1张战术牌，你摸1张牌。任意角色回合结束时，以此法扣置的牌返回原角色手牌。" },
-      { name: "虚弱斩杀", type: "passive", icon: "⭐", text: "锁定技，当你使用的单体【杀】对没有手牌的敌方角色造成伤害时，此伤害翻倍。" }
+      { name: "魔刀阿波罗", type: "passive", icon: "⭐", text: "锁定技，当你使用实体单体【杀】指定一名敌方角色为目标时，你扣置其X张手牌（X为你使用此【杀】前的手牌数）；每扣置1张战术牌，你摸1张牌。任意角色回合结束时，以此法扣置的牌返回原角色手牌。" },
+      { name: "虚弱斩杀", type: "passive", icon: "⭐", text: "锁定技，当你使用的实体单体【杀】对没有手牌的敌方角色造成伤害时，此伤害翻倍（虚拟【杀】不触发）。" }
     ]
   },
   {
