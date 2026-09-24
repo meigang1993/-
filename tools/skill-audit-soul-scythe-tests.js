@@ -55,17 +55,17 @@ module.exports = ({ assert, card, unit }) => {
       }),
       card("无目标杀", "slash", { targetless: true }),
       card("普通战术", "tactic"),
+      card("虚拟单体杀", "slash", { virtual: true }),
     ];
     rejected.forEach(usedCard => {
       hits.length = 0;
       triggers.afterDamage(state, actor, targets[0], usedCard, 2, 0);
       assert(hits.length === 0,
-        `Soul Scythe must reject non-single Slash: ${usedCard.name}`);
+        `Soul Scythe must reject non-entity-single Slash: ${usedCard.name}`);
     });
 
     const accepted = [
       card("实体单体杀", "slash"),
-      card("虚拟单体杀", "slash", { virtual: true }),
       card("转换单体杀", "slash", { convertedFrom: "闪" }),
     ];
     accepted.forEach(usedCard => {
