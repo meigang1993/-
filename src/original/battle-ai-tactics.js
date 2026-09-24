@@ -42,7 +42,8 @@ window.BattleAITactics = (() => {
   function magicDuelTarget(ctx, foes) { return ctx.topBy(ctx.alive(foes).filter(u => !ctx.hasMagicKill(u)), u => -ctx.visible(u)); }
   function tacticMove(ctx, actor, team, foes, hand, ensureSlash, minScore = 1) {
     const aliveFoes = ctx.alive(foes);
-    const best = hand.filter(c => ["tactic", "consume", "obstacle"].includes(c.type)).reduce((r, card) => { const score = tacticScore(ctx, actor, card, team, foes, aliveFoes, ensureSlash); return score > r.score ? { card, score } : r; }, { card: null, score: 0 });
+    const bias = window.RuinsWithererSkills?.aiTacticBonus?.(actor) || 0;
+    const best = hand.filter(c => ["tactic", "consume", "obstacle"].includes(c.type)).reduce((r, card) => { const raw = tacticScore(ctx, actor, card, team, foes, aliveFoes, ensureSlash); const score = raw > 0 ? raw + bias : 0; return score > r.score ? { card, score } : r; }, { card: null, score: 0 });
     if (!best.card || best.score < minScore) return null;
     const card = best.card, target = tacticTarget(ctx, actor, card, team, foes);
     if (card.soulChain) { const fresh = aliveFoes.filter(u => !u.soulChain), first = ctx.targetByPolicy(fresh) || fresh[0], list = [first, ...fresh.filter(u => u.uid !== first?.uid)].filter(Boolean).slice(0, 2); card._targetUids = list.map(u => u.uid); return list.length ? { card, target: list[0] } : null; }
@@ -58,6 +59,9 @@ window.BattleAITactics = (() => {
     if (card.magicBullet) return ctx.magicBulletTarget(actor, foes, card);
     if (card.magicDuel) return magicDuelTarget(ctx, foes);
     if (card.duel) return duelTarget(ctx, actor, foes);
+    // XX型凋零者1312号：优先对男性角色造成伤害（AI逻辑）。
+    const withererTarget = window.RuinsWithererSkills?.aiTacticTarget?.(ctx, actor, foes);
+    if (withererTarget) return withererTarget;
     return ctx.targetByPolicy(foes) || actor;
   }
   return { tacticMove };
