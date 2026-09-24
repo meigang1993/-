@@ -57,6 +57,10 @@ window.BattleDamageResolution = ({
       state, actor, amount, effectiveCard, effectiveActor) ?? amount;
     amount = window.BondiSkills?.modifyOutgoingDamage?.(
       state, actor, amount, effectiveCard) ?? amount;
+    // 魅魔吸精术「对无性别角色造成的伤害为2倍」：需拿到被打者才能判性别，
+    // 故与 BakarSkills / BondiSkills 同走 outgoing 链。
+    amount = window.RuinsWithererSkills?.modifyOutgoingDamage?.(
+      state, actor, target, amount, effectiveCard) ?? amount;
     if (!effectiveCard?.skipDamageModify) {
       amount = window.EnemySkills?.modifyDamage(
         state, target, amount, effectiveCard) ?? amount;
@@ -69,8 +73,13 @@ window.BattleDamageResolution = ({
       state.battle, actor, source) || source;
     amount = window.RuinsCardSkills?.modifyIncomingDamage?.(
       state, target, amount, effectiveCard) ?? amount;
+    // 粉色魅魔装（被动）：红色牌对该角色无效。
+    amount = window.RuinsRelicEffects?.modifyIncomingDamage?.(
+      state, target, amount, effectiveCard) ?? amount;
     amount = amount > 0 ? Math.max(1, Math.round(amount)) : 0;
     window.RuinsCardSkills?.beforeResponseCheck?.(state, actor, target, effectiveCard);
+    // 粉色魅魔装（被动）：佩戴者使用的红色牌不可被响应。
+    window.RuinsRelicEffects?.beforeResponseCheck?.(state, actor, target, effectiveCard);
     queueAttackAnim(state, actor, target, effectiveCard);
     if (deps.isKillCard(effectiveCard) && effectiveCard?.ignoreResponse) {
       window.BattleLog.add(state,
