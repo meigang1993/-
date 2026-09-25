@@ -54,6 +54,16 @@ window.BattleSession = ({
     getCombat,
   });
 
+  function ensureOpeningSlash(unit) {
+    if (!unit?.hand) return;
+    const isSlash = c => window.CardUtils?.isKillCard?.(c) && !c.virtual;
+    if (unit.hand.some(isSlash)) return;
+    const deckIdx = (unit.deck || []).findIndex(isSlash);
+    if (deckIdx >= 0) { unit.hand.push(unit.deck.splice(deckIdx, 1)[0]); return; }
+    const discardIdx = (unit.discard || []).findIndex(isSlash);
+    if (discardIdx >= 0) unit.hand.push(unit.discard.splice(discardIdx, 1)[0]);
+  }
+
   async function start(state, missionId, onStep, context = {}) {
     const current = () => isCurrentState(state)
       && (!context.isCurrent || context.isCurrent());
@@ -63,6 +73,8 @@ window.BattleSession = ({
     const initialDrawBatches = [];
     [...allies, ...enemies].forEach(unit =>
       draw(unit, initialDrawCount(unit), state.battle, initialDrawBatches));
+    // 新手保护：首战保证罗卡尔初始手牌至少有一张可使用的实体【杀】。
+    if (window.Onboarding?.at?.(state, "battle")) ensureOpeningSlash(allies[0]);
     if (initialDrawBatches.length && state.battle?.animQueue) {
       state.battle.animQueue.push({
         id: `idg${nextAnim()}`,
