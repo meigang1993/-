@@ -39,7 +39,7 @@ BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 
 --- 1. noble_soldier - 贵族军士兵 ---
 类型：normal | 定位：地雷控场 | AI：ruins_soldier | 性别：男
-属性：HP64 ATK11 MAG8 SPD12 杀意1 手牌4 摸牌2 初始2
+属性：HP60 ATK9 MAG7 SPD14 杀意1 手牌4 摸牌2 初始2
 立绘：./assets/ruins-enemies/noble-soldier.webp
 BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 技能：
@@ -47,7 +47,7 @@ BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 
 --- 2. noble_sniper - 贵族军狙击手 ---
 类型：normal | 定位：花色狙击 | AI：ruins_sniper | 性别：男
-属性：HP58 ATK14 MAG9 SPD15 杀意1 手牌4 摸牌1 初始1
+属性：HP52 ATK10 MAG7 SPD17 杀意1 手牌4 摸牌1 初始1
 立绘：./assets/ruins-enemies/attack-drone.webp（注：交叉引用）
 BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 技能：
@@ -56,7 +56,7 @@ BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 
 --- 3. merca_tank - 梅尔卡坦克 ---
 类型：normal | 定位：群体蓄力 | AI：ruins_tank
-属性：HP85 ATK16 MAG12 SPD12 杀意1 手牌4 摸牌3 初始2
+属性：HP80 ATK8 MAG8 SPD12 杀意1 手牌4 摸牌2 初始2
 立绘：./assets/ruins-enemies/merca-tank.webp
 BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 技能：
@@ -64,7 +64,7 @@ BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 
 --- 4. attack_drone - 攻击型无人机 ---
 类型：normal | 定位：麻痹锁定 | AI：ruins_drone
-属性：HP47 ATK12 MAG10 SPD17 杀意2 手牌3 摸牌2 初始1
+属性：HP44 ATK8 MAG8 SPD18 杀意1 手牌3 摸牌2 初始1
 立绘：./assets/ruins-enemies/noble-sniper.webp（注：交叉引用）
 BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 技能：
