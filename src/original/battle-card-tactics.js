@@ -30,7 +30,24 @@ window.BattleCardTactics = ({ log, ctx, deps, reveal, openHandReveal }) => {
     ctx.damage(state, holder, amount(last), card.name, last, sourceCard);
     log(state, `${actor.name} 发起与我一战，${holder.name}无法继续出杀。`);
   }
-  function showDuelSlash(state, holder, target, slash, sourceName) { slash._playedByName = holder.name; slash._playedAction = "打出了"; state.battle.animQueue?.push({ type: "virtualPlay", id: `du${deps.nextAnim()}`, uid: holder.uid, side: holder.side, targetUid: target.uid, card: slash, enemyLine: holder.side === "enemy", slashText: true }); state.battle.played.unshift({ ...slash }); log(state, `${holder.name} 在${sourceName}中打出${slash.suit || ""}${slash.name}。`); }
+  // 决斗是同步 while 循环，若在此直接入 played，整轮决斗的杀会在结算瞬间
+  // 一次性挤进出牌区（动画还没播）。改为挂到动画的 commit：飞行动画播到哪
+  // 一张，出牌区才补哪一张。
+  function showDuelSlash(state, holder, target, slash, sourceName) {
+    slash._playedByName = holder.name;
+    slash._playedAction = "打出了";
+    const battle = state.battle;
+    state.battle.animQueue?.push({
+      type: "virtualPlay", id: `du${deps.nextAnim()}`, uid: holder.uid,
+      side: holder.side, targetUid: target.uid, card: slash,
+      enemyLine: holder.side === "enemy", slashText: true,
+      commit: () => {
+        if (state.battle !== battle) return;
+        (battle.played ||= []).unshift({ ...slash });
+      },
+    });
+    log(state, `${holder.name} 在${sourceName}中打出${slash.suit || ""}${slash.name}。`);
+  }
   function comboAttack(state, actor, target, card) { const partner = ctx.comboPartner(state.battle, actor); if (!partner || !target) return; card.comboPartnerUid = partner.uid; log(state, `${actor.name} 发动组合进攻，指定${target.name}为目标，并选择${partner.name}协同攻击。`); useComboSlash(state, actor, target, card, partner.uid); if (state.battle?.locked) { state.battle.comboAttackResume = { actorUid: actor.uid, partnerUid: partner.uid, targetUid: target.uid, card: { ...card } }; return; } if (target.hp > 0 && partner.hp > 0) useComboSlash(state, partner, target, card); }
   function resumeComboAttack(state) { const b = state.battle, p = b?.comboAttackResume; if (!p || b.locked) return false; b.comboAttackResume = null; const units = b.allies.concat(b.enemies), partner = units.find(u => u.uid === p.partnerUid), target = units.find(u => u.uid === p.targetUid); if (!partner || !target || partner.hp <= 0 || target.hp <= 0) return true; useComboSlash(state, partner, target, p.card); return true; }
   function useComboSlash(state, user, target, sourceCard, partnerLineUid = null) { const slash = { name: "杀（普攻）", type: "slash", power: 0, scale: "attack", virtual: true, noIntentCost: true, _skipHandMove: true, skipAfterCardPlayed: true, skipMvpCardCount: true, comboAttackVirtual: true, comboPartnerUid: sourceCard.comboPartnerUid, sourceName: sourceCard.name }; if (partnerLineUid) { slash._playedFlightDone = true; slash._playedTargetUid = target.uid; state.battle.animQueue?.push({ type: "virtualPlay", id: `ca${deps.nextAnim()}`, uid: user.uid, side: user.side, targetUid: target.uid, comboPartnerUid: partnerLineUid, card: slash, enemyLine: user.side === "enemy", slashText: true }); } log(state, `${user.name} 对${target.name}发动组合进攻的攻击。`); ctx.useCard(state, user, target, slash); }
