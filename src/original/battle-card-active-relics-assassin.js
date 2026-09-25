@@ -64,10 +64,7 @@ window.BattleCardActiveRelicsAssassin = (deps, ctx, core) => {
     const converted = window.CardUtils.convertAs("刺杀", source, {
       type: "slash", ignoreResponse: true, scale: "attack", noIntentCost: true,
       _skill: true, _relicSkill: true, _skipHandMove: true,
-      _entitySourceCard: source,
-      // TODO(刺客胶衣改造未完成)：本饰品转换牌尚未标 _entityConversion，
-      // 因此仍按「技能效果」处理，不触发外神之眼 / 魅魔吸精术。
-      // 待刺客胶衣完善后，与魅魔钢叉、鬼王扑克一致补上 _entityConversion: true。
+      _entitySourceCard: source, _entityConversion: true,
     });
     if (ok) ctx.moveHand(state, actor, i, "discard", { showDiscard: true });
     else { actor.hand.splice(idx, 1); ctx.putMany(state, actor, [source], "discard", { showDiscard: true }); }
