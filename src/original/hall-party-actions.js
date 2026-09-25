@@ -78,6 +78,7 @@ async function startMission(id, difficulty = "normal", actionCurrent = null) {
       DungeonSystem.start(actionState, id, difficulty, runId);
       if (!actionState.explore) throw new Error("副本地图创建失败");
       actionState.flags.firstExpeditionStarted = true;
+      window.Onboarding?.advance?.(actionState, "map");
       if (!window.ServerCore?.offlineOnly?.() && ok.result?.core?.activeRun?.nodes) {
         DungeonSystem.applyServerPlan(actionState.explore, ok.result.core.activeRun, actionState);
       }
