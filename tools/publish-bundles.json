@@ -286,6 +286,7 @@
     "ruins-grunt-landmine.js",
     "ruins-grunt-rps.js",
     "ruins-grunt-skills.js",
+    "ruins-dragon-deathwave.js",
     "ruins-dragon-skills.js",
     "ruins-witherer-skills.js",
     "ruins-elite-skills.js",
