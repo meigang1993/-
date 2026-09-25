@@ -1,6 +1,7 @@
 window.bindDungeonActions = function bindDungeonActions() {
   document.querySelectorAll("[data-dungeon-node]").forEach(b => b.onclick = () => AppActionGuard.run("进入副本节点失败", async ({ state: actionState, run: actionRun, isCurrent }) => {
     const nodeId = b.dataset.dungeonNode;
+    window.Onboarding?.advance?.(actionState, "battle");
     const ownsRun = () => isCurrent() && actionState.explore === actionRun;
     const ownsNode = () => ownsRun() && actionRun?.pending === nodeId;
     const restoreNode = async (err = null) => {
@@ -111,6 +112,7 @@ window.bindDungeonActions = function bindDungeonActions() {
   document.querySelector("[data-reward-confirm]")?.addEventListener("click", e => {
     AppActionGuard.run("奖励确认失败", async ({ state: actionState, isCurrent }) => {
       rememberDungeonScroll(true);
+      if (window.Onboarding?.active?.(actionState)) window.Onboarding.complete(actionState);
       DungeonSystem.confirmReward(actionState);
       if (!isCurrent()) return false;
       render();
