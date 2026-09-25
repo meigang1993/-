@@ -64,6 +64,18 @@ window.CardUtils = (() => {
         && (card?._queenTailConverted || isPhysicalSingleKill(actor, card))
       || actor?.ref === "besta" && slash && ["♠", "♣"].includes(card?.suit);
     if (convertedMagic) return "magic";
+    // 饰品主动技把「实体手牌」转换而成的牌走 convertAs：带 convertedFrom、不带 virtual，
+    // 本质是实体牌（应按牌面结算），却仍保留 _skill 标记以兼容既有流程。
+    // 若在此落到 _skill → null，攻击力/魔力加成会整段归零：魅魔钢叉的【魅杀】、
+    // 刺客胶衣的【刺杀】基础值为 0，最终打出 0 伤害。
+    // 不能靠删掉 _skill 实现：_skill 同时被神数计数、冻结杀、恐怖巨锤响应、
+    // 出牌日志措辞等多处依赖，删除会连带改变这些行为。
+    // 此处按牌面 scale 取键，分支与末尾默认分支同一口径，避免误改鬼王扑克等
+    // 无 scale 的战术牌（默认走 magic）。
+    if (card?._relicSkill && card?.convertedFrom && !card?.virtual) {
+      return card?.scale === "magic" ? "magic"
+        : card?.scale === "attack" || slash ? "attack" : "magic";
+    }
     if (card?.virtual) return "attack";
     if (card?._skill) return null;
     return card?.scale === "magic" ? "magic" : card?.scale === "attack" || slash ? "attack" : "magic";
