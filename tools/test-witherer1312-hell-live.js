@@ -119,6 +119,25 @@ const settle = async page => {
 // 真实回合：我方结束出牌 → 敌方 AI 行动 → 敌方结束阶段 → 回到我方。
 // 必须先等 activeUid 切到敌方，再等切回我方；只判"在我方"会在点击后立即为真，
 // 导致敌方回合还没跑就采样。
+// 展示手牌弹窗（battle.handReveal）：敌方打出【魔弹特攻】【偷窃】等牌时要求我方亮牌/选牌，
+// 此时 battle.locked 为真且 activeUid 已切到敌方，若不处理则敌方回合永久卡住。
+// 注意 magicBulletReveal 模式下界面不渲染「取消」按钮，只能点选一张有效牌。
+async function dismissHandReveal(page) {
+  const pick = page.locator("[data-hand-reveal-pick]:not([disabled])");
+  if (await pick.count()) {
+    await pick.first().click().catch(() => {});
+    await settle(page);
+    return true;
+  }
+  const close = page.locator("[data-hand-reveal-close]");
+  if (await close.count()) {
+    await close.first().click().catch(() => {});
+    await settle(page);
+    return true;
+  }
+  return false;
+}
+
 async function runEnemyTurn(page, label) {
   // 我方可能有多名角色，逐个「结束出牌」直到轮到敌方
   for (let i = 0; i < 10; i++) {
@@ -132,6 +151,7 @@ async function runEnemyTurn(page, label) {
       };
     })()`);
     if (stt.enemyTurn) break;
+    if (await dismissHandReveal(page)) continue;
     // 准备阶段若有「跳过榨取/模仿/神速」提示，先真实点击跳过
     const skip = page.locator("[data-skip-extract]");
     if (await skip.count()) {
@@ -148,11 +168,27 @@ async function runEnemyTurn(page, label) {
     await btn.click();
     await settle(page);
   }
-  // 等敌方回合（含结束阶段）跑完并回到我方
-  await page.waitForFunction(() => {
-    const b = window.state.battle;
-    return b && (b.allies || []).some(a => a.uid === b.activeUid);
-  }, null, { timeout: 60000 }).catch(() => {});
+  // 等敌方回合（含结束阶段）跑完并回到我方。
+  // 敌方战术牌（如魔弹特攻）可能触发我方【看破】手动响应弹窗，此时 battle.locked 为真、
+  // 敌方回合永久卡住；必须真实点击「不使用」，否则回合推进超时后采样到的是半成品回合
+  // （表现为百眼魅魔偶发失败）。
+  let backToAlly = false;
+  for (let i = 0; i < 60; i++) {
+    if (await dismissHandReveal(page)) continue;
+    const cancel = page.locator("[data-manual-counter-cancel]");
+    if (await cancel.count()) {
+      await cancel.click().catch(() => {});
+      await settle(page);
+      continue;
+    }
+    backToAlly = await page.evaluate(`(() => {
+      const b = window.state.battle;
+      return !!(b && (b.allies || []).some(a => a.uid === b.activeUid));
+    })()`);
+    if (backToAlly) break;
+    await page.waitForTimeout(1000);
+  }
+  if (!backToAlly) console.log(`  [回合推进·${label}] 敌方回合未回到我方`);
   await settle(page);
 }
 
