@@ -74,6 +74,15 @@ function focusDungeonStart() {
   const map = document.querySelector(".tower-map"), current = document.querySelector(".map-node.current"); if (!map || !current) return;
   const openNodes = [...document.querySelectorAll(".map-node.open")];
   if (state.explore?.rewardPopup || state.explore?.keepScroll) { restoreScrollInstant(map, state.explore.mapScrollTop ?? dungeonScrollTop, null); return; }
+  // 新手引导：地图阶段把"推荐"节点滚到视野内，优先于默认焦点。
+  const recommend = window.Onboarding?.at?.(state, "map") ? document.querySelector(".map-node.onboarding-recommend") : null;
+  if (recommend) {
+    dungeonFocusKey = `onboarding:${state.explore?.current || ""}:${recommend.dataset.dungeonNode}`;
+    const top = recommend.getBoundingClientRect().top - map.getBoundingClientRect().top + map.scrollTop;
+    dungeonScrollTop = Math.max(0, top - map.clientHeight * .5 + recommend.clientHeight / 2);
+    restoreScrollInstant(map, dungeonScrollTop, null);
+    return;
+  }
   const shouldAdvanceFocus = (current.classList.contains("done") || map.clientHeight < 160) && openNodes.length;
   const focus = shouldAdvanceFocus ? openNodes[Math.floor((openNodes.length - 1) / 2)] : current;
   const openKey = openNodes.map(n => n.dataset.dungeonNode).join(",");
