@@ -29,6 +29,10 @@ window.BattleRuntimeHelpers = () => {
   }
   function resetRound(battle, advance = false) {
     battle.roundOrder = order(battle).map(unit => unit.uid);
+    // 新手保护：首战让罗卡尔先行动。
+    const lokar = window.Onboarding?.at?.(window.state, "battle")
+      && battle.allies?.find(unit => unit.ref === "lokar");
+    if (lokar) battle.roundOrder = [lokar.uid, ...battle.roundOrder.filter(uid => uid !== lokar.uid)];
     battle.roundIndex = 0;
     if (advance) battle.roundNo = (battle.roundNo || 1) + 1;
   }
