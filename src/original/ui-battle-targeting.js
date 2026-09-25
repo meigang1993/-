@@ -59,6 +59,9 @@ window.GameUIBattleTargeting = (() => {
     else if (card?.magicBullet) allowed = unitData.side === "enemy"
       && hasMagicBulletCard(unitData);
     else allowed = comboPartnerReady && unitData.side === "enemy";
+    // 隐身中的希尔德不可被单体【杀】指定：与逻辑层 chooseTarget 同一判定源，
+    // 否则会出现「点得到但点了没反应」。
+    if (allowed && window.RuinsEnemySkills?.blocksKillTarget?.(unitData, card)) allowed = false;
     return (kaiichiShare || gerdaComfort || millerShare || share
       || battle.selectedCardIndex != null || battle.selectedSkillCard) && allowed;
   }
