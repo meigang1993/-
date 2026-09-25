@@ -37,7 +37,7 @@ window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
     apply();
   }
 
-  function afterDamage(state, actor, target, card, hpLoss, damage, cardUser = actor) {
+  function afterDamage(state, actor, target, card, hpLoss, damage, cardUser = actor, directDamage = null) {
     // 精灵守护属受击触发（其他友方受伤后给护甲），按设计逐段结算。
     window.GuardKellySkills?.afterDamage?.(state, actor, target, card, hpLoss, cardUser);
     if (hpLoss && target.shock && !card?.shockBonus) {
@@ -62,7 +62,8 @@ window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
     }
     machine.afterDamage(state, actor, target, hpLoss, damage);
     window.UnderwaterTrainSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage);
-    window.RuinsEnemySkills?.afterDamage?.(state, actor, target, card, hpLoss, damage);
+    window.RuinsEnemySkills?.afterDamage?.(
+      state, actor, target, card, hpLoss, damage, directDamage);
     if (!hpLoss || actor.ai !== "goblin" || !card || card.type !== "slash") return;
     const discarded = discardOne(target);
     if (!discarded) return;
