@@ -122,7 +122,9 @@ window.BattleTurnStart = ({
       record(state, `${unit.name} 可以发动模仿之音。`);
       return unit;
     }
-    if (shouldPromptExtract(unit, battle)) {
+    // 新手保护：首战不让贝丝妲魔偶弹出榨取精华，避免打断第一场战斗教学。
+    if (shouldPromptExtract(unit, battle)
+      && !(window.Onboarding?.at?.(state, "battle") && unit.ref === "besta_doll")) {
       battle.awaitingExtractUid = unit.uid;
       battle.extractPrompted = true;
       record(state, `${unit.name} 可以发动榨取精华。`);
