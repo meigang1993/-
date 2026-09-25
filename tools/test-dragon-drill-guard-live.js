@@ -11,7 +11,7 @@
 // 修复（玩家选定方案 A）：护驾只在整张杀的第 1 段触发，追加段直接结算给护驾者；
 //   且护驾结算后按最新总段数重新计算追加段，不再沿用弹窗时的旧值。
 //
-// 断言：护驾只弹一次 / 追加段挂起 6 段 / 7 段全部结算给护驾者 /
+// 断言：护驾只弹一次 / 追加段走反应队列 / 7 段全部结算给护驾者 /
 //       奥菲莉亚全程未掉血 / 半魅魔血逐段触发 / 结束时无残留 / 无 JS 错误。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
@@ -169,8 +169,11 @@ run().then(res => {
     logs.some(l => l.includes("电钻火花") && l.includes("点数6")));
   check("2 护驾已触发且只弹一次（追加段不再护驾）",
     p.guardPrompts === 1, `实际=${p.guardPrompts}`);
-  check("3 护驾结算后追加段已挂起（修复前为 null/0）",
-    p.resumeAfterGuard === 6, `挂起=${p.resumeAfterGuard}`);
+  // 电钻火花改为「追加多段伤害」后，追加段走反应队列而非 remainingHits 挂起：
+  // 不再依赖 manualDodgeResume.remainingHits，故挂起值本就应为 null/未设置，
+  // 追加段是否结算改由断言 4（护驾者掉血段数）验证。
+  check("3 追加段走反应队列（不再依赖 remainingHits 挂起）",
+    p.resumeAfterGuard == null, `挂起=${p.resumeAfterGuard}`);
   check("4 追加段继续结算给护驾者（掉血 ≥5 段）",
     drops >= 5, `掉血段数=${drops} 轨迹=${JSON.stringify(hp)}`);
   check("5 奥菲莉亚全程未掉血（伤害全部转移给护驾者）",
