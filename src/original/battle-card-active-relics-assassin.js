@@ -24,7 +24,7 @@ window.BattleCardActiveRelicsAssassin = (deps, ctx, core) => {
         _entitySourceCard: picked, _entityConversion: true,
       });
       actor.hand.splice(idx, 1);
-      ctx.putMany(state, actor, [picked], "discard", { showDiscard: true });
+      ctx.putMany(state, actor, [picked], "discard");
       markUsed(actor, "usedSuccubusFork", card);
       log(state, `${actor.name} 发动魅魔钢叉，将一张${picked.suit}${picked.name}当【魅杀】使用且不消耗杀意。`);
       window.BattleLines?.skill(state, actor, "魅魔钢叉", target);
@@ -36,7 +36,7 @@ window.BattleCardActiveRelicsAssassin = (deps, ctx, core) => {
       _skill: true, _relicSkill: true, _skipHandMove: true,
       _entitySourceCard: chosen, _entityConversion: true,
     });
-    ctx.moveHand(state, actor, i, "discard", { showDiscard: true });
+    ctx.moveHand(state, actor, i, "discard");
     markUsed(actor, "usedSuccubusFork", card);
     log(state, `${actor.name} 发动魅魔钢叉，将一张${chosen.suit}${chosen.name}当【魅杀】使用且不消耗杀意。`);
     window.BattleLines?.skill(state, actor, "魅魔钢叉", target);
@@ -66,8 +66,8 @@ window.BattleCardActiveRelicsAssassin = (deps, ctx, core) => {
       _skill: true, _relicSkill: true, _skipHandMove: true,
       _entitySourceCard: source, _entityConversion: true,
     });
-    if (ok) ctx.moveHand(state, actor, i, "discard", { showDiscard: true });
-    else { actor.hand.splice(idx, 1); ctx.putMany(state, actor, [source], "discard", { showDiscard: true }); }
+    if (ok) ctx.moveHand(state, actor, i, "discard");
+    else { actor.hand.splice(idx, 1); ctx.putMany(state, actor, [source], "discard"); }
     markUsed(actor, "usedAssassinLatex", card);
     log(state, `${actor.name} 发动刺客胶衣，将一张${source.suit}${source.name}当【刺杀】使用且不消耗杀意。`);
     window.BattleLines?.skill(state, actor, "刺客胶衣", target);
