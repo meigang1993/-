@@ -6,8 +6,16 @@ window.DungeonMap = (() => {
   const rand = (min, max, state = window.state) => window.GameRandom.int(min, max, state);
   function makeNode(layer, col, type) { return { id: `n${layer}-${col}`, layer, col, type, enemies: null, next: [], done: false }; }
   function buildLayers(mission, diff, state = window.state) {
-    if (mission?.route?.type === "linear") return linearLayers(mission.route, diff, state);
-    if (mission?.route?.type === "fixed-random") return fixedRandomLayers(mission.route, diff, state);
+    const layers = mission?.route?.type === "linear" ? linearLayers(mission.route, diff, state)
+      : mission?.route?.type === "fixed-random" ? fixedRandomLayers(mission.route, diff, state)
+        : defaultLayers(diff, state);
+    // 新手保护：首次远征的第一个可选层固定为普通战斗，避免随机到精英、休整或宝箱。
+    if (window.Onboarding?.active?.(state) && Array.isArray(layers[1])) {
+      layers[1].forEach(n => { n.type = "normal"; n.enemies = null; });
+    }
+    return layers;
+  }
+  function defaultLayers(diff, state) {
     const layers = [[makeNode(1, 0, "start")]];
     for (let i = 2; i <= diff.layers; i++) layers.push(i === diff.layers ? [makeNode(i, 0, "boss")] : Array.from({ length: rand(3, 5, state) }, (_, c) => makeNode(i, c, pickNodeType(diff, state))));
     return layers;
@@ -57,7 +65,7 @@ window.DungeonMap = (() => {
     }
   }
   function currentNode(run) { repairLinks(run); return nodes(run).find(n => n.id === run.current); }
-  function nodes(run) { return run.layers.flat(); }
+  function nodes(run) { return Array.isArray(run?.layers) ? run.layers.flat() : []; }
   function canChoose(run, id) { return !run.pending && !run.rewardPopup && currentNode(run)?.next.includes(id) && !nodes(run).find(n => n.id === id)?.done; }
   function validType(type) { return ["start", "normal", "elite", "rest", "chest", "boss"].includes(type); }
   return { meta, makeNode, buildLayers, connect, nodes, canChoose, validType };
