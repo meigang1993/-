@@ -130,7 +130,8 @@ function bindActions() {
   }));
   document.querySelector("[data-manual-response]")?.addEventListener("change", e => { state.settings.manualResponse = e.target.checked; persistSettingsNow(); });
   document.querySelectorAll("[data-view]").forEach(b => b.onclick = () => setView(b.dataset.view));
-  document.querySelectorAll("[data-open-modal]").forEach(b => b.onclick = () => { state.hallModal = b.dataset.openModal; if (state.hallModal !== "skins") state.skinFilterChar = null; render(); });
+  document.querySelectorAll("[data-open-modal]").forEach(b => b.onclick = () => { state.hallModal = b.dataset.openModal; if (state.hallModal !== "skins") state.skinFilterChar = null; if (state.hallModal === "team") window.Onboarding?.advance?.(state, "prep"); render(); });
+  document.querySelectorAll("[data-onboarding-skip]").forEach(b => b.onclick = () => { window.Onboarding?.skip?.(state); render(); persist?.({ flush: true })?.catch?.(() => {}); });
   document.querySelector("[data-close-modal]")?.addEventListener("click", closeHallModal);
   document.querySelector(".villa-modal")?.addEventListener("click", e => { if (e.button !== 0 || e.target !== e.currentTarget || !["bounty", "updates"].includes(state.hallModal)) return; e.preventDefault(); closeHallModal(); });
   document.querySelectorAll("[data-art-src]").forEach(el => el.onclick = e => { if (!el.closest(".info-art") && !el.closest(".active-portrait-shell") && !el.closest(".skin-preview")) return; e.stopPropagation(); state.artZoom = { src: el.dataset.artSrc, name: el.dataset.artName }; render(); });
