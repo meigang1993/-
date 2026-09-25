@@ -22,9 +22,12 @@ window.VillaUI = (() => {
     return `<aside class="villa-actions"${blocked}><button data-open-modal="relics"><span>饰品库</span><small>库存与装备</small></button><button data-open-modal="shop"><span>商店</span><small>购买与删牌</small></button><button data-open-modal="deck"><span>牌库</span><small>卡牌收藏</small></button><button data-open-modal="bounty"><span>任务</span><small>悬赏与目标</small></button><button data-save-game="1"><span>存档</span><small>保存当前进度</small></button></aside>`;
   }
   function hallMainActions(state) {
-    const first = !state.flags?.firstExpeditionStarted;
-    const objective = first ? `<div class="hall-first-objective" role="status"><span>首次目标</span><b>前往魔国机械工厂</b><small>初始队伍已就绪</small></div>` : "";
-    return `${objective}<div class="hall-main-actions"><button class="primary" data-open-modal="team">${first ? "开始首次远征" : "准备启程"}</button></div>`;
+    const O = window.Onboarding;
+    const first = !!O?.at?.(state, "hall");
+    if (!first) return `<div class="hall-main-actions"><button class="primary" data-open-modal="team">准备启程</button></div>`;
+    const copy = O.COPY.hall;
+    const objective = `<div class="hall-first-objective" role="status"><span>${copy.title}</span><b>${copy.target}</b><small>${copy.sub}</small><button class="ghost" data-onboarding-skip="1">跳过引导</button></div>`;
+    return `${objective}<div class="hall-main-actions"><button class="primary" data-open-modal="team">开始首次远征</button></div>`;
   }
   function modal(state) {
     if (!state.hallModal) return "";
