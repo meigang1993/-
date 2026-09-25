@@ -11,7 +11,7 @@ window.GameUIHandView = (() => {
       : "";
     const skipTag = actor.skipPlayPhase
       ? `<span class="tag hand-skip-tag">${U.esc(actor.skipPlayReason || "状态牌")}：本回合无法使用牌</span>` : "";
-    return `<div class="hand-panel ${battle.locked && !modes.transferLocked ? "locked" : ""}${actor.skipPlayPhase ? " play-locked" : ""}"><div class="hand-head"><b>${U.esc(actor.name)} 的手牌</b><span class="tag">${phaseLabel(context)}</span>${skipTag}<span class="tag">杀意 ${actor.intent || 0}/${intentMax}</span>${charge}${controls}</div><div class="hand-body ${skillLine ? "has-skills" : ""}">${skillLine}${handWrap}</div></div>`;
+    return `<div class="hand-panel ${battle.locked && !modes.transferLocked ? "locked" : ""}${actor.skipPlayPhase ? " play-locked" : ""}"><div class="hand-head"><b>${U.esc(actor.name)} 的手牌</b><span class="tag">${phaseLabel(context)}</span>${skipTag}<span class="tag">杀意 ${actor.intent || 0}/${intentMax}</span>${charge}${controls}</div>${window.Onboarding?.battleHint?.(context) || ""}<div class="hand-body ${skillLine ? "has-skills" : ""}">${skillLine}${handWrap}</div></div>`;
   }
 
   function renderControls(context, U) {
