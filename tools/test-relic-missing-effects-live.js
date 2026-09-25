@@ -99,26 +99,55 @@ const peekTpl = `(() => {
     200 - pink2.foeHp > 0 && (pink2.foeHand || []).some(n => /闪/.test(n)),
     { loss: 200 - pink2.foeHp, foeHand: pink2.foeHand, logs: pink2.logs.slice(0, 5) });
 
-  // ===== 冰心双刺剑：单体杀转为不消耗杀意的【刺杀】 =====
-  // 对照：不装备时打出杀消耗杀意
-  await page.evaluate(setupTpl([], [], []));
-  const beforeBase = await page.evaluate(peekTpl);
-  await page.evaluate(playTpl);
-  await page.waitForTimeout(900);
-  const base3 = await page.evaluate(peekTpl);
-  const baseIntentCost = beforeBase.allyIntent - base3.allyIntent;
-  console.log(`[对照] 无饰品打出杀，杀意消耗 ${baseIntentCost}`);
+  // ===== 冰心双刺剑：摸到的实体单体杀转为不消耗杀意的【刺杀】 =====
+  // 描述限定「你摸到的实体单体【杀】牌」才转换，转换发生在 afterDraw 钩子里。
+  // 因此必须走真实摸牌路径（BattleSystem.draw）；把手牌直接塞进 hand 不会
+  // 触发 afterDraw，测的是"打出未转换的杀"，与描述口径不符。
+  const drawKillTpl = (relics) => `(() => {
+    const st = window.state, b = st.battle;
+    const a = b.allies[0];
+    b.activeUid = a.uid; b.phase = 4; b.locked = false; b.animQueue = [];
+    a.intent = 5; a.hp = 200; a.maxHp = 200;
+    a.battleRelics = ${JSON.stringify(relics || [])};
+    a.deck = [{ name: "杀", type: "slash", suit: "♠", scale: "attack" }];
+    a.discard = []; a.hand = [];
+    st.log = [];
+    window.BattleSystem.draw(a, 1, b);
+    window.render();
+    return {
+      hand: a.hand.map(c => c.name + (c.noIntentCost ? "[免杀意]" : "")),
+      names: a.hand.map(c => c.name),
+      logs: (st.log || []).slice(0, 8).map(String),
+    };
+  })()`;
 
-  await page.evaluate(setupTpl(["冰心双刺剑"], [], []));
-  const beforeIce = await page.evaluate(peekTpl);
-  await page.evaluate(playTpl);
+  const noRelic = await page.evaluate(drawKillTpl([]));
+  console.log(`[对照] 无饰品摸到实体单体杀，手牌 ${JSON.stringify(noRelic.hand)}`);
+  T("对照：无饰品时摸到的实体单体【杀】保持为【杀】",
+    noRelic.hand.some(n => n.startsWith("杀")), noRelic);
+
+  const withIce = await page.evaluate(drawKillTpl(["冰心双刺剑"]));
+  console.log(`[冰心双刺剑] 摸到实体单体杀后手牌 ${JSON.stringify(withIce.hand)}，日志 ${JSON.stringify((withIce.logs || []).slice(0, 2))}`);
+  T("冰心双刺剑：摸到的实体单体【杀】转换为【刺杀】且不消耗杀意",
+    withIce.hand.some(n => n.startsWith("刺杀") && n.includes("[免杀意]")), withIce);
+
+  // ===== 打出转换后的刺杀：确认不消耗杀意 =====
+  const icePlay = await page.evaluate(`(() => {
+    const st = window.state, b = st.battle;
+    const a = b.allies[0], e = b.enemies[${FOE}];
+    b.activeUid = a.uid; b.phase = 4; b.locked = false;
+    e.hp = 200; e.block = 0; e.hand = [];
+    const before = a.intent;
+    const idx = a.hand.findIndex(c => c.name === "刺杀");
+    if (idx < 0) return { ok: false, before, after: before, reason: "手牌中没有刺杀" };
+    const ok = window.BattleSystem.playActiveCard(st, idx, e.uid);
+    return { ok, before, after: a.intent, foeHp: e.hp };
+  })()`);
   await page.waitForTimeout(900);
-  const ice = await page.evaluate(peekTpl);
-  const iceIntentCost = beforeIce.allyIntent - ice.allyIntent;
-  console.log(`[冰心双刺剑] 打出杀，杀意消耗 ${iceIntentCost}，日志: ${(ice.logs || []).slice(0, 4).join(" / ")}`);
-  T("冰心双刺剑：单体杀不消耗杀意（已转为刺杀）",
-    baseIntentCost > 0 && iceIntentCost === 0,
-    { baseIntentCost, iceIntentCost, logs: ice.logs.slice(0, 6) });
+  const icePlayCost = (icePlay.before ?? 0) - (icePlay.after ?? 0);
+  console.log(`[冰心双刺剑] 打出刺杀 杀意 ${icePlay.before}→${icePlay.after}（消耗 ${icePlayCost}）`);
+  T("冰心双刺剑：转换后的【刺杀】打出不消耗杀意",
+    icePlay.ok === true && icePlayCost === 0, icePlay);
 
   await page.close();
   await browser.close();
