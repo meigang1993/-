@@ -27,10 +27,8 @@ window.BattleManualHitResume = ({
       }
       pending.remainingHits = Math.max(0, (pending.remainingHits || 0) - 1);
       const hitCard = { ...pending.card };
-      // 电钻火花追加段：整张杀仍属同一次攻击，反击只应在第 1 段触发。
-      // 护驾/交牌打断后追加段走本恢复流程而非 hitTarget 循环，需沿用同一标记，
-      // 否则贝尔蒂丝一格洛特等反击会在护驾场景下逐段触发（骰子6 → 7 次反击）。
-      if (pending.card?._dragonDrillApplied) hitCard._drillExtraHit = true;
+      // 电钻火花已改为「追加多段伤害」（不再增加结算次数），护驾/交牌打断后
+      // 不存在需要恢复的追加段，故不再按 _dragonDrillApplied 置位额外段标记。
       const result = combat.damage(
         state, target, pending.amount, pending.source, actor, hitCard);
       combat.recordDeferredHit?.(
