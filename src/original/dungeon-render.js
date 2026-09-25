@@ -19,7 +19,8 @@ window.DungeonRender = (() => {
     });
     (r.cards || []).forEach(c => items.push(`<li><span>卡牌</span><b class="reward-name" title="${esc(c.text || "")}">${esc(c.name)} ${esc(c.suit)}</b></li>`));
     (r.relics || []).forEach(name => items.push(`<li><span>饰品</span><b class="reward-name">${window.UICommon?.relicLabel?.(name) || esc(name)}</b></li>`));
-    return `<div class="reward-popup pink-settle"><div class="reward-card"><h2>${title}</h2><ul>${items.join("")}</ul><button data-reward-confirm="1">确认</button></div></div>`;
+    const O = window.Onboarding, tip = O?.active?.(window.state) ? `<p class="onboarding-tip" role="status">${O.COPY.reward}</p>` : "";
+    return `<div class="reward-popup pink-settle"><div class="reward-card"><h2>${title}</h2><ul>${items.join("")}</ul>${tip}<button data-reward-confirm="1">确认</button></div></div>`;
   }
   function render(state) {
     const run = state.explore, diff = GameData.difficulties[run.difficultyId], mission = GameData.missions.find(m => m.id === run.missionId);
@@ -50,8 +51,9 @@ window.DungeonRender = (() => {
     const [icon, fallback] = window.DungeonMap.meta[n.type], cur = run.current === n.id, open = window.DungeonMap.canChoose(run, n.id), done = n.done;
     const baseLabel = done ? "已完成" : nodeLabel(n, fallback), label = `第${n.layer}层 · ${baseLabel}`;
     const blocked = !cur && !open && !done;
+    const recommend = !!window.Onboarding?.active?.(window.state) && n.layer === 2 && !done && (cur || open);
     const accent = n.type === "boss" ? window.DungeonIcons.render("crown", "node-accent boss-crown") : '<span class="node-accent"></span>';
-    return `<button class="map-node ${n.type} ${n.bounty ? "bounty-target" : ""} ${cur ? "current" : ""} ${open ? "open" : ""} ${done ? "done" : ""} ${blocked ? "blocked" : ""}" data-dungeon-node="${n.id}" title="${esc(n.bounty?.title || label)}" aria-label="${esc(label)}" ${cur ? 'aria-current="step"' : ""} ${open ? "" : "disabled"}>${n.bounty ? `<i>任务</i>` : ""}<span class="node-icon" aria-hidden="true">${window.DungeonIcons.render(icon)}${accent}</span><span class="node-label">${esc(label)}</span></button>`;
+    return `<button class="map-node ${n.type} ${n.bounty ? "bounty-target" : ""} ${recommend ? "onboarding-recommend" : ""} ${cur ? "current" : ""} ${open ? "open" : ""} ${done ? "done" : ""} ${blocked ? "blocked" : ""}" data-dungeon-node="${n.id}" title="${esc(n.bounty?.title || label)}" aria-label="${esc(label)}" ${cur ? 'aria-current="step"' : ""} ${open ? "" : "disabled"}>${n.bounty ? `<i>任务</i>` : recommend ? `<i>推荐</i>` : ""}<span class="node-icon" aria-hidden="true">${window.DungeonIcons.render(icon)}${accent}</span><span class="node-label">${esc(label)}</span></button>`;
   }
   function nodeLabel(n, fallback) {
     if (n.type === "normal") return "战斗";
