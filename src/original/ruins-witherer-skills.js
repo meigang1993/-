@@ -18,7 +18,7 @@ window.RuinsWithererSkills = (() => {
   // 不带 virtual，本质是实体牌，因此额外标了 _entityConversion，此处视为实体牌。
   // 不能靠删掉 _skill 来实现：_skill 同时被伤害加成计算（battle-combat-attack-values.js）
   // 等多个位置依赖，删除会改变伤害值。
-  // 已标注：魅魔钢叉、鬼王扑克。未标注：刺客胶衣（改造未完成，暂按技能效果处理）。
+  // 已标注：魅魔钢叉、鬼王扑克、刺客胶衣（三件 convertAs 饰品口径统一）。
   const isEntityCard = card => !!card && card?.type !== "skill"
     && !card.generatedBySkill && !card.virtual
     && (!card._skill || !!card._entityConversion);
