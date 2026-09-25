@@ -5,6 +5,8 @@ window.RuinsDragonSkills = (() => {
     + (key === "attack" ? unit.tempAttack || 0 : 0);
   const log = (state, text) => window.BattleLog?.add?.(state, text);
   const suits = ["♥", "♦", "♠", "♣"];
+  // 死亡音波的实现拆分到 ruins-dragon-deathwave.js（主文件 200 行硬约束）。
+  const DW = new Proxy({}, { get: (_, key) => window.RuinsDragonDeathWave?.[key] });
 
   function prepare(state, unit) {
     if (unit?.ai !== "ruins_dragon") return;
@@ -16,26 +18,52 @@ window.RuinsDragonSkills = (() => {
   }
 
   // 电钻火花：描述为「你使用单体【杀】牌造成伤害时」——须在真正造成生命值伤害之后
-  // 才摇骰追加结算次数。此前挂在 beforeKillUsed（出牌时、结算之前），被【闪】抵消
+  // 才摇骰追加。此前挂在 beforeKillUsed（出牌时、结算之前），被【闪】抵消
   // 时次数也已追加，与描述不符。
-  function dragonDrill(state, actor, card) {
+  // 追加形式由「增加杀的结算次数」改为「追加多段伤害」（与卡洛斯疯狂刺刀一致）：
+  // 增加 gatlingRepeats 会把整张杀重跑一遍（每段都重新走一次完整出牌结算），
+  // 现改为按骰子点数直接追加等量攻击力伤害段。
+  function dragonDrill(state, actor, target, card, directDamage) {
     if (!window.CardUtils?.isSingleKill?.(card) && !card?.dragonDrill) return;
     if (card._dragonDrillApplied) return;
     card._dragonDrillApplied = true;
     const roll = window.GameRandom?.int?.(1, 6, state) || 3;
-    card.gatlingRepeats = (card.gatlingRepeats || 1) + roll;
     state.battle?.animQueue?.push({
       type: "dice", id: window.GameRandom?.id?.("dr") || "dr",
       value: roll, skill: "电钻火花", uid: actor.uid,
     });
     window.BattleLines?.skill?.(state, actor, "电钻火花");
-    log(state, `${actor.name} 发动电钻火花，骰子点数${roll}，本次杀额外结算${roll}次。`);
+    log(state,
+      `${actor.name} 发动电钻火花，骰子点数${roll}，追加${roll}次攻击力伤害。`);
+    if (!directDamage || !target) return;
+    const amount = Math.max(0, stat(actor, "attack"));
+    // 追加段沿用 _drillExtraHit：整张杀仍属同一次攻击，反击只应在第一段触发，
+    // 否则骰子点数会线性放大反击次数。
+    const extraCard = {
+      name: "电钻火花", type: "skill", _drillExtraHit: true,
+      ignoreResponse: true, skipDamageModify: true,
+    };
+    // 优先排入反应队列：交牌/护驾等弹窗期间 battle.locked 为真，
+    // 直接调 directDamage 会被 locked 分支整段吞掉（返回 hpLoss 0）。
+    // 队列在解锁后才 flush，追加段因此不会丢失。
+    const actions = [];
+    for (let index = 0; index < roll; index += 1) {
+      const action = window.BattleReactionQueue?.directDamageAction?.(
+        actor, target, amount, "电钻火花", { ...extraCard }, 120 * index);
+      if (action) actions.push(action);
+    }
+    if (actions.length
+      && window.BattleReactionQueue?.enqueue?.(state, actions)) return;
+    for (let index = 0; index < roll && target.hp > 0; index += 1) {
+      directDamage(
+        state, target, amount, "电钻火花", actor, 120 * index, extraCard);
+    }
   }
 
-  function afterDamage(state, actor, target, card, hpLoss, damage) {
+  function afterDamage(state, actor, target, card, hpLoss, damage, directDamage = null) {
     if (!actor || !hpLoss) return;
     if (actor.ai === "ruins_dragon") {
-      dragonDrill(state, actor, card);
+      dragonDrill(state, actor, target, card, directDamage);
       return;
     }
     const dragon = (state.battle?.enemies || []).find(unit => unit.ai === "ruins_dragon" && unit.hp > 0);
@@ -56,16 +84,22 @@ window.RuinsDragonSkills = (() => {
     const targets = alive(state.battle.allies);
     if (!targets.length) return;
     const amount = stat(dragon, "attack");
+    // 描述为「视为使用一张虚拟【机枪扫杀】」，且该虚拟牌可被【闪】响应：
+    // 真正的【机枪扫杀】靠 responseKind:"dodge" 才进响应判定，手搓牌若只有
+    // type:"skill" 既不是杀牌也没有 responseKind，needsResponse 恒为 false，
+    // 去掉 ignoreResponse 也依然无法被响应。故补上 responseKind。
     const card = {
-      name: "机尾机枪", type: "skill", sweep: true, ignoreResponse: true,
+      name: "机尾机枪", type: "skill", sweep: true,
+      responseKind: "dodge",
       skipDamageModify: true, magicDamage: false,
     };
     let dealt = 0;
     window.BattleLines?.skill?.(state, dragon, "机尾机枪");
     targets.forEach(target => {
-      const before = target.hp;
-      damage(state, target, amount, "机尾机枪", dragon, { ...card });
-      dealt += Math.max(0, before - target.hp);
+      // 护甲按「对每名角色造成的伤害量」累加：直接用 damage 返回的 hpLoss，
+      // 被【闪】响应时为 0，不会误给护甲。
+      const result = damage(state, target, amount, "机尾机枪", dragon, { ...card });
+      dealt += Math.max(0, result?.hpLoss || 0);
     });
     if (dealt > 0) {
       dragon.block = (dragon.block || 0) + dealt;
@@ -76,59 +110,10 @@ window.RuinsDragonSkills = (() => {
 
   function endTurn(state, unit) {
     if (unit?.ai !== "ruins_dragon") {
-      checkDeathWave(state, unit);
+      DW.checkDeathWave?.(state, unit);
       return;
     }
-    recordDeathWave(state, unit);
-  }
-
-  // 兼容旧存档字段 ruinsDeathWaveSuit（单花色）
-  const recordedSuits = unit => (Array.isArray(unit?.ruinsDeathWaveSuits)
-    ? unit.ruinsDeathWaveSuits.filter(suit => suits.includes(suit))
-    : (suits.includes(unit?.ruinsDeathWaveSuit) ? [unit.ruinsDeathWaveSuit] : []));
-
-  function recordDeathWave(state, dragon) {
-    const counts = { "♥": 0, "♦": 0, "♠": 0, "♣": 0 };
-    visible(dragon).forEach(card => { if (counts[card.suit] != null) counts[card.suit] += 1; });
-    // 「记录手中1-3张牌的花色」：按手中张数从多到少取前3种花色，去重后不足3种则按实际数量。
-    const picked = suits
-      .filter(suit => counts[suit] > 0)
-      .sort((left, right) => counts[right] - counts[left]
-        || suits.indexOf(left) - suits.indexOf(right))
-      .slice(0, 3);
-    dragon.ruinsDeathWaveSuits = picked;
-    dragon.ruinsDeathWaveSuit = null;
-    if (!picked.length) return;
-    window.BattleLines?.skill?.(state, dragon, "死亡音波");
-    log(state, `${dragon.name} 发动死亡音波，记录${picked.join("、")}花色。`);
-    state.battle?.animQueue?.push({
-      type: "statusMark", id: window.GameRandom?.id?.("dw") || "dw",
-      uid: dragon.uid, mark: picked.join(""), skill: "死亡音波",
-    });
-  }
-
-  function checkDeathWave(state, unit) {
-    if (!unit || unit.side !== "ally") return;
-    const dragon = (state.battle?.enemies || []).find(enemy =>
-      enemy.ai === "ruins_dragon" && enemy.hp > 0 && recordedSuits(enemy).length);
-    if (!dragon) return;
-    const recorded = recordedSuits(dragon);
-    const used = unit.suitsUsedThisTurn || {};
-    // 「未能使用你记录的花色」：记录的花色里只要有没用上的，回合结束就受伤一次。
-    const missing = recorded.filter(suit => !used[suit]);
-    // 「未能使用你记录的花色」：用上记录的任一花色即视为已使用，不触发伤害；
-    // 仅当记录的花色全部未使用时才受伤。此前实现为「任一未使用即受伤」，记录 1-3 种
-    // 花色时，用掉其中一种仍会挨打，与描述不符（实战用例 C 复现）。
-    if (missing.length < recorded.length) return;
-    const amount = stat(dragon, "attack");
-    const before = unit.hp;
-    unit.hp = Math.max(0, unit.hp - amount);
-    const loss = before - unit.hp;
-    if (loss > 0) {
-      window.BattleSystem?.pushFloat?.(state.battle, unit.uid, "hp-loss", loss);
-      window.BattleLines?.skill?.(state, dragon, "死亡音波", unit);
-      log(state, `${unit.name} 未使用${missing.join("、")}花色，受到死亡音波${amount}点伤害。`);
-    }
+    DW.recordDeathWave?.(state, unit);
   }
 
   function beforeCardPlayed(state, actor, card) {
@@ -166,6 +151,7 @@ window.RuinsDragonSkills = (() => {
 
   return {
     prepare, afterDamage, endTurn,
-    beforeCardPlayed, allyTurnStart, aiMove, recordedSuits,
+    beforeCardPlayed, allyTurnStart, aiMove,
+    recordedSuits: unit => DW.recordedSuits?.(unit) || [],
   };
 })();
