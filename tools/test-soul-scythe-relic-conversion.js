@@ -3,6 +3,8 @@
 //         该判定不看 _skill，也不看 _entityConversion。
 //   而外神之眼用 isEntityCard（!virtual && (!_skill || _entityConversion)）。
 //   两套判定口径不同，需实测饰品转换牌在锁魂镰刀下的真实行为是否与其他技能一致。
+//   债务 2（2026-09-25 处理）：三件 convertAs 饰品均已标 _entityConversion，
+//   两套判定对同一张牌结论一致，此前「刺客胶衣」的反向冲突已消除。
 //   造牌参数与 src/original/battle-card-active-relics-assassin.js 源码一字不差。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
@@ -70,19 +72,22 @@ const RUN = (expr) => `(() => {
   check("魅魔钢叉产物：触发锁魂镰刀（第二名敌人掉血）",
     fork.hits === 2 && fork.e2 < 30, fork);
 
-  // --- 2. 刺客胶衣产物（源码参数一致，未标 _entityConversion）---
+  // --- 2. 刺客胶衣产物（源码参数一致，已标 _entityConversion）---
   const latex = await page.evaluate(RUN(`window.CardUtils.convertAs("刺杀", source, {
       type: "slash", ignoreResponse: true, scale: "attack", noIntentCost: true,
       _skill: true, _relicSkill: true, _skipHandMove: true,
-      _entitySourceCard: source })`));
+      _entitySourceCard: source, _entityConversion: true })`));
   console.log("刺客胶衣产物:", JSON.stringify(latex.card));
   check("刺客胶衣产物：不带 virtual（按 isEntitySingleKill 算实体）",
     latex.card.virtual === false, latex.card);
-  // 记录实际行为：锁魂镰刀不看 _skill，因此即便外神之眼不认它，锁魂镰刀仍会触发。
+  // 债务 2 补齐标记后：外神之眼口径（isEntityCard）与锁魂镰刀口径
+  // （isEntitySingleKill）统一为「都算实体牌」，口径冲突消除。
+  check("刺客胶衣产物：已标 _entityConversion（与钢叉/扑克口径统一）",
+    latex.card._entityConversion === true, latex.card);
   console.log(`   ↳ 实测锁魂镰刀 hits=${latex.hits} e2=${latex.e2}`
     + ` isEntitySingleKill=${latex.isEntitySingleKill}`);
-  check("刺客胶衣产物：锁魂镰刀实测行为已记录（口径差异，非断言失败）",
-    typeof latex.hits === "number", latex);
+  check("刺客胶衣产物：触发锁魂镰刀（与外神之眼口径一致，冲突消除）",
+    latex.hits === 2 && latex.e2 < 30, latex);
 
   // --- 3. 鬼王扑克产物（战术牌，不是杀）---
   const poker = await page.evaluate(RUN(`window.CardUtils.convertAs("魔法对决", source, {
