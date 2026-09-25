@@ -192,3 +192,7 @@ body.start-mode .main-grid { grid-template-columns: 1fr; }
   html { scroll-behavior: auto; }
   .gear-panel img, .scan-line { animation: none !important; }
 }
+
+.onboarding-tip { margin: 6px 0; padding: 6px 10px; border-radius: 8px; background: rgba(255, 214, 232, .16); border: 1px solid rgba(255, 138, 190, .38); color: #ffd9ec; font-size: 13px; line-height: 1.5; }
+.map-node.onboarding-recommend { box-shadow: 0 0 0 2px rgba(255, 196, 0, .85), 0 0 14px rgba(255, 196, 0, .45); }
+.map-node.onboarding-recommend .node-label { color: #ffe08a; }
