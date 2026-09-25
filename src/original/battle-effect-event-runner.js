@@ -99,6 +99,9 @@ window.BattleEffectEventRunner = handlers => {
         renderStep, active);
     } else if (event.type === "virtualPlay") {
       await handlers.virtualPlay(state, event, renderStep, active);
+      // 决斗的杀等虚拟牌把入 played 的时机挂在 commit 上，动画播完才补进
+      // 出牌区，避免同步循环导致整轮一次性显示。
+      if (active()) { event.commit?.(); renderStep(); }
     } else if (event.type === "clash") {
       await handlers.clash(state, event, renderStep, active);
     } else if (event.type === "judgement") {
