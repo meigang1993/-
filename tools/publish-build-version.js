@@ -156,10 +156,14 @@ function assertRepositoryPublishVersion(root, outputs, currentIndex) {
     currentResources[relative] = fs.readFileSync(path.join(publish, relative));
   }
   const head = headBlobSha1s(root);
-  // index.html 承载构建版本号，单独用 buildVersion 比对；它不在 currentResources 内，
-  // 若混进资源比对集会因工作区版本已前进而被恒判为「已变更」。
+  // 只对「带版本号缓存」的资源做比对：bundles/*.min.js 与 *.css（与 currentResources 同一命名空间）。
+  // publish 下还有 assets/**、bundles/*.min.js.map 等未纳入 currentResources 的内容文件，
+  // 若把它们并入比对集，current 恒为 null 而 head 有 sha，会被永久误判为「已变更」。
+  const versionedResource = relative =>
+    relative !== "index.html" &&
+    (/^bundles\/[^/]+\.min\.js$/.test(relative) || relative.endsWith(".css"));
   const names = [...new Set([...Object.keys(currentResources), ...head.keys()])]
-    .filter(relative => relative !== "index.html");
+    .filter(versionedResource);
   // 先按 blob 哈希判断是否真有资源变化；没有变化就不必读取任何 HEAD 内容。
   const changed = names.filter(relative => {
     const current = Object.hasOwn(currentResources, relative)
