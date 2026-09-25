@@ -34,10 +34,16 @@ window.BattleDamageTriggers = (api) => {
     return source;
   }
   function afterDamage(state, actor, target, card, hpLoss, blockLoss, cardUser = actor) {
-    window.EnemySkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, cardUser);
+    // directDamage 一并提供：电钻火花改为「追加多段伤害」而非增加结算次数，
+    // 需要直接发伤害的接口。
+    window.EnemySkills?.afterDamage?.(
+      state, actor, target, card, hpLoss, damage, cardUser, directDamage);
     window.SakuraRisaSkills?.afterDamage?.(state, target, hpLoss, deps.draw);
     window.MannySkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, directDamage);
-    window.FloraCarlosSkills?.afterSlashDamage?.(state, actor, target, card, hpLoss, { damage, directDamage });
+    // blockLoss 一并提供：疯狂刺刀改为「造成生命值或护甲值伤害」即触发，
+    // 全额被护甲吸收时 hpLoss 为 0，只看 hpLoss 会漏触发。
+    window.FloraCarlosSkills?.afterSlashDamage?.(
+      state, actor, target, card, hpLoss, { damage, directDamage, blockLoss });
     window.EdisSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, blockLoss);
     // 电钻火花追加段（_drillExtraHit）不触发反击：连击多段属同一次攻击，
     // 反击只在第一段入队，否则骰子点数会线性放大反击次数。
