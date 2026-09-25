@@ -42,6 +42,7 @@ window.DungeonNodeRewards = (() => {
         ? `、精华宝珠${run.lastReward.essence}` : ""}${run.activeParty?.length
         ? "。" : "，全员被击倒。"}`);
       run.rewardPopup = { ...run.lastReward };
+      window.Onboarding?.advance?.(state, "reward");
       completeNode(state);
       window.BattleFX?.leave?.(state);
       state.battle = null;
