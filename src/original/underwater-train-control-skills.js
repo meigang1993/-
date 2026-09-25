@@ -47,8 +47,10 @@ window.UnderwaterTrainControlSkills = (shared) => {
       const i = holder.hand.findIndex(c => c.name === "杀（普攻）" && !c._pendingDraw);
       if (i < 0) break;
       const slash = holder.hand.splice(i, 1)[0]; window.BattleCards?.put(state.battle, holder, slash, "discard", { skipAnim: true });
-      state.battle.animQueue?.push({ type: "virtualPlay", id: window.GameRandom.id("ce"), uid: holder.uid, side: holder.side, targetUid: other.uid, card: slash, enemyLine: false, slashText: true });
-      slash._playedByName = holder.name; slash._playedAction = "打出了"; state.battle.played.unshift({ ...slash });
+      // 与 showDuelSlash 同款：入出牌区的时机挂到动画 commit，避免一次性显示。
+      const duelBattle = state.battle;
+      state.battle.animQueue?.push({ type: "virtualPlay", id: window.GameRandom.id("ce"), uid: holder.uid, side: holder.side, targetUid: other.uid, card: slash, enemyLine: false, slashText: true, commit: () => { if (state.battle !== duelBattle) return; (duelBattle.played ||= []).unshift({ ...slash }); } });
+      slash._playedByName = holder.name; slash._playedAction = "打出了";
       window.BattleLog.add(state, `${holder.name} 在控神魔眼决斗中打出${slash.suit || ""}${slash.name}。`);
       count += 1; last = holder; [holder, other] = [other, holder];
     }
