@@ -15,12 +15,13 @@ window.RuinsEnemySkills = (() => {
     elite?.prepare?.(state, unit, damage);
   }
 
-  function endTurn(state, unit) {
+  // damage 透传：潜影背刺已改到结束阶段发动，需要真实的伤害结算函数。
+  function endTurn(state, unit, damage) {
     if (!isRuins(unit) && unit?.side !== "ally") return;
     grunt?.endTurn?.(state, unit);
     dragon?.endTurn?.(state, unit);
     witherer?.endTurn?.(state, unit);
-    elite?.endTurn?.(state, unit);
+    elite?.endTurn?.(state, unit, damage);
   }
 
   function beforeKillUsed(state, actor, card) {
@@ -35,6 +36,11 @@ window.RuinsEnemySkills = (() => {
     elite?.beforeKillTargeted?.(state, actor, target, card);
   }
 
+  // 供目标选择环节调用：某些敌人（如隐身中的希尔德）不可被指定为单体【杀】的目标。
+  function blocksKillTarget(target, card) {
+    return !!elite?.blocksKillTarget?.(target, card);
+  }
+
   function modifyDamage(state, target, amount, card) {
     let result = amount;
     if (isRuins(target)) {
@@ -43,10 +49,10 @@ window.RuinsEnemySkills = (() => {
     return result;
   }
 
-  function afterDamage(state, actor, target, card, hpLoss, damage) {
+  function afterDamage(state, actor, target, card, hpLoss, damage, directDamage = null) {
     grunt?.afterDamage?.(state, actor, target, card, hpLoss);
     if (isRuins(actor) || isRuins(target)) {
-      dragon?.afterDamage?.(state, actor, target, card, hpLoss, damage);
+      dragon?.afterDamage?.(state, actor, target, card, hpLoss, damage, directDamage);
       witherer?.afterDamage?.(state, actor, target, card, hpLoss, damage);
     }
   }
@@ -70,7 +76,6 @@ window.RuinsEnemySkills = (() => {
       () => grunt?.sniperMove?.(state, actor),
       () => grunt?.tankMove?.(state, actor),
       () => grunt?.landmineRpsMove?.(state, actor),
-      () => elite?.backstabMove?.(state, actor),
       () => elite?.helicopterMove?.(state, actor),
       () => elite?.carrierRamMove?.(state, actor),
       () => dragon?.aiMove?.(state, actor),
@@ -98,7 +103,6 @@ window.RuinsEnemySkills = (() => {
     if (card?.ruinsSnipe) return runUse(() => grunt?.useSnipe?.(state, actor, target));
     if (card?.ruinsTankShell) return runUse(() => grunt?.useTankShell?.(state, actor));
     if (card?.ruinsLandmineRps) return runUse(() => grunt?.useLandmineRps?.(state, actor));
-    if (card?.ruinsBackstab) return runUse(() => elite?.useBackstab?.(state, actor, target, damage));
     return false;
   }
 
@@ -113,7 +117,7 @@ window.RuinsEnemySkills = (() => {
   }
 
   return {
-    prepare, endTurn, beforeKillUsed, beforeKillTargeted, modifyDamage,
+    prepare, endTurn, beforeKillUsed, beforeKillTargeted, blocksKillTarget, modifyDamage,
     afterDamage, afterDodged, beforeCardPlayed, allyTurnStart,
     aiMove, useSkillCard, isSkillBlocked, battleStart,
     landmineRps: {
