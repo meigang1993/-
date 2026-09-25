@@ -85,6 +85,8 @@ const standalone = Object.freeze([
   "test-orc-cards-rest-live.js",
   "test-ai-underwater-cards.js",
   "test-hover-tools-landmine-live.js",
+  "test-onboarding-flow-live.js",
+  "test-onboarding-robustness-live.js",
 ]);
 
 const groups = Object.freeze({
