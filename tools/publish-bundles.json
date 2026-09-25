@@ -44,6 +44,7 @@
     "battle-save-checkpoint.js",
     "store-unlock-recovery.js",
     "store-unlock-migrations.js",
+    "onboarding.js",
     "store-state-factory.js",
     "store-save-schema.js",
     "store-bounty-repairs.js",
