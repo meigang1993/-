@@ -107,5 +107,37 @@ const mkDragon = () => ({
   check("B4 追加段不再触发贝尔蒂丝反击", calls.bertis === 1, `bertis=${calls.bertis}（应为1）`);
 }
 
+// ---------- 场景C：电钻火花改为「追加多段伤害」而非追加使用杀 ----------
+{
+  const dragon = mkDragon();
+  const target = { uid: "a1", name: "目标", side: "ally", hp: 400 };
+  const state = {
+    battle: {
+      allies: [target], enemies: [dragon], animQueue: [], reactionQueue: [],
+    },
+    log: [],
+  };
+  const card = { name: "杀", type: "slash", suit: "\u2660" };
+  let dmgCalls = 0;
+  const directDamage = () => { dmgCalls += 1; return { hpLoss: 13 }; };
+  const queued = () => (state.battle.reactionQueue || [])
+    .filter(a => a && a.kind === "directDamage").length;
+  window.RuinsDragonSkills.afterDamage(
+    state, dragon, target, card, 5, () => ({}), directDamage);
+  const total1 = queued() + dmgCalls;
+  check("C1 电钻火花不再增加结算次数（不是追加使用杀）",
+    card.gatlingRepeats == null, `gatlingRepeats=${card.gatlingRepeats}`);
+  check("C2 追加段按骰子点数发放伤害段（入队或直接发放）",
+    total1 >= 1, `队列=${queued()} 直发=${dmgCalls} 合计=${total1}`);
+  window.RuinsDragonSkills.afterDamage(
+    state, dragon, target, card, 5, () => ({}), directDamage);
+  check("C3 同一张杀只摇一次骰子（_dragonDrillApplied 防重复追加）",
+    queued() + dmgCalls === total1,
+    `首次=${total1} 再次=${queued() + dmgCalls}`);
+  check("C4 追加段带 _drillExtraHit（反击不被骰子点数放大）",
+    (state.battle.reactionQueue || []).every(a => a.card?._drillExtraHit !== false)
+      && total1 >= 1, `队列=${queued()}`);
+}
+
 console.log(`\n汇总：${passed} 通过 / ${failed} 失败`);
 process.exit(failed ? 1 : 0);
