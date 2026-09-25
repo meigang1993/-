@@ -25,8 +25,12 @@ window.CarlosSkills = (() => {
     return true;
   }
   function afterSlashDamage(state, actor, target, card, hpLoss, api) {
-    if (!hpLoss || actor?.ref !== "carlos" || !singleKill(card)
-      || card._crazyBayonet) return;
+    // 疯狂刺刀按「造成伤害」判定，护甲吸收的伤害同样算造成：
+    // 描述改为「造成生命值或护甲值伤害后」，故 blockLoss > 0 也触发。
+    // 此前只判 hpLoss，被护甲完全吸收时不触发，与描述不符。
+    const blockLoss = api?.blockLoss || 0;
+    if (!(hpLoss > 0 || blockLoss > 0) || actor?.ref !== "carlos"
+      || !singleKill(card) || card._crazyBayonet) return;
     const count = visible(actor).filter(isKill).length;
     if (!count) return;
     card._crazyBayonet = true;
