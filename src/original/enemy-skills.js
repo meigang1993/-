@@ -100,7 +100,7 @@ window.EnemySkills = (() => {
     window.AbeMikeSkills?.endTurn?.(state, unit, damage);
     window.OrcDungeonSkills?.endTurn?.(state, unit, damage);
     window.WithererSkills?.endTurn?.(state, unit);
-    window.RuinsEnemySkills?.endTurn?.(state, unit);
+    window.RuinsEnemySkills?.endTurn?.(state, unit, damage);
     window.GuardKellySkills?.endTurn?.(state, unit, draw);
     if (unit.ai === "radar") unit.radarUsed = false;
     if (unit.ai === "krow_doctor") unit.grenadeUsed = false;
