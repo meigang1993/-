@@ -178,7 +178,7 @@ function run() {
       const m2 = window.BattleCardActiveRelicsAssassin({}, c2, core2);
       m2.assassinLatex(s, st.a1, st.witherer, {});
     });
-    check("饰品·刺客胶衣（convertAs 刺杀·待完善）", false, card, st);
+    check("饰品·刺客胶衣（convertAs 刺杀·实体转换）", true, card, st);
   }
 
   // ===== 7. 鬼王扑克（饰品）：convertAs + _skill =====
