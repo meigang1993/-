@@ -49,8 +49,8 @@ console.log("=== 废墟沙城 普通怪技能 实现检查 ===\n");
 {
   const def = find("noble_soldier");
   check("1.1 数据表存在", !!def, `${def?.name} ai=${def?.ai}`);
-  check("1.2 基础属性", def?.attack === 11 && def?.magic === 8 && def?.speed === 12
-    && def?.hp === 64 && def?.bloodlust === 1 && def?.handLimit === 4
+  check("1.2 基础属性", def?.attack === 9 && def?.magic === 7 && def?.speed === 14
+    && def?.hp === 60 && def?.bloodlust === 1 && def?.handLimit === 4
     && def?.drawPerTurn === 2 && def?.initialDraw === 2,
     `攻${def?.attack} 魔${def?.magic} 速${def?.speed} 血${def?.hp} 杀意${def?.bloodlust} 手牌${def?.handLimit} 摸${def?.drawPerTurn}+${def?.initialDraw}`);
   check("1.3 性别/所属", def?.gender === "male", `gender=${def?.gender}`);
@@ -136,8 +136,8 @@ console.log("=== 废墟沙城 普通怪技能 实现检查 ===\n");
 {
   const def = find("noble_sniper");
   check("2.1 数据表存在", !!def, `${def?.name} ai=${def?.ai}`);
-  check("2.2 基础属性", def?.attack === 14 && def?.magic === 9 && def?.speed === 15
-    && def?.hp === 58 && def?.bloodlust === 1 && def?.handLimit === 4
+  check("2.2 基础属性", def?.attack === 10 && def?.magic === 7 && def?.speed === 17
+    && def?.hp === 52 && def?.bloodlust === 1 && def?.handLimit === 4
     && def?.drawPerTurn === 1 && def?.initialDraw === 1,
     `攻${def?.attack} 魔${def?.magic} 速${def?.speed} 血${def?.hp} 摸${def?.drawPerTurn}+${def?.initialDraw}`);
 
@@ -179,9 +179,9 @@ console.log("=== 废墟沙城 普通怪技能 实现检查 ===\n");
 {
   const def = find("merca_tank");
   check("3.1 数据表存在", !!def, `${def?.name} ai=${def?.ai}`);
-  check("3.2 基础属性", def?.attack === 16 && def?.magic === 12 && def?.speed === 12
-    && def?.hp === 85 && def?.bloodlust === 1 && def?.handLimit === 4
-    && def?.drawPerTurn === 3 && def?.initialDraw === 2,
+  check("3.2 基础属性", def?.attack === 8 && def?.magic === 8 && def?.speed === 12
+    && def?.hp === 80 && def?.bloodlust === 1 && def?.handLimit === 4
+    && def?.drawPerTurn === 2 && def?.initialDraw === 2,
     `攻${def?.attack} 魔${def?.magic} 速${def?.speed} 血${def?.hp} 摸${def?.drawPerTurn}+${def?.initialDraw}`);
 
   const G3 = window.RuinsGruntSkills;
@@ -218,8 +218,8 @@ console.log("=== 废墟沙城 普通怪技能 实现检查 ===\n");
 {
   const def = find("attack_drone");
   check("4.1 数据表存在", !!def, `${def?.name} ai=${def?.ai}`);
-  check("4.2 基础属性", def?.attack === 12 && def?.magic === 10 && def?.speed === 17
-    && def?.hp === 47 && def?.bloodlust === 2 && def?.handLimit === 3
+  check("4.2 基础属性", def?.attack === 8 && def?.magic === 8 && def?.speed === 18
+    && def?.hp === 44 && def?.bloodlust === 1 && def?.handLimit === 3
     && def?.drawPerTurn === 2 && def?.initialDraw === 1,
     `攻${def?.attack} 魔${def?.magic} 速${def?.speed} 血${def?.hp} 杀意${def?.bloodlust} 手牌${def?.handLimit}`);
 
