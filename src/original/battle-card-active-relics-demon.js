@@ -22,7 +22,7 @@ window.BattleCardActiveRelicsDemon = (deps, ctx, core) => {
       _skill: true, _relicSkill: true, _skipHandMove: true,
       _playedTargetUid: target.uid, _entitySourceCard: selected, _entityConversion: true,
     });
-    ctx.moveHand(state, actor, i, "discard", { showDiscard: true });
+    ctx.moveHand(state, actor, i, "discard");
     markUsed(actor, "usedDemonPoker", card);
     log(state, `${actor.name} 发动鬼王扑克，将一张手牌转化为${template.name}使用。`);
     ctx.useCard(state, actor, target, converted);
