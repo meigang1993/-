@@ -15,17 +15,38 @@
     ).toString().trim();
   } catch (e) { /* 系统无 chromium 则跳过 */ }
   if (!nix) return;
-  process.env.PLAYWRIGHT_BROWSERS_PATH =
-    process.env.PLAYWRIGHT_BROWSERS_PATH || "/data/workspace/.pw-browsers";
+  const base = process.env.PLAYWRIGHT_BROWSERS_PATH || "/data/workspace/.pw-browsers";
+  process.env.PLAYWRIGHT_BROWSERS_PATH = base;
+  // revision 不能写死：机器上可能同时存在多份 playwright（仓库内、qa-deps、
+  // 以及 npmrc global=true 装到 /usr/local 的那份），各自要求的浏览器目录版本不同
+  // （实测 1.61 → 1228、1.63 → 1243）。写死会在升级后集体报 "Executable doesn't exist"。
+  const revisions = new Set();
   [
-    "/root/.cache/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-linux64/chrome-headless-shell",
-    "/root/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
-  ].forEach(target => {
+    nodePath.join(__dirname, "../../node_modules/playwright-core"),
+    "/data/workspace/qa-deps/node_modules/playwright-core",
+    "/usr/local/lib/node_modules/playwright/node_modules/playwright-core",
+    "/usr/local/lib/node_modules/playwright-core",
+  ].forEach(core => {
     try {
-      fs.mkdirSync(nodePath.dirname(target), { recursive: true });
-      fs.writeFileSync(target, `#!/bin/sh\nexec ${nix} --no-sandbox --disable-dev-shm-usage "$@"\n`);
-      fs.chmodSync(target, 0o755);
-    } catch (e) { /* 只读或其他异常则忽略，交由外层 wrapper 兜底 */ }
+      const list = JSON.parse(fs.readFileSync(nodePath.join(core, "browsers.json"), "utf8")).browsers;
+      (list || []).filter(b => /^chromium(-headless-shell)?$/.test(b.name))
+        .forEach(b => revisions.add(b.revision));
+    } catch (e) { /* 该位置未安装则跳过 */ }
+  });
+  if (!revisions.size) revisions.add("1228");
+  const roots = [base, "/root/.cache/ms-playwright"];
+  revisions.forEach(rev => {
+    [
+      `chromium_headless_shell-${rev}/chrome-headless-shell-linux64/chrome-headless-shell`,
+      `chromium-${rev}/chrome-linux64/chrome`,
+    ].forEach(rel => roots.forEach(root => {
+      const target = nodePath.join(root, rel);
+      try {
+        fs.mkdirSync(nodePath.dirname(target), { recursive: true });
+        fs.writeFileSync(target, `#!/bin/sh\nexec ${nix} --no-sandbox --disable-dev-shm-usage "$@"\n`);
+        fs.chmodSync(target, 0o755);
+      } catch (e) { /* 只读或其他异常则忽略，交由外层 wrapper 兜底 */ }
+    }));
   });
 })();
 
@@ -55,6 +76,11 @@ async function openGame(page, options = {}) {
       value = (value * 1664525 + 1013904223) >>> 0;
       return value / 4294967296;
     };
+    // context.setOffline() 对 file:// 页面不生效（chromium 142 实测 navigator.onLine 仍为 true），
+    // 而启动流程会据此走在线分支，故在此直接固定为离线，与既有测试假设保持一致。
+    try {
+      Object.defineProperty(navigator, "onLine", { get: () => false, configurable: true });
+    } catch (e) { /* 部分环境 navigator 不可重定义则忽略 */ }
   });
   await page.goto(gameUrl);
   await page.locator("#view").waitFor({ state: "visible" });
