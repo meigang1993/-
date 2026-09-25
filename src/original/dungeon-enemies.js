@@ -30,6 +30,16 @@ window.DungeonEnemyGroups = (() => {
     if (run.missionId === "underwater_train") return underwaterEnemies(pool, diff, type, state);
     if (run.missionId === "orc_dungeon") return orcDungeonEnemies(pool, diff, type, state);
     if (run.missionId === "ruins_sand_city") return ruinsEnemies(pool, diff, type, state);
+    // 新手保护：首次远征第一场战斗固定为单个机械哥布林，避免随机到多名敌人或精英。
+    // 注意：本函数在 DungeonSystem.start 生成 layers 的过程中被调用，此时 run.layers
+    // 可能尚未建立，故只能做防御式读取，不能调用 DungeonMap.nodes()（它假定 layers 已存在，
+    // 会抛 "reading 'flat'"，导致出征直接失败）。
+    const started = Array.isArray(run?.layers)
+      && run.layers.some(l => (Array.isArray(l) ? l : []).some(n => n?.done && n.type !== "start"));
+    if (type === "normal" && run.missionId === "machine_factory" && window.Onboarding?.active?.(state)
+      && !started) {
+      return fixedGroup(pool, diff, type, ["mechanical_goblin"], state);
+    }
     if (type === "boss") {
       const boss = sample(pool.filter(e => e.type === "boss"), state);
       return boss?.id === "pursuer_edis" ? fixedGroup(pool, diff, type, [boss.id], state) : fixedGroup(pool, diff, type, ["mecha_minotaur", boss?.id || "mechanical_bull_king", "skeleton_patrol"], state);
