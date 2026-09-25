@@ -55,6 +55,12 @@ window.GameStoreMigrations = (() => {
       state.flags.firstExpeditionStarted = true;
       markForSave(state);
     }
+    // 老存档从未记录 onboarding，视为已完成，不能重新强制教学。
+    if (!Object.prototype.hasOwnProperty.call(state.flags, "onboarding")) {
+      state.flags.onboarding = window.Onboarding?.done?.()
+        || { version: 1, step: "hall", completed: true, skipped: false };
+      markForSave(state);
+    }
     state.chars = Array.isArray(state.chars) ? state.chars : [];
     const migrateProgression =
       (state.flags.characterProgressionVersion || 0) < characterProgressionVersion;
