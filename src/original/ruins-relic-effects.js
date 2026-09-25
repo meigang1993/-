@@ -19,10 +19,39 @@ window.RuinsRelicEffects = (() => {
     return true;
   }
 
+  // 冰心双刺剑（被动）：摸到的实体单体【杀】牌转换为【刺杀】，且不消耗杀意。
+  // 只认实体牌：虚拟【杀】由技能生成，若一并转换会把技能产物当成手牌资源。
+  function convertIceDaggers(state, unit, cards) {
+    if (!window.RelicSystem?.hasEquipped?.(state, unit, "冰心双刺剑")) return 0;
+    const hand = unit?.hand;
+    if (!Array.isArray(cards) || !cards.length || !Array.isArray(hand)) return 0;
+    let count = 0;
+    cards.forEach(card => {
+      if (!card || card.virtual || card._skill || card._iceDagger) return;
+      if (!window.CardUtils?.isSingleKill?.(card)) return;
+      const index = hand.indexOf(card);
+      if (index < 0) return;
+      const converted = window.CardUtils.convertAs("刺杀", card, {
+        noIntentCost: true, convertedFrom: card.name, _iceDagger: true,
+      });
+      // convertAs 走 clean()，会剥掉飞行中的标记；不补回会让牌瞬间出现在
+      // 手牌里而不是飞入，与摸牌动画脱节。
+      if (card._pendingDraw) converted._pendingDraw = true;
+      hand[index] = converted;
+      count += 1;
+    });
+    if (count) {
+      window.BattleLines?.skill?.(state, unit, "冰心双刺剑");
+      log(state, `${unit.name} 的冰心双刺剑触发，${count}张实体单体【杀】转换为不消耗杀意的【刺杀】。`);
+    }
+    return count;
+  }
+
   function afterDraw(state, unit, cards, draw, ctx) {
     if (!cards || !cards.length) return;
     const battle = state?.battle;
     if (!battle) return;
+    convertIceDaggers(state, unit, cards);
     if (battle.phase === 4 && window.RelicSystem?.hasEquipped?.(state, unit, "螺旋桨")) {
       triggerPropeller(state, unit, ctx);
     }
