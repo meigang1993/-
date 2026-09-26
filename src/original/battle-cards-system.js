@@ -72,7 +72,10 @@ window.BattleCards = window.BattleCards || (() => {
     });
     if (opts.forcedDiscard) showForcedDiscard(b, holder, card, pile, dest, trailId);
     else if (opts.showDiscard) showDiscard(b, holder, card, pile, dest, trailId);
-    (zone[pile] ||= []).push(card);
+    // 入堆存还原后的副本，原对象保持转换态：
+    // 弃牌堆/消耗区得到原牌（洗牌后牌库不会被凭空换成刺杀），
+    // 而出牌区在动画阶段引用的是原对象，玩家看到的仍是打出的【刺杀】。
+    (zone[pile] ||= []).push(window.CardUtils?.revertConvertedCopy?.(card) ?? card);
     if (!opts.skipAfterHandLost) afterHandLost(b, holder);
   }
   function putMany(b, holder, cards, pile = "discard", opts = {}) {
