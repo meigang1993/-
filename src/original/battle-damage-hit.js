@@ -31,7 +31,9 @@ window.BattleDamageHit = ({
     const beforeBlock = target.block;
     const blocked = card.ignoreBlock ? 0 : Math.min(target.block, amount);
     const remain = amount - blocked;
-    const critical = deps.isKillCard(card) && amount >= 5;
+    // skipCriticalFx：技能生成的虚拟牌（如机尾机枪的虚拟【机枪扫杀】）只造成技能伤害，
+    // 不应套用普通杀牌的暴击表现（放大飘字 + 额外粒子）。
+    const critical = deps.isKillCard(card) && amount >= 5 && !card.skipCriticalFx;
     const damageTypes =
       window.BattleDamageAttributes?.resolve(card, source, effectiveActor)
       || ["physical"];
