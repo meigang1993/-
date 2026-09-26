@@ -80,6 +80,11 @@ window.BattleCombat = (deps) => {
     if (!state?.battle || !actor || !target || !card) return false;
     if (actor.hp <= 0 || target.hp <= 0) return false;
     card.virtual = true;
+    // 虚拟杀不在手牌里，必须跳过"从手牌移出"这一步。
+    // 此前未设该标记：resolveCard 里 actor.hand.splice(actor.hand.indexOf(card), 1)
+    // 对不在手牌的牌返回 -1，splice(-1,1) 会把手牌最后一张牌删掉，
+    // 于是外神之眼/百眼魅魔/螺旋桨等一驱动虚拟杀，出杀者就白白丢一张手牌。
+    card._skipHandMove = true;
     const ok = useCard(state, actor, target, card);
     checkDefeat(state);
     checkEnd(state);
@@ -110,7 +115,8 @@ window.BattleCombat = (deps) => {
     if (window.HoshinoSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat })) { card._countAsPlayed = true; return true; }
     if (card.ailengBet || card.ailengCharge || card.bestaEndSlash) { const ok = window.GuestCharacterSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat, intentMax: deps.intentMax }, specialCtx); if (ok) card._countAsPlayed = true; return !!ok; }
     if (window.GuestCharacterSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat, intentMax: deps.intentMax }, specialCtx)) { card._countAsPlayed = true; return true; }
-    if (!card._skill && !card._skipHandMove) { actor.hand.splice(actor.hand.indexOf(card), 1); const pile = card.type === "consume" || card.copiedByEdis || card.void ? "consumed" : "discard"; putCard(state, actor, card, pile, { skipAnim: pile === "discard" && !!card._playedFlightDone }); }
+    // 兜底：牌不在手牌时 indexOf 返回 -1，splice(-1,1) 会误删手牌最后一张。
+    if (!card._skill && !card._skipHandMove) { const handIndex = actor.hand.indexOf(card); if (handIndex >= 0) actor.hand.splice(handIndex, 1); const pile = card.type === "consume" || card.copiedByEdis || card.void ? "consumed" : "discard"; putCard(state, actor, card, pile, { skipAnim: pile === "discard" && !!card._playedFlightDone }); }
     card._playedByName = actor.name; card._playedAction = card.type === "tactic" ? "发动了" : "使用了";
     // 出牌阶段限一次的技能：守卫命中时连「使用」日志一起拦掉，避免出现
     // 日志里用了多次、实际只生效一次的误导。
