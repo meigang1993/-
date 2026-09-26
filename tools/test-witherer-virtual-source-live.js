@@ -72,7 +72,8 @@ const HOOK_VK = `(() => {
     a0.stats = Object.assign({}, a0.stats, { attack: 5, magic: 3 });
     a1.hp = 200; a1.maxHp = 200; a1.hand = [];
     a1.stats = Object.assign({}, a1.stats, { attack: 7, magic: 3 });
-    a0.hand = [{ name: "战术测试", type: "tactic", suit: "♠", power: 3, scale: "attack" }];
+    a0.hand = [{ name: "战术测试", type: "tactic", suit: "♠", power: 3, scale: "attack" },
+               { name: "备用牌", type: "tactic", suit: "♦" }];
     a0.hand.forEach(c => { delete c._pendingDraw; });
     st.log = [];
     window.__vkLog = [];
@@ -104,6 +105,7 @@ const HOOK_VK = `(() => {
     return {
       vk: window.__vkLog || [],
       allyHp: b.allies.map(x => x.hp),
+      handLens: b.allies.map(x => (x.hand || []).length),
       logs: (st.log || []).map(String),
     };
   })()`);
@@ -124,6 +126,12 @@ const HOOK_VK = `(() => {
   T("外神之眼：伤害数值取出杀者的攻击力（而非凋零者的 12）",
     eyeRes.allyHp[1] < 200 && (200 - eyeRes.allyHp[1]) === a0.atk,
     { hp: eyeRes.allyHp, a0atk: a0.atk, foeAtk: eyeCtx.foe.atk, loss: 200 - eyeRes.allyHp[1] });
+  // 虚拟杀不在手牌里：打出战术牌后应只剩 1 张备用牌。
+  // 旧 BUG：resolveCard 里 splice(indexOf=-1, 1) 会把手牌最后一张（备用牌）删掉。
+  console.log(`[外神之眼] 出牌后手牌数=${JSON.stringify(eyeRes.handLens)}`);
+  T("外神之眼：虚拟杀不消耗出杀者手牌（打出1张后应剩1张）",
+    eyeRes.handLens[0] === 1,
+    { handLens: eyeRes.handLens, vkCount: (eyeRes.vk || []).length });
 
   // =====================================================================
   // ② 百眼魅魔：结束阶段弃红桃 → 驱动我方逐一互相出虚拟杀
@@ -139,7 +147,11 @@ const HOOK_VK = `(() => {
               { name: "红桃牌B", type: "tactic", suit: "♥" }];
     w.hand.forEach(c => { delete c._pendingDraw; });
     b.activeUid = w.uid; b.phase = 5; b.locked = false; b.animQueue = [];
-    b.allies.forEach(a => { a.hp = 200; a.maxHp = 200; a.hand = []; });
+    b.allies.forEach(a => {
+      a.hp = 200; a.maxHp = 200;
+      a.hand = [{ name: "友方备用牌", type: "tactic", suit: "♦" }];
+      a.hand.forEach(c => { delete c._pendingDraw; });
+    });
     b.allies[0].stats = Object.assign({}, b.allies[0].stats, { attack: 5 });
     b.allies[1].stats = Object.assign({}, b.allies[1].stats, { attack: 7 });
     st.log = [];
@@ -160,6 +172,7 @@ const HOOK_VK = `(() => {
   const hRes = await page.evaluate(`(() => {
     const st = window.state, b = st.battle;
     return { vk: window.__vkLog || [], allyHp: b.allies.map(x => x.hp),
+             handLens: b.allies.map(x => (x.hand || []).length),
              logs: (st.log || []).map(String) };
   })()`);
   console.log(`[百眼魅魔] 驱动记录=${JSON.stringify(hRes.vk)}`);
@@ -175,6 +188,10 @@ const HOOK_VK = `(() => {
     hVk.length >= 1 && hVk.every(v => v.targetSide === "ally" && v.targetUid !== v.actorUid), hVk);
   T("百眼魅魔：无任何一次由敌方凋零者出手",
     hVk.every(v => v.actor !== "XX型凋零者1312号"), hVk);
+  console.log(`[百眼魅魔] 驱动后手牌数=${JSON.stringify(hRes.handLens)}`);
+  T("百眼魅魔：虚拟杀不消耗出杀者手牌（每人仍剩1张）",
+    hVk.length >= 1 && hRes.handLens.every(n => n === 1),
+    { handLens: hRes.handLens, vkCount: hVk.length });
 
   // =====================================================================
   // ③ 希尔德两饰品转换的【刺杀】是否保留「弃置目标 1 张手牌」
