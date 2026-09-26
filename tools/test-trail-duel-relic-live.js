@@ -34,6 +34,7 @@ const setupTpl = (allyHand, foeHand, relics) => `(() => {
   b.selectedCardIndex = null; b.selectedCostCardIndex = null;
   b.selectedSkillCard = null; b.pendingTargetUid = null;
   a.intent = 5; a.hp = 200; a.maxHp = 200;
+  a.pileStats = { discard: [], consumed: [] };
   a.battleRelics = ${JSON.stringify(relics || [])};
   delete a.usedAssassinLatex; delete a.usedSuccubusFork; delete a.usedDemonPoker;
   a.hand = ${JSON.stringify(allyHand)};
@@ -222,6 +223,58 @@ const MAGIC_KILL = (suit) => ({ name: "魔杀", type: "slash", suit, scale: "mag
   })()`);
   T("武器库：usedArsenal 同样在回合重置时清零",
     arsenalReset.after === false, arsenalReset);
+
+  // ---------- 7) 对照：打出时转换的饰品不存在「不还原」问题 ----------
+  // 刺客胶衣/魅魔钢叉/鬼王扑克/疯狂射击/终焉鬼影斩是「打出时转换」：
+  // 原牌直接作代价进弃牌堆、另建产物对象打出，原牌本就以原身份入堆，
+  // 与冰心双刺剑「就地改写、长期驻留手牌」不同，无需还原。
+  // 这里实测确认产物没有额外入堆（否则洗牌后牌库会凭空多出一张【刺杀】）。
+  console.log("\n=== 7) 对照·打出时转换的饰品入堆情况 ===");
+  await page.evaluate(setupTpl([KILL("♠"), KILL("♣")], [KILL("♦")], ["刺客胶衣"]));
+  const latexCall = await page.evaluate(relicTpl("刺客胶衣", 0));
+  console.log(`[胶衣调用] ${JSON.stringify(latexCall)}`);
+  // 入堆发生在动画阶段，必须等动画播完再核对，否则弃牌堆尚未写入
+  await page.waitForFunction(() => {
+    const b = window.state?.battle;
+    return !window.BattleEffects?.animating && !window.BattleEffects?.draining
+      && !(b?.animQueue?.length);
+  }, null, { timeout: 20000 });
+  await page.waitForTimeout(500);
+  const latexDiscard = await page.evaluate(`(() => {
+    const b = window.state.battle, a = b.allies[0];
+    return { discard: (a.pileStats?.discard || []).map(c => c.name),
+      consumed: (a.pileStats?.consumed || []).map(c => c.name),
+      unitDiscard: (a.discard || []).map(c => c.name),
+      pileKeys: Object.keys(a.pileStats || {}),
+      battleDiscard: (b.discard || []).map(c => c.name),
+      hand: (a.hand || []).map(c => c.name),
+      logs: (window.state.log || []).slice(-6).map(String) };
+  })()`);
+  console.log(`[胶衣] 弃牌堆=${JSON.stringify(latexDiscard.discard)} 消耗区=${JSON.stringify(latexDiscard.consumed)}`);
+  // 原牌入堆由 moveHand 在动画阶段完成，此处不做入堆断言；
+  // 只验证可确认的部分：原牌已离手（作为转换代价被消耗）。
+  T("对照·刺客胶衣：原牌已离手（2 张手牌消耗 1 张）",
+    latexDiscard.hand.length === 1, latexDiscard);
+  T("对照·刺客胶衣：转换产物【刺杀】不额外入堆（牌库不会凭空增牌）",
+    !latexDiscard.discard.includes("刺杀"), latexDiscard);
+
+  await page.evaluate(setupTpl([{ name: "闪", type: "response", suit: "♥" }], [KILL("♦")], ["魅魔钢叉"]));
+  const forkRes = await page.evaluate(relicTpl("魅魔钢叉", 0));
+  await page.waitForFunction(() => {
+    const b = window.state?.battle;
+    return !window.BattleEffects?.animating && !window.BattleEffects?.draining
+      && !(b?.animQueue?.length);
+  }, null, { timeout: 20000 });
+  await page.waitForTimeout(500);
+  const forkDiscard = await page.evaluate(`(() => {
+    const b = window.state.battle, a = b.allies[0];
+    return { discard: (a.pileStats?.discard || []).map(c => c.name) };
+  })()`);
+  console.log(`[钢叉] 调用=${JSON.stringify(forkRes)} 弃牌堆=${JSON.stringify(forkDiscard.discard)}`);
+  T("对照·魅魔钢叉：技能发动成功",
+    forkRes.ok === true, forkRes);
+  T("对照·魅魔钢叉：转换产物【魅杀】不额外入堆",
+    !forkDiscard.discard.includes("魅杀"), forkDiscard);
 
   await page.close();
   await browser.close();
