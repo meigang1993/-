@@ -61,8 +61,11 @@ window.BattleCardActiveRelicsAssassin = (deps, ctx, core) => {
     const source = ok && (chosen.suit === "♠" || chosen.suit === "♣") ? chosen : blacks[0];
     const idx = actor.hand.indexOf(source);
     if (idx < 0) return false;
+    // 不写 ignoreResponse：原牌【刺杀】模板没有该字段，可被【闪】响应。
+    // 此前这里硬写了 ignoreResponse: true，导致同角色的两件掉落中，
+    // 冰心双刺剑可响应、刺客胶衣不可响应，与原牌也不一致。
     const converted = window.CardUtils.convertAs("刺杀", source, {
-      type: "slash", ignoreResponse: true, scale: "attack", noIntentCost: true,
+      type: "slash", scale: "attack", noIntentCost: true,
       _skill: true, _relicSkill: true, _skipHandMove: true,
       _entitySourceCard: source, _entityConversion: true,
     });
