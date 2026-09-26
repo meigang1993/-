@@ -22,6 +22,29 @@ window.CardUtils = (() => {
   function cloneEntity(name, extra = {}) { return clean(entity(name), { name, ...extra }); }
   function fromEntity(name, extra = {}) { return cloneEntity(name, { virtual: true, ...extra }); }
   function convertAs(name, costCard, extra = {}) { return cloneEntity(name, { suit: costCard?.suit, convertedFrom: costCard?.name, ...extra }); }
+  // 转换牌离开手牌区后还原为原牌。
+  // 只有「获得即转换、长期留在手牌」的转化需要它：冰心双刺剑在原牌上就地改写，
+  // 原牌字段被清空，若离手时不还原，弃牌堆里留下的就是转换产物（【刺杀】），
+  // 洗牌堆重洗后牌库会凭空累积刺杀，原牌永久消失。
+  // 打出时才转换的牌（魅魔钢叉/刺客胶衣/鬼王扑克/疯狂射击/终焉鬼影斩）不适用：
+  // 它们把原牌直接送进弃牌堆、另建产物对象打出，原牌本就以原身份入堆。
+  // 快照存于 _revertSnapshot（下划线字段，clean 会剥除，故不参与牌面显示与结算）。
+  function revertConverted(card) {
+    const snapshot = card?._revertSnapshot;
+    if (!snapshot || !card) return card;
+    Object.keys(card).forEach(key => { delete card[key]; });
+    Object.assign(card, snapshot);
+    return card;
+  }
+  // 入堆专用：返回还原后的副本，原对象保持转换态。
+  // 打出牌在 put 入弃牌堆之后，动画阶段才由 battle-effect-handlers 把 card
+  // 引用 unshift 进 b.played 出牌区；若就地还原，玩家会看到"打出【刺杀】、
+  // 出牌区却显示【杀】"。入堆用副本即可两头正确：弃牌堆存原牌，出牌区显示刺杀。
+  function revertConvertedCopy(card) {
+    const snapshot = card?._revertSnapshot;
+    if (!snapshot || !card) return card;
+    return { ...snapshot };
+  }
   const isKillCard = card => card?.type === "slash" || /杀(?:（[^）]*）)?$/.test(card?.name || "");
   const isGroupTargetCard = card => !!(card?.sweep || card?.allTargets || card?.aoeLineShown);
   const isSingleTargetCard = card => !!card && !card.targetless && !isGroupTargetCard(card);
@@ -81,7 +104,8 @@ window.CardUtils = (() => {
     return card?.scale === "magic" ? "magic" : card?.scale === "attack" || slash ? "attack" : "magic";
   }
   return {
-    cardTypes, cloneEntity, fromEntity, convertAs, copyPlayable, clean,
+    cardTypes, cloneEntity, fromEntity, convertAs, copyPlayable, clean, revertConverted,
+    revertConvertedCopy,
     isKillCard, isEntityKillCard, isGroupTargetCard, isSingleTargetCard,
     targetScope, isGroupKillCard, isSingleKill, isPhysicalSingleKill,
     isEntitySingleKill,
