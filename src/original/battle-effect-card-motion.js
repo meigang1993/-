@@ -113,6 +113,10 @@ window.BattleEffectCardMotion = U => {
     if (!active()) return;
     if (clearPending) {
       (event.cards || []).forEach(card => { delete card._pendingDraw; });
+      // 落位后再跑"获得牌"类被动（冰心双刺剑）：此时牌已进手且待定标记已清。
+      // 必须早于 onArrive——onArrive 里的 syncIncomingHand 用 hand.includes(card)
+      // 统计手牌数，改写牌面若在其之后会让计数漏加。
+      window.RuinsRelicEffects?.afterCardsLanded?.(event);
     }
     options.onArrive?.();
     if (moving || clearPending) renderStep();
