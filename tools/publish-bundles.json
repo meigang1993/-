@@ -344,6 +344,7 @@
     "battle-relic-turns.js",
     "battle-share-flow.js",
     "battle-session-settlement.js",
+    "ruins-relic-ice-dagger.js",
     "ruins-relic-effects.js",
     "battle-session.js",
     "battle-auto-enemy.js",
