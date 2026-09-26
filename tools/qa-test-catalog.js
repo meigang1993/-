@@ -36,6 +36,7 @@ const standalone = Object.freeze([
   "test-soul-scythe-entity-live.js",
   "test-soul-scythe-relic-conversion.js",
   "test-trail-duel-relic-live.js",
+  "test-witherer-virtual-source-live.js",
   "test-relic-once-per-turn.js",
   "test-badge-hand-overlap-live.js",
   "test-dragon-drill-guard-live.js",
