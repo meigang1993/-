@@ -74,7 +74,10 @@ window.RuinsDragonSkills = (() => {
     // 龙挨不到打也能发动机尾机枪。
     if (!target || target.uid !== dragon.uid) return;
     dragon.ruinsHitsThisTurn = (dragon.ruinsHitsThisTurn || 0) + 1;
-    const threshold = Math.max(1, visible(dragon).length || dragon.handLimit || 1);
+    // 阈值为「当前手牌数」。此前写成 visible(...).length || dragon.handLimit，
+    // 手牌数为 0 时 0 是 falsy，阈值退化为手牌上限（4），触发条件变成「攒够手牌上限
+    // 次攻击」而非「手牌数次」，与描述不符。
+    const threshold = Math.max(1, visible(dragon).length);
     if (dragon.ruinsHitsThisTurn < threshold || dragon.ruinsGunFired) return;
     dragon.ruinsGunFired = true;
     fireTailGun(state, dragon, damage);
@@ -84,17 +87,30 @@ window.RuinsDragonSkills = (() => {
     const targets = alive(state.battle.allies);
     if (!targets.length) return;
     const amount = stat(dragon, "attack");
-    // 描述为「视为使用一张虚拟【机枪扫杀】」，且该虚拟牌可被【闪】响应：
-    // 真正的【机枪扫杀】靠 responseKind:"dodge" 才进响应判定，手搓牌若只有
-    // type:"skill" 既不是杀牌也没有 responseKind，needsResponse 恒为 false，
-    // 去掉 ignoreResponse 也依然无法被响应。故补上 responseKind。
-    const card = {
-      name: "机尾机枪", type: "skill", sweep: true,
+    // 描述为「视为使用一张虚拟【机枪扫杀】」：必须以实体牌【机枪扫杀】为模板建虚拟牌，
+    // 才能继承 type:"slash" / sweep:true / targetless:true / scale:"attack" 等原牌字段。
+    // 此前是手搓 { name:"机尾机枪", type:"skill" }，既不是杀牌，也没有 allTargets /
+    // aoeLineShown，导致：①不绘制全体目标线；②isGroupTargetCard 判 false，群体牌
+    // 相关判定（群体响应口径、群体触发、目标线渲染）全部失效。
+    // responseKind:"dodge" 保留：真正的【机枪扫杀】靠它才进响应判定，可被【闪】响应。
+    const card = window.CardUtils.fromEntity("机枪扫杀", {
+      allTargets: targets.map(unit => unit.uid),
+      aoeLineShown: true,
       responseKind: "dodge",
-      skipDamageModify: true, magicDamage: false,
-    };
+      // 本牌是技能生成的虚拟牌，不走普通出牌的暴击表现。
+      // 改成以【机枪扫杀】为模板后 isKillCard 成立、攻击力 13 ≥ 5，
+      // 会命中 battle-damage-hit 的 critical 判定，飘字被放大 1.3 倍并加粒子，
+      // 与「锁定技造成技能伤害」的定位不符（数值不变，纯视觉副作用）。
+      skipCriticalFx: true,
+    });
     let dealt = 0;
     window.BattleLines?.skill?.(state, dragon, "机尾机枪");
+    // 全体目标线：与无限暗刃（edis-skills）同一范式，推 virtualPlay 动画。
+    state.battle.tailGunSeq = (state.battle.tailGunSeq || 0) + 1;
+    state.battle.animQueue?.push({
+      type: "virtualPlay", id: `tailgun${state.battle.tailGunSeq}`, uid: dragon.uid,
+      targetUids: card.allTargets, card, enemyLine: dragon.side === "enemy", show: true,
+    });
     targets.forEach(target => {
       // 护甲按「对每名角色造成的伤害量」累加：直接用 damage 返回的 hpLoss，
       // 被【闪】响应时为 0，不会误给护甲。
