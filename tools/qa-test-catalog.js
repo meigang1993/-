@@ -56,6 +56,7 @@ const standalone = Object.freeze([
   "test-ruins-dragon-heroic-relics-live.js",
   "test-codex-pop-role-live.js",
   "test-relic-missing-effects-live.js",
+  "test-ice-dagger-gain-live.js",
   "test-flora-wing-vs-shell-live.js",
   "test-ruins-landmine-rps-live.js",
   "test-landmine-counter-response-live.js",
