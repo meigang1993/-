@@ -20,11 +20,15 @@ window.BattleCardActiveRelicsArsenal = (deps, ctx, core) => {
         if (state.battle?.animQueue) found._pendingDraw = true;
         unit.hand.push(found);
         armed += 1;
+        // 每张牌必须随动画事件带出：落位时按 event.cards 清除 _pendingDraw，
+        // 而 _pendingDraw 会被 visible() 过滤——原实现推的是 cards:[] 的聚合事件，
+        // 标记永远清不掉，牌进了手牌却看不见也用不了（表现为"发动了但没效果"）。
+        // 且原事件 uid 写的是发动者，牌却在友方手里，动画指向也是错的。
+        state.battle?.animQueue?.push({
+          type: "gainCards", uid: unit.uid, side: unit.side,
+          count: 1, cards: [found], teamArsenal: true,
+        });
       }
-    });
-    if (armed) state.battle?.animQueue?.push({
-      type: "gainCards", uid: actor.uid, side: actor.side,
-      count: armed, cards: [], teamArsenal: others.map(u => ({ uid: u.uid })),
     });
     window.BattleLines?.skill(state, actor, "武器库");
     log(state, `${actor.name} 发动武器库，为${armed}名友方角色发放了【杀】牌（不消耗杀意）。`);
