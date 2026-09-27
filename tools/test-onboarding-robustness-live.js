@@ -152,7 +152,10 @@ async function toMap(page) {
   f = await flag(page);
   T("新档重新进入引导 step=hall", f && f.step === "hall", f);
 
-  await page.locator("[data-onboarding-skip]").click();
+  // 引导已不可从 UI 跳过（无跳过按钮），这里直接调用状态层验证 skipped 分支仍然正确，
+  // 因为老存档可能已是 skipped，必须保证这类存档行为正常。
+  T("大厅无跳过引导入口", await page.locator("[data-onboarding-skip]").count() === 0);
+  await page.evaluate(() => { window.Onboarding.skip(window.state); window.render(); });
   await page.waitForTimeout(300);
   f = await flag(page);
   T("跳过后 skipped=true", f && f.skipped === true, f);
