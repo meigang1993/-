@@ -91,6 +91,11 @@ window.BattleDamageUtils = (deps, ctx) => {
   }
   function directDamage(state, target, amount, source, actor, delay = 0, card = null) {
     if (!amount || state.battle?.locked || !target || target.hp <= 0) return { dodged: false, hpLoss: 0, blockLoss: 0 };
+    // 坚硬装甲：本函数直接改写 target.hp，完全不经过伤害修正链，
+    // 免疫必须在这里单独判定，否则一切直伤都能打穿无敌。
+    if (window.RuinsEliteSkills?.immuneIncoming?.(state, target, card)) {
+      return { dodged: false, hpLoss: 0, blockLoss: 0, immune: true };
+    }
     amount = Math.max(1, Math.round(amount));
     ctx.holdVisual(target);
     const hpBefore = target.hp;
