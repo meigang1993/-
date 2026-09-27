@@ -16,6 +16,28 @@ window.DungeonSettlementActions = (() => {
       });
   }
 
+  // 管家手册成果：难度维度记录，写入失败不影响结算主流程。
+  function runDifficulty(state, run) {
+    return run?.difficultyId || state?.explore?.difficultyId || "normal";
+  }
+  function recordButlerBattle(state, battle) {
+    const P = window.ButlerManualProgress;
+    if (!P?.recordBattle) return;
+    try {
+      P.recordBattle(state, battle?.defeatedEnemyIds || [], runDifficulty(state, null));
+    } catch (error) {
+      console.warn("管家手册记录战斗成果失败", error);
+    }
+  }
+  function recordButlerClear(state, run) {
+    const P = window.ButlerManualProgress;
+    if (!P?.recordClear || !run?.complete) return;
+    try {
+      P.recordClear(state, run.missionId, runDifficulty(state, run));
+    } catch (error) {
+      console.warn("管家手册记录通关成果失败", error);
+    }
+  }
   function queueBattleExtras(state, run, nodeId, battle) {
     const key = `${run.focusId || run.missionId}:${nodeId}`;
     const battleData = { defeatedEnemyIds: [...(battle.defeatedEnemyIds || [])] };
@@ -51,12 +73,16 @@ window.DungeonSettlementActions = (() => {
   }
 
   async function applyPending(state, action) {
-    if (action.type === "battleUnlock") return unlockEliteCards(state, action.data);
+    if (action.type === "battleUnlock") {
+      unlockEliteCards(state, action.data);
+      return recordButlerBattle(state, action.data);
+    }
     if (action.type === "battleBounty") {
       return window.BountySystem?.completeBattle?.(state, action.data.battle, action.data.run);
     }
     if (action.type === "dungeonBounty") {
-      return window.BountySystem?.completeDungeon?.(state, action.data.run);
+      window.BountySystem?.completeDungeon?.(state, action.data.run);
+      return recordButlerClear(state, action.data.run);
     }
     if (action.type === "shopRefresh") {
       if (await window.ShopSystem?.refresh?.(state) !== true) {
