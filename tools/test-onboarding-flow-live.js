@@ -45,20 +45,11 @@ const flag = page => page.evaluate(() => JSON.parse(JSON.stringify(
   T("大厅显示首次目标卡片", await objective.count() === 1);
   const objText = await objective.innerText().catch(() => "");
   T("目标为机械工厂·普通级", /机械工厂/.test(objText) && /普通级/.test(objText), objText);
-  T("大厅有跳过引导按钮", await page.locator("[data-onboarding-skip]").count() === 1);
+  T("大厅无跳过引导按钮（引导不可跳过）",
+    await page.locator("[data-onboarding-skip]").count() === 0);
   T("大厅有开始首次远征", await page.locator("[data-open-modal='team']").count() === 1);
-
-  // 跳过后恢复：先验证 skip，再重置回 hall 继续走完整流程
-  await page.locator("[data-onboarding-skip]").click();
   f = await flag(page);
-  T("点击跳过后 skipped=true", f && f.skipped === true, f);
-  await page.evaluate(() => {
-    const o = window.state.flags.onboarding;
-    o.skipped = false; o.completed = false; o.step = "hall";
-    window.render();
-  });
-  f = await flag(page);
-  T("重置后回到 hall 且未跳过", f && f.step === "hall" && !f.skipped, f);
+  T("大厅阶段 step=hall 且未跳过", f && f.step === "hall" && !f.skipped, f);
 
   // ---------- 第二阶段：出征准备 ----------
   await page.locator("[data-open-modal='team']").click();
@@ -106,6 +97,12 @@ const flag = page => page.evaluate(() => JSON.parse(JSON.stringify(
   const enemies = await page.evaluate(() => window.state.battle.enemies.map(e => e.id || e.name));
   T("首战只有 1 名敌人", enemies.length === 1, enemies);
   T("首战敌人为机械哥布林", /mechanical_goblin|机械哥布林/.test(String(enemies[0])), enemies);
+
+  // 首战锁定贝丝妲魔偶：只有罗卡尔一人出战
+  const allies = await page.evaluate(() =>
+    window.state.battle.allies.map(a => ({ id: a.ref, name: a.name })));
+  T("首战仅罗卡尔出战", allies.length === 1 && /lokar|罗卡尔/.test(allies[0].id + allies[0].name), allies);
+  T("首战魔偶不在场", !allies.some(a => /besta_doll|贝丝妲魔偶/.test(a.id + a.name)), allies);
 
   // 战斗刚进入时尚未确定行动者与阶段（实测初始 activeUid 为 null、phase 3），
   // 必须等真实推进到我方出牌阶段再断言，否则读到的是过渡态。
@@ -183,9 +180,18 @@ const flag = page => page.evaluate(() => JSON.parse(JSON.stringify(
   f = await flag(page);
   T("确认奖励后 completed=true", f && f.completed === true, f);
   T("引导完成后不再显示提示", await page.locator(".onboarding-tip").count() === 0);
-  T("完成后回到副本地图（可继续深入/撤退）",
-    await page.locator(".dungeon-screen").count() === 1
-    && await page.locator("[data-dungeon-retreat]").count() === 1);
+  // 首战胜利后强制回大厅并解锁贝丝妲魔偶（不再留在副本地图）
+  const after = await page.evaluate(() => ({
+    view: window.state.view,
+    explore: !!window.state.explore,
+    party: (window.state.party || []).slice(),
+    dollLocked: !!(window.state.chars.find(c => c.id === "besta_doll") || {}).locked,
+    log: (window.state.log || []).slice(0, 4),
+  }));
+  T("首战胜利后强制回大厅", after.view === "hall" && after.explore === false, after);
+  T("贝丝妲魔偶已解锁归队（在队伍中且日志播报）",
+    after.party.includes("besta_doll") && after.dollLocked === false
+    && after.log.some(t => /贝丝妲魔偶已解锁/.test(t)), after);
 
   const relevant = errors.filter(t => !/favicon|ResizeObserver loop/.test(t));
   T("页面无 JS 错误", relevant.length === 0, relevant.slice(0, 3));
