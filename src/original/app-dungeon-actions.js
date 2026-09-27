@@ -112,13 +112,20 @@ window.bindDungeonActions = function bindDungeonActions() {
   document.querySelector("[data-reward-confirm]")?.addEventListener("click", e => {
     AppActionGuard.run("奖励确认失败", async ({ state: actionState, isCurrent }) => {
       rememberDungeonScroll(true);
+      const firstWin = !!window.Onboarding?.at?.(actionState, "reward");
       if (window.Onboarding?.active?.(actionState)) window.Onboarding.complete(actionState);
       DungeonSystem.confirmReward(actionState);
+      // 首战胜利：解锁贝丝妲魔偶，并强制结束本次探索回大厅。
+      if (firstWin) {
+        window.Onboarding?.unlockFirstAlly?.(actionState);
+        await DungeonSystem.retreat(actionState);
+      }
       if (!isCurrent()) return false;
       render();
       await persist({ flush: true });
       return true;
-    }, { control: e.currentTarget });
+      // allowRunExit：首战胜利会结束探索（explore 置空），否则 isCurrent() 会判 false 而不渲染大厅
+    }, { control: e.currentTarget, allowRunExit: true });
   });
   document.querySelector("[data-dungeon-finish]")?.addEventListener("click", e => {
     AppActionGuard.run("通关结算失败", async ({ state: actionState, isCurrent }) => {
