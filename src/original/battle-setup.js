@@ -62,7 +62,11 @@ window.BattleSetup = () => {
     const baseDeck = context.deck || state.deck || GameData.baseDeck, earned = context.exploration ? (state.explore?.earned?.cards || []) : [];
     const sharedDeck = battleDeck(baseDeck, earned);
     const allyRefs = state.chars.filter(c => party.includes(c.id) && (context.test || (!c.locked && (!context.exploration || c.hp > 0))));
-    const shownAllies = allyRefs.map(c => window.SkinSystem?.applyToChar?.(state, c, !!context.test) || c);
+    // 新手引导首战锁定：贝丝妲魔偶不入场，只由罗卡尔单独出战。
+    const soloRefs = window.Onboarding?.at?.(state, "battle")
+      ? allyRefs.filter(c => c.id === "lokar")
+      : allyRefs;
+    const shownAllies = (soloRefs.length ? soloRefs : allyRefs).map(c => window.SkinSystem?.applyToChar?.(state, c, !!context.test) || c);
     let failedAssets, preloadError = "";
     try { failedAssets = await window.GameAssets?.preloadBattle?.(missionId, shownAllies, source, (done, total) => { if (!current()) return; state.loadingBattleProgress = { done, total }; onStep?.(); }) || []; }
     catch (err) {
