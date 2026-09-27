@@ -45,6 +45,28 @@ window.Onboarding = (() => {
     o.skipped = true;
     return true;
   }
+  // 首战失败时用：引导不结束，只把步骤回退到地图，让玩家重新打一次。
+  // 只允许回退（target < cur），不允许前进，也不会清除 completed / skipped。
+  function rewind(state, step) {
+    const o = ensure(state);
+    if (!o || o.completed || o.skipped) return false;
+    const cur = ORDER.indexOf(o.step), target = ORDER.indexOf(step);
+    if (cur < 0 || target < 0 || target >= cur) return false;
+    o.step = step;
+    return true;
+  }
+  // 首战锁定贝丝妲魔偶时的解锁：确保魔偶未锁定且回到出战队伍。
+  const FIRST_LOCKED_ID = "besta_doll";
+  function unlockFirstAlly(state) {
+    if (!state) return false;
+    const doll = (state.chars || []).find(c => c.id === FIRST_LOCKED_ID);
+    if (doll) doll.locked = false;
+    const party = (state.party || []).filter(id => id !== FIRST_LOCKED_ID);
+    if (doll && party.length < 4) party.push(FIRST_LOCKED_ID);
+    state.party = party.length ? party : ["lokar", FIRST_LOCKED_ID];
+    state.log?.unshift?.("贝丝妲魔偶已解锁，重新加入出战队伍。");
+    return true;
+  }
   function complete(state) {
     const o = ensure(state);
     if (!o) return false;
@@ -66,5 +88,5 @@ window.Onboarding = (() => {
         : hasTarget ? copy.confirm : copy.target;
     return `<p class="onboarding-tip" role="status">${text}</p>`;
   }
-  return { VERSION, ORDER, COPY, fresh, done, ensure, active, stepOf, at, advance, skip, complete, battleHint };
+  return { VERSION, ORDER, COPY, FIRST_LOCKED_ID, fresh, done, ensure, active, stepOf, at, advance, skip, rewind, complete, unlockFirstAlly, battleHint };
 })();
