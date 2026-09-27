@@ -136,8 +136,12 @@ window.DungeonRunRewards = (() => {
     state.battle = null;
     state.explore = null;
     state.view = "hall";
+    // 新手引导首战失败：引导不结束，回退到大厅步骤让玩家重新挑战（不 complete、不 skip）。
+    if (window.Onboarding?.active?.(state)) window.Onboarding.rewind(state, "hall");
     if (firstDefeat) state.hallModal = "firstDefeat";
     else if (secondDefeat) state.hallModal = "secondDefeat";
+    // 逻辑层切换了 view，主动刷新一次，避免界面停留在副本画面。
+    window.render?.();
   }
 
   return { rest, retreat, finish, fail, rewardText };
