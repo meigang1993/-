@@ -126,6 +126,7 @@ const groups = Object.freeze({
     "test-dungeon-matrix.js",
     "test-ruins-sand-city-layout.js",
     "test-ruins-boss-bounty-group.js",
+    "test-ruins-sand-city-groups.js",
     "check-enemy-pools.js",
     "check-bounty-groups.js",
     "check-bounty-elite-live.js",
