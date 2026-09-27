@@ -58,44 +58,11 @@ window.RuinsRelicEffects = (() => {
     log(state, `${unit.name} 的物资货物触发：友方${others.length}名角色各摸${count}张牌。`);
   }
 
-  function propellerTargets(state, unit) {
-    const battle = state?.battle;
-    if (!battle) return [];
-    return alive((unit?.side === "ally" ? battle.enemies : battle.allies) || []);
-  }
-
-  // 螺旋桨描述写的是「你可以……」，玩家佩戴时应由玩家决定发动，不能自动生效。
-  // 玩家侧走通用触发面板（battle-counter-triggers，统一渲染「发动 / 跳过」），
-  // 敌方没有可点击的玩家，AI 直接自动发动，保持原有行为。
-  function openPropeller(state, unit, ctx) {
-    if (!unit || unit.hp <= 0 || !propellerTargets(state, unit).length) return false;
-    if (unit.side === "ally" && window.BattleCounterTriggers?.open?.(state, {
-      skill: "螺旋桨", unitUid: unit.uid, sourceUid: unit.uid, count: 1,
-    })) return true;
-    triggerPropeller(state, unit, ctx);
-    return true;
-  }
-
-  function triggerPropeller(state, unit, ctx) {
-    const pool = propellerTargets(state, unit);
-    if (!pool.length) return;
-    const target = window.GameRandom?.sample?.(pool, state) || pool[0];
-    const virtual = window.CardUtils?.copyPlayable?.(
-      { name: "杀（普攻）", type: "slash", power: 0, scale: "attack", suit: "" },
-      { temporary: true, void: true, noIntentCost: true, generatedBySkill: "螺旋桨" });
-    if (!virtual) return;
-    window.BattleLines?.skill?.(state, unit, "螺旋桨", target);
-    log(state, `${unit.name} 的螺旋桨触发，对${target.name}视为使用一张虚拟【杀】。`);
-    const combat = ctx?.getCombat && ctx.getCombat();
-    if (combat?.useVirtualKill) combat.useVirtualKill(state, unit, target, virtual);
-    else window.BattleSystem?.useVirtualKill?.(state, unit, target, virtual);
-  }
-
-  // 通用触发面板「发动」时的执行器（跳过由面板统一记为「跳过螺旋桨」）。
-  function resolvePropeller(state, unit) {
-    if (!window.RelicSystem?.hasEquipped?.(state, unit, "螺旋桨")) return;
-    triggerPropeller(state, unit, null);
-  }
+  // 螺旋桨逻辑已拆至 ruins-relic-propeller.js（含「同一次伤害链内只弹一次」）：
+  // 本文件加入去重后超过 200 行硬约束，故仅保留代理。
+  const propeller = () => window.RuinsRelicPropeller;
+  const openPropeller = (state, unit, ctx) =>
+    propeller()?.openPropeller?.(state, unit, ctx) ?? false;
 
   // 推进器（被动）：根据你使用牌指定的目标数摸等量牌。
   // 目标数口径与牌型一致：群体/无目标牌按敌方存活数计，单体牌按 1 计。
@@ -167,7 +134,7 @@ window.RuinsRelicEffects = (() => {
 
   return {
     missileLauncherBlock, afterDraw, afterCardsLanded, afterCardPlayed, tacticDamage,
-    resolvePropeller,
+    resolvePropeller: (state, unit) => propeller()?.resolvePropeller?.(state, unit),
     modifyIncomingDamage, beforeResponseCheck,
   };
 })();
