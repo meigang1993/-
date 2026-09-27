@@ -4,7 +4,10 @@ window.GuestCharacterSkills = (() => {
   const black = card => card?.suit === "♠" || card?.suit === "♣";
   const isSlash = card => card?.type === "slash" || /杀(?:（[^）]*）)?$/.test(card?.name || "");
   const hasSkill = (unit, name) => (unit?.skills || []).some(skill => skill.name === name);
-  const countsForLimit = (unit, card) => !(unit?.ref === "besta" && hasSkill(unit, "黑暗之力") && black(card));
+  // 状态牌统一不记入手牌上限：所有读取 countsForLimit 的地方（手牌数、弃牌判定、UI 提示）都会排除它。
+  const isStatusCard = card => !!window.BattleStatusCards?.isStatus?.(card);
+  const countsForLimit = (unit, card) => !isStatusCard(card)
+    && !(unit?.ref === "besta" && hasSkill(unit, "黑暗之力") && black(card));
   const visibleHandCount = unit => visible(unit).filter(card => countsForLimit(unit, card)).length;
   const stat = (unit, key) => (unit.stats?.[key] || 0) + (key === "attack" ? (unit.tempAttack || 0) : key === "magic" ? (unit.tempMagic || 0) : 0);
   const line = (state, unit, name, target) => window.BattleLines?.skill(state, unit, name, target);
