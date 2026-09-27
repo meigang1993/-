@@ -1,62 +1,34 @@
-/* 检查所有副本的 elite / boss 是否获得【霸王色抗性】 */
-const fs = require("fs");
-const vm = require("vm");
-const { installGlobals, loadRuntime } = require("./skill-coverage-fixtures");
-
-installGlobals();
-loadRuntime();
-
-[
-  "battle-setup.js",
-  "data-machine-factory-enemies.js",
-  "data-underwater-train-enemies.js",
-  "data-ruins-sand-city-enemies.js",
-  "data-future-dungeons.js",
-  "data-ruins-content.js",
-  "data-ruins-sand-city.js",
-].forEach(f => vm.runInThisContext(
-  fs.readFileSync(`./src/original/${f}`, "utf8"), { filename: f },
-));
-
-window.GameRandom = window.GameRandom || {};
-window.GameRandom.shuffle = (arr) => arr.slice();
-window.GameRandom.sample = (arr) => arr[0];
-window.GameRandom.id = (p) => `${p}-test`;
-window.state = window.state || {};
-window.state.chars = [];
-window.state.deck = [];
-window.state.party = [];
-window.GameData = window.GameData || {};
-window.GameData.baseDeck = [];
-
-const api = window.BattleSetup();
-const TARGET = "霸王色抗性";
-
-const groups = Object.entries(window.GameData.enemies || {});
-
-let fail = 0;
-console.log("=== 各副本 elite/boss 的【霸王色抗性】注入检查 ===\n");
-
-async function checkGroup(name, list) {
-  if (!Array.isArray(list)) return;
-  const elites = list.filter(e => ["elite", "boss"].includes(e.type));
-  if (!elites.length) {
-    console.log(`[${name}] 无 elite/boss`);
-    return;
+/* 检查所有副本的 elite / boss 是否获得【霸王色抗性】。
+ * 逐个 enemy 调用 create()：若整批传入，create() 会抽样，只验证被抽中的部分。 */
+const fs=require("fs"),vm=require("vm");
+const {installGlobals,loadRuntime}=require("./skill-coverage-fixtures");
+installGlobals(); loadRuntime();
+["battle-setup.js","data-machine-factory-enemies.js","data-underwater-train-enemies.js",
+ "data-ruins-sand-city-enemies.js","data-future-dungeons.js","data-ruins-content.js",
+ "data-ruins-sand-city.js","data-world.js"].forEach(f=>{
+  try{vm.runInThisContext(fs.readFileSync(`./src/original/${f}`,"utf8"),{filename:f});}catch(e){console.log("LOAD_ERR",f,e.message);}
+});
+window.GameRandom=window.GameRandom||{};
+window.GameRandom.shuffle=a=>a.slice();
+window.GameRandom.sample=a=>a[0];
+window.GameRandom.id=p=>`${p}-test`;
+window.state={chars:[],deck:[],party:[]};
+window.GameData.baseDeck=window.GameData.baseDeck||[];
+const api=window.BattleSetup();
+const T="霸王色抗性";
+(async()=>{
+  let total=0,fail=0;
+  for(const [k,list] of Object.entries(window.GameData.enemies||{})){
+    for(const e of (list||[])){
+      if(!["elite","boss"].includes(e.type)) continue;
+      total++;
+      const res=await api.create(window.state,k,null,{test:true,allyIds:[],enemies:[e],deck:[]});
+      const u=(res.enemies||[]).find(x=>x.id===e.id)||(res.enemies||[])[0];
+      const has=(u&&(u.skills||[]).some(s=>s.name===T))||false;
+      if(!has)fail++;
+      console.log(`${has?"✅":"❌"} [${k}] ${e.type.padEnd(5)} ${e.name} 技能数=${u?(u.skills||[]).length:0} 含${T}=${has}`);
+    }
   }
-  const res = await api.create(window.state, name, null, {
-    test: true, allyIds: [], enemies: elites, deck: [],
-  });
-  (res.enemies || []).forEach(u => {
-    const has = (u.skills || []).some(s => s.name === TARGET);
-    const tag = has ? "✅" : "❌";
-    if (!has) fail += 1;
-    console.log(`${tag} [${name}] ${u.name}(${u.type}) 技能数=${(u.skills || []).length} 含${TARGET}=${has}`);
-  });
-}
-
-(async () => {
-  for (const [name, list] of groups) await checkGroup(name, list);
-  console.log(`\n合计缺失 ${fail} 个`);
-  process.exit(fail ? 1 : 0);
+  console.log(`\n总计 ${total} 个 elite/boss，缺失 ${fail} 个`);
+  process.exit(fail?1:0);
 })();
