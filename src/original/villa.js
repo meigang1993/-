@@ -26,7 +26,7 @@ window.VillaUI = (() => {
     const first = !!O?.at?.(state, "hall");
     if (!first) return `<div class="hall-main-actions"><button class="primary" data-open-modal="team">准备启程</button></div>`;
     const copy = O.COPY.hall;
-    const objective = `<div class="hall-first-objective" role="status"><span>${copy.title}</span><b>${copy.target}</b><small>${copy.sub}</small><button class="ghost" data-onboarding-skip="1">跳过引导</button></div>`;
+    const objective = `<div class="hall-first-objective" role="status"><span>${copy.title}</span><b>${copy.target}</b><small>${copy.sub}</small></div>`;
     return `${objective}<div class="hall-main-actions"><button class="primary" data-open-modal="team">开始首次远征</button></div>`;
   }
   function modal(state) {
