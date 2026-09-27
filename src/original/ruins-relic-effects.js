@@ -33,7 +33,7 @@ window.RuinsRelicEffects = (() => {
     if (!battle) return;
     convertIceDaggers(state, unit, cards);
     if (battle.phase === 4 && window.RelicSystem?.hasEquipped?.(state, unit, "螺旋桨")) {
-      triggerPropeller(state, unit, ctx);
+      openPropeller(state, unit, ctx);
     }
     // 摸牌阶段是 phase 3（battle-turn-start.js 判定=2、摸牌=3）。原判 phase===2 使本
     // 饰品在真实对局中永不触发——旧测试靠手动把 phase 写成 2 才通过，属伪造条件的假通过。
@@ -58,9 +58,26 @@ window.RuinsRelicEffects = (() => {
     log(state, `${unit.name} 的物资货物触发：友方${others.length}名角色各摸${count}张牌。`);
   }
 
+  function propellerTargets(state, unit) {
+    const battle = state?.battle;
+    if (!battle) return [];
+    return alive((unit?.side === "ally" ? battle.enemies : battle.allies) || []);
+  }
+
+  // 螺旋桨描述写的是「你可以……」，玩家佩戴时应由玩家决定发动，不能自动生效。
+  // 玩家侧走通用触发面板（battle-counter-triggers，统一渲染「发动 / 跳过」），
+  // 敌方没有可点击的玩家，AI 直接自动发动，保持原有行为。
+  function openPropeller(state, unit, ctx) {
+    if (!unit || unit.hp <= 0 || !propellerTargets(state, unit).length) return false;
+    if (unit.side === "ally" && window.BattleCounterTriggers?.open?.(state, {
+      skill: "螺旋桨", unitUid: unit.uid, sourceUid: unit.uid, count: 1,
+    })) return true;
+    triggerPropeller(state, unit, ctx);
+    return true;
+  }
+
   function triggerPropeller(state, unit, ctx) {
-    const foes = (unit?.side === "ally" ? state.battle.allies : state.battle.enemies) || [];
-    const pool = alive((unit.side === "ally" ? state.battle.enemies : state.battle.allies) || []);
+    const pool = propellerTargets(state, unit);
     if (!pool.length) return;
     const target = window.GameRandom?.sample?.(pool, state) || pool[0];
     const virtual = window.CardUtils?.copyPlayable?.(
@@ -72,6 +89,12 @@ window.RuinsRelicEffects = (() => {
     const combat = ctx?.getCombat && ctx.getCombat();
     if (combat?.useVirtualKill) combat.useVirtualKill(state, unit, target, virtual);
     else window.BattleSystem?.useVirtualKill?.(state, unit, target, virtual);
+  }
+
+  // 通用触发面板「发动」时的执行器（跳过由面板统一记为「跳过螺旋桨」）。
+  function resolvePropeller(state, unit) {
+    if (!window.RelicSystem?.hasEquipped?.(state, unit, "螺旋桨")) return;
+    triggerPropeller(state, unit, null);
   }
 
   // 推进器（被动）：根据你使用牌指定的目标数摸等量牌。
@@ -144,6 +167,7 @@ window.RuinsRelicEffects = (() => {
 
   return {
     missileLauncherBlock, afterDraw, afterCardsLanded, afterCardPlayed, tacticDamage,
+    resolvePropeller,
     modifyIncomingDamage, beforeResponseCheck,
   };
 })();
