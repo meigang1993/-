@@ -175,7 +175,9 @@
     "hall-character-actions.js",
     "hall-relic-actions.js",
     "app-hall-bindings.js",
-    "update-notice.js"
+    "update-notice.js",
+    "butler-manual-progress.js",
+    "butler-manual.js"
   ],
   "battle-rules": [
     "card-art.js",
@@ -347,6 +349,7 @@
     "battle-share-flow.js",
     "battle-session-settlement.js",
     "ruins-relic-ice-dagger.js",
+    "ruins-relic-propeller.js",
     "ruins-relic-effects.js",
     "battle-session.js",
     "battle-auto-enemy.js",
