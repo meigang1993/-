@@ -49,6 +49,12 @@ window.RuinsEnemySkills = (() => {
     return result;
   }
 
+  function beforeHeal(state, target, amount, actor, card, damage) {
+    return isRuins(target)
+      ? elite?.beforeHeal?.(state, target, amount, actor, card, damage) ?? amount
+      : amount;
+  }
+
   function afterDamage(state, actor, target, card, hpLoss, damage, directDamage = null) {
     grunt?.afterDamage?.(state, actor, target, card, hpLoss);
     if (isRuins(actor) || isRuins(target)) {
@@ -118,6 +124,7 @@ window.RuinsEnemySkills = (() => {
 
   return {
     prepare, endTurn, beforeKillUsed, beforeKillTargeted, blocksKillTarget, modifyDamage,
+    beforeHeal,
     afterDamage, afterDodged, beforeCardPlayed, allyTurnStart,
     aiMove, useSkillCard, isSkillBlocked, battleStart,
     landmineRps: {
