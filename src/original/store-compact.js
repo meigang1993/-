@@ -5,6 +5,7 @@ window.GameStoreCompact = (() => {
     "deckFilter", "cardCodex", "selectedCodexCard", "skinFilterChar", "skinFlash",
     "relicEquipChar", "pendingRelicSlot", "selectedRelic", "relicCodex",
     "selectedCodexRelic", "succubusCodex", "codexFlashId", "confirmDialog",
+    "butlerManual", "butlerTab",
     "inventoryCleanupTab",
     "bountyPopup", "sortieStarting", "testBattleStarting",
     "loadingBattleName", "loadingBattleProgress",
