@@ -36,6 +36,7 @@ function bindActions() {
       return finish(cancelBattleSelect);
     }
     if (window.SuccubusCodex?.closeTop?.(state)) finish(render);
+    if (state.butlerManual) return finish(() => { state.butlerManual = false; render(); });
   };
   $("settings-toggle").onclick = () => { settingsOpen = !settingsOpen; battleLogOpen = false; render(); };
   const saveCtx = { getState: () => state, setState, render, log,
@@ -139,6 +140,7 @@ function bindActions() {
   safeBind("relic ui", () => window.AppHallBindings
     && RelicUI.bind({ $, state: () => state, updateModalState, persist }));
   safeBind("succubus codex", () => window.SuccubusCodex?.bind?.({ $, state: () => state, update: done => { done(); render(); } }));
+  safeBind("butler manual", () => window.ButlerManual?.bind?.({ $, state: () => state, update: done => { done(); render(); } }));
   safeBind("hall buttons", () => window.AppHallBindings && bindHallButtons());
   safeBind("dungeon actions", () => window.bindDungeonActions?.());
   safeBind("battle select", () => window.bindBattleSelect?.());
