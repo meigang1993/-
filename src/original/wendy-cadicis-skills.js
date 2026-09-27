@@ -25,5 +25,6 @@ window.WendyCadicisSkills = (() => {
     modifyTacticDamage: cadicis.modifyTacticDamage,
     responsibilityVisible: cadicis.responsibilityVisible,
     resolveResponsibility: cadicis.resolveResponsibility,
+    skipResponsibility: cadicis.skipResponsibility,
   };
 })();
