@@ -29,6 +29,10 @@ function setup() {
   load("./src/original/ruins-witherer-skills.js");
   load("./src/original/witherer-relic-skills.js");
   load("./src/original/bakar-relic-skills.js");
+  // 螺旋桨逻辑已拆至独立模块，须在主文件之前加载（与 bundle 顺序一致）。
+  // 不加载的话主文件里的代理拿不到模块，螺旋桨会静默变成「无效果」，本审计的
+  // 虚拟牌捕获会退化成恒失败。
+  load("./src/original/ruins-relic-propeller.js");
   load("./src/original/ruins-relic-effects.js");
   load("./src/original/battle-relic-turns.js");
   load("./src/original/battle-card-active-relics-core.js");
