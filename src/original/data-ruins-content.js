@@ -18,7 +18,7 @@ window.GameDataRuinsContent = {
     "粉色魅魔装": { icon: "装", skillType: "passive", stats: {}, effect: "红色牌对你无效，你使用的红色牌不可响应。", lore: "1312号有着淫神莉莉丝血脉，混沌女神与自己女儿莉莉丝交合所生。", source: "XX型凋零者1312号", enemy: "witherer_1312" },
     "冰心双刺剑": { icon: "刺", skillType: "passive", stats: {}, effect: "你获得的实体单体【杀】牌转换为【刺杀】，转换的【刺杀】牌不消耗杀意。该牌离开你的手牌区后恢复为原牌。", lore: "希尔德是伊迪斯从富豪别墅救出来的精灵少女，少女爱上了同为女性的伊迪斯。她经过多年修行，掌握了暗影魔法和暗杀术。", source: "废墟沙城内英组杀手希尔德", enemy: "hilde" },
     "刺客胶衣": { icon: "胶", skillType: "active", stats: {}, effect: "出牌阶段限一次，你可以将黑色牌当做【刺杀】使用，不消耗杀意。", lore: "伊迪斯被安洁莉卡打败了一次还被羞辱了，希尔德被NTR了，为了打败安洁莉卡，不断训练自己变强。", source: "废墟沙城内英组杀手希尔德", enemy: "hilde", activeCard: { name: "刺客胶衣", type: "tactic", assassinLatex: true } },
-    "螺旋桨": { icon: "旋", skillType: "trigger", stats: {}, effect: "出牌阶段，当你摸牌时，随机对敌方一名角色视为使用一张虚拟【杀（普攻）】。", lore: "贵族军武装直升机的旋翼。", source: "废墟沙城武装直升机", enemy: "attack_helicopter" },
+    "螺旋桨": { icon: "旋", skillType: "trigger", stats: {}, effect: "出牌阶段，当你摸牌时，你可以随机对敌方一名角色视为使用一张虚拟【杀（普攻）】。", lore: "贵族军武装直升机的旋翼。", source: "废墟沙城武装直升机", enemy: "attack_helicopter" },
     "导弹发射器": { icon: "弹", stats: {}, effect: "你使用的【杀】牌指定目标时，目标角色需要额外弃置1张【杀】牌才能响应【闪】。", lore: "贵族军对反抗军使用的不人道武器。", source: "废墟沙城武装直升机", enemy: "attack_helicopter" },
     "物资货物": { icon: "货", stats: {}, effect: "摸牌阶段，你摸牌时，其他角色根据你摸的牌数摸等量的牌。", lore: "贵族军长期作战的物资储备。", source: "废墟沙城装甲运输车", enemy: "armored_carrier" },
     "武器库": { icon: "库", skillType: "active", stats: {}, effect: "出牌阶段限一次，你可以让我方所有其他角色从摸牌堆里摸1张【杀】牌，此【杀】牌不消耗杀意。", lore: "装甲运输车的弹药储备。", source: "废墟沙城装甲运输车", enemy: "armored_carrier", activeCard: { name: "武器库", type: "tactic", arsenal: true } },
