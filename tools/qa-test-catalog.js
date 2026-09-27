@@ -31,6 +31,7 @@ const standalone = Object.freeze([
   "test-relic-virtual-guard.js",
   "test-hilde-skills-live.js",
   "test-carrier-skills-live.js",
+  "test-carrier-fixes-live.js",
   "test-relic-conversion-damage-live.js",
   "test-witherer-virtual-full-audit.js",
   "test-tailgun-bayonet-live.js",
