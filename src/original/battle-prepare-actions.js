@@ -65,6 +65,19 @@ function chooseAilengDrillTarget(uid) {
   if (!GuestCharacterSkills.resolveBattleDrill(state, uid)) return;
   BattleSystem.checkEnd(state); render(); setTimeout(() => persist({ battleOperation: true }), 0);
 }
+async function skipCadicisResponsibility() {
+  const actionState = state;
+  if (!actionState.battle?.cadicisResponsibility
+    || window.WendyCadicisSkills?.responsibilityVisible?.(
+      actionState.battle) === false) return;
+  if (!window.WendyCadicisSkills?.skipResponsibility?.(actionState)) return;
+  render(); await BattleEffects.whenIdle?.();
+  if (window.state !== actionState) return;
+  await BattleSystem.continueAfterCadicisResponsibility(actionState, render);
+  if (window.state !== actionState) return;
+  BattleSystem.checkEnd(actionState); render();
+  setTimeout(() => persist({ battleOperation: true }), 0);
+}
 async function chooseCadicisGive(index) {
   const actionState = state;
   if (!actionState.battle?.cadicisResponsibility
