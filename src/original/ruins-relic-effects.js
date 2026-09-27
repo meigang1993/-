@@ -35,7 +35,9 @@ window.RuinsRelicEffects = (() => {
     if (battle.phase === 4 && window.RelicSystem?.hasEquipped?.(state, unit, "螺旋桨")) {
       triggerPropeller(state, unit, ctx);
     }
-    if (battle.phase === 2 && window.RelicSystem?.hasEquipped?.(state, unit, "物资货物")) {
+    // 摸牌阶段是 phase 3（battle-turn-start.js 判定=2、摸牌=3）。原判 phase===2 使本
+    // 饰品在真实对局中永不触发——旧测试靠手动把 phase 写成 2 才通过，属伪造条件的假通过。
+    if (battle.phase === 3 && window.RelicSystem?.hasEquipped?.(state, unit, "物资货物")) {
       triggerSupplyCargo(state, unit, cards.length, draw);
     }
   }
