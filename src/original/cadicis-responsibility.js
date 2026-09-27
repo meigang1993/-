@@ -67,7 +67,28 @@ window.CadicisResponsibility = (() => {
     return true;
   }
 
+  // 玩家选择不发动：描述写的是「你可以摸1张牌，然后交给其1张手牌」，
+  // 所以交不交应由玩家决定。此前只有手牌点击一条路径、没有任何放弃入口，
+  // 而 beforeKillTargeted 会把 battle.locked 置 true，玩家被强制交牌、无法拒绝。
+  // 跳过时同样要写入 cadicisResponsibilityResume，否则后续杀的结算不会继续。
+  function skipResponsibility(state) {
+    const battle = state?.battle;
+    const prompt = battle?.cadicisResponsibility;
+    if (!prompt || !responsibilityVisible(battle)) return false;
+    const cadicis = battle.allies.find(unit => unit.uid === prompt.cadicisUid);
+    battle.cadicisResponsibilityResume = {
+      actorUid: prompt.actorUid, targetUid: prompt.targetUid, card: prompt.card,
+      comboPartnerUid: prompt.comboPartnerUid || null,
+    };
+    battle.cadicisResponsibility = null;
+    battle.locked = false;
+    window.BattleLog?.add?.(state,
+      `${cadicis?.name || "卡迪西斯"}不交牌，指挥官责任本次不发动。`);
+    return true;
+  }
+
   return {
     beforeKillTargeted, resolveResponsibility, responsibilityVisible,
+    skipResponsibility,
   };
 })();
