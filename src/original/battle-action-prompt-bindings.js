@@ -54,6 +54,13 @@ window.BattleActionPromptBindings = (() => {
         () => resolveKaiichiShare(null),
       ),
     );
+    document.querySelector("[data-cadicis-responsibility-skip]")?.addEventListener(
+      "click",
+      event => queuePrompt(
+        event, "指挥官责任处理失败", "cadicisResponsibility",
+        () => skipCadicisResponsibility(),
+      ),
+    );
     document.querySelector("[data-miller-discard]")?.addEventListener(
       "click",
       event => queuePrompt(
