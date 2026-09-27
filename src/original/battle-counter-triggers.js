@@ -55,6 +55,7 @@ window.BattleCounterTriggers = (() => {
           "贝尔蒂丝受伤反击": () => window.BertisGerlotSkills?.resolveRevengeTrigger?.(state, source, target, prompt.count, api, prompt.skill),
           "刺刀AK47": () => window.MannySkills?.resolveCounterTrigger?.(state, source, target, api),
           "血色刺伞": () => window.SakuraRisaSkills?.resolveUmbrellaTrigger?.(state, source, api),
+          "螺旋桨": () => window.RuinsRelicEffects?.resolvePropeller?.(state, source),
         };
         const resolver = resolvers[prompt.skill];
         if (!resolver) {
