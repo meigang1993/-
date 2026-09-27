@@ -99,27 +99,35 @@ window.RuinsEliteSkills = (() => {
     return true;
   }
 
-  function beforeKillTargeted(state, actor, target, card) {
-    if (actor?.ai === "ruins_helicopter" && singleKill(card) && !card?._ruinsSuppressApplied) {
-      card._ruinsSuppressApplied = true;
-      card._tempSweep = true; card.sweep = true; card.name = "机枪扫杀";
-      window.BattleLines?.skill?.(state, actor, "战场扫射", target);
-      log(state, `${actor.name} 触发战场扫射，单体杀视为机枪扫杀。`);
-    }
-  }
-
+  // 战场扫射：出牌阶段，将 2 张同花色牌当做【机枪扫杀】使用，不消耗杀意。
+  // 产物必须以实体牌【机枪扫杀】为模板（与机尾机枪同一范式）——此前是手搓
+  // { name:"战场扫射", sweep:true }，既没有 type:"slash" 也没有 scale / responseKind，
+  // 攻击流程的 attacks 判定不成立，实测打出后伤害恒为 0；同时缺 allTargets /
+  // aoeLineShown，不绘制全体目标线，isGroupTargetCard 判 false，群体牌相关判定全失效。
+  // 战场扫射无「每回合限一次」约束：只要有 2 张同花色牌就能发动，一回合内可多次发动。
+  // 不会无限循环——每次发动 splice 掉 2 张手牌，手牌耗尽后 sweepPair 返回 null 自然退出。
   function helicopterMove(state, actor) {
-    if (actor?.ai !== "ruins_helicopter" || actor.usedRuinsSweep) return null;
+    if (actor?.ai !== "ruins_helicopter") return null;
     const pair = sweepPair(actor);
     if (!pair) return null;
     const targets = alive(state.battle.allies);
     const target = targets[0];
     if (!target) return null;
-    actor.usedRuinsSweep = true;
     pair.map(item => item.index).sort((a, b) => b - a)
       .forEach(index => actor.hand.splice(index, 1));
+    // 代价牌按原身份入弃牌堆（就地改写会污染牌库，见冰心双刺剑的离手还原说明）
     pair.forEach(item => window.BattleCards?.put?.(state.battle, actor, item.card, "discard", { skipAnim: true }));
-    return { card: { name: "战场扫射", _skill: true, ruinsSweep: true, sweep: true, noIntentCost: true, virtual: true }, target };
+    const card = window.CardUtils?.fromEntity?.("机枪扫杀", {
+      allTargets: targets.map(unit => unit.uid),
+      aoeLineShown: true,
+      responseKind: "dodge",
+      noIntentCost: true,
+      ruinsSweep: true,
+      generatedBySkill: "战场扫射",
+    }) || { name: "机枪扫杀", type: "slash", sweep: true, targetless: true, scale: "attack", noIntentCost: true };
+    window.BattleLines?.skill?.(state, actor, "战场扫射", target);
+    log(state, `${actor.name} 发动战场扫射，将2张同花色牌当做【机枪扫杀】使用。`);
+    return { card, target };
   }
 
   function sweepPair(actor) {
@@ -174,12 +182,12 @@ window.RuinsEliteSkills = (() => {
   function endTurn(state, unit, damage) {
     if (unit?.ai === "ruins_hilde") backstabEndPhase(state, unit, damage);
     if (unit?.ai === "ruins_helicopter") {
-      unit.usedRuinsSweep = false; unit.ruinsSuppressDraws = 0;
+      unit.ruinsSuppressDraws = 0;
     }
   }
 
   return {
-    prepare, backstabEndPhase, useBackstab, beforeKillTargeted, stealthOn,
+    prepare, backstabEndPhase, useBackstab, stealthOn,
     blocksKillTarget, helicopterMove, afterDodged, modifyDamage,
     immuneIncoming, beforeHeal,
     carrierRamMove, endTurn,
