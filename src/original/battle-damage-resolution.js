@@ -76,6 +76,11 @@ window.BattleDamageResolution = ({
     // 粉色魅魔装（被动）：红色牌对该角色无效。
     amount = window.RuinsRelicEffects?.modifyIncomingDamage?.(
       state, target, amount, effectiveCard) ?? amount;
+    // 坚硬装甲：免疫判定必须放在 Math.max(1,...) 之前，否则 0 会被抬成 1。
+    // 也不能只依赖 EnemySkills.modifyDamage——该调用被 skipDamageModify 短路。
+    if (window.RuinsEliteSkills?.immuneIncoming?.(state, target, effectiveCard)) {
+      amount = 0;
+    }
     amount = amount > 0 ? Math.max(1, Math.round(amount)) : 0;
     window.RuinsCardSkills?.beforeResponseCheck?.(state, actor, target, effectiveCard);
     // 粉色魅魔装（被动）：佩戴者使用的红色牌不可被响应。
