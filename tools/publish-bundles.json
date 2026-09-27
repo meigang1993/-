@@ -290,6 +290,8 @@
     "ruins-dragon-deathwave.js",
     "ruins-dragon-skills.js",
     "ruins-witherer-skills.js",
+    "ruins-carrier-armor.js",
+    "ruins-carrier-ram.js",
     "ruins-elite-skills.js",
     "ruins-card-skills.js",
     "ruins-enemy-skills.js",
