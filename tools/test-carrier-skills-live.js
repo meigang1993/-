@@ -90,7 +90,7 @@ const reinTpl = `(() => {
 const cargoTpl = `(() => {
   const st = window.state, b = st.battle;
   const a = b.allies[0], other = b.allies[1];
-  b.phase = 2; b.activeUid = a.uid;
+  b.phase = 3; b.activeUid = a.uid;   // 真实摸牌阶段是 phase 3（原写 2 属伪造条件）
   const oh = (other.hand || []).length;
   const drawFn = (unit, count) => {
     const got = [];
