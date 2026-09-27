@@ -135,8 +135,12 @@ window.EnemySkills = (() => {
     useHammer: (state, actor, damage) => machine.useHammer(state, actor, damage),
     addPoison: status.addPoison, addShock: status.addShock,
     absorbDefense: (state, target, amount, meta) => machine.absorbDefense(state, target, amount, meta),
-    beforeHeal: (state, target, amount, actor, card, damage) =>
-      window.EdisSkills?.beforeHeal?.(state, target, amount, actor, card, damage),
+    beforeHeal: (state, target, amount, actor, card, damage) => {
+      const base = window.EdisSkills?.beforeHeal?.(
+        state, target, amount, actor, card, damage) ?? amount;
+      return window.RuinsEnemySkills?.beforeHeal?.(
+        state, target, base, actor, card, damage) ?? base;
+    },
     clearHolyScar: status.clearHolyScar, onHeal: status.onHeal, tickPoison: status.tickPoison,
     beforeKillUsed: hooks.beforeKillUsed, beforeKillTargeted: hooks.beforeKillTargeted,
     prepareGroupKillTarget: hooks.prepareGroupKillTarget, modifyDamage: hooks.modifyDamage,
