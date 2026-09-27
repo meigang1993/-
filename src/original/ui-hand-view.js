@@ -27,7 +27,7 @@ window.GameUIHandView = (() => {
       return `<span class="discard-prompt">半魅魔血：已选${picks.kaiichi.length}/${battle.kaiichiShare.maxCount}张，选择至多2张后点击一名队友一次性交出。</span><button data-kaiichi-share-skip="1">不交</button>`;
     }
     if (modes.cadicisShare) {
-      return `<span class="discard-prompt">指挥官责任：点击${U.esc(actor.name)}的一张手牌交给目标，还需交出${battle.cadicisResponsibility.remaining || 1}张。</span>`;
+      return `<span class="discard-prompt">指挥官责任：点击${U.esc(actor.name)}的一张手牌交给目标，还需交出${battle.cadicisResponsibility.remaining || 1}张。</span><button data-cadicis-responsibility-skip="1">不交</button>`;
     }
     if (modes.share) {
       return `<span class="discard-prompt">新月之歌：已选${picks.share.length}/${battle.newMoonShare.count}张，选满后点击一名其他我方角色交出，或不交。</span><button data-new-moon-skip="1">不交</button>`;
