@@ -92,6 +92,7 @@ const standalone = Object.freeze([
   "test-hover-tools-landmine-live.js",
   "test-onboarding-flow-live.js",
   "test-onboarding-robustness-live.js",
+  "test-onboarding-first-battle-live.js",
 ]);
 
 const groups = Object.freeze({
