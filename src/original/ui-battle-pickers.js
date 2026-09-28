@@ -24,6 +24,16 @@ window.GameUIBattlePickers = U => {
     const targets = battle.allies.filter(unit => unit.uid !== picker.actorUid && unit.hp > 0);
     return `<div class="armory-popup"><div class="armory-card"><h2>战斗演练</h2><p class="muted">${U.esc(actor?.name || "艾伦格")}使用了${U.esc(picker.card?.name || "卡牌")}，请选择交给哪名队友，也可以不交。</p><div class="armory-options" ${scrollKey(`aileng:${picker.actorUid}`)}>${targets.map(unit => `<button class="armory-option" data-aileng-drill-target="${U.esc(unit.uid)}"><b>${U.esc(unit.name)}</b><span>获得这张牌</span></button>`).join("")}<button class="armory-option ghost" data-aileng-drill-skip="1"><b>不交出</b><span>保留结算结果</span></button></div></div></div>`;
   }
+  function catherineStealPicker(battle) {
+    const picker = battle.catherineStealPicker;
+    if (!picker) return "";
+    const units = battle.allies.concat(battle.enemies);
+    const actor = units.find(unit => unit.uid === picker.actorUid);
+    const victim = units.find(unit => unit.uid === picker.targetUid);
+    const targets = battle.allies.filter(unit =>
+      unit.uid !== picker.actorUid && unit.hp > 0);
+    return `<div class="armory-popup"><div class="armory-card"><h2>窃取</h2><p class="muted">请选择接收${U.esc(victim?.name || "敌方角色")}手牌的队友，也可以放弃。</p><div class="armory-options" ${scrollKey(`catherine:${picker.actorUid}`)}>${targets.map(unit => `<button class="armory-option" data-catherine-receiver="${U.esc(unit.uid)}"><b>${U.esc(unit.name)}</b><span>获得转移的牌</span></button>`).join("")}<button class="armory-option ghost" data-catherine-receiver-skip="1"><b>放弃发动</b><span>不转移任何牌</span></button></div></div></div>`;
+  }
   function cadicisResponsibilityPicker(battle) {
     const picker = battle.cadicisResponsibility;
     if (!picker || window.WendyCadicisSkills?.responsibilityVisible?.(battle) === false) return "";
@@ -68,7 +78,8 @@ window.GameUIBattlePickers = U => {
     return `<div class="slot-popup"><div class="slot-card"><b>${U.esc(unit.name)}的贪玩老虎机</b><div class="slot-reels">${slot.rolls.map(value => `<span>${U.esc(value)}</span>`).join("")}</div><p>摸${slot.count}张牌</p></div></div>`;
   }
   return {
-    ailengDrillPicker, armoryPicker, cadicisResponsibilityPicker,
+    ailengDrillPicker, armoryPicker, catherineStealPicker,
+    cadicisResponsibilityPicker,
     dimensionPicker, gerdaComfortPicker, kaiichiSharePicker, millerSlot, newMoonPicker, opheliaGuardPicker,
     wendyTutorPicker,
   };
