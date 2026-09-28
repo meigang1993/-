@@ -50,6 +50,7 @@ window.BattlePrepareSequence = deps => {
       } else if (step === 8) {
         battle.prepareStep += 1;
         window.RuinsEnemySkills?.allyTurnStart?.(state, unit);
+        window.CatherineSkills?.syncMagic?.(state, unit);
       }
       if (unit.hp <= 0 || interrupted(battle)) break;
     }
