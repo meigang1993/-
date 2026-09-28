@@ -3,7 +3,7 @@ window.BattleCombatResponses = (api) => {
   function resolveHandReveal(state, index = null) {
     const b = state.battle, p = b?.handReveal;
     if (!p) return false;
-    const mandatory = ["magicBulletReveal", "borrowSlashChoice", "borrowGainChoice"];
+    const mandatory = ["magicBulletReveal", "borrowSlashChoice", "borrowGainChoice", "catherineSteal"];
     if (mandatory.includes(p.mode) && index == null) return true;
     const units = b ? allUnits(b) : [], actor = units.find(u => u.uid === p.actorUid), target = units.find(u => u.uid === p.targetUid), source = p.mode === "magicBullet" ? actor : target, cards = p.mode === "magicBulletReveal" ? window.CardUtils.magicBulletCards(source) : (source?.hand || []).filter(c => !c._pendingDraw), shown = index == null ? null : cards[index];
     if (index != null && p.validIndexes && !p.validIndexes.includes(index)) {
@@ -24,6 +24,7 @@ window.BattleCombatResponses = (api) => {
     if (p.mode === "magicBulletReveal"
       && !window.CardUtils.canMagicBulletDisplay(shown)) return true;
     b.handReveal = null; b.locked = false;
+    if (p.mode === "catherineSteal") { if (shown) window.CatherineSkills?.resolveSteal?.(state, actor, target, p, shown); return true; }
     if (p.mode === "droneExtract") { window.OrcDungeonSkills?.resolveDroneExtract?.(state, actor, target, p, shown); checkDefeat(state); checkEnd(state); return true; }
     if (!actor || !target || p.mode === "view" || index == null) return true;
     if (!shown) { window.BattleLog.add(state, `${target.name}没有可选择的手牌。`); return true; }
