@@ -19,12 +19,18 @@ window.LocalCoreDungeonOps = (() => {
     const base = Array.isArray(configured) ? window.GameRandom.int(configured[0], configured[1], core) : configured;
     return Math.round(base * (diff.reward || 1) * multiplier);
   }
-  function progressionParty(run) {
+  function progressionParty(run, participants) {
     const active = uniq(run.activeParty).slice(0, 4);
     const party = uniq(run.party).slice(0, 4);
-    if (!party.length) return active;
-    const allowed = new Set(party);
-    return active.filter(id => allowed.has(id));
+    const allowed = new Set(party.length ? party : active);
+    let ids = active.filter(id => allowed.has(id));
+    const given = uniq(participants || []);
+    // 只有真正入场的角色才获得经验：首战锁定的贝丝妲魔偶不在 battle.allies 中。
+    if (given.length) {
+      const set = new Set(given);
+      ids = ids.filter(id => set.has(id));
+    }
+    return ids;
   }
   function settleDungeon(core, args) {
     const run = args.run || {}, nodeId = String(args.nodeId || run.pending || ""), node = (run.layers || []).flat().find(item => item.id === nodeId);
@@ -42,7 +48,7 @@ window.LocalCoreDungeonOps = (() => {
     if (["normal", "elite", "boss"].includes(kind) && (!enemyIds.every(id => defeated.includes(id)) || defeated.some(id => !enemyIds.includes(id)))) return outcomes.rejected;
     const gold = rollGold(core, run, kind), essence = ["elite", "boss"].includes(kind) ? 1 : 0;
     const experience = window.CharacterProgression.rewardFor(kind, diff, run.missionId);
-    const progression = progressionParty(run).map(id => {
+    const progression = progressionParty(run, args.participantIds).map(id => {
       const character = char(core, id);
       const template = GameData.characters?.find(item => item.id === id);
       return character && template && !character.locked
