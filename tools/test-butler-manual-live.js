@@ -46,14 +46,14 @@ const openManual = async page => {
 
   // 4. 四个页签
   const tabs = await page.locator("[data-butler-tab]").allTextContents();
-  T("四个页签齐全", JSON.stringify(tabs) === JSON.stringify(["讨伐目标", "精英目标", "英雄培养", "探索目标"]), tabs);
+  T("四个页签齐全", JSON.stringify(tabs) === JSON.stringify(["讨伐目标", "精英目标", "魅魔目标", "探索目标"]), tabs);
   T("默认选中讨伐目标", await page.locator("[data-butler-tab='boss'].on").isVisible());
 
   // 5. 页签切换
   await page.locator("[data-butler-tab='hero']").click();
   await page.locator(".butler-hero-grid").waitFor({ state: "visible" });
   const heroCount = await page.locator(".butler-hero").count();
-  T("英雄培养目标列出 29 名角色", heroCount === 29, { heroCount });
+  T("魅魔目标列出 29 名角色", heroCount === 29, { heroCount });
   const sum = await page.locator(".butler-sum").textContent();
   T("显示已满级统计", /已满级：\d+ \/ 29/.test(sum || ""), { sum });
 
