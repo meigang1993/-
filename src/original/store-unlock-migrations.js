@@ -95,6 +95,12 @@ window.StoreUnlockMigrations = (() => {
     state.flags.bestaNurseryUnlockSeen = true;
     delete state.flags.bestaNurseryUnlockPending;
   }
+  function syncCatherineUnlock(state) {
+    const manny = character(state, "manny");
+    if (!manny || manny.locked) return;
+    unlock(state, "catherine");
+    state.flags.catherineUnlockSeen = true;
+  }
   function syncNewCharacterUnlocks(state) {
     if (done(state, "gerda_nursery")) {
       state.flags.gerdaNurseryUnlocked = true;
@@ -122,6 +128,7 @@ window.StoreUnlockMigrations = (() => {
     unlockOrcDungeonAfterEvent,
     unlockAilengAfterUnderwaterTrain,
     syncBestaNurseryUnlock,
+    syncCatherineUnlock,
     syncNewCharacterUnlocks,
     ...recovery,
   };
