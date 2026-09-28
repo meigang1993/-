@@ -5,7 +5,7 @@ window.ButlerManual = (() => {
   const TABS = [
     { id: "boss", label: "讨伐目标" },
     { id: "elite", label: "精英目标" },
-    { id: "hero", label: "英雄培养" },
+    { id: "hero", label: "魅魔目标" },
     { id: "explore", label: "探索目标" },
   ];
 
