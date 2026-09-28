@@ -52,6 +52,7 @@ const expectedCharacters = {
   hoshino_kaiichi: { attack: 1, magic: 3, speed: 2, maxHp: 46, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
   artina: { attack: 3, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
   maria: { attack: 3, magic: 3, speed: 4, maxHp: 38, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
+  catherine: { attack: 1, magic: 3, speed: 2, maxHp: 28, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
 };
 assert.strictEqual(Object.keys(expectedCharacters).length, GameDataCharacters.length,
   "every character needs a complete initial-stat baseline");
@@ -73,6 +74,7 @@ const expectedGrowth = {
   chiyo: [92.4, 19.11, 5.46, 24.5], gerda: [159.6, 10.92, 19.11, 17.5],
   hoshino_yi: [109.2, 19.11, 19.11, 15.75], hoshino_kaiichi: [184.8, 8.19, 19.11, 10.5],
   artina: [84, 24.57, 8.19, 21], maria: [117.6, 16.38, 16.38, 17.5],
+  catherine: [84, 5.46, 21.84, 7],
 };
 assert.strictEqual(Object.keys(expectedGrowth).length, GameDataCharacters.length,
   "every character needs a complete growth baseline");
