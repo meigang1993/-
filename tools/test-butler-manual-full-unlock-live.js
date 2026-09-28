@@ -192,10 +192,12 @@ const EXPECT = {
     width: document.querySelector(".butler-bar i")?.getAttribute("style") || "",
     comment: document.querySelector(".butler-comment")?.textContent || "",
     speaker: document.querySelector(".butler-speaker")?.textContent || "",
+    bubble: document.querySelectorAll(".butler-bubble").length,
   }));
   T("进度条显示 100%", foot.pct.includes("100%") && foot.width.includes("100%"), foot);
   T("底部简评含管家名凯瑟琳", foot.comment.includes("凯瑟琳"), foot);
-  T("气泡署名为凯瑟琳", foot.speaker === "凯瑟琳", foot);
+  T("台词气泡已取消（无 .butler-speaker / .butler-bubble）",
+    foot.bubble === 0 && foot.speaker === "", foot);
 
   // ============ 六、真实结算入口：每名首领/精英是否都能被记录 ============
   // 手册记录靠 defeatedEnemyIds 与敌人 id 匹配；若某怪的 id 对不上，该目标永远打不掉（死目标）。
