@@ -3,7 +3,7 @@ window.AppRuntimeRecovery = (() => {
     "manualDodge", "manualCounter", "counterTrigger", "counterTriggerQueue",
     "recklessPrompt", "risaEyePrompt", "landmineRpsPrompt",
     "handReveal", "thunderHammer", "dimensionTransfer", "opheliaGuard",
-    "cadicisResponsibility", "wendyTutorPicker", "ailengDrillPicker",
+    "cadicisResponsibility", "wendyTutorPicker", "ailengDrillPicker", "catherineStealPicker",
     "mannyArmoryPicker", "gerdaComfort", "kaiichiShare", "newMoonShare",
     "millerShare", "discardPick", "pendingVictory", "pendingDefeat",
     "victoryScreen", "defeat", "testComplete",
