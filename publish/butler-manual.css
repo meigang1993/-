@@ -75,9 +75,11 @@
   min-height: 0;
   padding: 14px 0;
 }
-.butler-portrait { max-height: 34vh; }
+/* 单列（窄屏）：任务列表在上，立绘在下 */
+.butler-portrait { max-height: 32vh; }
 @media (min-width: 900px) {
-  .butler-body { grid-template-columns: 45% 55%; }
+  /* 宽屏：列表在左（自适应占满剩余空间），立绘在右且尽量大 */
+  .butler-body { grid-template-columns: minmax(0, 1fr) clamp(280px, 36%, 460px); }
   .butler-portrait { max-height: none; }
 }
 
@@ -85,27 +87,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
   min-height: 0;
-}
-.butler-bubble {
-  max-width: 92%;
-  padding: 10px 16px;
-  border: 1px solid rgba(150, 120, 200, .45);
-  border-radius: 14px;
-  background: rgba(58, 40, 84, .55);
-  color: #ded4f2;
-  font-size: 14px;
-  line-height: 1.5;
-  text-align: center;
-  box-shadow: 0 6px 22px rgba(0, 0, 0, .35);
-}
-.butler-speaker {
-  display: block;
-  margin-bottom: 4px;
-  color: #f0d48a;
-  font-size: 12px;
-  letter-spacing: .16em;
 }
 .butler-comment b { color: #f0d48a; font-weight: 600; }
 .butler-portrait {
