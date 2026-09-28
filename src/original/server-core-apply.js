@@ -72,7 +72,11 @@ window.ServerCoreApply = (() => {
       ? String(context.args?.id || "") : "";
     const map = new Map(coreChars.map(c => [c.id, c]));
     (state.chars || []).forEach(c => {
-      if (scopedId && c.id !== scopedId) return;
+      if (scopedId && c.id !== scopedId) {
+        // 自动解锁角色（如曼妮解锁后自动加入的凯瑟琳）不在 scopedId 内，需一并向 state 落地
+        const pending = map.get(c.id);
+        if (!(c.locked && pending && !pending.locked)) return;
+      }
       const next = map.get(c.id);
       if (!next) return;
       const oldMax = c.stats?.maxHp || c.hp || 1;
