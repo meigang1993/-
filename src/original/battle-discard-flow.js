@@ -23,6 +23,8 @@ window.BattleDiscardFlow = (deps) => {
     window.BattleCards.putMany(b, unit, normal, "discard");
     voids.forEach(card => window.BattleCards.put(b, unit, card, "consumed"));
     window.WendyCadicisSkills?.afterDiscard?.(state, unit, cards, { draw, pushFloat: combat.pushFloat });
+    // 手牌里的战术牌变少，需重算「魔力增幅」的 tempMagic（见 battle-discard-overflow 同名注释）。
+    window.CatherineSkills?.syncMagic?.(state, unit);
     record(state, `${unit.name} ${label} ${cards.map(c => c.name).join("、")}。`);
   }
   function completeDiscardPhase(state, unit) {
