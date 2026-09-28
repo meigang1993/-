@@ -19,13 +19,15 @@ const eventIds = [
   "little_elrana", "ace", "aileng", "ophelia", "chiyo",
   "hoshino_yi", "hoshino_kaiichi", "artina", "maria",
 ];
+// 前置角色解锁后自动加入，无独立解锁入口（凯瑟琳：曼妮解锁后自动加入）
+const autoIds = ["catherine"];
 
 function assertRosterPartition() {
   const ids = GameData.characters.map(character => character.id);
-  const routes = [...initialIds, ...nurseryIds, ...eventIds];
-  assert(ids.length === 28 && new Set(ids).size === 28,
-    "the playable roster must contain 28 unique characters");
-  assert(routes.length === 28 && new Set(routes).size === 28,
+  const routes = [...initialIds, ...nurseryIds, ...eventIds, ...autoIds];
+  assert(ids.length === 29 && new Set(ids).size === 29,
+    "the playable roster must contain 29 unique characters");
+  assert(routes.length === 29 && new Set(routes).size === 29,
     "every playable character must have exactly one unlock route");
   assert([...routes].sort().join(",") === [...ids].sort().join(","),
     "the unlock-route matrix must cover the complete playable roster");
