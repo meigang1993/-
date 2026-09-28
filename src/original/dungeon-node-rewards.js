@@ -18,6 +18,8 @@ window.DungeonNodeRewards = (() => {
       const result = await window.ServerCore.call("settleDungeon", {
         run, nodeId: token.nodeId, kind: battle.nodeType,
         defeatedEnemyIds: battle.defeatedEnemyIds || [],
+        // 实际参战角色：首战锁定的贝丝妲魔偶不入场，因此不应获得经验。
+        participantIds: battle.allies.map(ally => ally.ref).filter(Boolean),
       }, state);
       if (result.stale) return false;
       if (!result.ok) return false;
