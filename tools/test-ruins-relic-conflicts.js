@@ -84,10 +84,20 @@ function caseIceShark() {
   T("对照组（仅鲨鱼头套）牌名仍为【杀（普攻）】", cardB.name === "杀（普攻）", { name: cardB.name });
   const shownA = window.UnderwaterTrainSkills.displayBiteCard(st, a, cardA);
   const shownB = window.UnderwaterTrainSkills.displayBiteCard(st, b, cardB);
-  T("冰心+鲨鱼头套：鲨鱼头套不再生效（未被转换成咬杀）",
-    shownA.biteKill !== true, { biteKill: shownA.biteKill, name: shownA.name });
-  T("对照组：鲨鱼头套正常把【杀（普攻）】视为【咬杀】",
+  T("冰心+鲨鱼头套：鲨鱼头套生效（不再是死的）",
+    shownA.biteKill === true && shownA.name === "咬杀", { biteKill: shownA.biteKill, name: shownA.name });
+  T("叠加后保留冰心的不消耗杀意", shownA.noIntentCost === true, { noIntentCost: shownA.noIntentCost });
+  T("叠加后保留刺杀的弃置手牌效果", shownA.assassinate === true, { assassinate: shownA.assassinate });
+  T("对照组：仅鲨鱼头套时正常把【杀（普攻）】视为【咬杀】",
     shownB.biteKill === true && shownB.name === "咬杀", { biteKill: shownB.biteKill, name: shownB.name });
+  // 反向锚点：没有冰心时普通【刺杀】不应被鲨鱼头套接管，否则会波及刺客胶衣等产物
+  const d = mkUnit("D", "ally", ["鲨鱼头套"]);
+  const stD = mkState([d], [mkUnit("E3", "enemy")]);
+  const plainAssassin = window.CardUtils.cloneEntity("刺杀", { suit: "♠" });
+  d.hand.push(plainAssassin);
+  const shownD = window.UnderwaterTrainSkills.displayBiteCard(stD, d, plainAssassin);
+  T("对照组：非冰心产物的普通【刺杀】不被鲨鱼头套接管",
+    shownD.biteKill !== true && shownD.name === "刺杀", { biteKill: shownD.biteKill, name: shownD.name });
 }
 
 // ---------- 2. 物资货物 连锁 ----------
@@ -103,10 +113,14 @@ function caseCargoChain() {
   const cargoLogs = (st.log || []).filter(l => l.includes("物资货物"));
   const handLens = { A: a.hand.length, B: b.hand.length, C: c.hand.length };
   console.log(`   物资货物触发日志 ${cargoLogs.length} 条；手牌 ${JSON.stringify(handLens)}`);
-  T("两名角色各戴物资货物时会连锁（触发不止 1 次）",
-    cargoLogs.length > 1, { logs: cargoLogs.length, handLens });
-  T("连锁后有人被反复喂牌（手牌远超 A 的摸牌数 2）",
-    Math.max(a.hand.length, b.hand.length, c.hand.length) > 4, handLens);
+  T("两名角色各戴物资货物时不再连锁（只触发 1 次）",
+    cargoLogs.length === 1, { logs: cargoLogs.length, handLens });
+  T("牌库不再被抽干（每人手牌不超过 A 摸牌数 2 张）",
+    Math.max(a.hand.length, b.hand.length, c.hand.length) <= 2, handLens);
+  T("友方确实被喂到牌（B、C 各 2 张）",
+    b.hand.length === 2 && c.hand.length === 2, handLens);
+  T("防护标志用完即清（不会残留到后续摸牌）",
+    st.battle._supplyCargoFeeding === undefined, { flag: st.battle._supplyCargoFeeding });
   // 对照组：只有 A 戴
   const a2 = mkUnit("A2", "ally", ["物资货物"]);
   const b2 = mkUnit("B2", "ally", []);
