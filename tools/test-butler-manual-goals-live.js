@@ -98,10 +98,11 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
 
   T("立绘 alt 显示管家名",
     (await page.locator(".butler-portrait img").getAttribute("alt")) === BUTLER_NAME);
-  T("气泡署名显示管家名",
-    (await page.locator(".butler-speaker").textContent()).trim() === BUTLER_NAME);
+  T("台词气泡已取消（不再渲染 .butler-bubble / .butler-speaker）",
+    (await page.locator(".butler-bubble").count()) === 0
+    && (await page.locator(".butler-speaker").count()) === 0);
   const nameHits = await page.locator(`text=${BUTLER_NAME}`).count();
-  T("界面多处出现管家名", nameHits >= 2, { nameHits });
+  T("界面仍显示管家名（底部简评）", nameHits >= 1, { nameHits });
   const comment = await page.locator(".butler-comment").textContent();
   T("底部简评带管家署名", (comment || "").startsWith(`${BUTLER_NAME}：`), { comment });
 
