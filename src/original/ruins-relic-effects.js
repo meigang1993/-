@@ -37,8 +37,17 @@ window.RuinsRelicEffects = (() => {
     }
     // 摸牌阶段是 phase 3（battle-turn-start.js 判定=2、摸牌=3）。原判 phase===2 使本
     // 饰品在真实对局中永不触发——旧测试靠手动把 phase 写成 2 才通过，属伪造条件的假通过。
-    if (battle.phase === 3 && window.RelicSystem?.hasEquipped?.(state, unit, "物资货物")) {
-      triggerSupplyCargo(state, unit, cards.length, draw);
+    // 连锁防护：物资货物为队友发牌时同样走 draw() → afterDraw，若队友也戴着物资货物
+    // 就会反向再喂一轮，双方在摸牌阶段互推直到牌库被抽干（实测三人各 30 张牌库
+    // 全部进手牌、触发日志 30 条）。发牌期间置标志，让被喂牌者的 afterDraw 跳过本饰品。
+    if (battle.phase === 3 && !battle._supplyCargoFeeding
+      && window.RelicSystem?.hasEquipped?.(state, unit, "物资货物")) {
+      battle._supplyCargoFeeding = true;
+      try {
+        triggerSupplyCargo(state, unit, cards.length, draw);
+      } finally {
+        delete battle._supplyCargoFeeding;
+      }
     }
   }
 
