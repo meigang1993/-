@@ -19,7 +19,8 @@ window.StoreMigrationsUnlocks = deps => {
       "recoverPendingDefeatEvents", "unlockUnderwaterTrainAfterEvent",
       "unlockOrcDungeonAfterEvent",
       "unlockAilengAfterUnderwaterTrain", "syncBestaNurseryUnlock",
-      "recoverPostUnderwaterTrainEvents", "syncNewCharacterUnlocks",
+      "recoverPostUnderwaterTrainEvents", "syncCatherineUnlock",
+      "syncNewCharacterUnlocks",
     ].forEach(name => unlocks[name](state));
     const after = JSON.stringify({
       unlockEvents: state.unlockEvents,
