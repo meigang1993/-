@@ -504,8 +504,8 @@ BGM：./assets/new-bgm/hilde.mp3
 立绘：./assets/ruins-enemies/attack-helicopter.webp
 BGM：./assets/new-bgm/attack-helicopter.mp3
 技能：
-- 战场扫射（主动）：将两张同花色牌当【机枪扫杀】使用，不消耗杀意。
-- 继续压制（被动）：【杀】被【闪】抵消后摸一张牌。
+- 战场扫射（主动）：出牌阶段，你可以将2张同花色牌当做【机枪扫杀】使用，不消耗杀意。
+- 继续压制（锁定）：锁定技，当你使用的【杀】牌被【闪】抵消时，你摸1张牌。
 
 --- 36. armored_carrier - 装甲运输车 ---
 类型：elite | 定位：无敌复活 | AI：ruins_carrier
