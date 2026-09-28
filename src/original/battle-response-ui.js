@@ -99,13 +99,14 @@ window.BattleResponseUI = (() => {
     if (["magicBullet", "magicBulletReveal", "borrowSlashChoice", "borrowGainChoice"]
       .includes(p.mode)) return "";
     if (b.revealCards || b.animQueue?.some(evt => evt.type === "revealCards")) return "";
-    const units = b.allies.concat(b.enemies), actor = units.find(u => u.uid === p.actorUid), target = units.find(u => u.uid === p.targetUid), choosingCost = p.mode === "magicBullet", droneExtract = p.mode === "droneExtract", mandatory = ["magicBulletReveal", "borrowSlashChoice", "borrowGainChoice"].includes(p.mode);
+    const units = b.allies.concat(b.enemies), actor = units.find(u => u.uid === p.actorUid), target = units.find(u => u.uid === p.targetUid), choosingCost = p.mode === "magicBullet", droneExtract = p.mode === "droneExtract", mandatory = ["magicBulletReveal", "borrowSlashChoice", "borrowGainChoice", "catherineSteal"].includes(p.mode);
     const cards = ((choosingCost ? actor?.hand : target?.hand) || []).filter(c => !c._pendingDraw), select = p.mode !== "view";
     const key = [p.mode, p.actorUid, p.targetUid, p.cardName, p.shownSuit || "", p.shownCard?.suit || "", p.shownCard?.name || "", cards.length, p.validIndexes?.join(",") || ""].join("|");
     const steady = key === lastHandRevealKey;
     lastHandRevealKey = key;
     const shown = (choosingCost || droneExtract) && p.shownCard ? `<div class="hand-reveal-shown"><span>${U.esc(droneExtract ? actor?.name || "敌方" : target?.name || "目标")}${droneExtract ? "亮出" : "随机展示"}</span>${U.card(p.shownCard, false)}</div>` : "";
-    const hideCards = (p.mode === "steal" || p.mode === "discard")
+    const hideCards = (p.mode === "steal" || p.mode === "discard"
+      || p.mode === "catherineSteal")
       && actor?.side !== target?.side;
     const body = cards.length ? cards.map((c, i) => { const ok = !p.validIndexes || p.validIndexes.includes(i); return `<button class="hand-reveal-card ${ok ? "" : "disabled"}" ${select && ok ? `data-hand-reveal-pick="${i}"` : ""} title="${hideCards ? "未知手牌" : U.esc(c.text || "")}">${U.card(c, hideCards)}</button>`; }).join("") : `<p class="hand-reveal-empty">无手牌</p>`;
     const title = choosingCost || droneExtract ? `选择弃置${U.esc(p.shownSuit || "同花色")}手牌` : p.mode === "magicBulletReveal" ? `选择展示一张手牌` : `${U.esc(target?.name || "目标")} 的手牌`;
