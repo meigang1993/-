@@ -28,6 +28,21 @@ window.BattleActionSpecialBindings = (() => {
         chooseAilengDrillTarget(button.dataset.ailengDrillTarget);
       };
     });
+    document.querySelectorAll("[data-catherine-receiver]").forEach(button => {
+      button.onpointerdown = event => {
+        event.preventDefault();
+        event.stopPropagation();
+        chooseCatherineReceiver(button.dataset.catherineReceiver);
+      };
+    });
+    document.querySelector("[data-catherine-receiver-skip]")?.addEventListener(
+      "pointerdown",
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+        chooseCatherineReceiver(null);
+      },
+    );
     document.querySelector("[data-aileng-drill-skip]")?.addEventListener(
       "pointerdown",
       event => {
@@ -51,7 +66,7 @@ window.BattleActionSpecialBindings = (() => {
     document.oncontextmenu = event => {
       if (state.battle?.handReveal && !event.target.closest(".hand-reveal-panel")) {
         event.preventDefault();
-        if (["magicBulletReveal", "borrowSlashChoice", "borrowGainChoice"]
+        if (["magicBulletReveal", "borrowSlashChoice", "borrowGainChoice", "catherineSteal"]
           .includes(state.battle.handReveal.mode)) return;
         BattleActionGuard.run("关闭展示牌失败", async ({ state: actionState, isCurrent }) => {
           await BattleSystem.resolveHandReveal(actionState, null);
