@@ -120,10 +120,10 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
   const eliteRows = (await texts(page, ".butler-row b")).map(s => s.trim());
   T("精英目标列出 12 名", same(eliteRows, ELITES), eliteRows);
 
-  // 英雄培养
+  // 魅魔目标
   await tab(page, "hero");
   const heroNames = (await texts(page, ".butler-hero b")).map(s => s.trim());
-  T("英雄培养列出 29 名", same(heroNames, HEROES), heroNames.length);
+  T("魅魔目标列出 29 名", same(heroNames, HEROES), heroNames.length);
   const lv = await page.locator(".butler-hero small").first().textContent();
   T("等级显示为 X/20", /\/\s*20$/.test((lv || "").trim()), { lv });
 
