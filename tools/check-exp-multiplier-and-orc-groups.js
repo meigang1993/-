@@ -1,4 +1,4 @@
-/* global GameData, window */
+/* global GameData */
 
 // 检查两件事：
 //  1. 每个副本的经验值倍率是否正常（dungeonExpMultiplier 的 key 必须覆盖全部副本 missionId，
