@@ -94,7 +94,8 @@ window.BattleCounterTriggers = (() => {
       || battle.millerShare || battle.newMoonShare
       || battle.handReveal || battle.manualCounter
       || battle.mannyArmoryPicker || battle.wendyTutorPicker
-      || battle.ailengDrillPicker || battle.cadicisResponsibility);
+      || battle.ailengDrillPicker || battle.cadicisResponsibility
+      || battle.catherineStealPicker);
   }
   return {
     open, resolve, activatePending: activateNext,
