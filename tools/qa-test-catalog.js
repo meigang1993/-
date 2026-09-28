@@ -36,9 +36,15 @@ const standalone = Object.freeze([
   "test-helicopter-hell-live.js",
   "test-butler-manual-live.js",
   "test-butler-manual-goals-live.js",
+  "test-butler-manual-trigger-live.js",
+  "test-butler-manual-full-unlock-live.js",
+  "test-butler-manual-hero-locked-live.js",
+  "test-catherine-steal-flow-live.js",
+  "test-helicopter-suppress-propeller-live.js",
   "test-catherine-skills-live.js",
   "test-cadicis-responsibility-choice-live.js",
   "test-relic-conversion-damage-live.js",
+  "test-relic-conflict-fixes-live.js",
   "test-witherer-virtual-full-audit.js",
   "test-tailgun-bayonet-live.js",
   "test-witherer-eye-regress2.js",
@@ -100,6 +106,7 @@ const standalone = Object.freeze([
   "test-onboarding-flow-live.js",
   "test-onboarding-robustness-live.js",
   "test-onboarding-first-battle-live.js",
+  "test-onboarding-first-victory-exp-live.js",
 ]);
 
 const groups = Object.freeze({
@@ -136,6 +143,7 @@ const groups = Object.freeze({
     "test-ruins-sand-city-groups.js",
     "check-enemy-pools.js",
     "check-bounty-groups.js",
+    "check-exp-multiplier-and-orc-groups.js",
     "check-bounty-elite-live.js",
     "test-ruins-grunt-skills.js",
   ],
