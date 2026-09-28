@@ -10,6 +10,8 @@ window.LocalCoreCharacterOps = (() => {
     core.resources.essence -= cost;
     c.locked = false;
     c.hp = c.stats?.maxHp || c.hp;
+    // 凯瑟琳无独立入口：曼妮解锁后自动加入，需在此即时同步（否则要等下次读档才生效）
+    window.StoreUnlockMigrations?.syncCatherineUnlock?.(core);
     return outcomes.changed;
   }
   return { unlockChar };
