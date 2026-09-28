@@ -96,14 +96,22 @@ window.ButlerManualProgress = (() => {
       })),
     })).filter(g => g.list.length);
   }
+  // 以角色模板为基准列出全部可培养魅魔：未解锁的也要占位（灰剪影），
+  // 保证「已满级 X / 总数」的分母恒为 29，而不是随解锁进度增长。
   function heroList(state) {
     const chars = Array.isArray(state?.chars) ? state.chars : [];
-    return chars.map(c => {
-      const tpl = (window.GameData?.characters || []).find(x => x.id === c.id) || c;
-      const level = Math.max(0, Math.floor(Number(c.level) || 0));
+    const byId = new Map(chars.filter(c => c && c.id).map(c => [c.id, c]));
+    const tpls = Array.isArray(window.GameData?.characters) ? window.GameData.characters : [];
+    const ids = tpls.map(t => t.id);
+    // 存档里比模板多出的角色（旧档等）也要列出，避免条目丢失
+    chars.forEach(c => { if (c?.id && !ids.includes(c.id)) ids.push(c.id); });
+    return ids.map(id => {
+      const tpl = tpls.find(x => x.id === id) || byId.get(id) || {};
+      const c = byId.get(id);
+      const level = c ? Math.max(0, Math.floor(Number(c.level) || 0)) : 0;
       return {
-        id: c.id, name: tpl.name || c.name || c.id, level, maxed: level >= MAX_LEVEL,
-        unlocked: !c.locked, art: tpl.avatar || tpl.art || "", face: tpl.face || "?",
+        id, name: tpl.name || c?.name || id, level, maxed: level >= MAX_LEVEL,
+        unlocked: !!c && !c.locked, art: tpl.avatar || tpl.art || "", face: tpl.face || "?",
       };
     });
   }
