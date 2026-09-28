@@ -35,6 +35,7 @@ window.GameCombatRoles = (() => {
     hoshino_kaiichi: ["辅助/续航"],
     artina: ["输出"],
     maria: ["辅助/续航"],
+    catherine: ["控制"],
     mechanical_goblin: ["控制"],
     machine_succubus: ["输出"],
     skeleton_patrol: ["控制"],
