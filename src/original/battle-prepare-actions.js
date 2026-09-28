@@ -65,6 +65,11 @@ function chooseAilengDrillTarget(uid) {
   if (!GuestCharacterSkills.resolveBattleDrill(state, uid)) return;
   BattleSystem.checkEnd(state); render(); setTimeout(() => persist({ battleOperation: true }), 0);
 }
+function chooseCatherineReceiver(uid) {
+  if (!state.battle?.catherineStealPicker) return;
+  if (!window.CatherineSkills?.chooseReceiver?.(state, uid)) return;
+  BattleSystem.checkEnd(state); render(); setTimeout(() => persist({ battleOperation: true }), 0);
+}
 async function skipCadicisResponsibility() {
   const actionState = state;
   if (!actionState.battle?.cadicisResponsibility
