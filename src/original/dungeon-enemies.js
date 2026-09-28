@@ -20,6 +20,8 @@ window.DungeonEnemyGroups = (() => {
       // 兽人地下城 / 废墟沙城精英：赏金战与正常精英战保持同一固定组合
       witherer_1124_split: ["witherer_1124_split", "witherer_1124_split"],
       assassin_sakura_risa: ["demon_witch", "assassin_sakura_risa", "demon_witch"],
+      // orc_king_bondi 若不写会落到 groups[id] || [id] 回退（结果同 [id]），此处显式声明以免歧义。
+      orc_king_bondi: ["orc_king_bondi"],
       // 废墟沙城精英三组合（赏金战与正常精英战共用）：
       //   组合一 梅尔卡坦克 + 武装直升机
       //   组合二 梅尔卡坦克 + 装甲运输车 + 贵族军士兵 + 贵族军士兵
