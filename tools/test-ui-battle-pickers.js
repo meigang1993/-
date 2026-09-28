@@ -340,6 +340,7 @@ window.GameUIInfo = () => ({ infoPanelForState: () => "" });
 window.GameUILivingRoom = () => ({ render: () => "" });
 window.GameUIBattlePickers = () => ({
   armoryPicker: () => "", wendyTutorPicker: () => "", ailengDrillPicker: () => "",
+  catherineStealPicker: () => "",
   cadicisResponsibilityPicker: () => "", dimensionPicker: () => "",
   opheliaGuardPicker: () => "", newMoonPicker: () => "", gerdaComfortPicker: () => "",
   kaiichiSharePicker: () => "", millerSlot: () => "",
