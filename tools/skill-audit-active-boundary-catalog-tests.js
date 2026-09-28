@@ -3,13 +3,13 @@
 module.exports = ({ assert, card, unit }) => {
   const access = window.CharacterSkillAccess;
   const definitions = access.definitions;
-  assert(definitions.length === 26,
-    "Character active-skill boundary catalog must cover 23 base and 3 derived skills");
+  assert(definitions.length === 27,
+    "Character active-skill boundary catalog must cover 24 base and 3 derived skills");
 
   const formal = GameData.characters.flatMap(character =>
     character.skills.filter(skill => skill.type === "active" && skill.card));
-  assert(formal.length === 23,
-    "Character catalog must retain 23 formal active skills");
+  assert(formal.length === 24,
+    "Character catalog must retain 24 formal active skills");
   formal.forEach(skill => {
     assert(access.definitionOf(skill.card)?.name === skill.name,
       `${skill.name} must be registered in the active-skill boundary catalog`);
