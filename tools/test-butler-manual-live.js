@@ -38,11 +38,37 @@ const openManual = async page => {
   T("标题为「管家手册」", (await page.locator(".butler-top h2").textContent()).trim() === "管家手册");
 
   // 3. 立绘真实加载（非 404）
+  // 立绘是 lazy 加载，等它真正解码完成再断言（否则会读到 complete:false/naturalWidth:0）
+  await page.waitForFunction(() => {
+    const el = document.querySelector(".butler-portrait img");
+    return !!el && el.complete && el.naturalWidth > 0;
+  }, null, { timeout: 15000 }).catch(() => {});
   const img = await page.locator(".butler-portrait img").evaluate(el => ({
     src: el.getAttribute("src"), complete: el.complete, w: el.naturalWidth, h: el.naturalHeight,
   }));
   T("管家立绘已加载", img.complete && img.w > 0 && img.h > 0, img);
   T("立绘路径指向 assets", /assets\/images\/butler-portrait/.test(img.src || ""), img);
+
+  // 4b. 布局：立绘在任务列表右侧，且渲染尺寸明显放大
+  const layout = await page.evaluate(() => {
+    const box = el => {
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      return { x: Math.round(b.x), y: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height) };
+    };
+    return {
+      list: box(document.querySelector(".butler-list")),
+      main: box(document.querySelector(".butler-right")),
+      art: box(document.querySelector(".butler-portrait img")),
+      aside: box(document.querySelector(".butler-left")),
+    };
+  });
+  T("立绘位于任务列表右侧",
+    !!layout.list && !!layout.art && layout.art.x >= layout.list.x + layout.list.w - 40, layout);
+  T("立绘渲染尺寸放大（短边 ≥ 240px）",
+    !!layout.art && Math.min(layout.art.w, layout.art.h) >= 240, layout);
+  T("立绘区与列表区同高（占满可用高度）",
+    !!layout.aside && !!layout.main && Math.abs(layout.aside.h - layout.main.h) <= 8, layout);
 
   // 4. 四个页签
   const tabs = await page.locator("[data-butler-tab]").allTextContents();
@@ -75,8 +101,7 @@ const openManual = async page => {
   // 6. 新档完成度为 0，台词为最低档
   const pct0 = await page.locator(".butler-progress span").textContent();
   T("新档总完成度为 0%", /0%/.test(pct0 || ""), { pct0 });
-  const bubble0 = await page.locator(".butler-bubble").textContent();
-  T("低进度台词正确", (bubble0 || "").includes("深渊的目标还在等着您"), { bubble0 });
+  T("台词气泡已取消（不再渲染）", await page.locator(".butler-bubble").count() === 0);
 
   // 7. 数据层：记录成果后完成度与台词随之变化
   const after = await page.evaluate(() => {
@@ -89,6 +114,7 @@ const openManual = async page => {
   });
   T("记录战斗成果后 feats 增加", after.feats === 3, after);
   T("总完成度随之上升", after.pct > 0, after);
+  T("台词数据层仍按进度分档（低档）", (after.line || "").includes("深渊的目标"), after);
   await page.waitForTimeout(150);
   const pct1 = await page.locator(".butler-progress span").textContent();
   T("进度条文案同步更新", pct1 === `总完成度：${after.pct}%`, { pct1, expect: after.pct });
@@ -106,12 +132,13 @@ const openManual = async page => {
     });
     st.chars.forEach(c => { c.level = 20; });
     window.render();
-    return P.overall(st).pct;
+    return { pct: P.overall(st).pct, line: P.line(st), comment: P.comment(st) };
   });
-  T("全部达成后完成度接近满值", full >= 90, { full });
+  T("全部达成后完成度接近满值", full.pct >= 90, full);
+  T("高进度台词数据层切换为赞赏", (full.line || "").includes("您比我想象的更有趣"), full);
+  T("高进度底部简评切换", (full.comment || "").includes("所剩无几"), full);
   await page.waitForTimeout(150);
-  const bubble1 = await page.locator(".butler-bubble").textContent();
-  T("高进度台词切换为赞赏", (bubble1 || "").includes("您比我想象的更有趣"), { bubble1 });
+  T("高进度下仍不渲染台词气泡", await page.locator(".butler-bubble").count() === 0);
 
   // 8. 打勾显示
   const doneMarks = await page.locator(".butler-mark.done").count();
