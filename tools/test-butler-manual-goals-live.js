@@ -38,7 +38,7 @@ const HEROES = [
   "罗卡尔", "贝丝妲魔偶", "安洁莉卡", "诺诺卡", "艾尔拉娜", "曼妮", "温蒂",
   "芙萝娅", "贝尔蒂丝", "娜娜莉", "洛基", "卡洛斯", "米勒", "杰洛特", "鲁卡",
   "卡迪西斯", "艾斯", "奥菲莉亚", "艾伦格", "格尔达", "星野依", "星野海一",
-  "索尼娅", "橘千樱", "亚缇娜", "玛利亚", "小艾尔拉娜", "贝丝妲",
+  "索尼娅", "橘千樱", "亚缇娜", "玛利亚", "小艾尔拉娜", "贝丝妲", "凯瑟琳",
 ];
 const MISSION_NAMES = ["魔国机械工厂", "水下列车", "兽人地下城", "废墟沙城"];
 const DIFF_NAMES = ["普通级", "冒险级", "勇士级", "王者级", "英雄级"];
@@ -88,7 +88,7 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
   }
   const allElite = Object.values(data.groups).flatMap(g => g.elite);
   T("精英共 12 名且与清单一致", allElite.length === 12 && same(allElite, ELITES), allElite);
-  T("英雄共 28 名且与清单一致", data.heroes.length === 28 && same(data.heroes, HEROES), data.heroes.length);
+  T("英雄共 29 名且与清单一致", data.heroes.length === 29 && same(data.heroes, HEROES), data.heroes.length);
   T("满级线为 20 级", data.maxLevel === 20, data.maxLevel);
   T(`管家名为「${BUTLER_NAME}」`, data.butlerName === BUTLER_NAME, data.butlerName);
 
@@ -123,7 +123,7 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
   // 英雄培养
   await tab(page, "hero");
   const heroNames = (await texts(page, ".butler-hero b")).map(s => s.trim());
-  T("英雄培养列出 28 名", same(heroNames, HEROES), heroNames.length);
+  T("英雄培养列出 29 名", same(heroNames, HEROES), heroNames.length);
   const lv = await page.locator(".butler-hero small").first().textContent();
   T("等级显示为 X/20", /\/\s*20$/.test((lv || "").trim()), { lv });
 
