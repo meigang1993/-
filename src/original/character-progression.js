@@ -31,6 +31,7 @@ window.CharacterProgression = (() => {
     ophelia: { maxHp: 100.8, attack: 5.46, magic: 27.3, speed: 17.5 },
     aileng: { maxHp: 117.6, attack: 19.11, magic: 16.38, speed: 21 },
     besta: { maxHp: 84, attack: 8.19, magic: 27.3, speed: 7 },
+    catherine: { maxHp: 84, attack: 5.46, magic: 21.84, speed: 7 },
     sonia: { maxHp: 126, attack: 19.11, magic: 10.92, speed: 19.25 },
     chiyo: { maxHp: 92.4, attack: 19.11, magic: 5.46, speed: 24.5 },
     gerda: { maxHp: 159.6, attack: 10.92, magic: 19.11, speed: 17.5 },
