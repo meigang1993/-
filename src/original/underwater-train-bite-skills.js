@@ -8,8 +8,16 @@ window.UnderwaterTrainBiteSkills = ({ singleSlash }) => {
   };
   const biteKeys = [...Object.keys(biteForm), "convertedFrom"];
 
+  // 冰心双刺剑在「获得」阶段就把【杀（普攻）】就地改写成【刺杀】，而鲨鱼头套原本只认
+  // 牌名仍为【杀（普攻）】的牌，两件同戴时鲨鱼头套被整件废掉——连"造成伤害后恢复
+  // 等量生命"也一起丢失，玩家看不出任何提示。改为同时接受「由冰心双刺剑从【杀（普攻）】
+  // 转换而来」的牌（_iceDagger 是冰心转换后保留的专属标记，实测 convertAs 不会剥除）。
+  // 效果是两件叠加而非互相顶掉：刺杀的不消耗杀意与弃置手牌效果保留，再叠加咬杀的回血。
+  const iceDaggerKill = card => !!card?._iceDagger && card?.convertedFrom === "杀（普攻）";
+
   function biteEligible(state, actor, card) {
-    return !!(actor && card && card.name === "杀（普攻）" && singleSlash(card)
+    return !!(actor && card && singleSlash(card)
+      && (card.name === "杀（普攻）" || iceDaggerKill(card))
       && window.RelicSystem?.hasEquipped?.(state, actor, "鲨鱼头套"));
   }
 
