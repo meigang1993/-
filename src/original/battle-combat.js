@@ -96,7 +96,7 @@ window.BattleCombat = (deps) => {
       && !window.WithererSkills?.canUseTongueActive?.(state, actor, target, useCard)) return false;
     if (card?.armyOrder
       && !window.BakarSkills?.canUseArmyOrder?.(state, actor, card, useCard)) return false;
-    state.battle.testRecovery = false; if (actor.hand.includes(card)) card._playedFromHand = true; window.WithererSkills?.convertBerserkCard?.(state, actor, card); if (!card._skill) { window.AngelicaLukaSkills?.beforeCardPlayed?.(state, actor, card); window.ArtinaMariaSkills?.beforeCardPlayed?.(state, actor, card, deps); } window.RuinsEnemySkills?.beforeCardPlayed?.(state, actor, card);
+    state.battle.testRecovery = false; if (actor.hand.includes(card)) card._playedFromHand = true; window.WithererSkills?.convertBerserkCard?.(state, actor, card); if (!card._skill) { window.AngelicaLukaSkills?.beforeCardPlayed?.(state, actor, card); window.ArtinaMariaSkills?.beforeCardPlayed?.(state, actor, card, deps); } window.CatherineSkills?.beforeCardPlayed?.(state, actor, card); window.RuinsEnemySkills?.beforeCardPlayed?.(state, actor, card);
     window.EdisSkills?.rememberPrePlayHand?.(actor, card);
     window.WithererSkills?.prepareSpeedCard?.(state, actor, card);
     if (card.demonPoker) { const done = specials.demonPoker(state, actor, target, card); repeatIfDone(state, actor, target, card, done); return done; }
@@ -113,6 +113,7 @@ window.BattleCombat = (deps) => {
     if (window.ArtinaMariaSkills?.handleSpecialCard?.(state, actor, target, card, deps)) { card._countAsPlayed = true; return; }
     if (window.ElranaAceNanaliSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat }, specialCtx)) { card._countAsPlayed = true; return true; }
     if (window.HoshinoSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat })) { card._countAsPlayed = true; return true; }
+    if (card.catherineSteal && window.CatherineSkills?.handleSpecialCard?.(state, actor, target, card)) { card._countAsPlayed = true; return true; }
     if (card.ailengBet || card.ailengCharge || card.bestaEndSlash) { const ok = window.GuestCharacterSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat, intentMax: deps.intentMax }, specialCtx); if (ok) card._countAsPlayed = true; return !!ok; }
     if (window.GuestCharacterSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat, intentMax: deps.intentMax }, specialCtx)) { card._countAsPlayed = true; return true; }
     // 兜底：牌不在手牌时 indexOf 返回 -1，splice(-1,1) 会误删手牌最后一张。
