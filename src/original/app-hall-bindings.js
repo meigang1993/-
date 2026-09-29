@@ -12,6 +12,7 @@ window.AppHallBindings = (() => {
     document.querySelector("[data-start-test-battle]")?.addEventListener("click", e => AppActionGuard.run("测试战斗启动失败", ({ isCurrent }) => startTestBattle(isCurrent), { control: e.currentTarget, busyText: "进入中…", captureRun: false }));
     document.querySelectorAll("[data-unlock]").forEach(b => b.onclick = () => AppActionGuard.run("角色孕育失败", ({ state, isCurrent }) => unlockChar(b.dataset.unlock, state, isCurrent), { control: b, captureRun: false, key: `unlock:${b.dataset.unlock}` }));
     bindUnlockCompletes();
+    bindAdvDialogue();
     document.querySelectorAll("[data-deck-filter]").forEach(b => b.onclick = () => updateModalState(() => { getState().deckFilter = b.dataset.deckFilter; }, { persist: false }));
     document.querySelectorAll("[data-card-codex]").forEach(b => b.onclick = e => {
       e.preventDefault();
@@ -62,6 +63,32 @@ window.AppHallBindings = (() => {
     bind("[data-gerda-nursery-unlock-complete]", window.completeGerdaNurseryUnlockEvent);
     bind("[data-hoshino-family-unlock-complete]", window.completeHoshinoFamilyUnlockEvent);
     bind("[data-ruins-sand-city-unlock-complete]", window.completeRuinsSandCityUnlockEvent);
+  }
+  let advKeysBound = false;
+  /* ADV 对话框：一次一句，点对话框/继续/空格推进，结尾才出现解锁按钮。
+     点击与按键都只改 state.adv.index 后重绘，不触碰解锁逻辑。 */
+  function bindAdvDialogue() {
+    const advance = document.querySelector("[data-adv-advance]");
+    if (advance) {
+      advance.onclick = e => { if (e.target.closest("button")) return; window.AdvDialogue?.next(); };
+      // 每次重绘后把焦点收回对话框，空格/回车才会推进而不是被上次的按钮吃掉。
+      if (!advance.contains(document.activeElement)) advance.focus({ preventScroll: true });
+    }
+    const click = (selector, action) => document.querySelector(selector)?.addEventListener("click", e => {
+      e.stopPropagation();
+      action();
+    });
+    click("[data-adv-next]", () => window.AdvDialogue?.next());
+    click("[data-adv-prev]", () => window.AdvDialogue?.prev());
+    click("[data-adv-skip]", () => window.AdvDialogue?.skip());
+    if (advKeysBound) return;
+    advKeysBound = true;
+    document.addEventListener("keydown", e => {
+      if (!document.querySelector("[data-adv-next]")) return;
+      if (e.target?.closest?.("button, input, textarea, select")) return;
+      if (e.key === " " || e.key === "Enter" || e.key === "ArrowRight") { e.preventDefault(); window.AdvDialogue?.next(); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); window.AdvDialogue?.prev(); }
+    });
   }
   function bindShopAndBounty({ getState, render, persist, lockControl, preserveInteractionScroll, updateModalState, askGameConfirm, log }) {
     document.querySelectorAll("[data-shop-refresh]").forEach(b => b.onclick = () => preserveInteractionScroll(() => AppActionGuard.run("商店刷新失败", async ({ state, isCurrent }) => { const ok = await ShopSystem.refresh(state); if (!isCurrent()) return false; log(ok ? "商店库存已刷新。" : "商店刷新失败，请稍后重试。"); render(); if (ok) await persist({ flush: true }); return ok; }, { control: b, busyText: "刷新中…", captureRun: false, key: "shop-operation" })));
