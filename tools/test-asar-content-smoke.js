@@ -1,4 +1,4 @@
-// app.asar 内容冒烟：解包后以 file:// 打开，验证游戏能启动且版本号为 55。
+// app.asar 内容冒烟：解包后以 file:// 打开，验证游戏能启动且版本号与 package.json 一致（随版本自动推断，不写死）。
 // 目的：Electron 加载的就是 asar 内的 index.html（file:// 协议），
 // 用真实浏览器跑一遍可排除打包遗漏/路径错误。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
@@ -39,8 +39,20 @@ const DIR = process.argv[2]
   }
 
   const html = fs.readFileSync(entry, "utf8");
-  T("index.html 版本为 55", /v26\.0915\.55/.test(html));
-  T("index.html 无 54 残留", !/20260915-54/.test(html));
+
+  // 版本号不写死：从 index.html 提取唯一版本戳，并交叉校验徽章与 package.json
+  // （index.html 戳形如 20260915-59，徽章形如 v26.0915.59，package.json 为 26.0915.59）
+  const stamps = [...new Set((html.match(/20260915-\d+/g) || []))].sort();
+  const TAIL = stamps.length ? stamps[0].split("-").pop() : "";
+  T("index.html 版本戳唯一（无旧版残留）", stamps.length === 1, { stamps });
+  T(`index.html 徽章为 v26.0915.${TAIL}`,
+    !!TAIL && html.includes(`v26.0915.${TAIL}`), { tail: TAIL });
+
+  const pkgPath = path.join(DIR, "package.json");
+  if (fs.existsSync(pkgPath)) {
+    const pv = (JSON.parse(fs.readFileSync(pkgPath, "utf8")).version || "").split(".").pop();
+    T("package.json 版本号与 index.html 一致", pv === TAIL, { pkg: pv, html: TAIL });
+  }
 
   const browser = await chromium.launch();
   const page = await browser.newPage();
@@ -74,7 +86,7 @@ const DIR = process.argv[2]
     const el = document.querySelector("[data-version], .version-badge, #version");
     return el ? el.textContent.trim() : (document.body.textContent.match(/v26\.\d+\.\d+/) || [""])[0];
   });
-  T("页面显示版本 55", /55/.test(ver), { ver });
+  T(`页面显示版本 ${TAIL}`, !!TAIL && ver.includes(TAIL), { ver, tail: TAIL });
 
   const imgBroken = await page.evaluate(() => {
     const imgs = [...document.images].filter(i => i.complete && i.naturalWidth === 0);
