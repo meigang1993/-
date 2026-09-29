@@ -41,15 +41,26 @@ const check = (name, cond, info) => {
       { missionId: "orc_dungeon", difficultyId: "warrior" });
     window.render?.();
     await new Promise(r => setTimeout(r, 500));
-    // 只取弹窗内部，避免把大厅里的 <b> 一起匹配进来
+    // ADV 化后一次只显示一句：先渲染拿到总句数，再逐句收集全部台词。
     const html = document.querySelector(".villa-modal")?.innerHTML || "";
+    const total = s.adv?.total || 0;
+    const lines = [];
+    for (let i = 0; i < total; i++) {
+      s.adv.index = i;
+      window.render?.();
+      lines.push((document.querySelector(".adv-name")?.textContent || "")
+        + "：" + (document.querySelector(".adv-text")?.textContent || ""));
+    }
+    s.adv.index = 0;
+    window.render?.();
     return {
       triggered,
       modal: s.hallModal,
       villaModal: !!document.querySelector(".villa-modal"),
       portraits: (html.match(/class="portrait/g) || []).length,
       title: (html.match(/<h2>(.*?)<\/h2>/) || [])[1] || null,
-      lines: [...html.matchAll(/<b>(.*?)<\/b><span>(.*?)<\/span>/g)].map(m => m[1] + "：" + m[2]),
+      lines,
+      firstOnly: document.querySelectorAll(".adv-text").length,
       hasBtn: !!document.querySelector("[data-ruins-sand-city-unlock-complete]"),
     };
   });
@@ -62,6 +73,7 @@ const check = (name, cond, info) => {
   check("标题 = 加撒地区的战事", before.title === "加撒地区的战事", { title: before.title });
   check("立绘数 = 4", before.portraits === 4, { n: before.portraits });
   check("对话行数 = 15", before.lines.length === 15, { n: before.lines.length });
+  check("首屏只显示一句", before.firstOnly === 1, { n: before.firstOnly });
   check("以贝丝妲开场", (before.lines[0] || "").startsWith("贝丝妲："), { first: before.lines[0] });
   check("含「加撒地区」", before.lines.some(l => l.includes("加撒地区")));
   check("含「双胞胎姐姐」「卡迪西斯」",
@@ -72,7 +84,12 @@ const check = (name, cond, info) => {
   const badWords = ["乱交", "派对", "女同", "一夜", "榨", "变态", "轮我", "玩玩", "绿"];
   check("无敏感词残留", !before.lines.some(l => badWords.some(w => l.includes(w))),
     { hit: badWords.filter(w => before.lines.some(l => l.includes(w))) });
-  check("完成按钮存在", before.hasBtn === true);
+  // 解锁按钮只在最后一句出现（首屏是继续/跳过）
+  check("首屏无解锁按钮", before.hasBtn === false);
+  await page.click("[data-adv-skip]");
+  await page.waitForTimeout(200);
+  const endBtn = await page.evaluate(() => !!document.querySelector("[data-ruins-sand-city-unlock-complete]"));
+  check("走到结尾出现解锁按钮", endBtn === true);
 
   await page.click("[data-ruins-sand-city-unlock-complete]");
   await page.waitForTimeout(1500);
