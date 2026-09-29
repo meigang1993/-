@@ -147,6 +147,7 @@
     "app-runtime-errors.js"
   ],
   "hall": [
+    "adv-dialogue.js",
     "villa-event-renderer.js",
     "villa-defeat-events.js",
     "villa-family-events.js",
