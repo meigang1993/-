@@ -28,8 +28,9 @@ window.VillaDefeatEvents = (() => {
       ["贝丝妲", "妈妈答应你，以后只榨你一个人"],
     ];
     return renderer.render({
-      title: "首次全军覆没",
+      key: "firstDefeat", title: "首次全军覆没",
       cast: [
+        { character: character(state, "lokar"), className: "vn-loki" },
         { character: renderer.besta, className: "vn-besta" },
         { character: character(state, "loki"), className: "vn-loki" },
       ],
@@ -57,8 +58,9 @@ window.VillaDefeatEvents = (() => {
       ["贝丝妲", "宝宝，继续变强。别让任何人决定我们的命运。"],
     ];
     return renderer.render({
-      title: "第二次全军覆没",
+      key: "secondDefeat", title: "第二次全军覆没",
       cast: [
+        { character: character(state, "lokar"), className: "vn-loki" },
         { character: renderer.besta, className: "vn-besta" },
         { character: character(state, "carlos"), className: "vn-loki" },
       ],
@@ -85,7 +87,7 @@ window.VillaDefeatEvents = (() => {
       ["曼妮", "好……好的，妈妈……"],
     ];
     return renderer.render({
-      title: "曼妮苏醒后的来客",
+      key: "millerUnlock", title: "曼妮苏醒后的来客",
       cast: [
         { character: renderer.besta, className: "vn-besta" },
         { character: character(state, "manny"), className: "vn-loki" },
