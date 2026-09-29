@@ -126,6 +126,9 @@ const check = (name, cond, info) => {
     window.triggerRuinsSandCityUnlockEvent?.(st, { missionId: "orc_dungeon", difficultyId: "warrior" });
     window.render?.();
     await new Promise(r => setTimeout(r, 400));
+    // ADV 化后首屏只有第一句，完成按钮在最后一句，故先跳到结尾再取 HTML
+    window.AdvDialogue?.skip?.();
+    await new Promise(r => setTimeout(r, 200));
     const html = document.querySelector("#view")?.innerHTML || "";
     return { view: st.view, modal: st.hallModal,
       hasRuins: html.includes("废墟沙城"),
