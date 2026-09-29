@@ -1,6 +1,17 @@
 window.ExtraUnlockEventViews = (() => {
-  const U = () => window.UICommon;
-  function portrait(c) { return c ? `<div class="portrait vn-loki"><img src="${U().esc(c.avatar || c.art)}" alt="${U().esc(c.name)}" loading="lazy" decoding="async"></div>` : ""; }
+  const char = (state, id) => state.chars.find(c => c.id === id);
+  const bestaOf = state => char(state, "besta")
+    || { name: "贝丝妲", art: "./assets/generated/besta-villa-new.3cf7a4f0.webp" };
+  /* 普雷希不在角色栏（剧情人物），专用立绘；原先复用贝丝妲的图会让贝丝妲的脸出现在普雷希身上。 */
+  const preshi = { name: "普雷希", art: "./assets/images/preshi-portrait.fd6b898e.webp" };
+  /* 魅魔女大臣只在杰洛特归还事件里出现两句台词，没有角色栏条目，单独给一张立绘。 */
+  const minister = { name: "魅魔女大臣", art: "./assets/images/succubus-minister-portrait.5f2ba968.webp" };
+  const view = (key, state, title, cast, lines, note, buttonText, action) =>
+    window.AdvDialogue.render({
+      key, title, cast: window.AdvDialogue.cast(state, cast), lines, note,
+      buttonAttribute: `data-${action}`, buttonText,
+    });
+
   function littleElranaUnlock(state) {
     const lines = [
       ["小艾尔拉娜", "母亲！你怎么在这里，是来接我的吗？"],
@@ -10,9 +21,12 @@ window.ExtraUnlockEventViews = (() => {
       ["小艾尔拉娜", "好的，母亲。我想证明自己不是假的。"],
       ["艾尔拉娜", "你是真的。你是妈妈的乖孩子。"],
     ];
-    const elrana = state.chars.find(c => c.id === "elrana"), little = state.chars.find(c => c.id === "little_elrana");
-    return `<div class="first-defeat-event"><h2>克隆体归巢</h2><div class="vn-stage">${portrait(elrana)}${portrait(little)}</div><div class="vn-lines">${lines.map(([n, t]) => `<div class="vn-line"><b>${U().esc(n)}</b><span>${U().esc(t)}</span></div>`).join("")}</div><p class="muted">战斗被强制终止，小艾尔拉娜加入角色栏，队伍返回别墅。</p><div class="actions"><button data-little-elrana-unlock-complete="1">带小艾尔拉娜回别墅</button></div></div>`;
+    return view("littleElranaUnlock", state, "克隆体归巢",
+      [char(state, "elrana"), char(state, "little_elrana")], lines,
+      "战斗被强制终止，小艾尔拉娜加入角色栏，队伍返回别墅。",
+      "带小艾尔拉娜回别墅", "little-elrana-unlock-complete");
   }
+
   function aceUnlock(state) {
     const lines = [
       ["贝丝妲", "艾尔拉娜，你终于醒了。我有事情想问你，你最好老实回答。"],
@@ -28,11 +42,13 @@ window.ExtraUnlockEventViews = (() => {
       ["贝丝妲", "我听说了。里面不断出现了名为凋零者的怪物，世界政府也封锁了很多地区。"],
       ["艾尔拉娜", "母亲，艾斯现在在哪？"],
       ["贝丝妲", "差点忘了。艾伦格把他送回来了。他现在在你房间里，你去找他吧。"],
-      ["艾尔拉娜", "谢谢，母亲。"]
+      ["艾尔拉娜", "谢谢，母亲。"],
     ];
-    const elrana = state.chars.find(c => c.id === "elrana"), ace = state.chars.find(c => c.id === "ace"), besta = { name: "贝丝妲", avatar: "./assets/generated/besta-villa-new.3cf7a4f0.webp" };
-    return `<div class="first-defeat-event"><h2>艾尔拉娜苏醒后的真相</h2><div class="vn-stage">${portrait(besta)}${portrait(elrana)}${portrait(ace)}</div><div class="vn-lines">${lines.map(([n, t]) => `<div class="vn-line"><b>${U().esc(n)}</b><span>${U().esc(t)}</span></div>`).join("")}</div><p class="muted">事件结束后，艾斯将加入角色栏。</p><div class="actions"><button data-ace-unlock-complete="1">结束剧情，解锁艾斯</button></div></div>`;
+    return view("aceUnlock", state, "艾尔拉娜苏醒后的真相",
+      [bestaOf(state), char(state, "elrana"), char(state, "ace")], lines,
+      "事件结束后，艾斯将加入角色栏。", "结束剧情，解锁艾斯", "ace-unlock-complete");
   }
+
   function underwaterTrainUnlock(state) {
     const lines = [
       ["贝丝妲", "宝宝，你看，这是妈妈跟你生的，纯血的女儿。"],
@@ -44,11 +60,14 @@ window.ExtraUnlockEventViews = (() => {
       ["普雷希", "我这次来，想请姐姐孩子们帮我一个忙。人鱼国的列车被狂鲨海盗团劫持，魅魔国和人鱼国航线被切断了。"],
       ["普雷希", "很多我国国民困在了人鱼国。背后的幕后黑手就是世界贵族。"],
       ["贝丝妲", "我会叫孩子们帮你讨伐海盗，不过还有个要求，把艾伦格留下来照顾我。"],
-      ["普雷希", "好的…………"]
+      ["普雷希", "好的…………"],
     ];
-    const besta = state.chars.find(c => c.id === "besta") || { name: "贝丝妲", avatar: "./assets/images/besta-portrait.3dca20b9.webp" }, nanali = state.chars.find(c => c.id === "nanali"), aileng = state.chars.find(c => c.id === "aileng");
-    return `<div class="first-defeat-event"><h2>水下列车求援</h2><div class="vn-stage">${portrait(besta)}${portrait(nanali)}${portrait(aileng)}</div><div class="vn-lines">${lines.map(([n, t]) => `<div class="vn-line"><b>${U().esc(n)}</b><span>${U().esc(t)}</span></div>`).join("")}</div><p class="muted">事件结束后，艾伦格自动加入；副本“水下列车”开放。</p><div class="actions"><button data-underwater-train-unlock-complete="1">接受委托，解锁水下列车</button></div></div>`;
+    return view("underwaterTrainUnlock", state, "水下列车求援",
+      [bestaOf(state), char(state, "manny"), preshi, char(state, "aileng")], lines,
+      "事件结束后，艾伦格自动加入；副本“水下列车”开放。",
+      "接受委托，解锁水下列车", "underwater-train-unlock-complete");
   }
+
   function opheliaUnlock(state) {
     const lines = [
       ["奥菲莉亚", "你就是帮母亲大人夺回列车的勇者？这么可爱一定很好吃。"],
@@ -66,11 +85,13 @@ window.ExtraUnlockEventViews = (() => {
       ["艾伦格", "好……好的。"],
       ["罗卡尔", "什么嘛，原来是拜金女，要不是妈妈要我来，我才不会找别人做我老婆。"],
       ["奥菲莉亚", "罗卡尔……不，亲爱的，海盗背后幕后黑手，是世界贵族，你可要小心，别死在他们手里。"],
-      ["罗卡尔", "他们要来，统统打飞就行了。"]
+      ["罗卡尔", "他们要来，统统打飞就行了。"],
     ];
-    const ophelia = state.chars.find(c => c.id === "ophelia"), lokar = state.chars.find(c => c.id === "lokar"), aileng = state.chars.find(c => c.id === "aileng");
-    return `<div class="first-defeat-event"><h2>人鱼公主的彩礼</h2><div class="vn-stage">${portrait(ophelia)}${portrait(lokar)}${portrait(aileng)}</div><div class="vn-lines">${lines.map(([n, t]) => `<div class="vn-line"><b>${U().esc(n)}</b><span>${U().esc(t)}</span></div>`).join("")}</div><p class="muted">事件结束后，奥菲莉亚加入角色栏。</p><div class="actions"><button data-ophelia-unlock-complete="1">带奥菲莉亚回别墅</button></div></div>`;
+    return view("opheliaUnlock", state, "人鱼公主的彩礼",
+      [char(state, "ophelia"), char(state, "lokar"), char(state, "aileng")], lines,
+      "事件结束后，奥菲莉亚加入角色栏。", "带奥菲莉亚回别墅", "ophelia-unlock-complete");
   }
+
   function bestaNurseryUnlock(state) {
     const lines = [
       ["艾伦格", "大姐，你那个诅咒，我了解一点，我的血精能暂时缓解症状，恢复魔力。"],
@@ -79,10 +100,13 @@ window.ExtraUnlockEventViews = (() => {
       ["贝丝妲", "这样啊，你怎么不早说？这宝珠是魔国硬通货，还能解除大部分诅咒。"],
       ["艾伦格", "那就又要等你儿子收集了。"],
       ["贝丝妲", "那你去帮帮他吧，曼妮会照顾我的。"],
-      ["艾伦格", "好吧，我去帮他。"]
+      ["艾伦格", "好吧，我去帮他。"],
     ];
-    const besta = state.chars.find(c => c.id === "besta") || { name: "贝丝妲", avatar: "./assets/images/besta-portrait.3dca20b9.webp" }, aileng = state.chars.find(c => c.id === "aileng");
-    return `<div class="first-defeat-event"><h2>血精与宝珠</h2><div class="vn-stage">${portrait(aileng)}${portrait(besta)}</div><div class="vn-lines">${lines.map(([n, t]) => `<div class="vn-line"><b>${U().esc(n)}</b><span>${U().esc(t)}</span></div>`).join("")}</div><p class="muted">事件结束后，贝丝妲会在孕育殿堂开放兑换，价格40精华宝珠。</p><div class="actions"><button data-besta-nursery-unlock-complete="1">开放贝丝妲兑换</button></div></div>`;
+    return view("bestaNurseryUnlock", state, "血精与宝珠",
+      [char(state, "aileng"), bestaOf(state)], lines,
+      "事件结束后，贝丝妲会在孕育殿堂开放兑换，价格40精华宝珠。",
+      "开放贝丝妲兑换", "besta-nursery-unlock-complete");
   }
+
   return { littleElranaUnlock, aceUnlock, underwaterTrainUnlock, opheliaUnlock, bestaNurseryUnlock };
 })();
