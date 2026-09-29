@@ -12,6 +12,9 @@ test("offline defeat event can be completed after local settlement", async ({ pa
     window.render();
   });
   await expect(page.locator(".first-defeat-event")).toBeVisible();
+  // ADV 化后一次只显示一句，完成按钮只在最后一句出现
+  await page.evaluate(() => window.AdvDialogue?.skip?.());
+  await expect(page.locator("[data-first-defeat-complete]")).toBeVisible();
   await page.locator("[data-first-defeat-complete]").click();
   await expect(page.locator(".first-defeat-event")).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => ({
