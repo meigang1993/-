@@ -190,7 +190,7 @@ const dependencies = [
   ["dungeon-map.js", "dungeon-icons.js", "dungeon-render.js"],
   ["dungeon-reward-core.js", "dungeon-reward-payload.js", "settlement-recovery.js", "dungeon-settlement-actions.js", "dungeon-node-rewards.js", "dungeon-run-rewards.js", "dungeon-rewards.js"],
   ["battle-action-share-selection.js", "battle-action-selection.js", "battle-action-hand-bindings.js", "battle-action-prompt-bindings.js", "battle-action-target-bindings.js", "battle-action-special-bindings.js", "battle-actions.js"],
-  ["ui-common-skill-model.js", "ui-common-skill-view.js", "ui-common-skills.js", "ui-common-art.js", "ui-common-relics.js", "ui-common.js", "villa-event-renderer.js", "villa-defeat-events.js", "villa-family-events.js", "villa-events.js", "villa.js"],
+  ["ui-common-skill-model.js", "ui-common-skill-view.js", "ui-common-skills.js", "ui-common-art.js", "ui-common-relics.js", "ui-common.js", "adv-dialogue.js", "villa-event-renderer.js", "villa-defeat-events.js", "villa-family-events.js", "villa-events.js", "villa.js"],
   ["villa-test.js", "villa.js"],
   ["app.js", "app-battle-persistence.js", "app-settings-persistence.js", "app-persistence.js", "app-state.js", "app-render.js"],
   ["data-skins.js", "skins.js"],
