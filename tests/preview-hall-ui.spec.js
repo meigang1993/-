@@ -138,11 +138,10 @@ test("announcement and every unlock event keep scrolling inside their content", 
     await page.evaluate(name => { window.state.hallModal = name; window.render(); }, modal);
     await expect(page.locator(".modal-card.event-modal")).toHaveCount(1);
     expect(await measure(".modal-card.event-modal")).toMatchObject({ overflowY: "hidden" });
-    const lines = page.locator(".vn-lines");
-    if (await lines.count()) {
-      expect(await measure(".vn-lines")).toEqual({ scrollable: true, overflowY: "auto" });
-    }
-    await expect(page.locator(".event-modal .actions button")).toBeVisible();
+    // ADV 化后一次一句：对话框存在且不可滚动，按钮（继续/跳过）可见
+    await expect(page.locator(".event-modal .adv-box")).toBeVisible();
+    expect(await measure(".event-modal .adv-box")).toMatchObject({ scrollable: false });
+    await expect(page.locator(".event-modal .adv-actions button").first()).toBeVisible();
   }
 });
 
