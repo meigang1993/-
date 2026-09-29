@@ -1,15 +1,10 @@
 window.NewCharacterUnlockEvents = (() => {
-  const U = () => window.UICommon;
   const defeated = (state, id) => (state.defeatedElites || []).includes(id);
-  function portrait(state, id) {
-    const character = state.chars.find(item => item.id === id);
-    const art = character?.avatar || character?.art;
-    return character && art ? `<div class="portrait vn-loki"><img src="${U().esc(art)}" alt="${U().esc(character.name)}" loading="lazy" decoding="async"></div>` : "";
-  }
-  function eventView(state, title, ids, lines, note, button, action) {
-    const portraits = ids.map(id => portrait(state, id)).join("");
-    const dialogue = lines.map(([name, text]) => `<div class="vn-line"><b>${U().esc(name)}</b><span>${U().esc(text)}</span></div>`).join("");
-    return `<div class="first-defeat-event"><h2>${U().esc(title)}</h2><div class="vn-stage">${portraits}</div><div class="vn-lines">${dialogue}</div><p class="muted">${U().esc(note)}</p><div class="actions"><button data-${action}="1">${U().esc(button)}</button></div></div>`;
+  function eventView(key, state, title, ids, lines, note, button, action) {
+    return window.AdvDialogue.render({
+      key, title, cast: window.AdvDialogue.cast(state, ids), lines, note,
+      buttonAttribute: `data-${action}`, buttonText: button,
+    });
   }
   function gerdaUnlock(state) {
     const lines = [
@@ -18,7 +13,10 @@ window.NewCharacterUnlockEvents = (() => {
       ["罗卡尔", "欢迎你，格尔达。不过出发前要先准备好殿堂的魔力。"],
       ["格尔达", "那就快点准备吧，下一场战斗我可不想错过。"],
     ];
-    return eventView(state, "兽人公主格尔达", ["gerda", "lokar"], lines, "事件结束后，格尔达会在孕育殿堂开放兑换，价格20精华宝珠。", "开放格尔达兑换", "gerda-nursery-unlock-complete");
+    /* 邦迪是精英怪、不在角色栏，按名字直接挂他的立绘，否则这句台词无人对应。 */
+    const bondi = { name: "兽人王邦迪", art: "./assets/new-portraits/orc-king-bondi.2f15201d.webp" };
+    return eventView("gerdaNurseryUnlock", state, "兽人公主格尔达", [bondi, "gerda", "lokar"], lines,
+      "事件结束后，格尔达会在孕育殿堂开放兑换，价格20精华宝珠。", "开放格尔达兑换", "gerda-nursery-unlock-complete");
   }
   function hoshinoUnlock(state) {
     const lines = [
@@ -27,7 +25,8 @@ window.NewCharacterUnlockEvents = (() => {
       ["星野海一", "不管你现在是什么样子，我都愿意相信你。"],
       ["罗卡尔", "既然你们决定同行，就一起回殿堂吧。"],
     ];
-    return eventView(state, "未完的巨蛋演出", ["hoshino_yi", "hoshino_kaiichi", "aileng"], lines, "事件结束后，星野依与星野海一会同时加入角色栏。", "邀请星野一家入队", "hoshino-family-unlock-complete");
+    return eventView("hoshinoFamilyUnlock", state, "未完的巨蛋演出", ["aileng", "hoshino_yi", "hoshino_kaiichi", "lokar"], lines,
+      "事件结束后，星野依与星野海一会同时加入角色栏。", "邀请星野一家入队", "hoshino-family-unlock-complete");
   }
   function ruinsSandCityUnlock(state) {
     const lines = [
@@ -47,7 +46,7 @@ window.NewCharacterUnlockEvents = (() => {
       ["罗卡尔", "这样啊。那明天一早出发，先去加撒地区和姐姐们会合。"],
       ["贝丝妲", "路上小心，别让我担心。"],
     ];
-    return eventView(state, "加撒地区的战事", ["besta", "lokar", "artina", "maria"], lines,
+    return eventView("ruinsSandCityUnlock", state, "加撒地区的战事", ["besta", "lokar", "artina", "maria"], lines,
       "事件结束后，副本“废墟沙城”开放，亚缇娜与玛利亚加入角色栏。",
       "解锁废墟沙城并邀请新角色", "ruins-sand-city-unlock-complete");
   }
