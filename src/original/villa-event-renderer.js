@@ -7,25 +7,10 @@ window.VillaEventRenderer = (() => {
     skills: [],
   };
 
-  function portrait(character, extraClass) {
-    const art = character.avatar || character.art;
-    const title = ui.esc(ui.skillSummary(character));
-    const className = `portrait${extraClass ? ` ${extraClass}` : ""}`;
-    if (!art) {
-      return `<div class="${className}" title="${title}">${character.face}</div>`;
-    }
-    return `<div class="${className}" title="${title}" data-art-src="${ui.esc(art)}" data-art-name="${ui.esc(character.name || "")}"><img src="${ui.esc(art)}" alt="${ui.esc(character.name || "角色")}" loading="lazy" decoding="async"></div>`;
-  }
-
-  function render({
-    title, cast, lines, note, buttonAttribute, buttonText,
-  }) {
-    const portraits = cast.filter(item => item.character)
-      .map(item => portrait(item.character, item.className)).join("");
-    const dialogue = lines.map(([name, text]) =>
-      `<div class="vn-line"><b>${ui.esc(name)}</b><span>${ui.esc(text)}</span></div>`)
-      .join("");
-    return `<div class="first-defeat-event"><h2>${title}</h2><div class="vn-stage">${portraits}</div><div class="vn-lines">${dialogue}</div><p class="muted">${note}</p><div class="actions"><button ${buttonAttribute}="1">${buttonText}</button></div></div>`;
+  /* 全部解锁事件改为 ADV 对话框：一次一句、说话者立绘高亮、点击推进，
+     结尾才出现解锁按钮。渲染交给 AdvDialogue，各事件只需提供台词与登场角色。 */
+  function render(options) {
+    return window.AdvDialogue.render(options);
   }
 
   return { besta, render };
