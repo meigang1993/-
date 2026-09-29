@@ -15,12 +15,18 @@ window.VillaFamilyEvents = (() => {
       ["魅魔女大臣", "我就怕万一。"],
       ["普雷希", "出了什么事，妾身一人承担。"],
     ];
+    /* 普雷希与魅魔女大臣都不在角色栏里，按名字与专用立绘直接挂上，
+       否则这两人说话时立绘区无人高亮（此前普雷希一直错用贝丝妲的立绘）。 */
+    const preshi = { name: "普雷希", art: "./assets/images/preshi-portrait.fd6b898e.webp" };
+    const minister = { name: "魅魔女大臣", art: "./assets/images/succubus-minister-portrait.5f2ba968.webp" };
     return renderer.render({
-      title: "贝尔蒂丝苏醒后的归还",
+      key: "gerlotUnlock", title: "贝尔蒂丝苏醒后的归还",
       cast: [
         { character: renderer.besta, className: "vn-besta" },
         { character: character(state, "bertis"), className: "vn-loki" },
         { character: character(state, "gerlot"), className: "vn-loki" },
+        { name: preshi.name, art: preshi.art, className: "vn-loki" },
+        { name: minister.name, art: minister.art, className: "vn-loki" },
       ],
       lines,
       note: "事件结束后，杰洛特将加入角色栏。",
@@ -45,7 +51,7 @@ window.VillaFamilyEvents = (() => {
       ["卡迪西斯", "我会回来的，母亲。不要为我担心。我想为他死去的家人报仇。"],
     ];
     return renderer.render({
-      title: "温蒂苏醒后的战地来客",
+      key: "cadicisUnlock", title: "温蒂苏醒后的战地来客",
       cast: [
         { character: renderer.besta, className: "vn-besta" },
         { character: character(state, "wendy"), className: "vn-loki" },
@@ -78,7 +84,7 @@ window.VillaFamilyEvents = (() => {
       ["贝丝妲", "不要紧。她从来没有对任何人温柔过——除了鲁卡。推我回卧室吧，曼妮。妈妈累了。"],
     ];
     return renderer.render({
-      title: "安洁莉卡苏醒后的别墅重逢",
+      key: "lukaUnlock", title: "安洁莉卡苏醒后的别墅重逢",
       cast: [
         { character: renderer.besta, className: "vn-besta" },
         { character: character(state, "besta_doll"), className: "vn-loki" },
