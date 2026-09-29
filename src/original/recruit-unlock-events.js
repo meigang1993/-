@@ -1,15 +1,10 @@
 window.RecruitUnlockEvents = (() => {
-  const U = () => window.UICommon;
   const defeated = (state, id) => (state.defeatedElites || []).includes(id);
-  function portrait(character) {
-    if (!character) return "";
-    const art = character.avatar || character.art;
-    return `<div class="portrait vn-loki"><img src="${U().esc(art)}" alt="${U().esc(character.name)}" loading="lazy" decoding="async"></div>`;
-  }
-  function eventView(state, title, ids, lines, note, button, action) {
-    const portraits = ids.map(id => portrait(state.chars.find(character => character.id === id))).join("");
-    const dialogue = lines.map(([name, text]) => `<div class="vn-line"><b>${U().esc(name)}</b><span>${U().esc(text)}</span></div>`).join("");
-    return `<div class="first-defeat-event"><h2>${U().esc(title)}</h2><div class="vn-stage">${portraits}</div><div class="vn-lines">${dialogue}</div><p class="muted">${U().esc(note)}</p><div class="actions"><button data-${action}="1">${U().esc(button)}</button></div></div>`;
+  function eventView(key, state, title, ids, lines, note, button, action) {
+    return window.AdvDialogue.render({
+      key, title, cast: window.AdvDialogue.cast(state, ids), lines, note,
+      buttonAttribute: `data-${action}`, buttonText: button,
+    });
   }
   function soniaUnlock(state) {
     const lines = [
@@ -25,7 +20,10 @@ window.RecruitUnlockEvents = (() => {
       ["罗卡尔", "连名字都不像人，还是我给你取名吧……你就叫索尼娅吧。"],
       ["XX型凋零者1124号", "好吧，知道了，快去准备宝珠。"],
     ];
-    return eventView(state, "混沌之女索尼娅", ["sonia", "lokar"], lines, "事件结束后，索尼娅会在孕育殿堂开放兑换，价格50精华宝珠。", "开放索尼娅兑换", "sonia-nursery-unlock-complete");
+    /* 台词署名是变身前的代号“XX型凋零者1124号”，角色栏里叫索尼娅，故按代号补一条登场项。 */
+    const withered = { name: "XX型凋零者1124号", art: state.chars.find(c => c.id === "sonia")?.art || "" };
+    return eventView("soniaNurseryUnlock", state, "混沌之女索尼娅", [withered, "lokar"], lines,
+      "事件结束后，索尼娅会在孕育殿堂开放兑换，价格50精华宝珠。", "开放索尼娅兑换", "sonia-nursery-unlock-complete");
   }
   function chiyoUnlock(state) {
     const lines = [
@@ -45,7 +43,8 @@ window.RecruitUnlockEvents = (() => {
       ["橘千樱", "就在天日国，那里非常危险。这几天我跟你一起冒险，让我看看你有没有这个实力去。"],
       ["罗卡尔", "好吧，我一定不会让你失望的。"],
     ];
-    return eventView(state, "鹰7部队的线索", ["chiyo", "lokar"], lines, "事件结束后，橘千樱直接加入角色栏。", "接受委托，邀请橘千樱入队", "chiyo-recruit-unlock-complete");
+    return eventView("chiyoRecruitUnlock", state, "鹰7部队的线索", ["chiyo", "lokar"], lines,
+      "事件结束后，橘千樱直接加入角色栏。", "接受委托，邀请橘千樱入队", "chiyo-recruit-unlock-complete");
   }
   function triggerPending(state) {
     if (state.view !== "hall" || state.hallModal || state.battle || state.explore) return false;
