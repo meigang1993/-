@@ -40,7 +40,7 @@ const aileng = runAilengCoverage(state, { assert, card, unitFromCharacter });
 
 window.SkinSystem.applyToChar = (_state, character) => character;
 [
-  "villa-event-renderer.js", "villa-defeat-events.js", "villa-family-events.js",
+  "adv-dialogue.js", "villa-event-renderer.js", "villa-defeat-events.js", "villa-family-events.js",
   "villa-events.js", "villa-team.js",
 ].forEach(file => vm.runInThisContext(fs.readFileSync(`./src/original/${file}`, "utf8"), { filename: file }));
 const teamState = {
@@ -80,7 +80,14 @@ recruitState.chars.find(character => character.id === "chiyo").locked = false;
 recruitState.flags.chiyoRecruitUnlockSeen = true;
 recruitState.hallModal = null;
 assert(RecruitUnlockEvents.triggerPending(recruitState) && recruitState.hallModal === "soniaNurseryUnlock", "Sonia nursery event must follow after defeating XX Witherer 1124");
-assert(RecruitUnlockEvents.soniaUnlock(recruitState).includes("价格50精华宝珠"), "Sonia event must state the 50-orb nursery price");
+/* ADV 化后首屏只显示第一句，结算说明（含兑换价）只在结尾那一句出现，
+   故先渲染一次拿到总句数，再跳到结尾断言——否则这条会变成永远不成立的死断言。 */
+window.state = recruitState;
+RecruitUnlockEvents.soniaUnlock(recruitState);
+assert(recruitState.adv?.total > 1, "Sonia event must advance line by line");
+recruitState.adv.index = recruitState.adv.total - 1;
+assert(RecruitUnlockEvents.soniaUnlock(recruitState).includes("价格50精华宝珠"), "Sonia event must state the 50-orb nursery price on its final line");
+recruitState.adv.index = 0;
 
 for (const relic of allRelics) {
   const data = RelicSystem.data(relic.name);
