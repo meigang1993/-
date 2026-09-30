@@ -55,6 +55,7 @@ window.ElranaHealingSkills = deps => {
         any = true;
         window.EnemySkills?.onHeal?.(state, api.draw);
         afterHeal(state, target, api, actor, assistToken);
+        window.HitwellSkills?.afterHeal?.(state, target, healed, api);
       }
       api.pushFloat?.(state.battle, target.uid, "heal", healed);
     });
