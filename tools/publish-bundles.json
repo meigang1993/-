@@ -329,7 +329,8 @@
     "guest-ophelia-guard.js",
     "guest-aileng-skills.js",
     "guest-characters-skills.js",
-    "catherine-skills.js"
+    "catherine-skills.js",
+    "hitwell-skills.js"
   ],
   "battle-flow": [
     "battle-counter-triggers.js",
