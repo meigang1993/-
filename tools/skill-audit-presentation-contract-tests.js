@@ -10,11 +10,11 @@ module.exports = ({ assert, unit }) => {
   const skills = templates.flatMap(template => template.skills || []);
   const relics = Object.keys({ ...GameDataRelics, ...GameDataFutureRelics });
 
-  assert(GameData.characters.length === 29,
-    "skill audit must cover all 29 playable characters");
+  assert(GameData.characters.length === 30,
+    "skill audit must cover all 30 playable characters");
   assert(enemies.length === 36, "skill audit must cover all 36 enemies");
-  assert(GameData.characters.flatMap(template => template.skills || []).length === 77,
-    "skill audit must cover all 77 playable-character skills");
+  assert(GameData.characters.flatMap(template => template.skills || []).length === 80,
+    "skill audit must cover all 80 playable-character skills");
   assert(enemies.flatMap(template => template.skills || []).length === 72,
     "skill audit must cover all 72 enemy skills");
   assert(relics.length === 30, "relic audit must cover all 30 formal relics");
