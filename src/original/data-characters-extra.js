@@ -122,5 +122,15 @@ window.GameDataCharactersExtra = [
       { name: "知识吸收", type: "passive", icon: "⭐", text: "锁定技，当场上其他角色使用实体战术牌结算完毕后，你获得该使用过的实体牌。" },
       { name: "魔力增幅", type: "passive", icon: "⭐", text: "锁定技，你每有一张战术牌，你魔力+1。若你魔力是全场最多，你使用战术牌不可被响应。" }
     ]
+  },
+  {
+    id: "hitwell", name: "希特威", gender: "male", face: "希", art: "./assets/images/hitwell-portrait.6af64b8e.webp", avatar: "./assets/images/hitwell-portrait.6af64b8e.webp", role: "天使少年·罗卡尔生父", locked: true,
+    stats: { attack: 3, magic: 3, speed: 4, maxHp: 34, bloodlust: 2, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
+    evaluation: "自愈、治疗共享与受伤索牌反制。神心自愈在使用或打出红桃牌时以自身魔力值回血，天使血愈把自身的恢复量同步给其他友方角色，心血之咒在受伤后向伤害来源索取红桃牌，索取失败则以自身攻击力反击。",
+    skills: [
+      { name: "天使血愈", type: "passive", icon: "⭐", text: "锁定技，当你恢复生命值后，其他友方角色也恢复等量生命值。" },
+      { name: "心血之咒", type: "passive", icon: "⭐", text: "锁定技，当你受到伤害后，伤害来源须交给你一张♥红桃牌。若其未交牌，你对其造成等同于你攻击力的伤害。" },
+      { name: "神心自愈", type: "passive", icon: "⭐", text: "锁定技，当你使用或打出♥红桃牌时，你恢复等同于你魔力值的生命值。" }
+    ]
   }
 ];
