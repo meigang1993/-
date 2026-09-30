@@ -1,4 +1,5 @@
-// 管家手册「魅魔目标」分母恒为 29 检查（浏览器）
+// 管家手册「魅魔目标」分母恒为全部可培养角色数检查（浏览器）
+// 分母取自 GameData.characters 模板（当前 30 名），不随解锁进度增长。
 // 需求：未解锁的魅魔也要占位显示灰剪影，分母不能随解锁进度增长。
 // 场景：新档（仅 2 名解锁）/ 全解锁 0 级 / 部分满级 / 满级后无灰剪影。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
@@ -16,7 +17,7 @@ const T = (name, cond, extra) => {
   return !!cond;
 };
 
-const EXPECT_TOTAL = 29;
+const EXPECT_TOTAL = 30;
 
 (async () => {
   const browser = await chromium.launch();
@@ -80,7 +81,7 @@ const EXPECT_TOTAL = 29;
   T("灰剪影用 face 占位而非头像图", s.face === s.locked && s.img === s.unlockedChars, s);
   T(`底部显示「已满级：0 / ${EXPECT_TOTAL}」（分母不随解锁数变化）`,
     s.sum === `已满级：0 / ${EXPECT_TOTAL}`, s);
-  T("总览分母为 29", s.heroes.total === EXPECT_TOTAL, s.heroes);
+  T(`总览分母为 ${EXPECT_TOTAL}`, s.heroes.total === EXPECT_TOTAL, s.heroes);
 
   // ================= 场景2：全解锁但都 0 级 =================
   console.log("—— 场景2：全部解锁、均为 0 级 ——");
@@ -121,7 +122,7 @@ const EXPECT_TOTAL = 29;
   T(`底部为「已满级：${EXPECT_TOTAL} / ${EXPECT_TOTAL}」`, s.sum === `已满级：${EXPECT_TOTAL} / ${EXPECT_TOTAL}`, s);
 
   // ================= 场景5：存档 chars 不完整 =================
-  // 加固点：分母由角色模板决定，即便存档只留了已解锁角色，也要补出 29 个占位
+  // 加固点：分母由角色模板决定，即便存档只留了已解锁角色，也要补齐全部占位
   console.log("—— 场景5：存档只含 2 名已解锁角色 ——");
   await page.evaluate(() => {
     state.chars = (window.GameData?.characters || []).slice(0, 2).map(c => ({ id: c.id, level: 20, locked: false }));
