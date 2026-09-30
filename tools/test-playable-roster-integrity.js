@@ -17,7 +17,7 @@ const nurseryIds = [
 const eventIds = [
   "miller", "gerlot", "cadicis", "luka", "loki", "carlos",
   "little_elrana", "ace", "aileng", "ophelia", "chiyo",
-  "hoshino_yi", "hoshino_kaiichi", "artina", "maria",
+  "hoshino_yi", "hoshino_kaiichi", "artina", "maria", "hitwell",
 ];
 // 前置角色解锁后自动加入，无独立解锁入口（凯瑟琳：曼妮解锁后自动加入）
 const autoIds = ["catherine"];
@@ -25,9 +25,9 @@ const autoIds = ["catherine"];
 function assertRosterPartition() {
   const ids = GameData.characters.map(character => character.id);
   const routes = [...initialIds, ...nurseryIds, ...eventIds, ...autoIds];
-  assert(ids.length === 29 && new Set(ids).size === 29,
-    "the playable roster must contain 29 unique characters");
-  assert(routes.length === 29 && new Set(routes).size === 29,
+  assert(ids.length === 30 && new Set(ids).size === 30,
+    "the playable roster must contain 30 unique characters");
+  assert(routes.length === 30 && new Set(routes).size === 30,
     "every playable character must have exactly one unlock route");
   assert([...routes].sort().join(",") === [...ids].sort().join(","),
     "the unlock-route matrix must cover the complete playable roster");
@@ -55,6 +55,8 @@ async function testAllCharactersUnlock() {
   state.flags.ruinsSandCityUnlockPending = true;
   state.defeatedElites.push(
     "xx_witherer_1124", "mechanical_bull_king", "demon_king_bakaar",
+    // 希特威：首次击败内英组杀手伊迪斯后回到别墅触发，伊迪斯计入 defeatedElites
+    "pursuer_edis",
   );
   for (const id of ["besta_nursery", "sonia_nursery", "gerda_nursery"]) {
     const result = await ServerCore.call("unlockEvent", { id }, state);
@@ -67,7 +69,7 @@ async function testAllCharactersUnlock() {
   for (const id of [
     "miller", "gerlot", "cadicis", "luka", "little_elrana", "ace",
     "underwater_train", "ophelia", "chiyo_recruit", "hoshino_family",
-    "ruins_sand_city",
+    "ruins_sand_city", "hitwell",
   ]) {
     const result = await ServerCore.call("unlockEvent", { id }, state);
     assert(result.changed, `${id} must complete its character unlock route`);
