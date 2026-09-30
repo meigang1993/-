@@ -39,6 +39,7 @@ const HEROES = [
   "芙萝娅", "贝尔蒂丝", "娜娜莉", "洛基", "卡洛斯", "米勒", "杰洛特", "鲁卡",
   "卡迪西斯", "艾斯", "奥菲莉亚", "艾伦格", "格尔达", "星野依", "星野海一",
   "索尼娅", "橘千樱", "亚缇娜", "玛利亚", "小艾尔拉娜", "贝丝妲", "凯瑟琳",
+  "希特威",
 ];
 const MISSION_NAMES = ["魔国机械工厂", "水下列车", "兽人地下城", "废墟沙城"];
 const DIFF_NAMES = ["普通级", "冒险级", "勇士级", "王者级", "英雄级"];
@@ -88,7 +89,7 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
   }
   const allElite = Object.values(data.groups).flatMap(g => g.elite);
   T("精英共 12 名且与清单一致", allElite.length === 12 && same(allElite, ELITES), allElite);
-  T("英雄共 29 名且与清单一致", data.heroes.length === 29 && same(data.heroes, HEROES), data.heroes.length);
+  T("魅魔共 30 名且与清单一致", data.heroes.length === 30 && same(data.heroes, HEROES), data.heroes.length);
   T("满级线为 20 级", data.maxLevel === 20, data.maxLevel);
   T(`管家名为「${BUTLER_NAME}」`, data.butlerName === BUTLER_NAME, data.butlerName);
 
@@ -124,16 +125,18 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
   // 魅魔目标
   await tab(page, "hero");
   const heroNames = (await texts(page, ".butler-hero b")).map(s => s.trim());
-  T("魅魔目标列出 29 名", same(heroNames, HEROES), heroNames.length);
+  T("魅魔目标列出 30 名", same(heroNames, HEROES), heroNames.length);
   const lv = await page.locator(".butler-hero small").first().textContent();
   T("等级显示为 X/20", /\/\s*20$/.test((lv || "").trim()), { lv });
 
   // 探索目标
   await tab(page, "explore");
   const exploreRows = (await texts(page, ".butler-row b")).map(s => s.trim());
-  const wantExplore = [];
+  const wantExplore = ["完成新手引导首战"];
   MISSION_NAMES.forEach(m => DIFF_NAMES.forEach(d => wantExplore.push(`通关${m} - ${d}`)));
-  T("探索目标为 4 副本 × 5 难度（20 条）", same(exploreRows, wantExplore), exploreRows.length);
+  T("探索目标为 新手引导首战 + 4 副本 × 5 难度（21 条）", same(exploreRows, wantExplore), exploreRows.length);
+  const tutDone = await page.evaluate(() => window.ButlerManualProgress.tutorialDone(window.state));
+  T("新档时新手引导首战未完成", tutDone === false, { tutDone });
 
   // ============ 三、记录后点亮 ============
   await page.evaluate(() => {
