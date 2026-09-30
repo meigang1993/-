@@ -180,7 +180,20 @@ T("其他副本普通怪属性未被本次改动影响", () => {
   });
 });
 
-// 11. 定位校验：废墟普通怪应强于前置副本普通怪（后期副本耐久）
+// 11. 废墟沙城全部敌人基础属性快照（本次只改难度倍率，不得改动基础属性）
+T("废墟沙城敌人基础属性未被本次改动影响", () => {
+  const crypto = require("crypto");
+  const rows = ruins.map(e => [
+    e.id, e.type, e.hp, e.attack, e.magic, e.speed,
+    e.bloodlust, e.handLimit, e.drawPerTurn, e.initialDraw,
+  ].join("/")).sort();
+  const digest = crypto.createHash("sha256").update(rows.join("\n")).digest("hex");
+  assert.strictEqual(digest,
+    "3416e91ed46bc2c9d0329c254a2a5bc25591006e3768cb6648e9943a1e943230",
+    "废墟沙城敌人基础属性被改动（快照不匹配）");
+});
+
+// 12. 定位校验：废墟普通怪应强于前置副本普通怪（后期副本耐久）
 T("废墟普通怪强度高于机械工厂与水下列车", () => {
   OTHER.forEach(key => {
     const list = (W.enemies[key] || []).filter(e => e.type === "normal");
