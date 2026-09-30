@@ -28,6 +28,8 @@ window.BattleCardResumeHooks = (api, stateApi) => {
       window.RuinsRelicEffects?.afterCardPlayed?.(state, actor, target, card, deps.draw),
       (state, actor, target, card) =>
         window.CatherineSkills?.afterCardPlayed?.(state, actor, card),
+      (state, actor, target, card) =>
+        window.HitwellSkills?.afterCardPlayed?.(state, actor, card, api),
   ];
 
   function cleanup(card) {
