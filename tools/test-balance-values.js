@@ -53,6 +53,7 @@ const expectedCharacters = {
   artina: { attack: 3, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
   maria: { attack: 3, magic: 3, speed: 4, maxHp: 38, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
   catherine: { attack: 1, magic: 3, speed: 2, maxHp: 28, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
+  hitwell: { attack: 3, magic: 3, speed: 4, maxHp: 34, bloodlust: 2, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
 };
 assert.strictEqual(Object.keys(expectedCharacters).length, GameDataCharacters.length,
   "every character needs a complete initial-stat baseline");
@@ -75,6 +76,7 @@ const expectedGrowth = {
   hoshino_yi: [109.2, 19.11, 19.11, 15.75], hoshino_kaiichi: [184.8, 8.19, 19.11, 10.5],
   artina: [84, 24.57, 8.19, 21], maria: [117.6, 16.38, 16.38, 17.5],
   catherine: [84, 5.46, 21.84, 7],
+  hitwell: [100.8, 13.65, 21.84, 17.5],
 };
 assert.strictEqual(Object.keys(expectedGrowth).length, GameDataCharacters.length,
   "every character needs a complete growth baseline");
@@ -176,9 +178,73 @@ assert.strictEqual(GameEconomy.relic.smeltGold, 180);
 const difficulties = Object.values(GameDataWorld.difficulties);
 assert.deepStrictEqual(difficulties.map(item => item.reward), [1, 1.35, 1.75, 2.2, 2.75]);
 assert.deepStrictEqual(difficulties.map(item => item.xp), [1, 1.15, 1.35, 1.6, 1.9]);
-assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.hp), [1, 1.35, 1.75, 2.3, 3.2]);
-assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.power), [1, 1.1, 1.22, 1.36, 1.52]);
+assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.hp), [1, 1.25, 1.55, 1.95, 2.45]);
+assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.power), [1, 1.08, 1.16, 1.26, 1.38]);
 assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.06, 1.12, 1.19, 1.27]);
+
+// 难度倍率严格递增（生命 / 输出），速度维持原表，XP 维持原表
+(() => {
+  const hp = difficulties.map(item => item.enemy.normal.hp);
+  const power = difficulties.map(item => item.enemy.normal.power);
+  const speed = difficulties.map(item => item.enemy.normal.speed);
+  const strictlyUp = list => list.every((v, i) => i === 0 || v > list[i - 1]);
+  assert.ok(strictlyUp(hp), `难度生命倍率未严格递增: ${hp.join("→")}`);
+  assert.ok(strictlyUp(power), `难度输出倍率未严格递增: ${power.join("→")}`);
+  assert.ok(strictlyUp(speed), `难度速度倍率未严格递增: ${speed.join("→")}`);
+  assert.strictEqual(difficulties[4].enemy.normal.speed, 1.27,
+    `英雄级速度倍率应为 1.27，实际 ${difficulties[4].enemy.normal.speed}`);
+  assert.deepStrictEqual(difficulties.map(item => item.xp), [1, 1.15, 1.35, 1.6, 1.9]);
+  // elite / boss 与 normal 同倍率，避免只改了普通档导致精英不跟随
+  ["elite", "boss"].forEach(kind => {
+    assert.deepStrictEqual(difficulties.map(item => item.enemy[kind].hp), hp,
+      `${kind} 生命倍率与 normal 不一致`);
+    assert.deepStrictEqual(difficulties.map(item => item.enemy[kind].power), power,
+      `${kind} 输出倍率与 normal 不一致`);
+  });
+})();
+
+// attrText 与倍率一致（界面展示不得停留在旧倍率）
+(() => {
+  const expected = [
+    ["冒险级", "生命125%/输出108%/速度106%"],
+    ["勇士级", "生命155%/输出116%/速度112%"],
+    ["王者级", "生命195%/输出126%/速度119%"],
+    ["英雄级", "生命245%/输出138%/速度127%/精英与BOSS携带掉落饰品技能"],
+  ];
+  expected.forEach(([name, text]) => {
+    const d = difficulties.find(item => item.name === name);
+    assert.strictEqual(d.attrText, text, `${name} attrText 为「${d.attrText}」，应为「${text}」`);
+  });
+  assert.strictEqual(difficulties[0].attrText, "基础", "普通级 attrText 应为「基础」");
+})();
+
+// 0～20 级角色成长数据未改变（全角色 × 全等级属性快照）
+(() => {
+  const crypto = require("crypto");
+  const progression = window.CharacterProgression;
+  assert.ok(progression?.statsAt, "未取到 CharacterProgression.statsAt，快照失效");
+  assert.strictEqual(progression.maxLevel, 20, "满级应为 20");
+  assert.strictEqual(progression.expToNext.reduce((a, b) => a + b, 0), 47710,
+    "升级经验总需求被改动");
+  const rows = GameDataCharacters.map(character => {
+    const levels = [];
+    for (let level = 0; level <= progression.maxLevel; level += 1) {
+      const s = progression.statsAt(character, level);
+      levels.push([s.maxHp, s.attack, s.magic, s.speed].join("/"));
+    }
+    return `${character.id}|${levels.join(",")}`;
+  }).sort();
+  const digest = crypto.createHash("sha256").update(rows.join("\n")).digest("hex");
+  assert.strictEqual(digest,
+    "85ff632eb9acb13b7602c74f07b3c8ffae1d499fb2ca9c549e6a340866814c1e",
+    "0～20 级角色成长数据被改动（快照不匹配）");
+  const lokar = GameDataCharacters.find(character => character.id === "lokar");
+  assert.deepStrictEqual(
+    [progression.statsAt(lokar, 0).maxHp, progression.statsAt(lokar, 20).maxHp],
+    [36, 137],
+    "罗卡尔 0/20 级生命与预期不符",
+  );
+})();
 difficulties.forEach(difficulty => {
   allEnemies.forEach(enemy => {
     const scaled = GameDataWorld.scaleEnemyStats(enemy, difficulty, enemy.type);
