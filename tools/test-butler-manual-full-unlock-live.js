@@ -18,7 +18,9 @@ const T = (name, cond, extra) => {
 };
 
 const EXPECT = {
-  boss: 8, elite: 12, missions: 4, heroes: 29, diffs: 5,
+  boss: 8, elite: 12, missions: 4, heroes: 30, diffs: 5,
+  // 探索目标 = 4 副本 × 5 难度 + 新手引导首战 1 条
+  explore: 4 * 5 + 1,
 };
 
 (async () => {
@@ -106,8 +108,13 @@ const EXPECT = {
     });
     // 全部魅魔设为 20 级且已解锁
     state.chars = (window.GameData?.characters || []).map(c => ({ id: c.id, level: 20, locked: false }));
+    // 新手引导首战（探索目标页签的第一条）：走 Onboarding 真实完成入口
+    state.flags = state.flags || {};
+    if (!window.Onboarding.complete(state)) {
+      state.flags.onboarding = { version: window.Onboarding.VERSION, step: "hall", completed: true, skipped: false };
+    }
     return {
-      bossN, eliteN, clearN,
+      bossN, eliteN, clearN, tutorialDone: window.ButlerManualProgress.tutorialDone(state),
       chars: state.chars.length,
       feats: (state.butlerFeats || []).length,
     };
@@ -119,6 +126,7 @@ const EXPECT = {
     rec.eliteN === EXPECT.elite * EXPECT.diffs, rec);
   T(`探索目标全部记录（${EXPECT.missions}×${EXPECT.diffs}）`,
     rec.clearN === EXPECT.missions * EXPECT.diffs, rec);
+  T("新手引导首战计入探索目标", rec.tutorialDone === true, rec);
   T(`成果总数 = ${EXPECT.boss * 5 + EXPECT.elite * 5 + EXPECT.missions * 5}`,
     rec.feats === (EXPECT.boss + EXPECT.elite + EXPECT.missions) * EXPECT.diffs, rec);
 
@@ -132,7 +140,7 @@ const EXPECT = {
   console.log(`   ${JSON.stringify(ov.boss)} ${JSON.stringify(ov.elite)} ${JSON.stringify(ov.explore)} ${JSON.stringify(ov.heroes)} pct=${ov.pct}`);
   T("首领 40/40", ov.boss.done === 40 && ov.boss.total === 40, ov.boss);
   T("精英 60/60", ov.elite.done === 60 && ov.elite.total === 60, ov.elite);
-  T("探索 20/20", ov.explore.done === 20 && ov.explore.total === 20, ov.explore);
+  T(`探索 ${EXPECT.explore}/${EXPECT.explore}`, ov.explore.done === EXPECT.explore && ov.explore.total === EXPECT.explore, ov.explore);
   T(`魅魔 ${EXPECT.heroes}/${EXPECT.heroes}`, ov.heroes.done === EXPECT.heroes && ov.heroes.total === EXPECT.heroes, ov.heroes);
   T("总完成度 100%", ov.pct === 100, { pct: ov.pct });
   T("管家台词为最高档", ov.line === "您比我想象的更有趣，主人。", { line: ov.line });
@@ -184,8 +192,8 @@ const EXPECT = {
     rows: document.querySelectorAll(".butler-row").length,
     allDone: document.querySelectorAll(".butler-row.all-done").length,
   }));
-  T(`探索页签 ${EXPECT.missions * 5} 条全部点亮`,
-    expUi.rows === 20 && expUi.allDone === 20, expUi);
+  T(`探索页签 ${EXPECT.explore} 条全部点亮（含新手引导首战）`,
+    expUi.rows === EXPECT.explore && expUi.allDone === EXPECT.explore, expUi);
 
   const foot = await page.evaluate(() => ({
     pct: document.querySelector(".butler-progress span")?.textContent || "",
