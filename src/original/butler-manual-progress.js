@@ -97,7 +97,7 @@ window.ButlerManualProgress = (() => {
     })).filter(g => g.list.length);
   }
   // 以角色模板为基准列出全部可培养魅魔：未解锁的也要占位（灰剪影），
-  // 保证「已满级 X / 总数」的分母恒为 29，而不是随解锁进度增长。
+  // 保证「已满级 X / 总数」的分母恒为 30，而不是随解锁进度增长。
   function heroList(state) {
     const chars = Array.isArray(state?.chars) ? state.chars : [];
     const byId = new Map(chars.filter(c => c && c.id).map(c => [c.id, c]));
@@ -115,11 +115,22 @@ window.ButlerManualProgress = (() => {
       };
     });
   }
+  // 新手引导首战并入「探索目标」，作为该页签的第一条。
+  // 只有真正打完首战才计完成：Onboarding.complete 在首战奖励确认时调用，
+  // 而跳过引导（skipped）不会置 completed，因此会一直保持未完成。
+  function tutorialDone(state) {
+    const o = state?.flags?.onboarding;
+    return !!o && o.completed === true;
+  }
   function exploreList(state) {
-    return missions().map(m => ({
+    const tutorial = {
+      id: "onboarding_first_win", name: "完成新手引导首战", tutorial: true,
+      diffs: [{ id: "done", name: "完成", done: tutorialDone(state) }],
+    };
+    return [tutorial, ...missions().map(m => ({
       id: m.id, name: m.name,
       diffs: difficulties().map(d => ({ ...d, done: doneDiffs(state, "clear", m.id).includes(d.id) })),
-    }));
+    }))];
   }
 
   function ratio(done, total) { return total > 0 ? done / total : 0; }
@@ -159,7 +170,7 @@ window.ButlerManualProgress = (() => {
 
   return {
     BUTLER_NAME, MAX_LEVEL, DIFFS, feats, has, record, recordBattle, recordClear, doneDiffs,
-    missions, enemiesOf, difficulties, bossGroups, eliteGroups, heroList, exploreList,
+    missions, enemiesOf, difficulties, bossGroups, eliteGroups, heroList, exploreList, tutorialDone,
     overall, line, comment,
   };
 })();
