@@ -57,6 +57,8 @@ window.BattleDamageTriggers = (api) => {
     window.GuestCharacterSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
     window.WithererSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, deps.draw, ctx.pushFloat);
     window.BondiSkills?.afterDamage?.(state, actor, target, card, hpLoss);
+    window.HitwellSkills?.afterDamage?.(
+      state, actor, target, card, hpLoss, { damage, directDamage });
     window.BakarSkills?.afterDamage?.(state, actor, target, card, hpLoss);
     window.RuinsCardSkills?.applyVulnerable?.(state, actor, target, card);
     window.RuinsCardSkills?.stealAfterHit?.(state, actor, target, card);
