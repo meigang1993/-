@@ -13,6 +13,7 @@ function completeClosableEventModal() {
     gerdaNurseryUnlock: window.completeGerdaNurseryUnlockEvent,
     hoshinoFamilyUnlock: window.completeHoshinoFamilyUnlockEvent,
     ruinsSandCityUnlock: window.completeRuinsSandCityUnlockEvent,
+    hitwellUnlock: window.completeHitwellUnlockEvent,
   };
   const action = actions[state.hallModal];
   if (action) {
