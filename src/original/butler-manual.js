@@ -39,7 +39,13 @@ window.ButlerManual = (() => {
   }
   function explore(state) {
     const list = P.exploreList(state);
-    return list.map(m => `<div class="butler-group"><h3>${U.esc(m.name)}</h3>${m.diffs.map(d => `<div class="butler-row ${d.done ? "all-done" : ""}"><span class="butler-box">${d.done ? "✓" : ""}</span><b>通关${U.esc(m.name)} - ${U.esc(d.name)}</b></div>`).join("")}</div>`).join("");
+    // 新手引导首战是单条目标（无难度档），单独渲染；其余按副本 × 难度渲染。
+    const tutorial = list.filter(m => m.tutorial).map(m => {
+      const done = m.diffs[0]?.done;
+      return `<div class="butler-group"><h3>新手引导</h3><div class="butler-row ${done ? "all-done" : ""}"><span class="butler-box">${done ? "✓" : ""}</span><b>${U.esc(m.name)}</b></div></div>`;
+    }).join("");
+    const missions = list.filter(m => !m.tutorial).map(m => `<div class="butler-group"><h3>${U.esc(m.name)}</h3>${m.diffs.map(d => `<div class="butler-row ${d.done ? "all-done" : ""}"><span class="butler-box">${d.done ? "✓" : ""}</span><b>通关${U.esc(m.name)} - ${U.esc(d.name)}</b></div>`).join("")}</div>`).join("");
+    return tutorial + missions;
   }
 
   function bind(ctx) {
