@@ -48,6 +48,7 @@ const standalone = Object.freeze([
   "test-unlock-event-cast-coverage-live.js",
   "test-helicopter-suppress-propeller-live.js",
   "test-catherine-skills-live.js",
+    "test-relic-heal-ally-live.js",
   "test-cadicis-responsibility-choice-live.js",
   "test-relic-conversion-damage-live.js",
   "test-relic-conflict-fixes-live.js",
@@ -183,6 +184,7 @@ const groups = Object.freeze({
     "test-status-card-judgement-popup.js",
   ],
   characters: [
+    "test-hitwell-skills-strict-live.js",
     "test-nanali-skills.js",
     "test-witherer-skills.js",
     "test-bakar-skills.js",
@@ -204,6 +206,8 @@ const groups = Object.freeze({
     "test-wendy-tutor-new-tactics.js",
     "test-skill-coverage.js",
     "test-skill-audit.js",
+    "test-little-elrana-unlock-live.js",
+    "test-butler-manual-tutorial-goal-live.js",
   ],
   presentation: [
     "test-villa-collection.js",
