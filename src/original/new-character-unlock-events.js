@@ -50,6 +50,24 @@ window.NewCharacterUnlockEvents = (() => {
       "事件结束后，副本“废墟沙城”开放，亚缇娜与玛利亚加入角色栏。",
       "解锁废墟沙城并邀请新角色", "ruins-sand-city-unlock-complete");
   }
+  function hitwellUnlock(state) {
+    const lines = [
+      ["贝丝妲", "回来了？"],
+      ["罗卡尔", "妈妈，我赢了。"],
+      ["贝丝妲", "很好，我把他也带来了。"],
+      ["罗卡尔", "谁呀，这小弟弟？"],
+      ["希特威", "我是贝丝妲姐姐的奴隶……希特威。"],
+      ["罗卡尔", "我怎么没听说过他？"],
+      ["贝丝妲", "以前在黑市买的玩具，因为是天使很贵的，被我调教好了。你出生后我就把他交给曼妮了，不需要了。如今曼妮因为诅咒睡了，只好把他放了。"],
+      ["罗卡尔", "这样啊，他是天使会魔法吗？"],
+      ["贝丝妲", "嗯，而你继承了他一点能力。"],
+      ["罗卡尔", "啊，妈妈你的意思是，他是我爸爸。"],
+      ["贝丝妲", "对，我都舍不得榨死，你带着他去冒险吧，他的能力很好用。"],
+      ["罗卡尔", "好，知道了。"],
+    ];
+    return eventView("hitwellUnlock", state, "贝丝妲的玩具", ["besta", "lokar", "hitwell"], lines,
+      "事件结束后，希特威加入角色栏。", "带希特威同行", "hitwell-unlock-complete");
+  }
   function recordDungeonClear(state, run) {
     if (run?.missionId !== "orc_dungeon" || run?.difficultyId !== "adventure" || run?.complete !== true) return false;
     if (state.flags?.hoshinoFamilyUnlockSeen || state.flags?.hoshinoFamilyUnlockPending) return false;
@@ -74,6 +92,12 @@ window.NewCharacterUnlockEvents = (() => {
       state.hallModal = "gerdaNurseryUnlock";
       return true;
     }
+    // 首次击败伊迪斯后回到别墅触发；伊迪斯在 eliteUnlocks 内，击败即写入 defeatedElites。
+    const hitwell = state.chars.find(character => character.id === "hitwell");
+    if (hitwell?.locked && defeated(state, "pursuer_edis") && !state.flags?.hitwellUnlockSeen) {
+      state.hallModal = "hitwellUnlock";
+      return true;
+    }
     return false;
   }
   async function complete(id, message, flashId) {
@@ -95,5 +119,5 @@ window.NewCharacterUnlockEvents = (() => {
   window.completeGerdaNurseryUnlockEvent = () => complete("gerda_nursery", "格尔达已在孕育殿堂开放兑换。", "gerda");
   window.completeHoshinoFamilyUnlockEvent = () => complete("hoshino_family", "星野依与星野海一加入角色栏。", "hoshino_yi");
   window.completeRuinsSandCityUnlockEvent = () => complete("ruins_sand_city", "废墟沙城已解锁，亚缇娜与玛利亚加入角色栏。", "artina");
-  return { gerdaUnlock, hoshinoUnlock, ruinsSandCityUnlock, recordDungeonClear, triggerPending };
+  return { gerdaUnlock, hoshinoUnlock, ruinsSandCityUnlock, hitwellUnlock, recordDungeonClear, triggerPending };
 })();
