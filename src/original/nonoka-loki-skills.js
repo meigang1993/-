@@ -67,6 +67,7 @@ window.NonokaLokiSkills = (() => {
       window.EnemySkills?.clearHolyScar?.(state, target);
       window.EnemySkills?.onHeal?.(state, deps.draw);
       window.ElranaAceNanaliSkills?.afterHeal?.(state, target, deps);
+      window.HitwellSkills?.afterHeal?.(state, target, healed, deps);
       window.BertisGerlotSkills?.refreshArrogance?.(state);
     }
   }
