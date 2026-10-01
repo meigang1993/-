@@ -97,10 +97,14 @@ const tankForce = `(() => {
   });
   if (e && e.hp > 0 && e.ai === "ruins_tank" && !e.usedRuinsTankShell && !e.ruinsTankShellReady &&
       window.state.battle.phase === 4 && window.state.battle.activeUid === e.uid) {
-    const n = (e.hand || []).filter(c => c && !c._pendingDraw
-      && window.CardUtils?.isEntitySingleKill?.(c)).length;
-    if (n < 2) e.hand = [{ name: "杀", type: "kill", suit: "♠" },
-                         { name: "杀", type: "kill", suit: "♥" }];
+    // 只保留 2 张单体杀：避免坦克用手牌里的【偷窃】/【魔杀】消耗我方【闪】，
+    // 否则发射瞬间我方闪数不足，本用例会随机失败（既有 flaky）。
+    const singles = (e.hand || []).filter(c => c && !c._pendingDraw
+      && window.CardUtils?.isEntitySingleKill?.(c));
+    e.hand = singles.length >= 2
+      ? singles.slice(0, 2)
+      : [{ name: "杀", type: "kill", suit: "♠" },
+         { name: "杀", type: "kill", suit: "♥" }];
   }
 })()`;
 
