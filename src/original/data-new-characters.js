@@ -13,7 +13,7 @@ window.GameDataNewCharacters = [
     grandfather: "兽人王邦迪",
     sourceDungeon: "兽人地下城",
     entrance: "兽人公主格尔达，来帮你们打赢这一战！",
-    stats: { attack: 3, magic: 3, speed: 4, maxHp: 40, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
+    stats: { attack: 4.8, magic: 5, speed: 6.7, maxHp: 69, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
     evaluation: "队友摸牌支援与杀牌防御核心。结束阶段可与一名其他队友各摸2张牌；敌方使用【杀】指定她时，必须额外弃置1张响应牌，否则该【杀】无效。",
     skills: [
       { name: "萌虎慰劳", type: "trigger", icon: "🔵", text: "结束阶段，你可以指定一名其他友方角色，你与该角色各摸2张牌。" },
@@ -32,7 +32,7 @@ window.GameDataNewCharacters = [
     mother: "混沌女神",
     sourceDungeon: "兽人地下城",
     entrance: "晚上好，我是A小町，星野依，天才般偶像，今天演唱新曲。",
-    stats: { attack: 3, magic: 3, speed: 3, maxHp: 34, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
+    stats: { attack: 4.8, magic: 5, speed: 5.5, maxHp: 59, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "颜色切换补牌与花色循环输出核心。偶像之星在颜色变化时为星野依和诺诺卡补牌；巨蛋演出集齐四种花色后对敌方全体造成攻击力与魔力复合伤害；梦想真理在三回合内完成20张用牌后获得花色成长，否则令敌方全体弃牌。",
     skills: [
       { name: "偶像之星", type: "passive", icon: "⭐", text: "锁定技，当你使用的牌与上一次使用的牌颜色不同时，你摸一张牌。若诺诺卡在队伍中，诺诺卡也摸一张牌。" },
@@ -53,7 +53,7 @@ window.GameDataNewCharacters = [
     father: "艾伦格",
     sourceDungeon: "兽人地下城",
     entrance: "我会把大家的魔力连接起来，一起战斗。",
-    stats: { attack: 1, magic: 3, speed: 2, maxHp: 46, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+    stats: { attack: 2.4, magic: 5, speed: 4.4, maxHp: 79, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
     evaluation: "受伤补牌与队友充能核心。生命值受损后摸牌并可分牌，星野依在场时获得治疗；每回合可承受一名女性队友的魔法伤害，令其按自己的每回合摸牌数补牌。",
     skills: [
       { name: "半魅魔血", type: "trigger", icon: "🔵", text: "当你受到生命值伤害后，你摸2张牌，然后可以选择至多2张手牌并将这些牌交给一名其他友方角色。若星野依在队伍中且存活，星野依令你恢复等同于其魔力值的生命值。" },
@@ -62,7 +62,7 @@ window.GameDataNewCharacters = [
   },
   {
     id: "artina", name: "亚缇娜", gender: "female", face: "亚", art: "./assets/new-portraits/artina.088f5fa4.webp", avatar: "./assets/new-portraits/artina.088f5fa4.webp", role: "魅影突击队狙击手", locked: true, unlockFlag: "ruinsSandCityUnlocked",
-    stats: { attack: 3, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+    stats: { attack: 4.8, magic: 3.7, speed: 6.7, maxHp: 62, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
     evaluation: "花色记录与单体狙击核心。每回合记录首次使用的花色，蓄力子弹强化下一张实体单体【杀】。",
     skills: [
       { name: "狙击目标", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以选择一名敌方角色，展示其一张手牌。若你手牌中与此牌花色相同的牌数多于该角色（即取得优势），则其被锁定，你对其使用的下一张实体单体【杀】不可被响应；未取得优势时锁定不生效。", card: { name: "狙击目标", type: "tactic", artinaSniper: true, enemyTarget: true, artName: "狙击目标", icon: "⚔️", text: "选择一名敌方角色，展示其一张手牌。" } },
@@ -71,7 +71,7 @@ window.GameDataNewCharacters = [
   },
   {
     id: "maria", name: "玛利亚", gender: "female", face: "玛", art: "./assets/new-portraits/maria.dc753ea7.webp", avatar: "./assets/new-portraits/maria.dc753ea7.webp", role: "魅影突击队支援兵", locked: true, unlockFlag: "ruinsSandCityUnlocked",
-    stats: { attack: 3, magic: 3, speed: 4, maxHp: 38, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
+    stats: { attack: 4.8, magic: 5, speed: 6.7, maxHp: 65, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
     evaluation: "标记成长与全队祝福支援核心。按出牌数触发神数摸牌，并以不同花色弃牌换取全队属性提升。",
     skills: [
       { name: "神数咒语", type: "passive", icon: "⭐", text: "锁定技，出牌阶段，你每使用一张牌，便获得1枚“神数”标记，且你的攻击力与魔力各+X（X为你“神数”标记的数量）。当你本阶段使用的牌数达到目标数时，你摸与目标数等量的牌，然后将已使用的牌数清零、弃去所有“神数”标记，并令目标数+1。目标数初始为1。回合结束时，你弃去所有“神数”标记。" },
