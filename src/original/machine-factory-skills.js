@@ -82,9 +82,12 @@ window.MachineFactorySkills = deps => {
       window.BattleLog.add(state, `${target.name} 防御系统崩溃，歼灭模式启动！`);
     };
   }
-  function afterDamage(state, actor, target, hpLoss, damage) {
+  // 参数名用 damageCard：函数体内已有 const { card } = drawJudge(...)，重名会解析报错。
+  function afterDamage(state, actor, target, hpLoss, damage, damageCard = null) {
     if (!hpLoss || target.ai !== "mechanical_bull_king" || !target.annihilationMode
       || hpPct(target) >= .6 || actor?.hp <= 0 || actor.uid === target.uid) return;
+    // 多段/连击的追加段不重复反制：一次攻击只判定一次，否则段数线性放大反伤。
+    if (damageCard?._drillExtraHit) return;
     window.BattleLines?.skill(state, target, "电磁反制装置");
     const { card, success } = drawJudge(state.battle, target, "电磁反制装置", black);
     window.BattleLog.add(state, `${target.name} 电磁反制判定：${card.suit}${card.name}，${success ? "反制成功" : "未触发"}。`);
