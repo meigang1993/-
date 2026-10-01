@@ -32,6 +32,10 @@ check("外神之眼 图标为⭐ / 类型为passive", eye?.icon === "⭐" && eye
 check("外神之眼 描述含「锁定技」", /^锁定技/.test(eye?.text || ""), { head: (eye?.text || "").slice(0, 12) });
 check("外神之眼 描述写明「实体牌」", /实体牌/.test(eye?.text || ""));
 check("外神之眼 描述排除技能伤害与虚拟牌", /技能伤害与虚拟牌伤害不触发/.test(eye?.text || ""));
+// 「多段或连击伤害时逐段结算」设定已取消：外神之眼只在第一段触发，
+// 追加段（_drillExtraHit）在 afterDamage 拦截。文案不得再出现该描述。
+check("外神之眼 描述不含已取消的「逐段结算」", !/逐段结算/.test(eye?.text || ""),
+  { text: (eye?.text || "").slice(-30) });
 
 // ---------- 2) 外神之眼：实现只认实体牌 ----------
 const st = () => ({
