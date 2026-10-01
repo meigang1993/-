@@ -62,6 +62,7 @@ window.AceSkills = deps => {
         `${responder.name} 触发勾爪陷阱，移除并消耗${source.name}的${picked.name}状态牌。`);
       return;
     }
+    picked.stolenFromUid = source.uid;
     if (state.battle.animQueue) picked._pendingDraw = true;
     responder.hand.push(picked);
     window.BattleCards?.syncStatusCards?.(responder);
