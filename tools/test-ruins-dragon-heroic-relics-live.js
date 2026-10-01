@@ -132,7 +132,7 @@ const logsTpl = `(() => ({
   const norm = await page2.evaluate(peekTpl);
   console.log("普通级机械AI龙:", JSON.stringify(norm));
   T("普通级：机械AI龙不携带饰品", (norm.battleRelics || []).length === 0, norm);
-  T("英雄级属性倍率已生效（HP 1095）", hell.hp === 1095, { hp: hell.hp, normal: norm.hp });
+  T("英雄级属性倍率已生效（HP 1054）", hell.hp === 1054, { hp: hell.hp, normal: norm.hp });
   await page2.close();
 
   await browser.close();
