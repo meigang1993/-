@@ -32,14 +32,24 @@ if (window.GameDataCards) {
     statusKey: item.statusKey || "", ignoreResponse: !!item.ignoreResponse,
     price: item.price, suits: item.suits,
   });
-  const cards = window.GameDataRuinsContent.cards.map(cardEntry);
+  // 必须展开成单张牌，与 data-cards.js 的 makeDeck 同形态（每卡带具体 suit）：
+  // 此前塞进 eliteCards 的是带 suits 对象、没有 suit 的卡定义，探索掉落与赏金奖励
+  // 直接 {...card} 发出去就是无花色牌，经 GameStoreSaveSchema.rebuildCard 校验
+  // （suits.has(card.suit)）时被判无效丢弃，玩家永远拿不到这 10 张牌。
+  const cardFields = window.GameDataCards.cardFields;
+  const expand = item => {
+    const { suits, ...fields } = { ...(cardFields ? cardFields(item) : {}), ...cardEntry(item) };
+    return Object.entries(suits || {}).flatMap(([suit, n]) =>
+      Array.from({ length: n }, () => ({ ...fields, suit })));
+  };
+  const cards = window.GameDataRuinsContent.cards.flatMap(expand);
   window.GameDataCards.eliteCards.push(...cards);
   // 注意：本文件可能先于 GameData 初始化被加载，必须整体可选链，
   // 只写 window.GameData.enemies || {} 会在 window.GameData 未定义时抛错。
   const enemyName = id => Object.values(window.GameData?.enemies || {})
     .flat().find(item => item.id === id)?.name || id;
-  window.GameDataCards.cardCodex.push(...cards.map(card => ({
-    ...card, suitsText: Object.entries(card.suits).map(([s, n]) => `${s}×${n}`).join(" "),
+  window.GameDataCards.cardCodex.push(...window.GameDataRuinsContent.cards.map(card => ({
+    ...cardEntry(card), suitsText: Object.entries(card.suits).map(([s, n]) => `${s}×${n}`).join(" "),
     source: `废墟沙城·${enemyName(card.enemy)}`,
   })));
   // 按敌人 ID 分组登记：解锁遍历的是 battle.defeatedEnemyIds（敌人ID），
