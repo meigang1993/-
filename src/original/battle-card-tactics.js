@@ -94,6 +94,7 @@ window.BattleCardTactics = ({ log, ctx, deps, reveal, openHandReveal }) => {
   }
   function gainBorrowedCard(state, actor, partner, gained) {
     partner.hand.splice(partner.hand.indexOf(gained), 1);
+    gained.stolenFromUid = partner.uid;
     if (state.battle.animQueue) gained._pendingDraw = true;
     actor.hand.push(gained);
     window.BattleCards?.syncStatusCards?.(actor);
