@@ -66,6 +66,12 @@ async function startDungeon(page) {
       return originalCall(method, args, state);
     };
   });
+  // 新档首战胜利会被新手引导强制结束探索（解锁贝丝妲魔偶后回大厅），
+  // 与本套件"端到端跑完整张地图"的验证目标冲突，因此先跳过引导走常规副本路径。
+  // 首战行为由 test-onboarding-first-victory-exp-live.js 单独覆盖。
+  await page.evaluate(() => {
+    if (window.Onboarding?.skip) window.Onboarding.skip(window.state);
+  });
   await page.locator("[data-open-modal='team']").first().click();
   await page.locator("[data-start='machine_factory'][data-difficulty='normal']").click();
   await expect(page.locator(".dungeon-screen")).toBeVisible();
