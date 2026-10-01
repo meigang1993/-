@@ -60,7 +60,8 @@ window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
         status.addPoison(state, target, 1, actor);
       });
     }
-    machine.afterDamage(state, actor, target, hpLoss, damage);
+    // card 一并传入：电磁反制需据此识别多段追加段，否则会被逐段放大。
+    machine.afterDamage(state, actor, target, hpLoss, damage, card);
     window.UnderwaterTrainSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage);
     window.RuinsEnemySkills?.afterDamage?.(
       state, actor, target, card, hpLoss, damage, directDamage);
