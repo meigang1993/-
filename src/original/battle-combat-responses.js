@@ -58,6 +58,9 @@ window.BattleCombatResponses = (api) => {
       deps.useCard(state, target, attackTarget, shown); resolved = true;
     } else if (p.mode === "borrowGainChoice") {
       target.hand.splice(target.hand.indexOf(shown), 1);
+      // 与 AI 路径 gainBorrowedCard 保持一致：牌用完要回到原主牌库，
+      // 否则玩家路径会永久占有队友的牌，两条路径行为不一致。
+      shown.stolenFromUid = target.uid;
       if (b.animQueue) shown._pendingDraw = true;
       actor.hand.push(shown); window.BattleCards?.syncStatusCards?.(actor);
       afterHandLost(state, target);
