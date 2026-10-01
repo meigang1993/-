@@ -103,10 +103,39 @@ const flag = page => page.evaluate(() => JSON.parse(JSON.stringify(
   });
   await page.waitForFunction(() => window.state?.view === "hall", null, { timeout: 25000 });
   await page.waitForTimeout(500);
-  // 首次全军覆没会弹出贝丝妲与洛基事件面板，先关闭再看大厅引导
-  if (await page.locator("[data-close-modal]").count()) {
-    await page.locator("[data-close-modal]").first().click().catch(() => {});
-    await page.waitForTimeout(400);
+  // 首次全军覆没会弹出贝丝妲与洛基事件面板（现在是 ADV 逐句对话框），
+  // 必须先「跳到结尾」才会出现关闭按钮，直接点关闭会被对话层挡住。
+  // 末句出现的按钮是 data-first-defeat-complete（不是通用 close-modal），
+  // 且解锁事件会排队（洛基之后可能还有下一个），所以要循环处理干净。
+  // 注意：这里不能用 locator.click()。实测按钮 rect(y 635~679) 与 .adv-box(y 290~578)
+  // 并不重叠，elementFromPoint 命中的也是按钮本身——但 Playwright 的 hit-target
+  // 检查会因页面持续 re-render 误报「adv-box subtree intercepts pointer events」。
+  // 真实鼠标点击同一坐标可正常关闭（已验证），故改用 DOM click，效果等同。
+  for (let i = 0; i < 12; i++) {
+    const st = await page.evaluate(() => ({
+      skip: document.querySelectorAll("[data-adv-skip]").length,
+      complete: document.querySelectorAll("[data-first-defeat-complete]").length,
+      close: document.querySelectorAll("[data-close-modal]").length,
+      advBox: document.querySelectorAll("[data-adv-advance]").length,
+    }));
+    if (!st.advBox && !st.complete && !st.close) break;
+    if (st.skip) {
+      await page.evaluate(() => { window.AdvDialogue?.skip?.(); window.render?.(); });
+      await page.waitForTimeout(300);
+      continue;
+    }
+    if (st.complete || st.close) {
+      await page.evaluate(() => {
+        const el = document.querySelector("[data-first-defeat-complete]")
+          || document.querySelector("[data-close-modal]");
+        if (el) el.click();
+      });
+      await page.waitForTimeout(450);
+      continue;
+    }
+    // 既无 skip 也无完成按钮（如首句即末句之外的中间态）：逐句推进
+    await page.evaluate(() => { window.AdvDialogue?.next?.(); window.render?.(); });
+    await page.waitForTimeout(200);
   }
 
   const f = await flag(page);
