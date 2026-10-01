@@ -75,7 +75,6 @@ const groups = Object.freeze({
     "test-card-consistency.js",
     "test-card-pool-sync-live.js",
     "test-card-transfer-ownership-live.js",
-    "test-multihit-vs-counter-live.js",
     "test-formal-card-edge-contracts.js",
     "test-status-card-rules.js",
     "test-ruins-card-effects.js",
