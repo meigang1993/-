@@ -64,15 +64,19 @@ for (const [mid, bossId] of [
   const names = ids.map(i => nameOf(mid, i));
   const types = ids.map(i => typeOf(mid, i));
   const bossCount = types.filter(t => t === "boss").length;
-  const hasNonBoss = types.some(t => t !== "boss");
+  const hasNonBoss = types.some(t => t !== "boss"); // 仅用于日志：BOSS 组合允许带随从
 
   console.log(`  [${mid}] 赏金目标 ${nameOf(mid, bossId)}`);
   console.log(`    实际 BOSS 节点: ${names.join(" + ")}`);
   console.log(`    类型: ${types.join("/")}`);
   ok(`    ${mid}: BOSS 节点含赏金目标`, ids.includes(bossId));
   ok(`    ${mid}: 无重复BOSS`, bossCount <= 1, bossCount > 1 ? `出现 ${bossCount} 个BOSS` : "");
-  ok(`    ${mid}: 无池外/降级怪混入`, !hasNonBoss && !ids.some(i => typeOf(mid, i) === "unknown"),
-    hasNonBoss ? `混入非BOSS: ${names.join("+")}` : "");
+  // BOSS 组合设计上带随从（如 bakaar 组合 = [机械三头犬, 魔王巴卡尔]），
+  // 所以这里只校验：无池外怪（unknown）+ 赏金目标本身未被降级为普通/精英。
+  ok(`    ${mid}: 无池外怪混入`, !ids.some(i => typeOf(mid, i) === "unknown"),
+    `组合: ${names.join("+")}`);
+  ok(`    ${mid}: 赏金目标未被降级`, typeOf(mid, bossId) === "boss",
+    `${nameOf(mid, bossId)} type=${typeOf(mid, bossId)}`);
 }
 
 console.log(`\n===== 汇总：${pass} 通过 / ${fail} 失败 =====`);
