@@ -81,5 +81,9 @@ window.GameDataCards = {
   marketCards: shoup4Deck.map(c => ({ ...c })),
   eliteCards,
   cardCodex,
+  // 供扩展副本（data-ruins-content.js 等）复用同一套字段定义与展开逻辑：
+  // 各副本各自手搓一遍会出现字段漂移，废墟沙城曾因此缺 suit，
+  // 掉落/赏金发出的无花色牌被 GameStoreSaveSchema.rebuildCard 判为无效并静默丢弃。
+  cardFields, makeDeck,
   eliteUnlocks: { elrana_clone: ["毒杀", "伤口处理"], krow_doctor: ["与我一战", "魔力提炼", "拆解"], invader_chiyo: ["刺杀", "看破", "组合进攻"], mechanical_bull_king: ["雷杀", "机枪扫杀", "无谋冲拳", "物资补给"], pursuer_edis: ["生命之泉", "偷窃", "灵魂锁链"], raff_assassin: ["魔法对决", "魔弹特攻"], abe_mike: ["双重打杀", "暴走杀"], shark_captain_mordio: ["咬杀", "放血"], mona_eagle_captain: ["圣杀", "怒杀"], orc_king_bondi: ["佯攻"], guard_kelly: ["武装", "撞杀"], assassin_sakura_risa: ["后空翻", "仇杀"], witherer_1124_split: ["勒杀", "战争号角"], xx_witherer_1124: ["追杀", "弹反"], demon_king_bakaar: ["火杀"] },
 };
