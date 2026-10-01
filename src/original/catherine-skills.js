@@ -62,6 +62,8 @@ window.CatherineSkills = (() => {
       .forEach(unit => {
         const gained = takeUsedCard(actor, card);
         if (!gained) return;
+        // 回收的是队友用过的牌，弃置时须回到该队友牌堆，否则等于把队友的牌转成自己的。
+        gained.stolenFromUid = actor.uid;
         if (battle.animQueue) gained._pendingDraw = true;
         unit.hand.push(gained);
         window.BattleCards?.syncStatusCards?.(unit);
@@ -86,6 +88,7 @@ window.CatherineSkills = (() => {
         `${actor.name} 使用窃取，移除并消耗${victim.name}的${card.name}状态牌。`);
       return true;
     }
+    card.stolenFromUid = victim.uid;
     if (battle.animQueue) card._pendingDraw = true;
     receiver.hand.push(card);
     window.BattleCards?.syncStatusCards?.(receiver);
