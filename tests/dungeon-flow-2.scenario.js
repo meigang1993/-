@@ -66,7 +66,12 @@ test("late node start failure cannot roll back a successor node", async ({ page 
   });
   expect(next).toBeTruthy();
   await page.locator(`[data-dungeon-node='${next}']`).click();
-  await expect.poll(() => page.evaluate(id => window.state.explore?.pending, next)).toBe(next);
+  // 第一次节点开始的 await 可能晚于待处理节点落定，等注入器就绪再触发失败，
+  // 否则会在 BattleSystem.start 尚未挂起时误判。
+  await expect.poll(() => page.evaluate(id => ({
+    pending: window.state.explore?.pending,
+    armed: typeof window.__rejectFirstNodeStart === "function",
+  }), next)).toEqual({ pending: next, armed: true });
   await page.evaluate(() => window.__rejectFirstNodeStart());
   await expect.poll(() => page.evaluate(() => window.__firstNodeStartReleased)).toBe(true);
   const after = await page.evaluate(() => ({
