@@ -292,7 +292,10 @@ const T = (name, cond, extra) => {
     maleLoss > 0 && noneLoss === maleLoss * 2,
     { maleLoss, noneLoss, logs: noneHp.logs.slice(0, 6) });
 
-  // ===== 外神之眼：多段伤害逐段结算 =====
+  // ===== 外神之眼：三次独立攻击各自触发 =====
+  // 注意：这里用的是 3 张独立的杀牌，不是一张牌的多段；
+  // 单张牌的多段/连击（_drillExtraHit 追加段）按设定不逐段结算，
+  // 由 tools/test-multihit-vs-counter-live.js 覆盖。
   await page.evaluate(`(() => {
     const st = window.state, b = st.battle;
     const a0 = b.allies[0], a1 = b.allies[1], w = b.enemies[0];
@@ -332,8 +335,8 @@ const T = (name, cond, extra) => {
     after: window.__after,
     logs: (window.__logs || []).slice() }))()`);
   const eyeHits = (seg.logs.join(" ").match(/外神之眼触发/g) || []).length;
-  console.log(`[外神之眼·逐段] afterDamage=${seg.after} 触发日志=${eyeHits}`);
-  T("外神之眼：多段伤害逐段结算", seg.after >= 3 && eyeHits >= 3,
+  console.log(`[外神之眼·独立攻击] afterDamage=${seg.after} 触发日志=${eyeHits}`);
+  T("外神之眼：三次独立攻击各触发一次（单张多段不逐段）", seg.after >= 3 && eyeHits >= 3,
     { after: seg.after, eyeHits });
 
   // ===== 百眼魅魔：中途阵亡的角色不再被驱动 =====
