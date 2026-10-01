@@ -1,6 +1,7 @@
 const { spawn } = require("child_process");
 const path = require("path");
 require("./repository-toolchain");
+require("./ensure-qa-bins").ensure();
 const catalog = require("./browser-test-catalog");
 
 const root = path.resolve(__dirname, "..");
