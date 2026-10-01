@@ -32,14 +32,16 @@ const setupTpl = `(() => {
   b.activeUid = b.allies[0].uid; b.phase = 4;
   const c = b.allies[0];
   c.name = "凯瑟琳"; c.ref = "catherine"; c.id = "catherine";
-  c.hp = 28; c.maxHp = 28; c.block = 0; c.tempMagic = 0; c.intent = 1;
-  c.stats = { attack: 1, magic: 3, speed: 2 };
-  c.usedCatherineSteal = false;
-  c.hand = [];
-  // 技能卡必须取自真实角色数据：手写 card 会自带一份 targetless 的取值，
+  // 属性与技能卡都必须取自真实角色数据：手写会自带一份旧取值，
   // 数据文件里的改动反映不到测试上（反向验证因此失效）。
   const src = (window.GameDataCharactersExtra || [])
     .find(item => item.id === "catherine");
+  const tplStats = src?.stats || { attack: 1, magic: 3, speed: 2, maxHp: 28 };
+  c.hp = tplStats.maxHp; c.maxHp = tplStats.maxHp;
+  c.block = 0; c.tempMagic = 0; c.intent = 1;
+  c.stats = { ...tplStats };
+  c.usedCatherineSteal = false;
+  c.hand = [];
   c.skills = src ? JSON.parse(JSON.stringify(src.skills)) : [];
   b.allies.forEach((u, i) => {
     if (i === 0) return;
