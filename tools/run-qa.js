@@ -1,6 +1,16 @@
 const { spawn } = require("child_process");
+
 const os = require("os");
 const path = require("path");
+const fs = require("fs");
+// 沙箱重建会清空系统 /tmp，后台任务的临时目录与派生文件会丢失。
+// 统一指向仓库外的永久目录，os.tmpdir() 会自动跟随 TMPDIR。
+const qaTmp = path.resolve(__dirname, "..", "..", ".qatmp");
+fs.mkdirSync(qaTmp, { recursive: true });
+process.env.TMPDIR = qaTmp;
+process.env.TMP = qaTmp;
+process.env.TEMP = qaTmp;
+
 require("./repository-toolchain");
 require("./ensure-qa-bins").ensure();
 const catalog = require("./qa-test-catalog");
