@@ -5,7 +5,7 @@ process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
 const { chromium } = require("playwright");
-const { openGame, startFreshGame } = require(
+const { openGame, startFreshGame, dismissOpeningStory } = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
 let pass = 0, total = 0;
@@ -17,7 +17,12 @@ const T = (name, cond, extra) => {
 };
 
 const openManual = async page => {
-  await page.locator("[data-open-butler]").click();
+  // 开场剧情弹窗会挡住入口按钮；页面持续 re-render 时 locator.click() 的
+  // actionability 检查也会误判，故用 DOM click 并自行等待面板出现。
+  await page.evaluate(() => {
+    const btn = document.querySelector("[data-open-butler]");
+    if (btn) btn.click();
+  });
   await page.locator(".butler-page").waitFor({ state: "visible" });
 };
 
@@ -28,6 +33,7 @@ const openManual = async page => {
   page.on("pageerror", e => errors.push(String(e)));
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
 
   // 1. 入口按钮存在且可见
   T("大厅侧边栏有「管家手册」入口", await page.locator("[data-open-butler]").isVisible());
@@ -81,12 +87,13 @@ const openManual = async page => {
   const heroCount = await page.locator(".butler-hero").count();
   T("魅魔目标列出 30 名角色", heroCount === 30, { heroCount });
   const sum = await page.locator(".butler-sum").textContent();
-  T("显示已满级统计", /已满级：\d+ \/ 29/.test(sum || ""), { sum });
+  T("显示已满级统计", /已满级：\d+ \/ 30/.test(sum || ""), { sum });
 
   await page.locator("[data-butler-tab='explore']").click();
   await page.waitForTimeout(120);
   const exploreRows = await page.locator(".butler-group").count();
-  T("探索目标列出 4 个副本", exploreRows === 4, { exploreRows });
+  // 4 个副本 + 1 个「新手引导」组（完成新手引导首战，单独成组）
+  T("探索目标列出 4 个副本 + 1 个新手引导组", exploreRows === 5, { exploreRows });
 
   await page.locator("[data-butler-tab='elite']").click();
   await page.waitForTimeout(120);
