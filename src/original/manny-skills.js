@@ -117,9 +117,8 @@ window.MannySkills = (() => {
       if (!(damage?.delayUntilHitSettled?.(state, spike)
         || window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, spike))) spike();
     }
-    // 多段/连击的追加段不重复反击（与杰洛特【复仇反击】同一约定）：
-    // 否则电钻火花骰几点就反几次，反伤随段数线性放大。
-    if (target?.ref === "manny" && target.hp > 0 && target.mannyWeapon === "ak47" && actor?.hp > 0 && !card?.mannyCounter && !card?._drillExtraHit) {
+    // 逐段结算：多段/连击的每一段各自触发一次反击。
+    if (target?.ref === "manny" && target.hp > 0 && target.mannyWeapon === "ak47" && actor?.hp > 0 && !card?.mannyCounter) {
       if (window.BattleCounterTriggers?.open(state, {
         skill: "刺刀AK47", unitUid: target.uid, sourceUid: actor.uid, targetUid: actor.uid,
       })) return;
