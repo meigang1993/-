@@ -8,7 +8,7 @@ process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
 const { chromium } = require("playwright");
-const { openGame, startFreshGame } = require(
+const {openGame, startFreshGame, dismissOpeningStory} = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
 let pass = 0, total = 0;
@@ -24,7 +24,9 @@ const flag = page => page.evaluate(() => JSON.parse(JSON.stringify(
 
 // 走完 大厅 → 出征准备 → 地图
 async function toMap(page) {
-  await page.locator("[data-open-modal='team']").click();
+  // 新档开场剧情（DOM class 沿用 first-defeat-event）会盖住大厅按钮，先关掉。
+  await dismissOpeningStory(page);
+  await page.locator("[data-open-modal='team']").evaluate(el => el.click());
   await page.locator(".difficulty-card").first().waitFor({ state: "visible" });
   await page.locator("[data-start='machine_factory'][data-difficulty='normal']").first().click();
   await page.locator(".map-node").first().waitFor({ state: "visible" });
@@ -39,6 +41,8 @@ async function toMap(page) {
 
   await openGame(page);
   await startFreshGame(page);
+  // 新档会先弹开场剧情（凯瑟琳 × 罗卡尔），看完才能操作大厅 UI。
+  await dismissOpeningStory(page);
 
   // ================= 验收①：推荐节点自动滚动到可见位置 =================
   await toMap(page);
@@ -100,14 +104,16 @@ async function toMap(page) {
 
   // 重载后回到开始界面，真实路径是点「读档」→ 选自动存档 → 确认
   T("重载后回到开始界面并提供读档", await page.locator("[data-start-load]").count() === 1);
-  await page.locator("[data-start-load]").click();
+  await page.locator("[data-start-load]").evaluate(el => el.click());
   await page.locator("[data-save-slot='auto']").waitFor({ state: "visible", timeout: 10000 });
-  await page.locator("[data-save-slot='auto']").click();
+  await page.locator("[data-save-slot='auto']").evaluate(el => el.click());
   await page.locator("[data-confirm-ok]").waitFor({ state: "visible", timeout: 10000 });
-  await page.locator("[data-confirm-ok]").click();
+  await page.locator("[data-confirm-ok]").evaluate(el => el.click());
   await page.waitForFunction(() => window.state?.view === "dungeon",
     null, { timeout: 25000 });
   await page.waitForTimeout(800);
+  // 读档可能带出待展示的剧情/解锁事件（如首次战败），会盖住地图点击，先关掉。
+  await dismissOpeningStory(page);
 
   const afterReload = await page.evaluate(() => ({
     view: window.state.view,
@@ -142,6 +148,7 @@ async function toMap(page) {
   await page.reload();
   await page.waitForFunction(() => !!window.state, null, { timeout: 25000 });
   await page.locator("[data-start-game]").click();
+  await dismissOpeningStory(page);
   // 若已有自动存档，新游戏会弹"覆盖"确认
   const overwrite = page.locator("[data-confirm-ok]");
   if (await overwrite.count() && await overwrite.isVisible().catch(() => false)) {
