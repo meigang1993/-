@@ -107,7 +107,23 @@ async function run() {
     await openGame(page);
     await startRegressionBattle(page);
     out.setup = await page.evaluate(setupTpl);
-    await page.locator("button", { hasText: "结束出牌" }).first().click();
+    // 直接把行动权交给龙并打出单体杀：原有「点结束出牌 → 敌方 AI 行动」
+    // 链路停在准备阶段不推进，电钻火花永不发动（drill=0、交牌弹窗=0）。
+    // 用 BattleSystem.useCard（AI 出牌同一入口）确保多段伤害真实发生。
+    await page.evaluate(`(() => {
+      const st = window.state, b = st.battle;
+      const e = b.enemies[1], a0 = (b.allies || [])[0];
+      if (!e || !a0) return false;
+      b.activeUid = e.uid; b.phase = 4; b.locked = false; b.animQueue = [];
+      b.selectedCardIndex = null; b.selectedSkillCard = null; b.pendingTargetUid = null;
+      e.intent = 1;
+      const hand = e.hand || (e.hand = []);
+      const kill = hand.find(c => window.CardUtils?.isEntitySingleKill?.(c)) || ${KILL};
+      if (!hand.includes(kill)) hand.push(kill);
+      window.BattleSystem.useCard(st, e, a0, kill);
+      return true;
+    })()`);
+    await page.waitForTimeout(600);
     for (let i = 0; i < 60; i++) {
       await page.waitForTimeout(600);
       await page.evaluate(`(() => {
