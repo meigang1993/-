@@ -294,8 +294,8 @@ const T = (name, cond, extra) => {
 
   // ===== 外神之眼：三次独立攻击各自触发 =====
   // 注意：这里用的是 3 张独立的杀牌，不是一张牌的多段；
-  // 单张牌的多段/连击（_drillExtraHit 追加段）按设定不逐段结算，
-  // 由 tools/test-multihit-vs-counter-live.js 覆盖。
+  // 单张牌的多段/连击（_drillExtraHit 追加段）是技能伤害，而外神之眼只响应
+  // 实体牌，故仍只触发第一段——属牌类型限定，非多段拦截。
   await page.evaluate(`(() => {
     const st = window.state, b = st.battle;
     const a0 = b.allies[0], a1 = b.allies[1], w = b.enemies[0];
