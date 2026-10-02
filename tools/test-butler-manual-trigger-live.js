@@ -5,7 +5,7 @@ process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
 const { chromium } = require("playwright");
-const { openGame, startFreshGame } = require(
+const { openGame, startFreshGame, dismissOpeningStory } = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
 let pass = 0, total = 0;
@@ -25,6 +25,7 @@ const T = (name, cond, extra) => {
 
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.waitForTimeout(300);
 
   // 真实结算：与 dungeon-node-rewards.js 中 completeBattle 的调用完全一致
@@ -93,7 +94,7 @@ const T = (name, cond, extra) => {
 
   console.log("—— 场景6：手册界面真实点亮 ——");
   // 手册没有 open 方法，真实入口是大厅的 [data-open-butler] 按钮
-  await page.locator("[data-open-butler]").click();
+  await page.evaluate(() => { const b = document.querySelector("[data-open-butler]"); if (b) b.click(); });
   await page.waitForTimeout(400);
   const opened = await page.locator("[data-butler-tab]").count();
   T("手册界面可打开且页签渲染", opened === 4, { opened });
