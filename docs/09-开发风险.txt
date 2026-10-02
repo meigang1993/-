@@ -288,3 +288,26 @@
    （如 ffmpeg-static 真实包），需改用本地替身包
 2. 沙箱重建会清空 ~/.cache 与 /tmp，工具与浏览器缓存必须放在 /data/workspace 下的永久目录，
    并由自愈接线脚本在每次启动前重新链接
+
+【二十、本地同步脚本必须动态取远端 HEAD（2026-10-02 事故）】
+现象：推送成功后执行本地 git 同步，工作树 180+ 个文件被回退到 44 版内容
+      （index.html 版本戳从 65 变 44），随后产物校验报"11 个源文件未纳入 bundle 清单"，
+      一度误判为清单损坏。
+根因：safe_sync_head.py 第 5 行把 HEAD 硬编码为 f18e6f48...（44 版提交）。
+      该脚本的逻辑是"本地 blob 与远端不一致就下载远端覆盖"，
+      远端取的是旧提交 → 于是把新内容全部覆盖成旧内容。
+教训：
+1. 任何"以远端为准覆盖本地"的脚本，HEAD 必须动态取 refs/heads/main，
+   禁止硬编码提交 sha（硬编码只在需要刻意回退某版本时才可用，且要显式传参）。
+2. 覆盖类脚本执行后必须立刻核对版本戳（index.html / villa.css），
+   否则回退会在后续校验里以"无关症状"暴露，排查成本极高。
+3. 产物校验报"源文件未纳入 bundle 清单"时，先确认工作树是否被回退，
+   再怀疑清单本身——本次清单自始至终是好的。
+4. rebuild_git_history.py 依赖 /tmp/newindex 与 /tmp/indexinfo.txt，
+   沙箱重建清空 /tmp 后会 FileNotFoundError；需先按远端 tree 的 mode+sha
+   重建索引（工作树内容等于远端时用 git hash-object 即可），不要直接用
+   git add -A 建索引——文件模式差异会导致 tree sha 与远端不符（实测 1249 条目数相同但
+   tree sha 不同：本地 f293d4ec vs 远端 235ee977）。
+正确做法（已验证）：
+   取远端 tree → 按 mode+sha 写 indexinfo → update-index --index-info → write-tree
+   → 校验 tree sha 与远端一致 → commit-tree → update-ref → 复制索引到 .git/index
