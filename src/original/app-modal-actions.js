@@ -14,6 +14,8 @@ function completeClosableEventModal() {
     hoshinoFamilyUnlock: window.completeHoshinoFamilyUnlockEvent,
     ruinsSandCityUnlock: window.completeRuinsSandCityUnlockEvent,
     hitwellUnlock: window.completeHitwellUnlockEvent,
+    newGameIntro: window.completeNewGameIntroEvent,
+    firstVictory: window.completeFirstVictoryEvent,
   };
   const action = actions[state.hallModal];
   if (action) {
