@@ -16,6 +16,29 @@ function check(name, cond, extra = "") {
   else { fail += 1; console.log(`❌ ${name}${extra ? " — " + extra : ""}`); }
 }
 
+// 敌方（机械AI龙）直接打出一张单体杀命中我方 0 号。
+// 原写法靠点击「结束出牌」推进到敌方回合，但该链路实测停在
+// 「准备阶段，杀意重置为 N/N」不再推进，电钻火花永远不会发动
+// （表现为 drill=0 / roll=null，1.1、1.2、3.1 全红）。
+// 改为把行动权交给龙并用 BattleSystem.useCard 打出——AI 出牌同一入口。
+async function dragonPlayKill(page) {
+  await page.evaluate(`(() => {
+    const st = window.state, b = st.battle;
+    const e = b.enemies[${DRAGON}], a0 = (b.allies || [])[0];
+    if (!e || !a0) return false;
+    b.activeUid = e.uid; b.phase = 4; b.locked = false; b.animQueue = [];
+    b.selectedCardIndex = null; b.selectedSkillCard = null; b.pendingTargetUid = null;
+    e.intent = 1;
+    const hand = e.hand || (e.hand = []);
+    const kill = hand.find(c => window.CardUtils?.isEntitySingleKill?.(c))
+      || { name: "杀", type: "kill", suit: "♠" };
+    if (!hand.includes(kill)) hand.push(kill);
+    window.BattleSystem.useCard(st, e, a0, kill);
+    return true;
+  })()`);
+  await page.waitForTimeout(600);
+}
+
 // 场景1：龙打出单体杀 → 电钻火花追加次数 → 统计实际命中次数
 const comboTpl = `(() => {
   const b = window.state.battle;
@@ -58,8 +81,7 @@ const comboTpl = `(() => {
 
     // ---------- 场景1：连击次数 ----------
     await page.evaluate(comboTpl);
-    // 推进到敌方回合：现有回归均靠点击「结束出牌」驱动，直接改 activeUid 不会触发出牌流程
-    try { await page.locator("button", { hasText: "结束出牌" }).first().click(); } catch (e) {}
+    await dragonPlayKill(page);
     await page.waitForTimeout(4000);
     let r1 = await page.evaluate(`(() => ({
       hp0: window.__hp0 || 0,
@@ -177,7 +199,7 @@ const comboTpl = `(() => {
     await openGame(p3); await startRegressionBattle(p3); await p3.waitForTimeout(400);
     const cr = await p3.evaluate(counterTpl);
     console.log("场景3 角色构造:", JSON.stringify(cr));
-    try { await p3.locator("button", { hasText: "结束出牌" }).first().click(); } catch (e) {}
+    await dragonPlayKill(p3);
     await p3.waitForTimeout(4000);
     const r3 = await p3.evaluate(`(() => ({
       opens: window.__counterOpens || 0,
