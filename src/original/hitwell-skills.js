@@ -92,10 +92,6 @@ window.HitwellSkills = (() => {
     }
     const amount = attackOf(target);
     if (amount <= 0) return;
-    // 多段/连击的追加段不再追加一次反击：一次攻击的反击只应在第一段结算，
-    // 否则段数会把反伤线性放大（与杰洛特【复仇反击】同一约定）。
-    // 交牌分支不受此限：交的是对手手牌，牌交完即自然收敛，逐段为预期行为。
-    if (card?._drillExtraHit) return;
     deps?.directDamage?.(state, actor, amount, "心血之咒", target, 0,
       { name: "心血之咒", type: "skill" });
     window.BattleLog.add(state,
