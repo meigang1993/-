@@ -39,11 +39,9 @@ window.RuinsWithererSkills = (() => {
     if (!hpLoss) return;
     // 外神之眼只响应实体牌伤害：技能卡、技能生成的虚拟杀、无卡直接伤害均不触发，
     // 否则技能伤害会连锁触发，且与「实体牌」描述不符。
-    // 多段/连击（电钻火花、疯狂刺刀）的追加段带 _drillExtraHit：整张杀仍属同一次
-    // 攻击，外神之眼只在第一段触发，不逐段结算（与反击类同一约定，见
-    // battle-damage-triggers.js）。追加段本身是 type:"skill"，isEntityCard 已排除，
-    // 这里再显式判一次，避免以后追加段改成实体牌时又变成逐段。
-    if (target?.ai === "ruins_witherer" && isEntityCard(card) && !card?._drillExtraHit) {
+    // 外神之眼逐段结算：多段/连击的每一段只要是实体牌就各自触发一次。
+    // （追加段本身是 type:"skill"，isEntityCard 会排除，故电钻火花仍只触发第一段。）
+    if (target?.ai === "ruins_witherer" && isEntityCard(card)) {
       // 等本段受击动画演完再驱动外神之眼。
       const confuse = () => eyeOfOuterGod(state, actor, target);
       if (!(damage?.delayUntilHitSettled?.(state, confuse)
@@ -56,8 +54,7 @@ window.RuinsWithererSkills = (() => {
 
   // 外神之眼：受伤后令伤害来源对其同阵营其他存活角色视为使用一张虚拟【杀（普攻）】。
   // 「其他敌方」沿用百眼魅魔的措辞口径——从凋零者视角看，其敌方阵营内的其余角色。
-  // 多段或连击不逐段结算：追加段（_drillExtraHit）已在 afterDamage 拦截，
-  // 一次多段攻击只会让外神之眼触发一次。
+  // 外神之眼只响应实体牌：追加段为 type:"skill"，故一次多段攻击仍只触发第一段。
   function eyeOfOuterGod(state, attacker, witherer) {
     if (!attacker || attacker.hp <= 0 || attacker === witherer) return;
     const mates = (attacker.side === "ally"
