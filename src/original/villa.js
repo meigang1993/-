@@ -53,6 +53,8 @@ window.VillaUI = (() => {
       hoshinoFamilyUnlock: state => window.NewCharacterUnlockEvents?.hoshinoUnlock?.(state) || "",
       ruinsSandCityUnlock: state => window.NewCharacterUnlockEvents?.ruinsSandCityUnlock?.(state) || "",
       hitwellUnlock: state => window.NewCharacterUnlockEvents?.hitwellUnlock?.(state) || "",
+      newGameIntro: state => window.VillaStoryEvents?.newGameIntro?.(state) || "",
+      firstVictory: state => window.VillaStoryEvents?.firstVictory?.(state) || "",
     };
     if (!map[state.hallModal]) { state.hallModal = null; return ""; }
     const close = state.hallModal === "teamRoster" ? `data-open-modal="team" title="返回准备启程"` : `data-close-modal="1"`;
@@ -62,6 +64,7 @@ window.VillaUI = (() => {
       "opheliaUnlock", "bestaNurseryUnlock", "orcDungeonUnlock", "soniaNurseryUnlock",
       "chiyoRecruitUnlock", "gerdaNurseryUnlock", "hoshinoFamilyUnlock",
       "ruinsSandCityUnlock", "hitwellUnlock",
+      "newGameIntro", "firstVictory",
     ]);
     const modalClass = state.hallModal === "updates"
       ? " update-modal"
