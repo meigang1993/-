@@ -151,6 +151,7 @@
     "villa-event-renderer.js",
     "villa-defeat-events.js",
     "villa-family-events.js",
+    "villa-story-events.js",
     "villa-events.js",
     "extra-unlock-event-views.js",
     "extra-unlock-events.js",
