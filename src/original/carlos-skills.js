@@ -39,8 +39,8 @@ window.CarlosSkills = (() => {
     window.BattleLog.add(state,
       `${actor.name} 触发疯狂刺刀，按手牌杀牌数量追加${count}次攻击力伤害。`);
     for (let index = 0; index < count && target.hp > 0; index += 1) {
-      // 追加段沿用 _drillExtraHit：整张杀仍属同一次攻击，受击方的反击只应在
-      // 第一段入队，否则手牌杀数会把反伤线性放大（与电钻火花同一约定）。
+      // 追加段沿用 _drillExtraHit 标识（现仅作标记，受击链已改为逐段结算）：
+      // 追加段同样会触发受击方的反击与收益类技能（逐段结算）。
       api.directDamage(
         state, target, amount, "疯狂刺刀", actor, 120 * index,
         { name: "疯狂刺刀", type: "skill", _drillExtraHit: true });
