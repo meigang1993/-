@@ -7,7 +7,7 @@ process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
 const { chromium } = require("playwright");
-const { openGame, startFreshGame } = require(
+const {openGame, startFreshGame, dismissOpeningStory} = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
 let pass = 0, total = 0;
@@ -29,6 +29,8 @@ const flag = page => page.evaluate(() => JSON.parse(JSON.stringify(
 
   await openGame(page);
   await startFreshGame(page);
+  // 新档会先弹开场剧情（凯瑟琳 × 罗卡尔），看完才能操作大厅 UI。
+  await dismissOpeningStory(page);
 
   // ---------- 进入首战 ----------
   await page.locator("[data-open-modal='team']").click();
