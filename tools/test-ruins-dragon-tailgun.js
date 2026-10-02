@@ -97,14 +97,15 @@ const mkDragon = () => ({
   check("B1 第一段触发半魅魔血", calls.hoshino === 1, `hoshino=${calls.hoshino}`);
   check("B2 第一段触发贝尔蒂丝反击判定", calls.bertis === 1, `bertis=${calls.bertis}`);
 
-  // 追加段（_drillExtraHit = true）：受击类与反击类均不得再触发
+  // 追加段（_drillExtraHit = true）：受击类与反击类同样逐段触发
   for (let i = 0; i < 6; i += 1) {
     triggers.afterDamage(state, actor, target,
       { name: "杀", type: "slash", _drillExtraHit: true }, 5, 0, actor);
   }
   check("B3 追加段仍逐段触发半魅魔血（骰子6 → 共7次摸牌/交牌，属设计）",
     calls.hoshino === 7, `hoshino=${calls.hoshino}（应为7）`);
-  check("B4 追加段不再触发贝尔蒂丝反击", calls.bertis === 1, `bertis=${calls.bertis}（应为1）`);
+  check("B4 追加段同样逐段触发贝尔蒂丝反击（骰子6 → 共7次）",
+    calls.bertis === 7, `bertis=${calls.bertis}（应为7）`);
 }
 
 // ---------- 场景C：电钻火花改为「追加多段伤害」而非追加使用杀 ----------
