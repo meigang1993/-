@@ -49,6 +49,7 @@ const groups = Object.freeze({
     "test-onboarding-first-victory-exp-live.js",
     "test-onboarding-flow-live.js",
     "test-onboarding-robustness-live.js",
+    "test-onboarding-story-events-live.js",
     "test-ruins-difficulty-scale.js",
     "test-ruins-doc-specs-live.js",
     "test-ruins-gold-difficulty-live.js",
@@ -56,6 +57,8 @@ const groups = Object.freeze({
     "test-underwater-elite-stats.js",
   ],
   battle: [
+    "test-raff-control-eye-live.js",
+    "test-multihit-vs-counter-live.js",
     "test-battle-ai-targeting.js",
     "test-animation-fallback.js",
     "test-battle-effects.js",
