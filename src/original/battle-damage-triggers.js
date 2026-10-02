@@ -45,20 +45,12 @@ window.BattleDamageTriggers = (api) => {
     window.FloraCarlosSkills?.afterSlashDamage?.(
       state, actor, target, card, hpLoss, { damage, directDamage, blockLoss });
     window.EdisSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, blockLoss);
-    // 电钻火花追加段（_drillExtraHit）不触发反击：连击多段属同一次攻击，
-    // 反击只在第一段入队，否则骰子点数会线性放大反击次数。
-    if (!card?._drillExtraHit) {
-      window.BertisGerlotSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage });
-    }
-    // 半魅魔血（星野一）：按设计「多段或连击伤害时逐段结算」，追加段照常触发。
-    // 与狂战不同 —— 狂战已取消逐段，半魅魔血保留，勿加 _drillExtraHit 拦截。
+    // 逐段结算：多段/连击的每一段各自触发一次（杰洛特【复仇反击】）。
+    window.BertisGerlotSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage });
+    // 半魅魔血（星野一）逐段结算：多段/连击的每一段各自摸 2 张并弹一次交牌窗。
     window.HoshinoSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
-    // 狂战（安洁莉卡）同属「受伤后获得收益」：多段/连击属同一次攻击，
-    // 追加段必须一并拦截，否则骰子点数会线性放大标记数（6 段 = 6 枚），
-    // 与其余受击触发类（复仇反击 / 心血之咒 / 刺刀AK47 / 外神之眼 / 半魅魔血）口径一致。
-    if (!card?._drillExtraHit) {
-      window.AngelicaLukaSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
-    }
+    // 狂战（安洁莉卡）逐段结算：多段/连击的每一段各自获得 1 枚标记。
+    window.AngelicaLukaSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
     window.GuestCharacterSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
     window.WithererSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, deps.draw, ctx.pushFloat);
     window.BondiSkills?.afterDamage?.(state, actor, target, card, hpLoss);
