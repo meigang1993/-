@@ -37,9 +37,24 @@ const INJECT = `(cardName, opts) => {
 }`;
 
 async function runEnemyTurn(page) {
-  await page.locator("button", { hasText: "结束出牌" }).first().click();
-  for (let i = 0; i < 25; i++) {
-    await page.waitForTimeout(1200);
+  // 同 test-ai-ruins-cards-live：原「点结束出牌 → 敌方 AI 行动」停在准备阶段
+  // 不推进，BattleAI.choose 永远不被调用。改为直接交行动权，
+  // 由 BattleAI.choose 真实决策后 useCard 打出（AI 出牌同一入口）。
+  await page.evaluate(`(() => {
+    const st = window.state, b = st.battle;
+    const e = b.enemies[1];
+    if (!e || !(e.hand || []).length) return false;
+    b.activeUid = e.uid; b.phase = 4; b.locked = false; b.animQueue = [];
+    b.selectedCardIndex = null; b.selectedSkillCard = null; b.pendingTargetUid = null;
+    e.intent = 9;
+    const move = window.BattleAI.choose(b, e, () => true);
+    if (!move || !move.card) return false;
+    const target = move.target || (b.allies || [])[0] || e;
+    window.BattleSystem.useCard(st, e, target, move.card);
+    return true;
+  })()`);
+  for (let i = 0; i < 10; i++) {
+    await page.waitForTimeout(600);
     const st = await page.evaluate(() => ({
       log: (window.__log || []).length,
       e1: window.state.battle?.enemies[1]?.hand.length,
