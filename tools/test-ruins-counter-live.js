@@ -33,6 +33,24 @@ const injectTpl = cardName => `(() => {
   return { missing: false, enemy: e1.name };
 })()`;
 
+// 敌方直接打出手中那张战术牌。
+// 原本依赖「我方点结束出牌 → 敌方 AI 行动」，实测该链路停在
+// 「准备阶段，杀意重置为 N/N」不再推进，看破窗口永远不会出现；
+// 而脚本末尾恒 exit(0)，于是"窗口=false"也被计成通过（假通过）。
+// 改为把行动权交给敌方并用 BattleSystem.useCard 打出（AI 出牌同一入口）。
+async function enemyPlayCard(page, idx) {
+  await page.evaluate(`(() => {
+    const st = window.state, b = st.battle;
+    const e = b.enemies[${idx}], a0 = (b.allies || [])[0];
+    if (!e || !a0 || !(e.hand || []).length) return false;
+    b.activeUid = e.uid; b.phase = 4; b.locked = false; b.animQueue = [];
+    b.selectedCardIndex = null; b.selectedSkillCard = null; b.pendingTargetUid = null;
+    window.BattleSystem.useCard(st, e, a0, e.hand[0]);
+    return true;
+  })()`);
+  await page.waitForTimeout(500);
+}
+
 (async () => {
   const browser = await chromium.launch();
   const out = {};
@@ -45,7 +63,7 @@ const injectTpl = cardName => `(() => {
       await startRegressionBattle(page);
       const inj = await page.evaluate(injectTpl(name));
       if (inj.missing) { out[name] = { err: "卡牌缺失" }; await page.close(); continue; }
-      await page.locator("button", { hasText: "结束出牌" }).first().click();
+      await enemyPlayCard(page, 1);
       let sawCounter = false;
       const counterCards = new Set();
       for (let i = 0; i < 30; i++) {
@@ -71,12 +89,18 @@ const injectTpl = cardName => `(() => {
   }
   await browser.close();
   console.log("\n===== 实战：看破响应 =====");
+  let pass = 0, total = 0;
+  const T = (n, c, x) => { total++; if (c) { pass++; console.log(`✅ ${n}`); }
+    else console.log(`❌ ${n}  ← ${JSON.stringify(x || {})}`); };
   Object.entries(out).forEach(([name, r]) => {
-    if (r.err) { console.log(`  ${name} ❌ ${r.err}`); return; }
+    if (r.err) { T(`${name}：可正常执行`, false, { err: r.err }); return; }
     console.log(`  ${name.padEnd(6)} 看破窗口=${r.counterWindow} 窗口牌=${JSON.stringify(r.counterCards)}`);
     console.log(`         我方HP=${JSON.stringify(r.allyHp)}`);
     console.log(`         战报=${JSON.stringify(r.log.slice(0, 12))}`);
     if (r.errors.length) console.log(`         页面错误=${r.errors.join(";")}`);
+    T(`${name}：出现看破响应窗口`, r.counterWindow === true, r);
+    T(`${name}：窗口牌为该战术牌`, r.counterCards.includes(name), r);
   });
-  process.exit(0);
+  console.log(`\n=== ${pass}/${total} 通过 ===`);
+  process.exit(pass === total ? 0 : 1);
 })();
