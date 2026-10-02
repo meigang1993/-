@@ -21,9 +21,9 @@ const milkSkill = kaiichiData.skills.find(skill => skill.name === "半魅魔精�
 const idolSkill = yiData.skills.find(skill => skill.name === "偶像之星");
 const truthSkill = yiData.skills.find(skill => skill.name === "梦想真理");
 
-assert(JSON.stringify(gerdaData.stats) === JSON.stringify({ attack: 3, magic: 3, speed: 4, maxHp: 40, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 }), "Gerda stats mismatch");
-assert(JSON.stringify(yiData.stats) === JSON.stringify({ attack: 3, magic: 3, speed: 3, maxHp: 34, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 }), "Hoshino Yi stats mismatch");
-assert(JSON.stringify(kaiichiData.stats) === JSON.stringify({ attack: 1, magic: 3, speed: 2, maxHp: 46, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 }), "Hoshino Kaiichi stats mismatch");
+assert(JSON.stringify(gerdaData.stats) === JSON.stringify({ attack: 4.8, magic: 5, speed: 6.7, maxHp: 69, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 }), "Gerda stats mismatch");
+assert(JSON.stringify(yiData.stats) === JSON.stringify({ attack: 4.8, magic: 5, speed: 5.5, maxHp: 59, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 }), "Hoshino Yi stats mismatch");
+assert(JSON.stringify(kaiichiData.stats) === JSON.stringify({ attack: 2.4, magic: 5, speed: 4.4, maxHp: 79, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 }), "Hoshino Kaiichi stats mismatch");
 assert(gerdaData.grandfather === "兽人王邦迪" && yiData.mother === "混沌女神" && kaiichiData.father === "艾伦格", "New character family metadata mismatch");
 assert(yiData.role === "XX型凋零者" && yiData.combatRoles[0] === "输出", "Hoshino Yi role positioning mismatch");
 assert(yiData.entrance === "晚上好，我是A小町，星野依，天才般偶像，今天演唱新曲。", "Hoshino Yi entrance line mismatch");
@@ -242,8 +242,8 @@ vm.runInThisContext(fs.readFileSync("./src/original/battle-line-data.js", "utf8"
 
 const artinaData = character("artina");
 const mariaData = character("maria");
-assert(JSON.stringify(artinaData.stats) === JSON.stringify({ attack: 3, magic: 2, speed: 4, maxHp: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 }), "Artina stats mismatch");
-assert(JSON.stringify(mariaData.stats) === JSON.stringify({ attack: 3, magic: 3, speed: 4, maxHp: 38, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 }), "Maria stats mismatch");
+assert(JSON.stringify(artinaData.stats) === JSON.stringify({ attack: 4.8, magic: 3.7, speed: 6.7, maxHp: 62, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 }), "Artina stats mismatch");
+assert(JSON.stringify(mariaData.stats) === JSON.stringify({ attack: 4.8, magic: 5, speed: 6.7, maxHp: 65, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 }), "Maria stats mismatch");
 assert(artinaData.unlockFlag === "ruinsSandCityUnlocked" && mariaData.unlockFlag === "ruinsSandCityUnlocked", "Artina/Maria must unlock with Ruins Sand City");
 assert(artinaData.role === "魅影突击队狙击手" && mariaData.role === "魅影突击队支援兵", "Artina/Maria role mismatch");
 
@@ -361,8 +361,11 @@ ArtinaMariaSkills.endTurn(blessState, maria);
 assert(maria.mariaBlessingSuits.length === 0 && blessed.mariaBlessingSuits.length === 0,
   "All suits must fade after enough turns");
 assert(!blessed.mariaBlessing && !maria.mariaBlessing, "Blessing must expire with the last suit");
-assert(blessed.stats.attack === blessBefore.attack && blessed.stats.magic === blessBefore.magic
-  && blessed.stats.speed === blessBefore.speed, "Expired blessing must remove its bonus");
+// 角色属性调整后含小数（如 magic 3.7），加/减同一数值存在浮点抵消误差
+// （3.7 + 5 - 5 === 3.6999999999999993），因此用容差而非严格相等。
+const near = (a, b) => Math.abs((a || 0) - (b || 0)) < 1e-9;
+assert(near(blessed.stats.attack, blessBefore.attack) && near(blessed.stats.magic, blessBefore.magic)
+  && near(blessed.stats.speed, blessBefore.speed), "Expired blessing must remove its bonus");
 
 // 弃置花色：记录本次弃置的花色，并作为跨回合冷却（全部消失后才能再次发动）
 assert(castSuits.length === 2 && castSuits.includes("♥") && castSuits.includes("♦"),
