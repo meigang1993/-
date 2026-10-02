@@ -37,8 +37,8 @@ window.RuinsDragonSkills = (() => {
       `${actor.name} 发动电钻火花，骰子点数${roll}，追加${roll}次攻击力伤害。`);
     if (!directDamage || !target) return;
     const amount = Math.max(0, stat(actor, "attack"));
-    // 追加段沿用 _drillExtraHit：整张杀仍属同一次攻击，反击只应在第一段触发，
-    // 否则骰子点数会线性放大反击次数。
+    // 追加段带 _drillExtraHit 标识（现仅作标记，受击链已改为逐段结算）：
+    // 追加段同样会触发受击方的反击与收益类技能（逐段结算）。
     const extraCard = {
       name: "电钻火花", type: "skill", _drillExtraHit: true,
       ignoreResponse: true, skipDamageModify: true,
