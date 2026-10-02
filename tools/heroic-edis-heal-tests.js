@@ -2,14 +2,20 @@ const {
   assert, battleState, card, combat, makeEdis, unit,
 } = require("./heroic-edis-test-harness");
 
+// 英雄级伊迪斯攻击力随本次敌人平衡调整提高（当前 12）。测试单位的血量必须
+// 高于该伤害值，否则结算会被 0 血下限钳制，断言就只能验证钳制而非伤害数值。
+const BASE_HP = 18;
+const BASE_MAX_HP = 30;
+const HEAL_AMOUNT = 9;
+
 function testHeal(dodges) {
   const heal = card("愈魔瓶");
   const healer = unit(`healer-${dodges}`, "ally", [
     heal,
     ...(dodges ? [card("闪", { suit: "♥" })] : []),
   ]);
-  healer.hp = 10;
-  healer.maxHp = 30;
+  healer.hp = BASE_HP;
+  healer.maxHp = BASE_MAX_HP;
   const edis = makeEdis([]);
   const state = battleState(edis, [healer]);
   combat.useCard(state, healer, healer, heal);
@@ -18,10 +24,10 @@ function testHeal(dodges) {
 
 function testSingleHealCounter() {
   const blocked = testHeal(false);
-  assert.strictEqual(blocked.healer.hp, 10 - blocked.edis.stats.attack,
+  assert.strictEqual(blocked.healer.hp, BASE_HP - blocked.edis.stats.attack,
     "without Flash, Infinite Dark Blade must deal scaled Slash damage and cancel the heal");
   const dodged = testHeal(true);
-  assert.strictEqual(dodged.healer.hp, 19,
+  assert.strictEqual(dodged.healer.hp, BASE_HP + HEAL_AMOUNT,
     "with Flash, Infinite Dark Blade must be cancelled and the nine-point heal must resolve");
   assert.strictEqual(dodged.healer.discard.some(item => item.name === "闪"), true,
     "the successful Infinite Dark Blade response must consume Flash normally");
@@ -32,15 +38,15 @@ function testGroupHealCounter() {
   const guarded = unit("group-heal-1", "ally", [spring, card("闪", { suit: "♥" })]);
   const exposed = unit("group-heal-2", "ally", []);
   [guarded, exposed].forEach(target => {
-    target.hp = 10;
-    target.maxHp = 30;
+    target.hp = BASE_HP;
+    target.maxHp = BASE_MAX_HP;
   });
   const edis = makeEdis([]);
   const state = battleState(edis, [guarded, exposed]);
   combat.useCard(state, guarded, guarded, spring);
-  assert.strictEqual(guarded.hp, 19,
+  assert.strictEqual(guarded.hp, BASE_HP + HEAL_AMOUNT,
     "a group-heal target that dodges Infinite Dark Blade must still recover");
-  assert.strictEqual(exposed.hp, 10 - edis.stats.attack,
+  assert.strictEqual(exposed.hp, BASE_HP - edis.stats.attack,
     "a group-heal target without Flash must take the sweep and lose its recovery");
   assert.strictEqual(
     state.battle.animQueue.filter(event => event.type === "virtualPlay" && event.card?.name === "机枪扫杀").length,
