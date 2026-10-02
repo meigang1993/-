@@ -111,7 +111,10 @@ window.RuinsRelicEffects = (() => {
       window.BattleLines?.skill?.(state, actor, "智能大脑");
       log(state, `${actor.name} 的智能大脑触发，战术牌${card.name}造成的伤害翻倍。`);
     }
-    return amount * 2;
+    // 角色属性带小数时，「先翻倍再取整」会与玩家看到的伤害不符
+    // （如 4.6 → 显示 5，翻倍 9.2 → 显示 9，看起来没翻倍）。
+    // 翻倍必须基于玩家实际会吃到的整数伤害，故先取整再翻倍。
+    return Math.round(amount) * 2;
   }
 
   // 粉色魅魔装（被动）：红色牌对你无效；你使用的红色牌不可响应。
