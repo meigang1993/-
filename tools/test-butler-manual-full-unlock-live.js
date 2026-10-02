@@ -6,7 +6,7 @@ process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
 const { chromium } = require("playwright");
-const { openGame, startFreshGame } = require(
+const { openGame, startFreshGame, dismissOpeningStory } = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
 let pass = 0, total = 0;
@@ -32,6 +32,7 @@ const EXPECT = {
 
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   const tab = async (id) => {
     await page.locator(`[data-butler-tab='${id}']`).click();
     await page.waitForTimeout(150);
@@ -148,7 +149,7 @@ const EXPECT = {
 
   // ================= 五、界面逐条点亮 =================
   console.log("—— 五、手册界面逐条点亮 ——");
-  await page.locator("[data-open-butler]").click();
+  await page.evaluate(() => { const b = document.querySelector("[data-open-butler]"); if (b) b.click(); });
   await page.waitForTimeout(400);
   T("手册已打开（4 个页签）", await page.locator("[data-butler-tab]").count() === 4);
 
