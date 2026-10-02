@@ -8,7 +8,7 @@ process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
 const { chromium } = require("playwright");
-const { openGame, startFreshGame } = require(
+const {openGame, startFreshGame, dismissOpeningStory} = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
 let pass = 0, total = 0;
@@ -28,6 +28,8 @@ const T = (name, cond, extra) => {
 
   await openGame(page);
   await startFreshGame(page);
+  // 新档会先弹开场剧情（凯瑟琳 × 罗卡尔），看完才能操作大厅 UI。
+  await dismissOpeningStory(page);
 
   // ============ 一、数据源：新档时该条存在且未完成 ============
   console.log("—— 一、数据源（新档） ——");
@@ -143,7 +145,14 @@ const T = (name, cond, extra) => {
 
   // ============ 五、界面：已点亮 + 总完成度上升 ============
   console.log("—— 五、界面（打完后点亮） ——");
-  await page.locator("[data-open-butler]").click();
+  // 打完首战回大厅后可能仍叠着弹窗（首战胜利剧情 / 队伍准备面板），
+  // 不先清干净的话点手册按钮会被 .villa-modal 拦截。
+  await dismissOpeningStory(page);
+  if (await page.locator(".villa-modal").count()) {
+    await page.evaluate(() => document.querySelector("[data-close-modal]")?.click());
+    await page.waitForTimeout(300);
+  }
+  await page.locator("[data-open-butler]").first().evaluate(el => el.click());
   await page.waitForTimeout(350);
   await page.locator("[data-butler-tab='explore']").click();
   await page.waitForTimeout(250);
