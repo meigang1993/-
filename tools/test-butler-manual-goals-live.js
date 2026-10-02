@@ -7,7 +7,7 @@ process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
 const { chromium } = require("playwright");
-const { openGame, startFreshGame } = require(
+const { openGame, startFreshGame, dismissOpeningStory } = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
 let pass = 0, total = 0;
@@ -60,6 +60,7 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
 
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   // hall 分组（含管家手册模块）是按需加载的，等入口出现后再读数据。
   await page.locator("[data-open-butler]").waitFor({ state: "visible", timeout: 30000 });
 
@@ -94,7 +95,7 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
   T(`管家名为「${BUTLER_NAME}」`, data.butlerName === BUTLER_NAME, data.butlerName);
 
   // ============ 二、手册界面与清单一致 ============
-  await page.locator("[data-open-butler]").click();
+  await page.evaluate(() => { const b = document.querySelector("[data-open-butler]"); if (b) b.click(); });
   await page.locator(".butler-page").waitFor({ state: "visible" });
 
   T("立绘 alt 显示管家名",
