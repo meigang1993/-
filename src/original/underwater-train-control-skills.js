@@ -6,8 +6,8 @@ window.UnderwaterTrainControlSkills = (shared) => {
   }
   function controlEyeMove(state, actor) {
     if (actor.ai !== "raff_assassin" || actor.usedControlEye) return null;
-    const heart = visible(actor).find(c => c.suit === "♥"), foes = alive(state.battle.allies);
-    if (!heart || foes.length < 2) return null;
+    // 描述已改为「弃置一张任意手牌」，不再限定红桃。
+    if (!visible(actor).length || alive(state.battle.allies).length < 2) return null;
     return { card: { name: "控神魔眼", _skill: true, controlEye: true, targetless: true }, target: actor };
   }
   function useFlashbang(state, actor) {
@@ -19,13 +19,23 @@ window.UnderwaterTrainControlSkills = (shared) => {
   }
   function useControlEye(state, actor, damage, draw) {
     if (actor.usedControlEye) return true;
-    const foes = alive(state.battle.allies), heartIndex = actor.hand.findIndex(c => c.suit === "♥" && !c._pendingDraw);
-    if (heartIndex < 0 || foes.length < 2) return true;
+    const foes = alive(state.battle.allies), costIndex = actor.hand.findIndex(c => !c._pendingDraw);
+    if (costIndex < 0 || foes.length < 2) return true;
     actor.usedControlEye = true;
-    const [heart] = actor.hand.splice(heartIndex, 1); window.BattleCards?.put(state.battle, actor, heart, "discard", { showDiscard: true });
+    const [cost] = actor.hand.splice(costIndex, 1); window.BattleCards?.put(state.battle, actor, cost, "discard", { showDiscard: true });
+    // AI 行为：指定我方攻击力最高的角色去决斗另一名我方角色。
     const first = foes.slice().sort((a, b) => stat(b, "attack") - stat(a, "attack") || b.hp - a.hp)[0];
     const second = foes.filter(u => u.uid !== first.uid).sort((a, b) => b.hp - a.hp)[0];
     window.BattleLines?.skill(state, actor, "控神魔眼", first); window.BattleLog.add(state, `${actor.name} 发动控神魔眼，令${first.name}向${second.name}发起与我一战。`);
+    // 描述新增：先令第一名角色弃置一张牌，再发起决斗。
+    const victimCards = (first.hand || []).filter(c => !c._pendingDraw);
+    if (victimCards.length) {
+      const pick = window.GameRandom?.int?.(0, victimCards.length - 1, state);
+      const victim = victimCards[Number.isInteger(pick) ? Math.min(Math.max(pick, 0), victimCards.length - 1) : 0];
+      const vi = first.hand.indexOf(victim);
+      if (vi >= 0) { first.hand.splice(vi, 1); window.BattleCards?.put(state.battle, first, victim, "discard", { showDiscard: true }); }
+      window.BattleLog.add(state, `${first.name} 因控神魔眼弃置了${victim.suit || ""}${victim.name}。`);
+    }
     const duel = window.CardUtils.fromEntity("与我一战", { _skipHandMove: true, skillName: "控神魔眼" });
     state.battle.animQueue?.push({ type: "virtualPlay", id: window.GameRandom.id("cd"), uid: first.uid, side: first.side, targetUid: second.uid, card: duel, enemyLine: false, show: true });
     const n = resolveControlDuel(state, first, second, damage);
