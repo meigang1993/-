@@ -121,6 +121,51 @@ async function startFreshGame(page) {
   await expect(page.locator("[data-open-modal='team']")).toBeVisible();
 }
 
+// 新档开场剧情（凯瑟琳 × 罗卡尔）会盖在大厅上，拦截对 [data-open-modal] 的点击。
+// 需要直接操作大厅 UI 的用例先调用它把剧情看完并关闭。
+// 全部走 DOM click：Playwright 的 hit-target 在页面持续 re-render 时会误报被拦截。
+async function dismissOpeningStory(page) {
+  // 剧情类弹窗：只有这些还开着时才继续处理，避免误把队伍面板之类也关掉或死循环
+  const STORY = /intro|victory|defeat|unlock|story|dialogue/i;
+  // 点「开始游戏」后剧情是异步渲染的，先等它出现；否则第一轮就会误判成"已关闭"而直接退出
+  await page.waitForSelector(".adv-box, .villa-modal", { timeout: 5000 }).catch(() => {});
+  let idle = 0;
+  for (let i = 0; i < 30; i++) {
+    const adv = await page.locator(".adv-box").count();
+    const modal = await page.evaluate(() => window.state?.hallModal || null);
+    // 没有 ADV 框、且大厅弹窗为空或非剧情态 → 可能已清理干净，连续两轮如此才收工
+    if (!adv && (!modal || !STORY.test(modal))) {
+      if (++idle >= 2) break;
+      await page.waitForTimeout(250);
+      continue;
+    }
+    idle = 0;
+    if (await page.locator("[data-adv-skip]").count()) {
+      await page.evaluate(() => { window.AdvDialogue?.skip?.(); window.render?.(); });
+      await page.waitForTimeout(250);
+      continue;
+    }
+    const done = page.locator([
+      "[data-new-game-intro-complete]", "[data-first-victory-complete]",
+      "[data-first-defeat-complete]", "[data-close-modal]",
+    ].join(",")).first();
+    if (await done.count()) {
+      await done.evaluate(el => el.click()).catch(() => {});
+      await page.waitForTimeout(300);
+      continue;
+    }
+    const box = page.locator(".adv-box[data-adv-advance]").first();
+    if (await box.count()) {
+      await box.evaluate(el => el.click()).catch(() => {});
+      await page.waitForTimeout(250);
+      continue;
+    }
+    // 剧情还在但 render 异步导致暂时无可点元素，稍等再试
+    await page.waitForTimeout(250);
+  }
+  await page.waitForTimeout(300);
+}
+
 async function openTestBattle(page) {
   await page.evaluate(() => {
     window.state.hallModal = "testBattle";
@@ -193,6 +238,7 @@ async function capturedAoeLineCount(page, key) {
 }
 
 module.exports = {
+  dismissOpeningStory,
   collectErrors, relevantErrors, openGame, waitForImages, expectImagesLoaded, startFreshGame,
   openTestBattle, startRegressionBattle, enterRegressionBattle, prepareAoeLineCapture,
   capturedAoeLineCount,
