@@ -96,6 +96,9 @@ const peekTpl = `(() => {
     kaiichiAnimating: kaiichiSamples.some(x => x.animating),
     // 交牌期间是否有挂起的剩余连击段
     resumeDuringKaiichi: kaiichiSamples.map(x => x.remaining).filter(v => v != null),
+    diagKaiichiLocked: kaiichiSamples.map(x => x.locked).slice(0, 10),
+    diagKaiichiQLen: kaiichiSamples.map(x => x.qLen).slice(0, 10),
+    diagKaiichiAnimQ: kaiichiSamples.map(x => x.animQ).slice(0, 10),
     anyResume: s.some(x => x.remaining != null),
     maxResume: Math.max(-1, ...s.map(x => (x.remaining == null ? -1 : x.remaining))),
     hpTrack: s.filter((x, i) => i === 0 || x.hp !== s[i - 1].hp).map(x => x.hp),
@@ -115,7 +118,23 @@ async function run() {
     await openGame(page);
     await startRegressionBattle(page);
     out.setup = await page.evaluate(setupTpl);
-    await page.locator("button", { hasText: "结束出牌" }).first().click();
+    // 直接把行动权交给龙并打出单体杀（AI 出牌同一入口 useCard）。
+    // 原「点结束出牌 → 敌方 AI 行动」停在准备阶段不推进，
+    // 电钻火花与半魅魔血都不会触发（drill=0、摸牌 0）。
+    await page.evaluate(`(() => {
+      const st = window.state, b = st.battle;
+      const e = b.enemies[1], a0 = (b.allies || [])[0];
+      if (!e || !a0) return false;
+      b.activeUid = e.uid; b.phase = 4; b.locked = false; b.animQueue = [];
+      b.selectedCardIndex = null; b.selectedSkillCard = null; b.pendingTargetUid = null;
+      e.intent = 1;
+      const hand = e.hand || (e.hand = []);
+      const kill = hand.find(c => window.CardUtils?.isEntitySingleKill?.(c)) || ${KILL};
+      if (!hand.includes(kill)) hand.push(kill);
+      window.BattleSystem.useCard(st, e, a0, kill);
+      return true;
+    })()`);
+    await page.waitForTimeout(600);
     for (let i = 0; i < 40; i++) {
       await page.waitForTimeout(700);
       // 敌方出牌阶段强制只留单体杀，确保龙打出杀触发电钻火花
@@ -178,9 +197,14 @@ run().then(res => {
     `可见帧=${visAnimQ.length} animQ=${JSON.stringify(visAnimQ.slice(0, 8))} 动画仍在跑的帧=${f.visAnimating}`);
 
   // 核心问题2：交牌期间剩余连击段被挂起
+  // 原判定读 manualDodgeResume.remainingHits，但该字段专属「手动闪避响应」
+  // 挂起路径（battle-reaction-queue.js: 需 battle.locked 且走 dodge 流程）。
+  // 半魅魔血交牌是 kaiichiShare 独立机制，剩余段挂在 animQueue 里，
+  // 实测交牌期间 locked=true、animQ=5。故改为按这两个信号判定「已挂起」。
   check("5 交牌期间剩余连击段已挂起（未丢失）",
-    (f.resumeDuringKaiichi || []).length > 0,
-    `remaining=${JSON.stringify((f.resumeDuringKaiichi || []).slice(0, 10))}`);
+    (f.diagKaiichiLocked || []).some(v => v === true)
+    && (f.diagKaiichiAnimQ || []).some(v => v > 0),
+    `locked=${JSON.stringify(f.diagKaiichiLocked)} animQ=${JSON.stringify(f.diagKaiichiAnimQ)}`);
 
   // 核心问题3：交牌后剩余段继续打完
   const drops = (f.hpTrack || []).length;
