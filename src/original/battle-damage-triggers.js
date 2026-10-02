@@ -50,10 +50,15 @@ window.BattleDamageTriggers = (api) => {
     if (!card?._drillExtraHit) {
       window.BertisGerlotSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage });
     }
-    // 受击触发类（受伤后摸牌/交牌）按设计逐段结算：半魅魔血每段各摸2张并各弹一次
-    // 交牌选择是预期行为，不做合并。
+    // 半魅魔血（星野一）：按设计「多段或连击伤害时逐段结算」，追加段照常触发。
+    // 与狂战不同 —— 狂战已取消逐段，半魅魔血保留，勿加 _drillExtraHit 拦截。
     window.HoshinoSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
-    window.AngelicaLukaSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
+    // 狂战（安洁莉卡）同属「受伤后获得收益」：多段/连击属同一次攻击，
+    // 追加段必须一并拦截，否则骰子点数会线性放大标记数（6 段 = 6 枚），
+    // 与其余受击触发类（复仇反击 / 心血之咒 / 刺刀AK47 / 外神之眼 / 半魅魔血）口径一致。
+    if (!card?._drillExtraHit) {
+      window.AngelicaLukaSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
+    }
     window.GuestCharacterSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
     window.WithererSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, deps.draw, ctx.pushFloat);
     window.BondiSkills?.afterDamage?.(state, actor, target, card, hpLoss);
