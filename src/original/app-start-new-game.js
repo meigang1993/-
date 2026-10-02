@@ -57,6 +57,8 @@ async function createNewGame() {
     SaveSlots.close();
     saveWarningShown = false;
     enterGameView();
+    // 新档开场剧情：凯瑟琳与罗卡尔的出发前对话（纯剧情，不解锁角色）。
+    window.triggerNewGameIntroEvent?.(state);
   } catch (err) {
     if (!isCurrent()) return;
     if (state !== previousState) setState(previousState);
