@@ -119,6 +119,8 @@ window.bindDungeonActions = function bindDungeonActions() {
       if (firstWin) {
         window.Onboarding?.unlockFirstAlly?.(actionState);
         await DungeonSystem.retreat(actionState);
+        // 首战胜利回大厅：凯瑟琳交代后续目标（纯剧情，不解锁角色）。
+        window.triggerFirstVictoryEvent?.(actionState);
       }
       if (!isCurrent()) return false;
       render();
