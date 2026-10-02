@@ -321,4 +321,32 @@ async function verify(replay) {
   };
 }
 
-module.exports = { record, verify, create, autoPlay, POLICY_VERSION };
+// Direct probe of the seeded-random mechanism used by enemy AI target selection.
+//
+// Why this exists: the mock runtime never drives enemy AI decisions (verified:
+// BattleAIHelpers.targetByPolicy is called 0 times during autoPlay), so a full
+// battle replay may legitimately consume zero randomness after setup. Asserting
+// "the battle must consume randomness" would therefore be a false guarantee.
+// Instead we exercise the mechanism directly: it must consume the seeded stream
+// and return the same choice for the same seed.
+function probeRandom(seed = 1124) {
+  loadRuntime();
+  const previous = global.window.state;
+  const owner = { version: 1, seed: seed >>> 0, cursor: 0 };
+  global.window.state = { random: owner };
+  try {
+    const units = [
+      { uid: 1, hp: 10, maxHp: 10, hand: [], stats: {} },
+      { uid: 2, hp: 20, maxHp: 20, hand: [], stats: {} },
+    ];
+    const first = window.BattleAIHelpers.targetByPolicy(units);
+    const consumed = owner.cursor;
+    owner.cursor = 0;
+    const repeat = window.BattleAIHelpers.targetByPolicy(units);
+    return { consumed, first: first?.uid ?? null, repeat: repeat?.uid ?? null };
+  } finally {
+    global.window.state = previous;
+  }
+}
+
+module.exports = { record, verify, create, autoPlay, probeRandom, POLICY_VERSION };
