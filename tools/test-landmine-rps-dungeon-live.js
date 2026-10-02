@@ -2,6 +2,7 @@
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
+const { dismissOpeningStory } = require(path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 const { chromium } = require("playwright");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -61,6 +62,8 @@ const cardTpl = `(() => {
   await page.locator("#view").waitFor({ state: "visible" });
   await page.waitForTimeout(2500);
   await page.locator("[data-start-game]").click();
+  // 新档会先弹开场剧情（凯瑟琳 × 罗卡尔），看完才能操作大厅 UI。
+  await dismissOpeningStory(page);
   await page.locator(".villa-hall").waitFor({ state: "visible" });
   await page.evaluate(() => Promise.all([
     window.GameBundles.load("battle"), window.GameBundles.load("dungeon")]));
