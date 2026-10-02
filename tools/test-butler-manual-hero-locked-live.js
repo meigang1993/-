@@ -6,7 +6,7 @@ process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
 const { chromium } = require("playwright");
-const { openGame, startFreshGame } = require(
+const { openGame, startFreshGame, dismissOpeningStory } = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
 let pass = 0, total = 0;
@@ -28,6 +28,7 @@ const EXPECT_TOTAL = 30;
 
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.waitForTimeout(300);
 
   const openManual = async () => {
@@ -37,7 +38,7 @@ const EXPECT_TOTAL = 30;
       await page.waitForTimeout(120);
     }
     await page.locator("[data-open-butler]").waitFor({ state: "visible", timeout: 30000 });
-    await page.locator("[data-open-butler]").click();
+    await page.evaluate(() => { const b = document.querySelector("[data-open-butler]"); if (b) b.click(); });
     await page.locator("[data-butler-tab]").first().waitFor({ state: "visible" });
     await page.locator("[data-butler-tab='hero']").click();
     await page.locator(".butler-hero-grid").waitFor({ state: "visible" });
