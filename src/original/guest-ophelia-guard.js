@@ -10,7 +10,7 @@ window.GuestOpheliaGuard = (deps) => {
   function guardOphelia(state, actor, target, amount, source, card, api) {
     if (target?.ref !== "ophelia" || actor?.side !== "enemy" || !isSlash(card) || (!card?.ignoreResponse && visible(target).some(c => api.canDodge(card, c)))) return null;
     // 护驾只在整张杀的第 1 段触发：追加段（连击多段）直接结算给护驾者，不再弹窗。
-    // 否则每段都弹一次护驾，与半魅魔血等受击弹窗交替，剩余段极易丢失。
+    // 否则每段都弹一次护驾，与其他受击弹窗交替，剩余段极易丢失。
     if (card?._opheliaGuardDone) return null;
     const allies = state.battle.allies.filter(u => u.uid !== target.uid && alive(u));
     if (!allies.length) return null;
