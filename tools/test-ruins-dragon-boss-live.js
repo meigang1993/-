@@ -92,6 +92,31 @@ const gunTpl = `(() => {
   return { enemy: e.name, dragonHand: e.hand.length };
 })()`;
 
+// 敌方（机械AI龙）直接打出一张单体杀命中我方 0 号。
+// 不再依赖「我方点结束出牌 → 敌方 AI 行动」这条链路：实测它会停在
+// 「准备阶段，杀意重置为 N/N」不再推进，电钻火花永远不会发动，
+// 失败表现为 drill/dice 全 false（而场景2 走我方驱动则正常）。
+// 这里把行动权直接交给龙，并用 BattleSystem.useCard 打出——
+// battle-auto-enemy.js 里敌方 AI 出牌调用的就是它，等价敌方真实出牌。
+async function dragonPlayKill(page) {
+  const ok = await page.evaluate(`(() => {
+    const st = window.state, b = st.battle;
+    const e = b.enemies[${DRAGON}], a0 = (b.allies || [])[0];
+    if (!e || !a0) return false;
+    b.activeUid = e.uid; b.phase = 4; b.locked = false; b.animQueue = [];
+    b.selectedCardIndex = null; b.selectedSkillCard = null; b.pendingTargetUid = null;
+    e.intent = 1;
+    const hand = e.hand || (e.hand = []);
+    const kill = hand.find(c => window.CardUtils?.isEntitySingleKill?.(c))
+      || { name: "杀", type: "kill", suit: "♠" };
+    if (!hand.includes(kill)) hand.push(kill);
+    window.BattleSystem.useCard(st, e, a0, kill);
+    return true;
+  })()`);
+  await page.waitForTimeout(600);
+  return ok;
+}
+
 // 我方真实打出一张单体杀命中龙：点手牌 → 点龙作为目标（走真实出牌与伤害链路）
 async function allyHitDragon(page) {
   await page.evaluate(`(() => { const st = window.state, b = st.battle;
@@ -197,7 +222,7 @@ async function watch(page, seenTarget, rounds, clickEnd = false) {
   await startRegressionBattle(page);
   const s1 = await page.evaluate(drillTpl);
   console.log("场景1 初始化:", JSON.stringify(s1));
-  await page.locator("button", { hasText: "结束出牌" }).first().click();
+  await dragonPlayKill(page);
   const seen1 = await watch(page, s => s.drill && s.diceData && s.diceDom, 20);
   console.log("场景1 seen:", JSON.stringify(seen1));
   T("电钻火花触发（日志含骰子点数）", seen1.drill, seen1);
@@ -211,7 +236,7 @@ async function watch(page, seenTarget, rounds, clickEnd = false) {
   await openGame(page1b);
   await startRegressionBattle(page1b);
   await page1b.evaluate(drillBlockTpl);
-  await page1b.locator("button", { hasText: "结束出牌" }).first().click();
+  await dragonPlayKill(page1b);
   // 不做提前 break：要看的是「全程都没出现电钻火花」
   await watch(page1b, () => false, 10);
   const fin1b = await page1b.evaluate(peekTpl);
@@ -245,16 +270,18 @@ async function watch(page, seenTarget, rounds, clickEnd = false) {
   await startRegressionBattle(page3);
   const s3 = await page3.evaluate(waveTpl);
   console.log("场景3 初始化:", JSON.stringify(s3));
-  for (let i = 0; i < 20; i++) {
-    await page3.waitForTimeout(800);
-    try {
-      const btn = page3.locator("button", { hasText: "结束出牌" }).first();
-      if (await btn.count() && await btn.isVisible()) await btn.click();
-    } catch (e) { /* 忽略 */ }
-    const st = await page3.evaluate(peekTpl);
-    if ((st.waveSuits || []).length && st.waveDom) break;
-  }
-  const seen3 = await watch(page3, s => s.waveRecord && s.waveDom, 20, true);
+  // 死亡音波的花色记录挂在龙的 endTurn（ruins-dragon-skills.js 的
+  // endTurn 分支 → DW.recordDeathWave）。敌方回合停在准备阶段不会推进，
+  // 所以记录永远不会发生。这里直接驱动龙的结束阶段，走真实记录逻辑。
+  await page3.evaluate(`(() => {
+    const st = window.state, b = st.battle;
+    const e = b.enemies[${DRAGON}];
+    b.animQueue = [];
+    window.RuinsDragonSkills?.endTurn?.(st, e);
+    window.render();
+    return true;
+  })()`);
+  const seen3 = await watch(page3, s => s.waveRecord && s.waveDom, 10);
   console.log("场景3 seen:", JSON.stringify(seen3));
   const fin = await page3.evaluate(peekTpl);
   T("结束阶段记录花色（1-3 种且均为合法花色）",
