@@ -276,6 +276,10 @@ const absorbRealTpl = `(() => {
     }
     replay = { handAfter: c.hand.length,
       discard: (c.pileStats.discard || []).map(x => x.name),
+      // 知识吸收拿到的是队友用过的牌，带 stolenFromUid，弃置时须回到该队友牌堆，
+      // 否则等于把队友的牌转成自己的。所以这里看的是 actor（队友）的弃牌堆。
+      ownerDiscard: (other.pileStats.discard || []).map(x => x.name),
+      stolenFromUid: gained.stolenFromUid === other.uid,
       logs: (st.log || []).slice(0, 4).map(String) };
   }
   return { gained: !!gained,
@@ -469,7 +473,10 @@ const speechReadTpl = `(() => {
     real.sameObject === true && real.virtual === false, real);
   T("知识吸收·真实路径：实体牌可再次打出",
     !!real.replay && real.replay.handAfter === 0
-    && real.replay.discard.includes("蓄力"), real);
+    && real.replay.ownerDiscard.includes("蓄力"), real);
+  T("知识吸收·真实路径：弃置后回到原使用队友牌堆（不占为己有）",
+    !!real.replay && real.replay.stolenFromUid === true
+    && !real.replay.discard.includes("蓄力"), real);
 
   const obs = await page.evaluate(absorbObstacleTpl);
   T("知识吸收：障碍牌不是战术牌，不获得",
