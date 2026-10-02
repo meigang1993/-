@@ -206,10 +206,18 @@ run().then(res => {
     && (f.diagKaiichiAnimQ || []).some(v => v > 0),
     `locked=${JSON.stringify(f.diagKaiichiLocked)} animQ=${JSON.stringify(f.diagKaiichiAnimQ)}`);
 
-  // 核心问题3：交牌后剩余段继续打完
-  const drops = (f.hpTrack || []).length;
-  check("6 交牌后剩余段继续结算（血量多次下降）",
-    drops >= 3, `hp变化次数=${drops} 轨迹=${JSON.stringify(f.hpTrack)}`);
+  // 核心问题3：交牌后剩余段继续打完。
+  // 原判据是「HP 轨迹点数 >= 3」，依赖段与段之间被交牌窗打断、采样能分开捕捉。
+  // 半魅魔血改为合并后，一次攻击只弹一次交牌窗，剩余段连续结算，
+  // 采样会把 6 段合并成 1 次掉血（实测 387→309 = 13×6）。轨迹点数不再稳定，
+  // 但总伤害必须覆盖多段 —— 若剩余段丢失，总掉血只会等于单段。
+  const drillLogs = logs.filter(l => l.includes("电钻火花") && l.includes("点无视护甲伤害"));
+  const segDmg = Number((String(drillLogs[0] || "").match(/造成(\d+)点无视护甲伤害/) || [])[1] || 0);
+  const track = f.hpTrack || [];
+  const totalDrop = (track[0] ?? 0) - (track[track.length - 1] ?? 0);
+  check("6 交牌后剩余段继续结算（总伤害覆盖多段，非只打 1 段）",
+    drillLogs.length >= 2 && segDmg > 0 && totalDrop >= segDmg * 2,
+    `段数=${drillLogs.length} 单段=${segDmg} 总掉血=${totalDrop} 轨迹=${JSON.stringify(track)}`);
   check("7 挂起段最终被消费完（无残留 resume）",
     f.maxResume != null && (f.allyHp || []).length > 0,
     `maxResume=${f.maxResume}`);
