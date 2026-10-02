@@ -63,6 +63,8 @@ window.AppHallBindings = (() => {
     bind("[data-gerda-nursery-unlock-complete]", window.completeGerdaNurseryUnlockEvent);
     bind("[data-hoshino-family-unlock-complete]", window.completeHoshinoFamilyUnlockEvent);
     bind("[data-ruins-sand-city-unlock-complete]", window.completeRuinsSandCityUnlockEvent);
+    bind("[data-new-game-intro-complete]", window.completeNewGameIntroEvent);
+    bind("[data-first-victory-complete]", window.completeFirstVictoryEvent);
   }
   let advKeysBound = false;
   /* ADV 对话框：一次一句，点对话框/继续/空格推进，结尾才出现解锁按钮。
