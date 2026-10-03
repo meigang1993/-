@@ -47,6 +47,8 @@ window.HoshinoKaiichiShareResolution = ({ alive, allUnits, queue }) => {
     });
     const received = cards.filter(card =>
       !window.UnderwaterTrainSkills?.consumeStatusByCharm?.(state, target, card));
+    // 交牌=借：牌仍属星野一
+    received.forEach(card => { if (!card.stolenFromUid) card.stolenFromUid = unit.uid; });
     target.hand.push(...received);
     window.BattleCards?.syncStatusCards?.(target);
     window.BattleCards?.afterHandLost?.(battle, unit);
