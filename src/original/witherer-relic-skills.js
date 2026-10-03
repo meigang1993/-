@@ -38,7 +38,7 @@ window.WithererRelicSkills = (() => {
     const [card] = unit.deck.splice(window.GameRandom.sample(indexes, state), 1);
     const recipient = window.SakuraRisaSkills?.drawRecipient?.(unit, state.battle) || unit;
     // 同上：被吸魔邪眼转交给别人的牌要记原主，弃置时归还。
-    if (recipient !== unit) card.stolenFromUid = unit.uid;
+    if (recipient !== unit && !card.stolenFromUid) card.stolenFromUid = unit.uid;
     if (state.battle.animQueue) card._pendingDraw = true;
     recipient.hand.push(card);
     state.battle.animQueue?.push({ type: "drawBatch", uid: recipient.uid, side: recipient.side, count: 1, cards: [card] });
