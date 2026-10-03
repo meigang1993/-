@@ -43,7 +43,7 @@ window.BattleCombatResponses = (api) => {
         window.BattleLog.add(state,
           `${actor.name} 使用${p.cardName}，偷走并消耗${target.name}的${shown.name}状态牌。`);
       } else {
-        shown.stolenFromUid = target.uid; if (b.animQueue) shown._pendingDraw = true; actor.hand.push(shown); window.BattleCards?.syncStatusCards?.(actor);
+        if (!shown.stolenFromUid) shown.stolenFromUid = target.uid; if (b.animQueue) shown._pendingDraw = true; actor.hand.push(shown); window.BattleCards?.syncStatusCards?.(actor);
         b.animQueue?.push({ type: "stealCard", fromUid: target.uid, fromSide: target.side, toUid: actor.uid, toSide: actor.side, count: 1, cards: [shown] }); afterHandLost(state, target);
         window.BattleLog.add(state, `${actor.name} 使用${p.cardName}，获得${target.name}一张${shown.suit || ""}${shown.name}。`);
       }
@@ -60,7 +60,7 @@ window.BattleCombatResponses = (api) => {
       target.hand.splice(target.hand.indexOf(shown), 1);
       // 与 AI 路径 gainBorrowedCard 保持一致：牌用完要回到原主牌库，
       // 否则玩家路径会永久占有队友的牌，两条路径行为不一致。
-      shown.stolenFromUid = target.uid;
+      if (!shown.stolenFromUid) shown.stolenFromUid = target.uid;
       if (b.animQueue) shown._pendingDraw = true;
       actor.hand.push(shown); window.BattleCards?.syncStatusCards?.(actor);
       afterHandLost(state, target);
@@ -111,7 +111,7 @@ window.BattleCombatResponses = (api) => {
   function resolveManualCounter(state, useCounter, index = 0) {
     const b = state.battle, p = b?.manualCounter;
     if (!p) return false;
-    const actor = allUnits(b).find(u => u.uid === p.actorUid), target = allUnits(b).find(u => u.uid === p.targetUid), counterable = window.CardUtils.isCounterableTactic(p.card), backflips = counterable ? (window.SakuraRisaSkills?.backflipCandidates?.(b.allies, actor, target, p.card) || []).map(choice => ({ ...choice, responseKind: "backflip" })) : [], counters = counterable ? [...backflips, ...b.allies.flatMap(u => u.hp > 0 ? u.hand.filter(c => (c.counterTactic || c.ambush || window.WithererSkills?.canCounterTacticCard?.(u, c) || window.GuardKellySkills?.canCounterTacticCard?.(u, c)) && !c._pendingDraw).map(c => ({ unit: u, card: c, responseKind: c.ambush ? "ambush" : "counter" })) : [])] : [];
+    const actor = allUnits(b).find(u => u.uid === p.actorUid), target = allUnits(b).find(u => u.uid === p.targetUid), counterable = window.CardUtils.isCounterableTactic(p.card), backflips = counterable ? (window.SakuraRisaSkills?.backflipCandidates?.(b.allies, actor, target, p.card) || []).filter(choice => !choice.unit?.noResponse).map(choice => ({ ...choice, responseKind: "backflip" })) : [], counters = counterable ? [...backflips, ...b.allies.flatMap(u => u.hp > 0 && !u.noResponse ? u.hand.filter(c => (c.counterTactic || c.ambush || window.WithererSkills?.canCounterTacticCard?.(u, c) || window.GuardKellySkills?.canCounterTacticCard?.(u, c)) && !c._pendingDraw).map(c => ({ unit: u, card: c, responseKind: c.ambush ? "ambush" : "counter" })) : [])] : [];
     b.manualCounter = null; b.pendingTargetUid = null; b.locked = false;
     if (!actor) { b.comboPartnerUid = null; return true; }
     const picked = counters[Math.max(0, Math.min(index || 0, counters.length - 1))];
