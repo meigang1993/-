@@ -23,7 +23,7 @@ window.BattleSession = ({
       const recipient = window.SakuraRisaSkills?.drawRecipient?.(unit, battle) || unit;
       // 吸魔邪眼会把摸到的牌转交给另一名角色；跨阵营转交必须记原主，
       // 否则弃置时会落进接收方牌库，等于永久占有对方阵营的牌。
-      if (recipient !== unit) card.stolenFromUid = unit.uid;
+      if (recipient !== unit && !card.stolenFromUid) card.stolenFromUid = unit.uid;
       if (battle?.animQueue) card._pendingDraw = true;
       recipient.hand.push(card);
       cards.push(card);
