@@ -248,7 +248,7 @@ console.log("=== 废墟沙城 普通怪技能 实现检查 ===\n");
     check("4.4b 造成伤害后附加1层毒", (al.poison || 0) >= 1, `毒层数=${al.poison || 0}`);
   }
 
-  // 麻痹判定：♥或♠ → 无法使用牌
+  // 麻痹判定：♥或♠ → 跳过本回合出牌阶段
   const reg = window.BattleStatusCardRegistry.create("paralysis");
   check("4.5 麻痹状态牌定义", reg?.name === "麻痹", `name=${reg?.name}`);
   const trig = fs.readFileSync("./src/original/battle-status-card-triggers.js", "utf8");
