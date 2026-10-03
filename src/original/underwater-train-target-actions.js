@@ -83,7 +83,7 @@ window.UnderwaterTrainTargetActions = ({
         `${actor.name} 触发冲锋掠夺，移除并消耗${target.name}的${card.name}状态牌。`);
       return;
     }
-    card.stolenFromUid = target.uid;
+    if (!card.stolenFromUid) card.stolenFromUid = target.uid;
     if (state.battle.animQueue) card._pendingDraw = true;
     actor.hand.push(card);
     state.battle.animQueue?.push({
