@@ -19,23 +19,38 @@ window.DungeonRewardPayload = (() => {
       || !Number.isFinite(essence) || essence < 0) return null;
     const cards = Array.isArray(raw.cards) ? raw.cards : [];
     const relics = Array.isArray(raw.relics) ? raw.relics : [];
-    if (!gold && !essence && !cards.length && !relics.length) return null;
+    // 首次击败精英/BOSS 的入池提示由服务端随奖励回传，不能因奖励数值为空被丢弃。
+    const notices = Array.isArray(raw.notices) ? raw.notices.filter(item => typeof item === "string" && item) : [];
+    if (!gold && !essence && !cards.length && !relics.length && !notices.length) return null;
     return {
       nodeId, gold, essence,
       experience: Math.max(0, Math.floor(Number(raw.experience) || 0)),
       progression: Array.isArray(raw.progression) ? raw.progression : [],
-      cards, relics,
+      cards, relics, notices,
     };
+  }
+
+  // 首次击败精英/BOSS 的入池提示由服务端随奖励回传（lastLocalReward.notices）。
+  // 写在这里而非结算调用点，是为了任何消费奖励的路径都能看到提示；
+  // 重试会再次回传同一批 notices，用 state 上的已展示清单去重。
+  function showNotices(state, notices) {
+    if (!Array.isArray(notices) || !notices.length) return;
+    const shown = (state._shownUnlockNotices ||= []);
+    notices.forEach(text => {
+      if (typeof text !== "string" || !text || shown.includes(text)) return;
+      shown.push(text);
+      state.log?.unshift?.(text);
+    });
   }
 
   function rewardFromSettlement(result, state, nodeId, before) {
     const core = result.result?.core;
     const direct = [core?.lastLocalReward, result.result?.lastLocalReward, result.result?.reward]
       .map(raw => normalizeReward(raw, nodeId)).find(Boolean);
-    if (direct) return direct;
+    if (direct) { showNotices(state, direct.notices); return direct; }
     const ledger = Object.values(state?._localRunState?.rewards || {})
       .map(raw => normalizeReward(raw, nodeId)).find(Boolean);
-    if (ledger) return ledger;
+    if (ledger) { showNotices(state, ledger.notices); return ledger; }
     const after = pendingSnapshot(state);
     const gold = after.gold - before.gold;
     const essence = after.essence - before.essence;
