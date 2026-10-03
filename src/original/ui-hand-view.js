@@ -10,7 +10,7 @@ window.GameUIHandView = (() => {
       ? `<span class="tag">蓄力×${Math.pow(2, actor.charge).toFixed(3).replace(/\.0+$/, "").replace(/0+$/, "")}</span>`
       : "";
     const skipTag = actor.skipPlayPhase
-      ? `<span class="tag hand-skip-tag">${U.esc(actor.skipPlayReason || "状态牌")}：本回合无法使用牌</span>` : "";
+      ? `<span class="tag hand-skip-tag">${U.esc(actor.skipPlayReason || "状态牌")}：本回合跳过出牌阶段${actor.noResponse ? "，且无法使用或打出响应牌" : ""}</span>` : "";
     return `<div class="hand-panel ${battle.locked && !modes.transferLocked ? "locked" : ""}${actor.skipPlayPhase ? " play-locked" : ""}"><div class="hand-head"><b>${U.esc(actor.name)} 的手牌</b><span class="tag">${phaseLabel(context)}</span>${skipTag}<span class="tag">杀意 ${actor.intent || 0}/${intentMax}</span>${charge}${controls}</div>${window.Onboarding?.battleHint?.(context) || ""}<div class="hand-body ${skillLine ? "has-skills" : ""}">${skillLine}${handWrap}</div></div>`;
   }
 
@@ -130,6 +130,10 @@ window.GameUIHandView = (() => {
       // 地雷状态牌虽然不能作为手牌打出，但在出牌阶段可点击发起猜拳 → 不置灰
       const rpsClickable = battle.phase === 4 && !battle.locked
         && window.BattleStatusCards?.keyOf?.(card) === "landmine";
+      // 麻痹/眩晕/混乱（skipPlayPhase）：面板显示「本回合跳过出牌阶段」，
+      // 但此前 disabled 判定不含此项，导致出牌阶段牌未置灰且可点选出牌。
+      // 只作用于出牌阶段 —— 弃牌阶段的弃牌是被动操作，不该被状态牌挡住。
+      const skipLocked = !!modes.playable && !!actor.skipPlayPhase;
       const normalLocked = !rpsClickable
         && !modes.dimensionTransfer && !modes.share && !modes.kaiichiShare
         && !modes.cadicisShare && !modes.borrowChoice && !modes.discard
@@ -141,7 +145,7 @@ window.GameUIHandView = (() => {
         discard: modes.discard && canDiscard && !shareFull, actor,
         disabled: battle.locked && !modes.transferLocked || dimensionLocked || newMoonFull
           || kaiichiFull || shareFull || borrowLocked
-          || modes.discard && !canDiscard || normalLocked,
+          || modes.discard && !canDiscard || normalLocked || skipLocked,
       });
     }).join("");
   }
