@@ -7,8 +7,8 @@ window.BattleResponseUI = (() => {
   const handPanel = (actor, label, controls, cards, tip) => `<div class="hand-panel response-hand-panel"><div class="hand-head"><b>${U.esc(actor?.name || "响应角色")} 的手牌</b><span class="tag">${U.esc(label)}</span>${controls}<span class="muted">${U.esc(tip)}</span></div><div class="hand-body"><div class="hand active-hand" data-hand-owner="${U.esc(actor?.uid || "")}">${cards}</div></div></div>`;
   function counterChoices(b) {
     const p = b.manualCounter, actor = b.enemies.concat(b.allies).find(u => u.uid === p?.actorUid), target = b.allies.find(u => u.uid === p?.targetUid), tactic = p?.card;
-    const backflips = (window.SakuraRisaSkills?.backflipCandidates?.(b.allies, actor, target, tactic) || []).map(x => ({ unit: x.unit, card: x.card, responseKind: "backflip" }));
-    const counters = b.allies.flatMap(unit => unit.hp > 0 ? unit.hand.filter(card => (card.counterTactic || card.ambush || window.WithererSkills?.canCounterTacticCard?.(unit, card) || window.GuardKellySkills?.canCounterTacticCard?.(unit, card)) && !card._pendingDraw).map(card => ({ unit, card, responseKind: card.ambush ? "ambush" : "counter" })) : []);
+    const backflips = (window.SakuraRisaSkills?.backflipCandidates?.(b.allies, actor, target, tactic) || []).filter(x => !x.unit?.noResponse).map(x => ({ unit: x.unit, card: x.card, responseKind: "backflip" }));
+    const counters = b.allies.flatMap(unit => unit.hp > 0 ? unit.hand.filter(card => (card.counterTactic || card.ambush || window.WithererSkills?.canCounterTacticCard?.(unit, card) || window.GuardKellySkills?.canCounterTacticCard?.(unit, card)) && !card._pendingDraw && !unit.noResponse).map(card => ({ unit, card, responseKind: card.ambush ? "ambush" : "counter" })) : []);
     return { actor, target, choices: [...backflips, ...counters] };
   }
   function manualCounterHand(b) {
@@ -22,7 +22,7 @@ window.BattleResponseUI = (() => {
     const p = b.manualDodge, actor = b.enemies.concat(b.allies).find(u => u.uid === p?.actorUid), target = b.allies.find(u => u.uid === p?.targetUid);
     if (!p || !target) return "";
     const needKill = p.card?.responseKind === "slash", label = needKill ? "杀" : "闪", verb = needKill ? "打出" : "使用", rule = needKill ? "slash" : { blackDodgeOnly: p.card?.blackDodgeOnly, singleKill: !(p.card?.sweep || p.card?.targetless || p.card?.allTargets || p.card?.aoeLineShown) };
-    const choices = target.hand.filter(card => window.CardUtils.canRespondTo(rule, card)), selected = Math.max(0, Math.min(p.deflectStarted ? p.deflectIndex || 0 : p.selectedIndex || 0, choices.length - 1)), locked = !!(p.deflectStarted || p.deflectRequired);
+    const choices = target.noResponse ? [] : target.hand.filter(card => window.CardUtils.canRespondTo(rule, card)), selected = Math.max(0, Math.min(p.deflectStarted ? p.deflectIndex || 0 : p.selectedIndex || 0, choices.length - 1)), locked = !!(p.deflectStarted || p.deflectRequired);
     const cards = choices.map((card, index) => `<button class="manual-dodge-card hand-response-card ${index === selected ? "selected" : ""}" ${locked ? "disabled" : `data-manual-dodge-pick="${index}"`}>${U.card(card, false, { actor: target })}</button>`).join("");
     const selectedCard = choices[selected], use = selectedCard?.deflect ? "" : `<button data-manual-dodge-use="1">${verb}${label}</button>`, cancel = locked ? "" : `<button class="ghost response-cancel" data-manual-dodge-cancel="1">取消</button>`;
     return handPanel(target, "手动响应", `${use}${cancel}`, cards, `${actor?.name || "敌方"}使用了${p.card?.name || "杀"}；选择是否${verb}${label}。`);
@@ -55,7 +55,7 @@ window.BattleResponseUI = (() => {
     const needKill = p.card?.responseKind === "slash";
     const singleKill = !(p.card?.sweep || p.card?.targetless || p.card?.allTargets || p.card?.aoeLineShown);
     const rule = needKill ? "slash" : { blackDodgeOnly: p.card?.blackDodgeOnly, singleKill };
-    const dodges = (target?.hand || []).filter(c => window.CardUtils.canRespondTo(rule, c));
+    const dodges = target?.noResponse ? [] : (target?.hand || []).filter(c => window.CardUtils.canRespondTo(rule, c));
     const selectedCard = dodges[Math.max(0, Math.min(selected, dodges.length - 1))];
     if (p.deflectResult) {
       const r = p.deflectResult, title = r.outcome === "tie" ? "平局" : r.outcome === "defender" ? `${target?.name || "守方"}弹反成功` : `${actor?.name || "攻方"}获胜，弹反失败`;
