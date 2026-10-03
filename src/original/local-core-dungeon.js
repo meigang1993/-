@@ -60,15 +60,24 @@ window.LocalCoreDungeonOps = (() => {
     core.pendingRun.essence = addResource(core.pendingRun.essence, essence);
     core.pendingRun.cards = [...(core.pendingRun.cards || []), ...rare.cards];
     core.pendingRun.relics = [...(core.pendingRun.relics || []), ...rare.relics];
+    const notices = [];
     defeated.forEach(id => {
       if (!core.defeatedElites.includes(id) && GameData.eliteUnlocks?.[id]) {
         core.defeatedElites.push(id);
         core.unlockedShopCards = uniq([...core.unlockedShopCards, ...GameData.eliteUnlocks[id]]);
+        // 服务端路径此前没有任何解锁反馈：牌确实进池了，但玩家看不到提示。
+        // 与客户端 DungeonSettlementActions.unlockEliteCards 保持同文案。
+        const enemy = Object.values(GameData.enemies || {}).flat().find(item => item.id === id);
+        const label = enemy?.type === "boss" ? "BOSS" : "精英";
+        if (id === "shark_captain_mordio") {
+          notices.push("首次击败莫迪奥：商店商品位与任务列表上限扩展至7，BOSS讨伐任务可跨副本同时出现。");
+        }
+        notices.push(`首次击败${label}：${enemy?.name || id}，新卡牌已加入商店池。`);
       }
     });
     core.lastLocalReward = {
       nodeId, gold, essence, experience, progression,
-      cards: rare.cards, relics: rare.relics,
+      cards: rare.cards, relics: rare.relics, notices,
     };
     ledger.rewards[receiptId] = core.lastLocalReward;
     return outcomes.changed;
