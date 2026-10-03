@@ -33,8 +33,11 @@ const check = (name, cond, info) => {
   check("等级上限 = 20", lv.maxLevel === 20, lv);
   check("经验表长度 = 20（每级一档）", lv.expTable === 20, { len: lv.expTable });
 
-  // ---------- 2) 属性成长幅度 +40% ----------
-  // 判据：每个角色每项属性的成长值都能被 1.4 整除回推成整齐旧值
+  // ---------- 2) 属性成长幅度 ----------
+  // 旧判据：每项成长值都能被 1.4 整除回推成整齐旧值（统一 +40%）。
+  // 现设计：按各副本怪物涨幅分别放大（攻击/魔力/速度各约 +68%~+76%，
+  // 生命另行补齐到与输出同档），不再存在统一倍率，故改为校验
+  // "成长值为正 + 30 角色满级平均属性落在设计区间"。
   const growth = await page.evaluate(() => {
     const P = window.CharacterProgression;
     const g = P.growth;
@@ -42,14 +45,27 @@ const check = (name, cond, info) => {
     Object.entries(g).forEach(([id, row]) => {
       Object.entries(row).forEach(([k, v]) => {
         total++;
-        const old = v / 1.4;
-        if (Math.abs(Math.round(old * 100) / 100 - old) > 1e-9) bad.push({ id, k, v, old });
+        if (!(v > 0) || !Number.isFinite(v)) bad.push({ id, k, v });
       });
     });
-    return { total, bad, roles: Object.keys(g).length };
+    const chars = window.GameData?.characters || [];
+    const sum = { maxHp: 0, attack: 0, magic: 0, speed: 0 };
+    for (const c of chars) {
+      const st = P.statsAt(c, 20);
+      for (const k of Object.keys(sum)) sum[k] += st[k] || 0;
+    }
+    const n = chars.length || 1;
+    const avg = Object.fromEntries(Object.entries(sum).map(([k, v]) => [k, v / n]));
+    return { total, bad, roles: Object.keys(g).length, avg, n };
   });
-  check("成长幅度 = 旧值 × 1.4（+40%）", growth.bad.length === 0,
-    { 角色数: growth.roles, 数值总数: growth.total, "非1.4倍项": growth.bad.length });
+  check("成长值全部为正", growth.bad.length === 0,
+    { 角色数: growth.roles, 数值总数: growth.total, 异常项: growth.bad.length });
+  const A = growth.avg;
+  const inRange = (v, target, tol) => Math.abs(v - target) <= tol;
+  check("30 角色满级平均属性落在设计区间",
+    inRange(A.maxHp, 218.5, 3) && inRange(A.attack, 26.92, 1.5)
+      && inRange(A.magic, 26.6, 1.5) && inRange(A.speed, 22.68, 1.5),
+    { 生命: A.maxHp?.toFixed(2), 攻击: A.attack?.toFixed(2), 魔力: A.magic?.toFixed(2), 速度: A.speed?.toFixed(2) });
 
   // 实际取一个角色，看 0 级 → 20 级的属性增量是否等于成长表
   const inc = await page.evaluate(() => {
