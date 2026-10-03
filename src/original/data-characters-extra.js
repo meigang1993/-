@@ -113,13 +113,13 @@ window.GameDataCharactersExtra = [
   {
     id: "catherine", name: "凯瑟琳", gender: "female", face: "凯", art: "./assets/images/butler-portrait.75f7a7f4.webp", avatar: "./assets/images/butler-portrait.75f7a7f4.webp", role: "别墅管家", locked: true,
     stats: { attack: 2.4, magic: 5, speed: 4.4, maxHp: 48, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
-    evaluation: "牌权夺取与战术牌精通辅助。窃取将敌方手牌直接转交队友，知识吸收不断回收场上已结算的实体战术牌，魔力增幅把手牌中的战术牌转化为魔力并让战术牌无法被响应。",
+    evaluation: "牌权夺取与战术牌精通辅助。窃取将敌方手牌直接转交队友，知识吸收不断回收友方已结算的战术牌，魔力增幅把手牌中的战术牌转化为魔力并让战术牌无法被响应。",
     skills: [
       // 不能标 targetless：标了之后手牌点击走 quickPlayTargetless 直接打出，
       // 玩家看不到「指定敌方一名角色」的选择流程，victim 会退化成随机一名敌人。
       // 去掉后点牌 → 选中 → 点敌方单位 → 才进入接收队友与手牌选择，与技能描述一致。
       { name: "窃取", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以指定敌方一名角色，然后指定我方其他一名角色，选择敌方角色一张牌转移给你指定的我方其他角色。", card: { name: "窃取", type: "tactic", catherineSteal: true, icon: "⚔️", text: "指定一名敌方角色与一名其他友方角色，将前者一张手牌转移给后者。" } },
-      { name: "知识吸收", type: "passive", icon: "⭐", text: "锁定技，当场上其他角色使用实体战术牌结算完毕后，你获得该使用过的实体牌。" },
+      { name: "知识吸收", type: "passive", icon: "⭐", text: "锁定技，当友方角色使用战术牌结算完毕后，你获得使用过的战术牌。" },
       { name: "魔力增幅", type: "passive", icon: "⭐", text: "锁定技，你每有一张战术牌，你魔力+1。若你魔力是全场最多，你使用战术牌不可被响应。" }
     ]
   },
