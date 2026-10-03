@@ -44,6 +44,7 @@ window.BattleDodgeDeflect = ({
   function autoDodge(state, actor, target, amount, source, card, response) {
     const needTwo = card?.krowFemaleTarget || card?.twoDodgesRequired;
     let second = needTwo
+      && !target.noResponse
       && target.hand.find(item => item !== response && canDodge(card, item));
     if (needTwo && !second && !card?.ignoreResponse) {
       second = window.FloraCarlosSkills?.dodgeAsFlash?.(
@@ -53,7 +54,7 @@ window.BattleDodgeDeflect = ({
           afterCardResponded:
             window.NonokaLokiSkills?.afterCardResponded,
         },
-        [response], item => canDodge(card, item));
+        [response], item => !target.noResponse && canDodge(card, item));
     }
     if (needTwo && !second) {
       window.BattleLog.add(state,
