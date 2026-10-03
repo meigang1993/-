@@ -76,7 +76,7 @@ window.BattleCardHandInteractions = (ctx, helpers) => {
         `${actor.name} 使用${card.name}，偷走并消耗${target.name}的${stolen.name}状态牌。`);
       return true;
     }
-    stolen.stolenFromUid = target.uid;
+    if (!stolen.stolenFromUid) stolen.stolenFromUid = target.uid;
     if (state.battle.animQueue) stolen._pendingDraw = true;
     actor.hand.push(stolen);
     window.BattleCards?.syncStatusCards?.(actor);
