@@ -116,7 +116,7 @@ window.GameUIBattleUnits = (U, I) => {
       .map(status => `<span class="status-icon ${statusClass(status)}" title="${U.esc(statusTip(status))}">${U.esc(statusText(status))}</span>`)
       .join("");
     const paralysis = unitData.skipPlayPhase && unitData.skipPlayReason === "麻痹"
-      ? `<span class="status-icon paralysis-locked" title="麻痹：本回合无法使用牌">麻</span>` : "";
+      ? `<span class="status-icon paralysis-locked" title="麻痹：本回合跳过出牌阶段，且无法使用或打出响应牌">麻</span>` : "";
     const stun = unitData.skipPlayPhase && unitData.skipPlayReason === "眩晕"
       ? `<span class="status-icon stun-locked" title="眩晕：本回合跳过出牌阶段">晕</span>` : "";
     const seal = unitData.skipDrawPhase || unitData.drawLockedThisTurn
