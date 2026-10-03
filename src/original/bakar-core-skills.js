@@ -53,6 +53,8 @@ window.BakarCoreSkills = (() => {
         if (!gained) return;
         triggerCommander(state, unit, card);
         if (state.battle.animQueue) gained._pendingDraw = true;
+        // 捕获入侵=借：牌仍属原巴卡尔单位
+        if (!gained.stolenFromUid) gained.stolenFromUid = actor.uid;
         unit.hand.push(gained);
         state.battle.animQueue?.push({
           type: "gainCards",
