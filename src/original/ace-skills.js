@@ -10,6 +10,8 @@ window.AceSkills = deps => {
     const cards = takeVisible(actor);
     cards.forEach(card => {
       if (state.battle.animQueue) card._pendingDraw = true;
+      // 交牌=借：牌仍属交出者，弃置时须回到其牌堆
+      if (!card.stolenFromUid) card.stolenFromUid = actor.uid;
       target.hand.push(card);
     });
     window.BattleCards?.syncStatusCards?.(target);
@@ -62,7 +64,7 @@ window.AceSkills = deps => {
         `${responder.name} 触发勾爪陷阱，移除并消耗${source.name}的${picked.name}状态牌。`);
       return;
     }
-    picked.stolenFromUid = source.uid;
+    if (!picked.stolenFromUid) picked.stolenFromUid = source.uid;
     if (state.battle.animQueue) picked._pendingDraw = true;
     responder.hand.push(picked);
     window.BattleCards?.syncStatusCards?.(responder);
