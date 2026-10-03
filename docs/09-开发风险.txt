@@ -311,3 +311,20 @@
 正确做法（已验证）：
    取远端 tree → 按 mode+sha 写 indexinfo → update-index --index-info → write-tree
    → 校验 tree sha 与远端一致 → commit-tree → update-ref → 复制索引到 .git/index
+
+【二十一、QA 环境：TMPDIR 不得指向 /data/workspace（2026-10-03 实测）】
+现象：chromium.launch() 必崩，报 SIGTRAP / "Target page, context or browser has been closed"，
+      且崩溃发生在 launch 阶段，与代码无关；换 headless_shell / 完整 chromium / 加
+      --single-process --no-zygote 等参数均无法绕过。
+根因：环境自愈脚本把 TMPDIR 设成了 /data/workspace/.qatmp（virtio 盘），
+      playwright 的 browser profile 建在该文件系统上，chromium 的文件锁/mmap 不支持，
+      进程起来即崩。改回系统默认 /tmp 后一切正常。
+已验证：TMPDIR=/data/workspace/.qatmp → 连跑 3 次全崩；unset TMPDIR → 立即成功。
+正确做法（已固化进 /data/workspace/qa-env.sh）：
+  1) TMPDIR 必须保留系统默认（/tmp），或显式 unset；只把「输出文件」放 /data/workspace/.qatmp。
+  2) PLAYWRIGHT_BROWSERS_PATH 必须指向 /data/workspace/.pw-browsers；
+     /data/workspace/repo/.playwright-browsers 缺 headless_shell 二进制，用它必崩。
+  3) 两个目录里的 chrome / headless_shell 是 138 字节的包装脚本，
+     真正二进制在 /nix/store/*-chromium-142.0.7444.175/bin/chromium，属正常现象，不算损坏。
+排查顺序建议：浏览器起不来时先看 TMPDIR，再看 PLAYWRIGHT_BROWSERS_PATH，
+  最后才怀疑二进制损坏——本次按此顺序一次定位。
