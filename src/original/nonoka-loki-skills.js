@@ -91,7 +91,10 @@ window.NonokaLokiSkills = (() => {
     const loki = state.battle.allies.find(unit => unit.ref === "loki" && unit.hp > 0);
     if (!loki) return target;
     card.lokiProtectDone = true;
-    const dodge = card?.ignoreResponse ? null : loki.hand.find(item => item.name === "闪" && item.type === "response" && !item._pendingDraw && (!card?.blackDodgeOnly || item.suit === "♠" || item.suit === "♣"));
+    // 护母心切是锁定技：洛基「代替诺诺卡使用1张闪」，若未能以此法使用闪则改为
+    // 代替承受伤害。麻痹（noResponse）禁止使用响应牌，故此时按「未能使用闪」处理，
+    // 走承受伤害分支——与技能描述一致，不是让麻痹者照常出闪。
+    const dodge = card?.ignoreResponse || loki.noResponse ? null : loki.hand.find(item => item.name === "闪" && item.type === "response" && !item._pendingDraw && (!card?.blackDodgeOnly || item.suit === "♠" || item.suit === "♣"));
     line(state, loki, "护母心切");
     if (dodge) {
       const visualHandBefore = window.BattleCards.visibleHandCount(loki);
@@ -103,7 +106,7 @@ window.NonokaLokiSkills = (() => {
       afterCardResponded(state, loki, actor, dodge, deps);
       return null;
     }
-    window.BattleLog.add(state, `${loki.name} 触发护母心切，${card?.ignoreResponse ? "但本次杀不可响应，" : "没有闪，"}代替${target.name}承受本次杀。`);
+    window.BattleLog.add(state, `${loki.name} 触发护母心切，${card?.ignoreResponse ? "但本次杀不可响应，" : loki.noResponse ? "但无法使用响应牌，" : "没有闪，"}}}代替${target.name}承受本次杀。`);
     return loki;
   }
   function sourceLabel(battle, actor, source) {
