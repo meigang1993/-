@@ -77,7 +77,7 @@ window.HitwellSkills = (() => {
       const given = hearts[0];
       actor.hand.splice(actor.hand.indexOf(given), 1);
       // 标明原主：转来的牌弃置时须回到原主牌堆，否则敌方的牌会永久变成我方资源。
-      given.stolenFromUid = actor.uid;
+      if (!given.stolenFromUid) given.stolenFromUid = actor.uid;
       if (battle.animQueue) given._pendingDraw = true;
       target.hand.push(given);
       window.BattleCards?.syncStatusCards?.(target);
