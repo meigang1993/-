@@ -82,6 +82,8 @@ window.GuestAilengSkills = (() => {
     const moved = handIndex >= 0 || pile ? card : window.CardUtils.copyPlayable(card);
     if (!moved.name) return false;
     if (battle.animQueue) moved._pendingDraw = true;
+    // 战斗演练=借：原牌仍属艾伦格（复制品无原主，不标记）
+    if (moved === card && !moved.stolenFromUid) moved.stolenFromUid = actor.uid;
     receiver.hand.push(moved); battle.animQueue?.push({ type: "giveCards", fromUid: actor.uid, fromSide: actor.side, toUid: receiver.uid, toSide: receiver.side, count: 1, cards: [moved] });
     battle.ailengDrillPicker = null; battle.locked = false; line(state, actor, "战斗演练", receiver); window.BattleLog.add(state, `${actor.name} 发动战斗演练，将${card.name}交给${receiver.name}。`);
     return true;
