@@ -93,7 +93,7 @@ window.BattleDamageResolution = ({
     window.WithererSkills?.refreshShiftState?.(target);
     const responseCards = !effectiveCard?.ignoreResponse
       && needsResponse(effectiveCard)
-      ? target.hand.filter(candidate => canDodge(effectiveCard, candidate))
+      ? (target.noResponse ? [] : target.hand.filter(candidate => canDodge(effectiveCard, candidate)))
       : [];
     let response = !state.settings?.manualResponse
       && actor.side === "enemy" && target.side === "ally"
@@ -122,7 +122,7 @@ window.BattleDamageResolution = ({
       response = window.FloraCarlosSkills?.dodgeAsFlash?.(
         state, target, actor, effectiveCard,
         { ...deps, afterCardResponded: window.NonokaLokiSkills?.afterCardResponded },
-        [], candidate => canDodge(effectiveCard, candidate));
+        [], candidate => !target.noResponse && canDodge(effectiveCard, candidate));
     }
     if (response && response.name !== "闪"
       && !window.RuinsRelicEffects?.missileLauncherBlock?.(state, actor, target, effectiveCard, responseCards, response)) {
