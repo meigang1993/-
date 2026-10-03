@@ -92,7 +92,7 @@ window.RuinsWithererSkills = (() => {
     const index = target.hand.indexOf(candidate);
     if (index < 0) return;
     target.hand.splice(index, 1);
-    candidate.stolenFromUid = target.uid;
+    if (!candidate.stolenFromUid) candidate.stolenFromUid = target.uid;
     if (state.battle?.animQueue) candidate._pendingDraw = true;
     actor.hand.push(candidate);
     state.battle.animQueue?.push({
