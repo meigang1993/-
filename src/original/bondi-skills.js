@@ -35,7 +35,8 @@ window.BondiSkills = (() => {
 
   function triggerFeint(state, actor, target, card) {
     if (card._feintTriggered || !visible(target).length) return;
-    const holder = sameSide(state.battle, actor).find(unit => unit.uid !== actor.uid && unit.hp > 0 && visible(unit).some(item => item.feint || window.GuardKellySkills?.canFeintCard?.(unit, item)));
+    // 佯攻按牌面是「打出」，属响应牌；麻痹（noResponse）者不能打出，改由其他友方承担。
+    const holder = sameSide(state.battle, actor).find(unit => unit.uid !== actor.uid && unit.hp > 0 && !unit.noResponse && visible(unit).some(item => item.feint || window.GuardKellySkills?.canFeintCard?.(unit, item)));
     if (!holder) return;
     const feint = visible(holder).find(item => item.feint || window.GuardKellySkills?.canFeintCard?.(holder, item));
     const visualHandBefore = window.BattleCards.visibleHandCount(holder);
@@ -46,6 +47,9 @@ window.BondiSkills = (() => {
       { type: "response", id: window.GameRandom.id("feint"), uid: holder.uid, side: holder.side, card: response },
       visualHandBefore);
     window.NonokaLokiSkills?.afterCardResponded?.(state, holder, actor, response, window.BattleSystem);
+    // 佯攻按牌面是「打出」，属响应牌，打出后触发持有者手牌区的地雷。
+    window.BattleStatusCards?.triggerLandmine?.(state, holder);
+    if (holder.hp <= 0) return;
     const discarded = discardRandom(state, target);
     card._feintTriggered = true;
     if (holder.ai === "guard_kelly") window.BattleLines?.skill(state, holder, "突破重围", target);
@@ -83,7 +87,7 @@ window.BondiSkills = (() => {
     pile.discard.splice(index, 1);
     entity._bondiClaimed = true;
     entity.bondiRevenge = true;
-    entity.stolenFromUid = sourceUserUid(units, actor, sourceCard);
+    if (!entity.stolenFromUid) entity.stolenFromUid = sourceUserUid(units, actor, sourceCard);
     if (state.battle.animQueue) entity._pendingDraw = true;
     target.hand.push(entity);
     state.battle.animQueue?.push({ type: "gainCards", fromZone: "public", uid: target.uid, side: target.side, count: 1, cards: [entity] });
