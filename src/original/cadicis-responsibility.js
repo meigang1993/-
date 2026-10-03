@@ -45,6 +45,8 @@ window.CadicisResponsibility = (() => {
     const toBefore = visible(target).length;
     cadicis.hand.splice(cardIndex, 1);
     card._pendingDraw = true;
+    // 责任心=借：牌仍属卡迪西斯
+    if (!card.stolenFromUid) card.stolenFromUid = cadicis.uid;
     target.hand.push(card);
     window.BattleCards?.syncStatusCards?.(target);
     battle.animQueue?.push({
