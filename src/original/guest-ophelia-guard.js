@@ -21,7 +21,9 @@ window.GuestOpheliaGuard = (deps) => {
     // 需两张闪的杀（莫娜·圣剑无双 / 克罗·肉欲之欢 / 坦克炮弹）护驾也要出两张，
     // 否则护驾者只出 1 张闪就把双闪杀完全抵消，绕过了双闪要求。
     const needTwo = !!(card?.krowFemaleTarget || card?.twoDodgesRequired);
-    const dodges = visible(guard).filter(c => api.canDodge(card, c));
+    // 护驾者若处于麻痹（noResponse），按「没有闪」处理：不能替奥菲莉亚使用闪，
+    // 按技能描述改为替其承受伤害，而不是照常出闪。
+    const dodges = guard.noResponse ? [] : visible(guard).filter(c => api.canDodge(card, c));
     const dodge = needTwo ? (dodges.length >= 2 ? dodges.slice(0, 2) : [])
       : dodges.slice(0, 1);
     if (dodge.length === (needTwo ? 2 : 1)) {
@@ -64,7 +66,7 @@ window.GuestOpheliaGuard = (deps) => {
     // 只出得起 1 张闪的人白白替奥菲莉亚承受伤害
     const required = card?.krowFemaleTarget || card?.twoDodgesRequired ? 2 : 1;
     return allies.reduce((best, u) => {
-      const canDodge = visible(u).filter(c => api.canDodge(card, c)).length >= required, favorite = u.ref === "aileng" ? 18 : u.ref === "lokar" ? 12 : 0, survives = u.hp > amount ? 8 : -18;
+      const canDodge = !u.noResponse && visible(u).filter(c => api.canDodge(card, c)).length >= required, favorite = u.ref === "aileng" ? 18 : u.ref === "lokar" ? 12 : 0, survives = u.hp > amount ? 8 : -18;
       const score = (canDodge ? 100 : 0) + favorite + survives + u.hp / 4;
       return !best || score > best.score ? { u, score } : best;
     }, null)?.u;
