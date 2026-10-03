@@ -10,7 +10,7 @@ window.BattleStatusCardRegistry = (() => {
     },
     paralysis: {
       name: "麻痹", flag: "paralysis", text:
-        "状态牌，带有虚无属性。判定阶段进行判定；若结果为♥红桃或♠黑桃，本回合无法使用牌。回合结束后消耗此牌。",
+        "状态牌，带有虚无属性。判定阶段进行判定；若结果为♥红桃或♠黑桃，跳过本回合出牌阶段，且直到你的下个回合开始前无法使用或打出响应牌（闪、杀、看破、埋伏、后空翻等）。回合结束后消耗此牌。",
     },
     confusion: {
       name: "混乱", flag: "confusion", text:
