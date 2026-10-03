@@ -87,7 +87,7 @@ window.MillerSkills = (() => {
     const cards = [...p.cards];
     cards.forEach(card => unit.hand.splice(unit.hand.indexOf(card), 1));
     const names = cards.map(c => c.name).join("、"), target = targetUid && b.allies.find(u => u.uid === targetUid && u.uid !== unit.uid && u.hp > 0);
-    if (target) { cards.forEach(c => c._pendingDraw = true); target.hand.push(...cards); window.BattleCards?.syncStatusCards?.(target); b.animQueue?.push({ type: "giveCards", fromUid: unit.uid, fromSide: unit.side, toUid: target.uid, toSide: target.side, count: cards.length, cards }); window.BattleCards?.afterHandLost?.(b, unit); window.BattleLog?.add?.(state, `${unit.name} 将 ${names} 交给${target.name}。`); }
+    if (target) { cards.forEach(c => { c._pendingDraw = true; if (!c.stolenFromUid) c.stolenFromUid = unit.uid; }); target.hand.push(...cards); window.BattleCards?.syncStatusCards?.(target); b.animQueue?.push({ type: "giveCards", fromUid: unit.uid, fromSide: unit.side, toUid: target.uid, toSide: target.side, count: cards.length, cards }); window.BattleCards?.afterHandLost?.(b, unit); window.BattleLog?.add?.(state, `${unit.name} 将 ${names} 交给${target.name}。`); }
     else rules.discardCards?.(state, unit, cards, "弃置");
     b.millerShare = null;
     return { ok: true, cards, shared: !!target };
