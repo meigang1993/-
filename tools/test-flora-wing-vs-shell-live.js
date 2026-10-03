@@ -194,8 +194,10 @@ const tankForce = `(() => {
   A("神速之翼对阵炮弹触发", wingHits >= 1, `触发${wingHits}次`);
   A("炮弹未对芙萝娅造成伤害（转换闪抵消）", !shellHitFlora,
     `HP=${last && last.floraHp}`);
-  A("双闪抵消成立", afterFire
-    .some(t => String(t).includes("自动使用两张闪")), "");
+  // 坦克炮弹是全场目标（sweep+targetless），属万箭齐发类 AOE：
+  // 按三国杀口径，响应 AOE 的【闪】是「打出」而非「使用」（只用到牌面信息）。
+  A("双闪抵消成立（AOE 响应记为打出）", afterFire
+    .some(t => String(t).includes("自动打出两张闪")), "");
 
   console.log(`\n通过 ${pass.length} / 失败 ${fail.length}`);
   pass.forEach(t => console.log(`  ✅ ${t}`));
