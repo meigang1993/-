@@ -33,12 +33,12 @@ window.BattleStatusCardTriggers = (() => {
         unit.skipDrawPhase = true;
         unit.drawLockedThisTurn = true;
       }
-      if (success && key === "paralysis") { unit.skipPlayPhase = true; unit.skipPlayReason = "麻痹"; }
+      if (success && key === "paralysis") { unit.skipPlayPhase = true; unit.skipPlayReason = "麻痹"; unit.noResponse = true; unit.noResponseReason = "麻痹"; }
       if (success && key === "freeze") unit.frozenSlash = true;
       if (success && key === "confusion") triggerConfusion(state, unit);
       const resultMap = {
         stun: "跳过出牌阶段", seal: "跳过摸牌阶段且本回合无法摸牌",
-        paralysis: "本回合无法使用牌", freeze: "本回合无法使用【杀】牌",
+        paralysis: "跳过出牌阶段，且本回合无法使用或打出响应牌", freeze: "本回合无法使用【杀】牌",
         confusion: "随机对我方其他角色视为使用虚拟【杀】",
       };
       window.BattleLog.add(state,
