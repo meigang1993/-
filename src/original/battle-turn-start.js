@@ -8,8 +8,11 @@ window.BattleTurnStart = ({
   const prepareSequence = window.BattlePrepareSequence({
     combat, draw, intentMax, nextAnim, record, relicPrepare,
   });
+  // 无谋冲拳按牌面是「打出」，属响应牌；麻痹（noResponse）禁止使用或打出响应牌，
+  // 故此处一并封堵，否则麻痹角色仍能在准备阶段打出它造成伤害。
   const shouldPromptReckless = (unit, battle) =>
-    !unit.recklessPromptDone
+    !unit.noResponse
+    && !unit.recklessPromptDone
     && unit.hand.some(card => card.reckless && !card._pendingDraw)
     && (unit.side === "enemy" ? battle.allies : battle.enemies)
       .some(enemy => enemy.hp > 0);
@@ -34,6 +37,7 @@ window.BattleTurnStart = ({
     battle.awaitingSpeedAssaultUid = null;
     battle.phase = 2;
     unit.skipPlayPhase = false;
+    unit.noResponse = false;
     if (unit.usedSpeedAssaultPrepare) {
       record(state, `${unit.name} 跳过判定阶段和摸牌阶段。`);
       return;
