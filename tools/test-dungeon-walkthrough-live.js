@@ -4,11 +4,16 @@ const { chromium } = require("playwright");
 const path = require("path");
 const { dismissOpeningStory } = require(path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
+// 四个副本全覆盖（此前漏了魔国机械工厂）。
+// maxSteps 必须 >= 层数：废墟沙城与水下列车都是 15 层，原先 14 步走不到 BOSS，
+// 导致「能否正常通关」从未被真正验证。
+// 可用 MISSION=<id> 环境变量只跑单个副本（沙箱单条命令约 150s 超时，分批跑）。
 const DUNGEONS = [
-  { id: "ruins_sand_city", name: "废墟沙城", flag: "ruinsSandCityUnlocked", maxSteps: 14 },
-  { id: "orc_dungeon", name: "兽人地下城", flag: "orcDungeonUnlocked", maxSteps: 14 },
-  { id: "underwater_train", name: "水下列车", flag: "underwaterTrainUnlocked", maxSteps: 14 },
-];
+  { id: "machine_factory", name: "魔国机械工厂", flag: null, maxSteps: 20 },
+  { id: "underwater_train", name: "水下列车", flag: "underwaterTrainUnlocked", maxSteps: 20 },
+  { id: "orc_dungeon", name: "兽人地下城", flag: "orcDungeonUnlocked", maxSteps: 20 },
+  { id: "ruins_sand_city", name: "废墟沙城", flag: "ruinsSandCityUnlocked", maxSteps: 20 },
+].filter(d => !process.env.MISSION || d.id === process.env.MISSION);
 
 (async () => {
   const browser = await chromium.launch();
@@ -36,6 +41,10 @@ const DUNGEONS = [
       ["ruinsSandCityUnlocked", "orcDungeonUnlocked", "underwaterTrainUnlocked"].forEach(f => { st.flags[f] = true; });
       if (!st.unlockedDifficulties?.includes("normal")) st.unlockedDifficulties = ["normal", ...(st.unlockedDifficulties || [])];
       st.party = (st.chars || []).filter(c => !c.locked).slice(0, 4).map(c => c.id);
+      // 跳过新手引导：首战胜利会触发「首战归来」剧情并把玩家送回大厅，
+      // 导致副本走查刚打完第一场就被判定结束（此前 machine_factory 只走 2 步）。
+      // 新手引导本身由 test-onboarding-first-battle-live 等专项覆盖，此处不重复。
+      if (st.flags?.onboarding) { st.flags.onboarding.skipped = true; st.flags.onboarding.completed = true; }
       st.sortieStarting = false;
       st.view = "hall"; st.hallModal = null; st.explore = null; st.battle = null;
       if (window.render) window.render();
@@ -218,13 +227,21 @@ const DUNGEONS = [
   }
 
   console.log("\n========== 试玩汇总 ==========");
+  let failed = 0;
   for (const s of summary) {
     const types = s.steps.map(x => x.type).filter(Boolean);
     const battles = s.steps.filter(x => /战斗/.test(x.r)).length;
     const okSettle = s.steps.every(x => !/结算=false|ERR:/.test(x.r));
-    console.log(`${okSettle ? "✅" : "❌"} ${s.name}: 走了 ${s.steps.length} 步，战斗 ${battles} 场，节点类型 [${types.join(",")}]`);
+    // 关键：必须真的走到 BOSS 节点并完成通关，否则只是"走了一半"也算过。
+    const reachedBoss = types.includes("boss");
+    const cleared = !!s.final?.complete;
+    if (!okSettle || !reachedBoss || !cleared) failed += 1;
+    console.log(`${okSettle && reachedBoss && cleared ? "✅" : "❌"} ${s.name}: 走了 ${s.steps.length} 步，战斗 ${battles} 场，到BOSS=${reachedBoss} 通关=${cleared}，节点类型 [${types.join(",")}]`);
     s.steps.forEach(x => { if (/ERR:|结算=false/.test(x.r)) console.log(`     ❌ ${x.r}`); });
   }
   console.log(`\n页面错误: ${errors.length ? errors.slice(0, 6).join(" | ") : "无"}`);
+  console.log(`\n失败副本: ${failed} / ${summary.length}`);
   await browser.close();
+  // 失败必须让退出码非零，否则 CI 恒绿（此前只打印 ❌ 不设码，属假通过）
+  process.exitCode = failed || errors.length ? 1 : 0;
 })();
