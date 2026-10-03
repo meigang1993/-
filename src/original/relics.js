@@ -3,7 +3,11 @@ window.RelicSystem = (() => {
   const owns = (record, key) => Object.prototype.hasOwnProperty.call(record, key);
   const canonical = (name) => typeof name === "string"
     ? (owns(aliases, name) ? aliases[name] : name) : null;
-  const special = { ...(window.GameDataFutureRelics || {}), ...(window.GameDataRelics || {}) };
+  // 废墟沙城的 10 个饰品定义在 GameDataRuinsContent.relics，此前从未并入，
+  // 导致它们对 RelicSystem 完全不可见：图鉴查不到、悬赏任务发不出、
+  // 英雄级"精英与BOSS携带掉落饰品技能"在废墟沙城也不生效。
+  // 该文件（startup 第 9 位）早于本文件（startup-app 第 18 位）加载，可直接消费。
+  const special = { ...(window.GameDataFutureRelics || {}), ...(window.GameDataRelics || {}), ...(window.GameDataRuinsContent?.relics || {}) };
   const eliteRelics = Object.keys(special);
   function data(name) {
     name = canonical(name);
