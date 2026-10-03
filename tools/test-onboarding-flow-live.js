@@ -139,9 +139,11 @@ const flag = page => page.evaluate(() => JSON.parse(JSON.stringify(
   T("提示②选目标", /点击发光的敌人/.test(t2), t2);
 
   // 选目标 → 提示应切到确定
+  // 真实 UI：点敌人只"选中目标"，随后由 [data-confirm-target] 确定发动。
+  // 不能调 BattleSystem.chooseTarget（它选中后立即发动，会跳过"确定"这一步）。
   await page.evaluate(() => {
     const st = window.state, b = st.battle;
-    window.BattleSystem.chooseTarget(st, b.enemies[0].uid);
+    window.BattleEffects.choose(st, b.enemies[0].uid);
     window.render();
   });
   let t3 = await tip();
