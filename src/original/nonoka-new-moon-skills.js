@@ -48,7 +48,7 @@ window.NonokaNewMoonSkills = (() => {
       if (indexes.length !== picker.count) return false;
       const give = [], fromBefore = handSize(unit), toBefore = handSize(target);
       indexes.forEach(index => { const [card] = unit.hand.splice(index, 1); if (card) give.unshift(card); });
-      give.forEach(card => { card._pendingDraw = true; target.hand.push(card); });
+      give.forEach(card => { card._pendingDraw = true; if (!card.stolenFromUid) card.stolenFromUid = unit.uid; target.hand.push(card); });
       if (give.length) window.BattleCards?.syncStatusCards?.(target);
       if (give.length) battle.animQueue?.push({ type: "giveCards", fromUid: unit.uid, fromSide: unit.side, toUid: target.uid, toSide: target.side, count: give.length, cards: give, fromBefore, toBefore });
       if (give.length) window.BattleCards?.afterHandLost?.(state.battle, unit);
