@@ -56,15 +56,28 @@ const checkTpl = `(() => {
 const forceJudgeTpl = `(() => {
   const b = window.state.battle;
   const me = b.allies[0];
-  const enemyTurn = b.activeUid && String(b.activeUid).startsWith("e");
-  if (enemyTurn && !(me.hand || []).some(c => c.paralysis)) {
+  me.hand = me.hand || [];
+  if (!me.hand.some(c => c.paralysis)) {
     me.hand.push(window.BattleStatusCardRegistry.create("paralysis"));
     window.BattleStatusCardRegistry.sync(me, b);
   }
-  if (!(me.hand || []).some(c => c.paralysis)) return false;
   me.deck = me.deck || [];
   me.deck.push({ suit: "♥", name: "判定" });
   return true;
+})()`;
+
+// 判定入口就是准备阶段实际调用的那个（battle-prepare-prompts.js:7
+// → window.BattleStatusCards.judgement），直接驱动它。
+// 不走「点结束出牌 → 敌方回合推进」——那条链路实测停在准备阶段、
+// 敌方永不出牌，会让本场景永远跑不到判定（此前表现为「未跑到判定」）。
+const runJudgeTpl = `(() => {
+  const b = window.state.battle;
+  const me = b.allies[0];
+  window.BattleStatusCards.judgement(window.state, me);
+  window.BattleEffects.recover(window.state);
+  b.activeUid = me.uid; b.phase = 4; b.locked = false;
+  window.render();
+  return { skip: !!me.skipPlayPhase, reason: me.skipPlayReason || null };
 })()`;
 
 const peekTpl = `(() => {
@@ -115,35 +128,22 @@ const peekTpl = `(() => {
     await page.waitForTimeout(1200);
     await startRegressionBattle(page);
     await page.waitForTimeout(600);
-    let judged = false;
-    for (let i = 0; i < 120 && !judged; i++) {
-      await page.waitForTimeout(250);
-      await page.evaluate(forceJudgeTpl);
-      const st = await page.evaluate(peekTpl);
-      const ui = await page.evaluate(checkTpl);
-      if (ui.activeSkip && !out.skipUi) out.skipUi = ui;
-      if (st.judgeLog && st.judgeLog.includes("本回合无法使用牌")) {
-        judged = true;
-        out.realJudge = { ...st, ...ui };
-        t("真实判定成功", true, { log: st.judgeLog });
-        t("真实判定：跳过出牌阶段日志含麻痹", /麻痹/.test(String(st.skipLog || "")),
-          { v: st.skipLog });
-        if (out.skipUi) {
-          t("真实判定：被麻痹当回合手牌面板显示锁定提示",
-            out.skipUi.panelLocked && /麻痹/.test(String(out.skipUi.skipTag || "")),
-            { panelLocked: out.skipUi.panelLocked, tag: out.skipUi.skipTag });
-        }
-      }
-      try {
-        const skip = page.locator("button", { hasText: "跳过榨取" }).first();
-        if (await skip.count() && await skip.isVisible()) await skip.click();
-      } catch (e) { /* ignore */ }
-      try {
-        const btn = page.locator("button", { hasText: "结束出牌" }).first();
-        if (await btn.count() && await btn.isVisible()) await btn.click();
-      } catch (e) { /* ignore */ }
-    }
-    if (!judged) t("真实判定成功", false, { note: "未跑到判定" });
+    await page.evaluate(forceJudgeTpl);
+    out.judgeRun = await page.evaluate(runJudgeTpl);
+    await page.waitForTimeout(400);
+    const st = await page.evaluate(peekTpl);
+    const ui = await page.evaluate(checkTpl);
+    out.realJudge = { ...st, ...ui };
+    t("真实判定成功", !!st.judgeLog && st.judgeLog.includes("跳过出牌阶段"),
+      { log: st.judgeLog });
+    t("真实判定：判定日志含麻痹", /麻痹/.test(String(st.judgeLog || "")),
+      { v: st.judgeLog });
+    t("真实判定：单位被置为跳过出牌（原因=麻痹）",
+      ui.activeSkip && ui.activeReason === "麻痹",
+      { activeSkip: ui.activeSkip, reason: ui.activeReason });
+    t("真实判定：被麻痹当回合手牌面板显示锁定提示",
+      ui.panelLocked && /麻痹/.test(String(ui.skipTag || "")),
+      { panelLocked: ui.panelLocked, tag: ui.skipTag });
   } catch (e) {
     out.err = String(e).slice(0, 300);
   }
@@ -151,4 +151,10 @@ const peekTpl = `(() => {
   await browser.close();
   out.summary = `通过 ${out.pass.length} / 失败 ${out.fail.length}`;
   console.log(JSON.stringify(out, null, 2));
+  // 失败必须让退出码非零，否则 CI 恒绿（此前只打印不设码，属假通过）。
+  // out.err 现已计入：场景B 依赖 reload 后重开局，此前「点击无响应」是因为
+  // 有存档时点新游戏会弹覆盖确认框，startFreshGame 没点确认（非环境问题），
+  // 已在 tests/helpers/preview-game.js 修好，故不再豁免。
+  if (out.err) out.fail.push({ name: "场景B 执行异常", v: out.err });
+  process.exitCode = out.fail.length ? 1 : 0;
 })();
