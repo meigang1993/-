@@ -2,12 +2,14 @@ window.BattleCardTactics = ({ log, ctx, deps, reveal, openHandReveal }) => {
   const visible = unit => (unit?.hand || []).filter(c => !c._pendingDraw);
   const damageCopy = (card, extra = {}) => ({ ...card, ...extra, _entitySourceCard: card._entitySourceCard || card });
   function soulChain(state, actor, target, card) { if (!target || target.side === actor.side) return; const foes = (actor.side === "enemy" ? state.battle.allies : state.battle.enemies).filter(u => u.hp > 0), selected = card._targetUids || state.battle.pendingTargetUids || [target.uid], picked = selected.map(uid => foes.find(u => u.uid === uid)).filter(Boolean).slice(0, 2); window.EdisSkills?.copyTargetedCards?.(state, actor, picked, card); picked.forEach(u => { u.soulChain = 2; if (!u.statuses.includes("锁魂")) u.statuses.push("锁魂"); }); log(state, `${actor.name} 使用${card.name}，${picked.map(u => u.name).join("、")}陷入锁魂状态。`); }
+  const blockedByNoResponse = unit => !!unit?.noResponse;
+  const cannotAct = unit => unit?.noResponse ? "无法使用或打出响应牌" : "";
   function magicDuel(state, actor, target, card) {
-    if (!target.hand.some(c => c.name === "魔杀" && !c._pendingDraw)) { ctx.damage(state, target, ctx.statOf(actor, "magic"), card.name, actor, damageCopy(card, { ignoreResponse: true, duelUserUid: actor.uid })); log(state, `${actor.name} 使用魔法对决，${target.name}没有魔杀。`); return; }
+    if (blockedByNoResponse(target) || !target.hand.some(c => c.name === "魔杀" && !c._pendingDraw)) { ctx.damage(state, target, ctx.statOf(actor, "magic"), card.name, actor, damageCopy(card, { ignoreResponse: true, duelUserUid: actor.uid })); log(state, `${actor.name} 使用魔法对决，${target.name}${cannotAct(target) || "没有魔杀"}。`); return; }
     let holder = target, other = actor, last = actor;
-    while (true) { const i = holder.hand.findIndex(c => c.name === "魔杀" && !c._pendingDraw); if (i < 0) break; const slash = holder.hand.splice(i, 1)[0]; ctx.putCard(state, holder, slash, "discard", { skipAnim: true }); showDuelSlash(state, holder, other, slash, "魔法对决"); last = holder; [holder, other] = [other, holder]; }
+    while (true) { if (blockedByNoResponse(holder)) break; const i = holder.hand.findIndex(c => c.name === "魔杀" && !c._pendingDraw); if (i < 0) break; const slash = holder.hand.splice(i, 1)[0]; ctx.putCard(state, holder, slash, "discard", { skipAnim: true }); showDuelSlash(state, holder, other, slash, "魔法对决"); last = holder; [holder, other] = [other, holder]; }
     ctx.damage(state, holder, ctx.statOf(last, "magic"), card.name, last, damageCopy(card, { ignoreResponse: true, duelUserUid: actor.uid }));
-    log(state, `${actor.name} 发起魔法对决，${holder.name}无法继续打出魔杀。`);
+    log(state, `${actor.name} 发起魔法对决，${holder.name}${cannotAct(holder) || "无法继续打出魔杀"}。`);
   }
   function magicBullet(state, actor, target, card) {
     if (actor.side === "ally") return openHandReveal(state, actor, target, card, "magicBullet");
@@ -23,12 +25,12 @@ window.BattleCardTactics = ({ log, ctx, deps, reveal, openHandReveal }) => {
   }
   function duel(state, actor, target, card) {
     const amount = unit => ctx.statOf(unit, window.CardUtils?.damageStatKey?.(unit, card) === "magic" ? "magic" : "attack");
-    if (!target.hand.some(c => c.name === "杀（普攻）" && !c._pendingDraw)) { ctx.damage(state, target, amount(actor), card.name, actor, damageCopy(card, { type: "tactic", ignoreResponse: true, duelUserUid: actor.uid })); log(state, `${actor.name} 使用与我一战，${target.name}没有杀（普攻）。`); return; }
+    if (blockedByNoResponse(target) || !target.hand.some(c => c.name === "杀（普攻）" && !c._pendingDraw)) { ctx.damage(state, target, amount(actor), card.name, actor, damageCopy(card, { type: "tactic", ignoreResponse: true, duelUserUid: actor.uid })); log(state, `${actor.name} 使用与我一战，${target.name}${cannotAct(target) || "没有杀（普攻）"}。`); return; }
     let holder = target, other = actor, last = actor;
-    while (true) { const i = holder.hand.findIndex(c => c.name === "杀（普攻）" && !c._pendingDraw); if (i < 0) break; const slash = holder.hand.splice(i, 1)[0]; ctx.putCard(state, holder, slash, "discard", { skipAnim: true }); showDuelSlash(state, holder, other, slash, "与我一战"); last = holder; [holder, other] = [other, holder]; }
+    while (true) { if (blockedByNoResponse(holder)) break; const i = holder.hand.findIndex(c => c.name === "杀（普攻）" && !c._pendingDraw); if (i < 0) break; const slash = holder.hand.splice(i, 1)[0]; ctx.putCard(state, holder, slash, "discard", { skipAnim: true }); showDuelSlash(state, holder, other, slash, "与我一战"); last = holder; [holder, other] = [other, holder]; }
     const sourceCard = damageCopy(card, { type: "tactic", ignoreResponse: true, duelUserUid: actor.uid });
     ctx.damage(state, holder, amount(last), card.name, last, sourceCard);
-    log(state, `${actor.name} 发起与我一战，${holder.name}无法继续出杀。`);
+    log(state, `${actor.name} 发起与我一战，${holder.name}${cannotAct(holder) || "无法继续出杀"}。`);
   }
   // 决斗是同步 while 循环，若在此直接入 played，整轮决斗的杀会在结算瞬间
   // 一次性挤进出牌区（动画还没播）。改为挂到动画的 commit：飞行动画播到哪
@@ -94,7 +96,7 @@ window.BattleCardTactics = ({ log, ctx, deps, reveal, openHandReveal }) => {
   }
   function gainBorrowedCard(state, actor, partner, gained) {
     partner.hand.splice(partner.hand.indexOf(gained), 1);
-    gained.stolenFromUid = partner.uid;
+    if (!gained.stolenFromUid) gained.stolenFromUid = partner.uid;
     if (state.battle.animQueue) gained._pendingDraw = true;
     actor.hand.push(gained);
     window.BattleCards?.syncStatusCards?.(actor);
