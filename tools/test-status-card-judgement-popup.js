@@ -36,7 +36,7 @@ const record = (name, ok, detail) => {
 const STATUS_CASES = [
   { key: "stun", name: "眩晕", suits: ["♠", "♣"], label: "跳过出牌阶段" },
   { key: "seal", name: "封魔", suits: ["♥", "♦"], label: "跳过摸牌阶段且本回合无法摸牌" },
-  { key: "paralysis", name: "麻痹", suits: ["♥", "♠"], label: "本回合无法使用牌" },
+  { key: "paralysis", name: "麻痹", suits: ["♥", "♠"], label: "跳过出牌阶段" },
   { key: "confusion", name: "混乱", suits: ["♠", "♥"], label: "随机对我方其他角色视为使用虚拟【杀】" },
   { key: "freeze", name: "冰冻", suits: ["♦", "♣"], label: "本回合无法使用【杀】牌" },
 ];
