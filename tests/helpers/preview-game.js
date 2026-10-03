@@ -117,6 +117,15 @@ async function expectImagesLoaded(locator) {
 
 async function startFreshGame(page) {
   await page.locator("[data-start-game]").click();
+  // 已有存档时（典型：reload 后 localStorage 仍在），点「新游戏」会先弹覆盖确认框
+  // （.game-confirm-overlay / [data-confirm-ok]）。不点确认就永远进不了大厅，
+  // 表现为「点击无响应」——曾被误判为环境问题，实为缺少这一步。
+  // hasMainSave() 是异步的，确认框不会立刻出现，故先 waitFor 再判断。
+  const okBtn = page.locator("[data-confirm-overlay] [data-confirm-ok]");
+  await okBtn.waitFor({ state: "visible", timeout: 3000 }).catch(() => {});
+  if (await okBtn.count()) {
+    await okBtn.first().evaluate(el => el.click()).catch(() => {});
+  }
   await expect(page.locator(".villa-hall")).toBeVisible();
   await expect(page.locator("[data-open-modal='team']")).toBeVisible();
 }
@@ -181,6 +190,9 @@ async function startRegressionBattle(page) {
 
 async function enterRegressionBattle(page) {
   await startFreshGame(page);
+  // 新档开场剧情盖在大厅上，会拦截对队伍面板的点击。
+  // 此前未处理，导致依赖本函数的用例场景静默走进 catch（恒绿假通过）。
+  await dismissOpeningStory(page);
   await openTestBattle(page);
   await page.evaluate(() => {
     window.state.testEnemies = [0, 1];
