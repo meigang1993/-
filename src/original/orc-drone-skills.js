@@ -57,7 +57,7 @@ window.OrcDroneSkills = deps => {
         consumed.push(card);
         continue;
       }
-      card.stolenFromUid = target.uid;
+      if (!card.stolenFromUid) card.stolenFromUid = target.uid;
       if (state.battle.animQueue) card._pendingDraw = true;
       actor.hand.push(card);
       stolen.push(card);
