@@ -1,5 +1,6 @@
 window.BattleDodgeCards = ({ deps, ctx, canDodge }) => {
   function count(target, card, limit = Infinity) {
+    if (target?.noResponse) return 0;
     let total = 0;
     for (const candidate of target?.hand || []) {
       if (canDodge(card, candidate) && ++total >= limit) return total;
@@ -59,7 +60,11 @@ window.BattleDodgeCards = ({ deps, ctx, canDodge }) => {
       window.NonokaLokiSkills?.afterCardResponded?.(
         state, target, actor, played[cardIndex], deps);
     });
-    window.BattleStatusCards?.triggerLandmine?.(state, target);
+    // 地雷描述限定「使用或打出响应牌」：响应 AOE 打出的是【杀】，
+    // 属打出但非响应牌，不触发地雷（与决斗同等口径）。
+    if (sources.some(card => card?.type === "response")) {
+      window.BattleStatusCards?.triggerLandmine?.(state, target);
+    }
   }
   function label(unit, cards) {
     const shown = cards.map(card => view(unit, card, "闪"));
@@ -69,7 +74,12 @@ window.BattleDodgeCards = ({ deps, ctx, canDodge }) => {
   const responseLabel = card =>
     card?.responseKind === "slash" ? "杀" : "闪";
   const responseAction = card =>
-    card?.responseKind === "slash" ? "打出" : "使用";
+    // 三国杀口径：响应【杀】而出的【闪】属于「使用」（执行牌面效果）；
+  // 响应万箭齐发类 AOE 的【闪】、响应南蛮入侵类 AOE 的【杀】都只是「打出」
+  // （只用到牌面信息，不执行效果）。AOE 判定与 shouldManualDodge 同口径。
+  card?.responseKind === "slash"
+    || card?.sweep || card?.targetless || card?.allTargets || card?.aoeLineShown
+    ? "打出" : "使用";
   return {
     count, pick, view, play, label, responseLabel, responseAction,
   };
