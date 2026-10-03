@@ -1,6 +1,6 @@
 // 凯瑟琳 · 实战回归（严格版）
 //   ⚔️ 窃取：出牌阶段限一次，指定敌方一名角色与我方其他一名角色，将前者一张牌转给后者
-//   ⭐ 知识吸收：锁定技，场上角色使用战术牌结算完毕后，你获得该战术牌
+//   ⭐ 知识吸收：锁定技，友方角色使用战术牌结算完毕后，你获得该战术牌
 //   ⭐ 魔力增幅：锁定技，每有一张战术牌魔力+1；魔力全场最多时战术牌不可被响应
 //
 // 注意：本文件断言的是「实际效果」，不是「标记是否存在」。
@@ -191,7 +191,7 @@ const absorbTpl = `(() => {
     logs: (st.log || []).slice(0, 3).map(String) };
 })()`;
 
-// 知识吸收：敌方角色使用战术牌，凯瑟琳同样获得
+// 知识吸收：敌方角色使用战术牌 → 不回收（描述限定为「友方角色」）
 const absorbFoeTpl = `(() => {
   const st = window.state, b = st.battle;
   const c = b.allies[0], foe = b.enemies[0];
@@ -202,6 +202,34 @@ const absorbFoeTpl = `(() => {
   window.CatherineSkills.afterCardPlayed(st, foe, tactic);
   return { count: c.hand.length, hand: c.hand.map(x => x.name),
     foeDiscard: foe.pileStats.discard.length };
+})()`;
+
+// 知识吸收·归属：友方用的是「从敌方夺来」的战术牌 → 回收后仍属敌方，不得洗成友方
+const absorbStolenTpl = `(() => {
+  const st = window.state, b = st.battle;
+  const c = b.allies[0], other = b.allies[1], foe = b.enemies[0];
+  b.animQueue = [];
+  c.hand = [];
+  const tactic = window.CardUtils.cloneEntity("蓄力", { suit: "♣" });
+  tactic.__probe = "foe-owned";
+  tactic.stolenFromUid = foe.uid;      // 该牌本属敌方，友方只是临时持有
+  other.pileStats.discard = [tactic];
+  window.CatherineSkills.afterCardPlayed(st, other, tactic);
+  const g = (c.hand || []).find(x => x.name === "蓄力");
+  let put = null;
+  if (g) {
+    delete g._pendingDraw;
+    foe.pileStats.discard = foe.pileStats.discard || [];
+    c.pileStats.discard = c.pileStats.discard || [];
+    other.pileStats.discard = other.pileStats.discard || [];
+    window.BattleCards.put(st.battle, c, g, "discard", { forcedDiscard: true });
+    put = { foeDiscard: foe.pileStats.discard.some(x => x.__probe === "foe-owned"),
+      allyDiscard: other.pileStats.discard.some(x => x.__probe === "foe-owned"),
+      selfDiscard: c.pileStats.discard.some(x => x.__probe === "foe-owned") };
+  }
+  return { count: c.hand.length,
+    stolenFromUid: g ? g.stolenFromUid : null,
+    foeUid: foe.uid, allyUid: other.uid, cathyUid: c.uid, put };
 })()`;
 
 // 知识吸收：凯瑟琳自己使用战术牌 → 不得把牌收回到自己手上（否则可无限重复使用）
@@ -449,8 +477,20 @@ const speechReadTpl = `(() => {
   T("知识吸收：获得的战术牌立刻计入魔力增幅", absorb.tempMagic === 1, absorb);
 
   const absorbFoe = await page.evaluate(absorbFoeTpl);
-  T("知识吸收：敌方使用战术牌同样获得",
-    absorbFoe.count === 1 && absorbFoe.hand[0] === "武装", absorbFoe);
+  T("知识吸收：敌方使用战术牌不回收", absorbFoe.count === 0, absorbFoe);
+  T("知识吸收：敌方用过的战术牌留在敌方弃牌堆",
+    absorbFoe.foeDiscard === 1, absorbFoe);
+
+  const stolen = await page.evaluate(absorbStolenTpl);
+  T("知识吸收·归属：友方用敌方牌后仍被回收", stolen.count === 1, stolen);
+  T("知识吸收·归属：保留敌方原归属（不被洗成友方）",
+    stolen.stolenFromUid === stolen.foeUid && stolen.stolenFromUid !== stolen.allyUid,
+    stolen);
+  T("知识吸收·归属：弃置后回到敌方牌堆",
+    !!stolen.put && stolen.put.foeDiscard === true, stolen);
+  T("知识吸收·归属：弃置后不落友方/凯瑟琳牌堆",
+    !!stolen.put && stolen.put.allyDiscard === false && stolen.put.selfDiscard === false,
+    stolen);
 
   const self = await page.evaluate(absorbSelfTpl);
   T("知识吸收：自己用的战术牌不回收给自己", self.handCount === 0, self);
