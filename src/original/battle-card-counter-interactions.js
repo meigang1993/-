@@ -10,8 +10,9 @@ window.BattleCardCounterInteractions = (deps, ctx, helpers) => {
     const backflips = (
       window.SakuraRisaSkills?.backflipCandidates?.(units, actor, target, tactic)
       || []
-    ).map(choice => ({ ...choice, responseKind: "backflip" }));
-    const counters = units.flatMap(unit => unit.hp > 0
+    ).filter(choice => !choice.unit?.noResponse)
+      .map(choice => ({ ...choice, responseKind: "backflip" }));
+    const counters = units.flatMap(unit => unit.hp > 0 && !unit.noResponse
       ? unit.hand.filter(card => (card.counterTactic || card.ambush
         || window.WithererSkills?.canCounterTacticCard?.(unit, card)
         || window.GuardKellySkills?.canCounterTacticCard?.(unit, card))
