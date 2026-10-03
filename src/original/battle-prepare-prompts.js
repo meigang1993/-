@@ -20,6 +20,9 @@ window.BattlePreparePrompts = (api) => {
       { type: "response", id: window.GameRandom.id("reckless"), uid: unit.uid, side: unit.side, card },
       visualHandBefore);
     window.NonokaLokiSkills?.afterCardResponded?.(state, unit, target, card, window.BattleSystem);
+    // 无谋冲拳按牌面是「打出」，属响应牌，打出后触发持有者手牌区的地雷。
+    window.BattleStatusCards?.triggerLandmine?.(state, unit);
+    if (unit.hp <= 0) { combat.checkEnd(state); return true; }
     record(state, `${unit.name} 打出无谋冲拳，冲向${target.name}。`); combat.damage(state, target, amount, "无谋冲拳", unit, { ...card, type: "skill", ignoreResponse: true }); combat.checkEnd(state); return true;
   }
   async function resolveReckless(state, useCard, index = 0, onStep) {
