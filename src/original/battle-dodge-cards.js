@@ -22,7 +22,7 @@ window.BattleDodgeCards = ({ deps, ctx, canDodge }) => {
     return window.GuardKellySkills?.responseCard?.(
       unit, witherer, name) || witherer;
   }
-  function play(state, target, actor, cards, reverseUid = null) {
+  function play(state, target, actor, cards, reverseUid = null, threat = null) {
     const cut = !cards.some(card => card?.type === "slash")
       && ctx.hasSkill(actor, "剪切邪斩");
     const sources = cards.filter(Boolean);
@@ -48,6 +48,11 @@ window.BattleDodgeCards = ({ deps, ctx, canDodge }) => {
       cards: played.length > 1 ? played : null,
       card: played.length > 1
         ? { ...(converted || played[0]), name: "闪×2" } : played[0],
+      // 出牌区文案必须与日志同口径：统一按「被响应的威胁牌」判使用/打出，
+      // 而不是按响应牌本身。否则响应 AOE（机枪扫杀/万箭类）的【闪】
+      // 会被误判为「使用了」——按三国杀它是「打出」，日志也是「打出」。
+      // 弹反与【闪】同为响应单体【杀】的响应牌，威胁牌是单体杀时记「使用了」。
+      action: threat ? `${responseAction(threat)}了` : null,
       pile,
       reverseUid,
     }, visualHandBefore, Math.max(0, visibleNow - removable));
