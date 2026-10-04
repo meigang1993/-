@@ -24,7 +24,7 @@ window.BattleDodgeDeflect = ({
       clearManual(battle);
       return false;
     }
-    cards.play(state, target, actor, picked, actor.uid);
+    cards.play(state, target, actor, picked, actor.uid, pending.card);
     clearManual(battle);
     if (result.outcome === "defender") {
       damage(state, actor, pending.amount, "弹反", target, {
@@ -61,7 +61,7 @@ window.BattleDodgeDeflect = ({
         `${target.name} 需要两张闪才能抵消本次杀。`);
       return false;
     }
-    cards.play(state, target, actor, [response, second].filter(Boolean));
+    cards.play(state, target, actor, [response, second].filter(Boolean), null, card);
     if (response.deflect) {
       if (window.WithererSkills?.deflect?.(
         state, target, actor, amount, source, card, damage)) {
@@ -71,7 +71,9 @@ window.BattleDodgeDeflect = ({
       return false;
     }
     window.BattleLog.add(state,
-      `${target.name} 自动${cards.responseAction(card)}${second ? "两张闪" : cards.view(target, response, "闪").name}，抵消一次${cards.responseLabel(card)}伤害。`);
+      // 抵消的是「威胁牌」的伤害，不是响应牌的：原写法把 responseLabel（闪/杀）
+      // 填进这里，会输出「抵消一次闪伤害」这种语义反了的文案。
+      `${target.name} 自动${cards.responseAction(card)}${second ? "两张闪" : cards.view(target, response, "闪").name}，抵消一次伤害。`);
     if (hammer.queue(state, actor, target, amount, source, card)) {
       triggers.afterDodged(state, actor, target, card);
       state.battle.thunderHammer.afterDodgedFired = true;
