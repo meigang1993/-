@@ -33,18 +33,22 @@ window.GuestOpheliaGuard = (deps) => {
         window.BattleCards?.put(
           state.battle, guard, item, "discard", { skipAnim: true });
       });
+      // 出牌区与战报须同口径：按「被响应的威胁牌」判使用/打出
+      // （响应单体杀=使用，响应全场扫射=打出），否则两处文案会不一致。
+      const guardVerb = window.CardUtils?.isSingleKill?.(card) ? "使用" : "打出";
       window.BattleCards?.queueResponse?.(state.battle, guard, {
         type: "response", id: window.GameRandom.id("og"),
         uid: guard.uid, side: guard.side,
         // 出牌区按实际张数记录（cards 供 recordResponse 展开）
         cards: dodge.length > 1 ? dodge : null,
         card: dodge.length > 1 ? { ...dodge[0], name: "闪×2" } : dodge[0],
+        action: `${guardVerb}了`,
       }, visualHandBefore, window.BattleCards.visibleHandCount(guard));
       window.NonokaLokiSkills?.afterCardResponded?.(
         state, guard, actor, dodge[0], api);
       api.afterDodged?.(state, actor, guard, card);
       window.BattleLog.add(
-        state, `${guard.name} 为${target.name}护驾，使用`
+        state, `${guard.name} 为${target.name}护驾，${guardVerb}`
         + `${dodge.length > 1 ? "两张闪" : dodge[0].name}抵消杀。`);
       return { dodged: true, hpLoss: 0 };
     }
