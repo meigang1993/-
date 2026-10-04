@@ -77,9 +77,9 @@ window.BattleDodgeResponse = ({
           pending.deflectResult = reveal;
           return true;
         }
-        cards.play(state, target, actor, picked, actor.uid);
+        cards.play(state, target, actor, picked, actor.uid, pending.card);
         window.BattleLog.add(state,
-          `${target.name} 手动${cards.responseAction(pending.card)}${cards.label(target, picked)}，抵消一次${cards.responseLabel(pending.card)}伤害。`);
+          `${target.name} 手动${cards.responseAction(pending.card)}${cards.label(target, picked)}，抵消一次伤害。`);
         const queued = hammer.queue(
           state, actor, target, pending.amount, pending.source, pending.card);
         clearManual(battle, queued);
