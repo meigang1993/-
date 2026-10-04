@@ -23,6 +23,8 @@ window.UnderwaterTrainControlSkills = (shared) => {
     if (costIndex < 0 || foes.length < 2) return true;
     actor.usedControlEye = true;
     const [cost] = actor.hand.splice(costIndex, 1); window.BattleCards?.put(state.battle, actor, cost, "discard", { showDiscard: true });
+    // 出牌区由 put(showDiscard) 写入；战报需同步，否则玩家看不到弃了哪张牌作为成本。
+    window.BattleLog.add(state, `${actor.name} 弃置了${cost?.suit || ""}${cost?.name || ""}作为控神魔眼的成本。`);
     // AI 行为：指定我方攻击力最高的角色去决斗另一名我方角色。
     const first = foes.slice().sort((a, b) => stat(b, "attack") - stat(a, "attack") || b.hp - a.hp)[0];
     const second = foes.filter(u => u.uid !== first.uid).sort((a, b) => b.hp - a.hp)[0];
