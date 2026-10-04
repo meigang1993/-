@@ -39,7 +39,7 @@ const eliteCardDefs = [
   { name: "勒杀", price: 1200, type: "slash", scale: "attack", strangleKill: true, suits: starterSuits, text: "指定一名敌方角色为目标，对其造成等同于你的攻击力的物理伤害。若此牌造成生命值伤害，目标获得不可叠加的“勒脖”标记（多段或连击伤害时逐段结算）。目标每个准备阶段受到X点物理伤害（X为你施加标记时攻击力的一半，向下取整且至少1点）。" },
   { name: "战争号角", price: 800, type: "tactic", warHorn: true, targetless: true, suits: starterSuits, text: "你的杀意重置至上限，然后所有友方角色各从牌堆随机摸1张【杀】。" },
   { name: "追杀", price: 1100, type: "slash", scale: "attack", pursueKill: true, suits: starterSuits, text: "指定一名敌方角色为目标，对其造成等同于你的攻击力的物理伤害。当你使用的其他实体【杀】未造成生命值伤害时，本回合使用此牌不消耗杀意。" },
-  { name: "弹反", price: 1400, type: "response", deflect: true, suits: starterSuits, text: "当你成为单体【杀】的目标时，你可以打出此牌并与伤害来源进行猜拳。平局则重新猜拳，直至分出胜负；若你获胜，将该【杀】的伤害反弹给伤害来源，否则该【杀】正常结算。" },
+  { name: "弹反", price: 1400, type: "response", deflect: true, suits: starterSuits, text: "当你成为单体【杀】的目标时，你可以使用此牌并与伤害来源进行猜拳。平局则重新猜拳，直至分出胜负；若你获胜，将该【杀】的伤害反弹给伤害来源，否则该【杀】正常结算。" },
   { name: "武装", price: 1400, type: "tactic", armSelf: true, targetless: true, suits: starterSuits, text: "你获得X点护甲（X为你的攻击力）。" },
   { name: "撞杀", price: 1100, type: "slash", power: 0, scale: "attack", armoredRam: true, suits: starterSuits, text: "指定一名敌方角色为目标，对其造成（你的攻击力+你的当前护甲）点物理伤害。若伤害结算时你仍有护甲，且目标存活，令目标翻面。" },
   { name: "后空翻", price: 1100, type: "response", backflip: true, drawCards: 2, suits: starterSuits, text: "当你成为战术牌的目标时，你可以打出此牌，令该战术牌对你无效，然后摸2张牌。" },
