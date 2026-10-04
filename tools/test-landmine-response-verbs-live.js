@@ -8,9 +8,15 @@ const { openGame, startRegressionBattle } = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
 // responseKind: dodge -> 使用闪 ; slash -> 打出杀
+// 口径（三国杀 + 地雷描述「在使用或打出响应牌时」）：
+//   响应单体【杀】的【闪】= 使用 → 闪是响应牌，地雷触发
+//   响应 AOE 的【闪】    = 打出 → 闪是响应牌，地雷触发
+//   响应 AOE 打出的【杀】= 打出 → 杀不是响应牌，地雷不触发
+// 注：流星杀是 AOE（敌方全体扫射），旧表按「使用」是错的，已校准为「打出」。
 const CASES = [
-  { name: "流星杀", kind: "dodge", verb: "使用", label: "闪" },
-  { name: "魔王军入侵", kind: "slash", verb: "打出", label: "杀" },
+  { name: "杀（普攻）", kind: "dodge", verb: "使用", label: "闪", expectMine: true, expectAll: false },
+  { name: "流星杀", kind: "dodge", verb: "打出", label: "闪", expectMine: true, expectAll: true },
+  { name: "魔王军入侵", kind: "slash", verb: "打出", label: "杀", expectMine: false },
 ];
 const MODES = ["auto", "manual"];
 
@@ -67,14 +73,27 @@ const snapshot = () => `(() => {
       const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
       const errors = [];
       page.on("pageerror", e => errors.push(String(e)));
-      const row = { mode, name: c.name, kind: c.kind, verb: c.verb };
+      const row = {
+      mode, name: c.name, kind: c.kind, verb: c.verb,
+      label: c.label, expectMine: c.expectMine, expectAll: c.expectAll,
+    };
       try {
         await openGame(page);
         await startRegressionBattle(page);
         const inj = await page.evaluate(inject(c.name, mode));
         if (inj.missing) { row.err = "卡牌缺失"; results.push(row); await page.close(); continue; }
         row.mineBefore = inj.mineBefore; row.landmineAttack = inj.landmineAttack;
-        await page.locator("button", { hasText: "结束出牌" }).first().click();
+        // 敌方回合靠「结束出牌」推进不可靠（实测停在准备阶段，敌方永不出牌），
+        // 直接驱动真实出牌入口 BattleSystem.useCard，与已修复用例同一修法。
+        await page.evaluate(`(() => {
+          const b = window.state.battle;
+          const e1 = b.enemies[1];
+          const card = e1.hand && e1.hand[0];
+          if (!card) return false;
+          window.BattleSystem.useCard(window.state, e1, b.allies[0], card);
+          window.render?.();
+          return true;
+        })()`);
         let clicked = false;
         for (let i = 0; i < 22; i++) {
           await page.waitForTimeout(700);
@@ -107,9 +126,18 @@ const snapshot = () => `(() => {
   let pass = 0, fail = 0;
   results.forEach(r => {
     if (r.err) { console.log(`  ${r.mode}/${r.name}  ❌ ${r.err}`); fail++; return; }
-    const ok = r.triggered && r.mineBefore?.some(n => n > 0) && r.mineNow?.every(n => n === 0);
+    const before = (r.mineBefore || []).reduce((a, b) => a + b, 0);
+    const after = (r.mineNow || []).reduce((a, b) => a + b, 0);
+    const consumed = before - after;
+    const mineOk = r.expectMine
+      ? (r.triggered && (r.expectAll ? after === 0 : consumed >= 1))
+      : (!r.triggered && consumed === 0);
+    // 动词必须被真正断言：此前只看地雷是否触发，动词写错也不会红
+    const verbOk = (r.head || []).some(l => l.includes(r.verb + r.label));
+    const ok = before > 0 && mineOk && verbOk;
     ok ? pass++ : fail++;
     console.log(`  ${ok ? "✅" : "❌"} ${r.mode}/${r.name}(${r.kind}) 期望动词=${r.verb}` +
+      ` 动词命中=${verbOk} 地雷期望${r.expectMine ? "触发" : "不触发"}` +
       ` 地雷触发=${r.triggered} 地雷数 ${JSON.stringify(r.mineBefore)}→${JSON.stringify(r.mineNow)}` +
       ` 伤害=${r.landmineAttack} HP=${JSON.stringify(r.allyHp)} 手动窗口=${!!r.manualWin} 点击=${r.clicks || 0}次`);
     console.log(`      使用闪=${r.verbUse} 打出杀=${r.verbPlay} 战报=${JSON.stringify(r.head || [])}`);
