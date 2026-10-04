@@ -113,7 +113,22 @@ const snap = () => `(() => {
         await startRegressionBattle(page);
         const inj = await page.evaluate(inject(name, mode));
         if (inj.missing) { out[key] = { err: "卡牌缺失" }; await page.close(); continue; }
-        await page.locator("button", { hasText: "结束出牌" }).first().click();
+        // 作弊式驱动：直接给敌方塞 AOE 牌后，走 BattleSystem.useCard
+        // （敌方 AI 出牌 commit 里调的就是它）当场打出。
+        // 不用「点结束出牌 → 等敌方 AI 行动」：该链路实测停在准备阶段、
+        // 敌方永不出牌，150 轮轮询只会空转到超时。
+        const drv = await page.evaluate(`(() => {
+          const st = window.state, b = st.battle;
+          const e1 = b.enemies.find(e => e.uid === window.__target.uid);
+          const card = e1 && e1.hand.find(c => c && c.name === window.__target.name);
+          if (!e1 || !card) return { err: "驱动失败: 敌方手牌无被测牌" };
+          window.__log = window.__log || [];
+          window.__log.push({ actor: e1.name, move: card.name, forced: true });
+          window.BattleSystem.useCard(st, e1, b.allies[0], card);
+          window.render && window.render();
+          return { ok: true, attacker: e1.name, card: card.name };
+        })()`);
+        if (drv.err) { out[key] = { err: drv.err }; await page.close(); continue; }
 
         const prompts = [];
         const total = inj.allies;
@@ -195,19 +210,21 @@ const snap = () => `(() => {
     const dodger = clean[0], skipper = clean[1];
     const dodgerHit = dodger
       ? new RegExp(`${card}对${dodger}造成`).test(joined) : null;
+    // AOE 的响应是「打出」不是「使用」（三国杀口径，见 battle-dodge-cards）。
+    // 旧断言按"使用"写的，故即使功能正确也恒为 false——属过时断言，非 BUG。
     const dodgerUsed = dodger
-      ? new RegExp(`${dodger} 手动使用.*闪，抵消`).test(joined) : false;
+      ? new RegExp(`${dodger} 手动打出.*闪，抵消`).test(joined) : false;
     const skipperHit = skipper
       ? new RegExp(`${card}对${skipper}造成${DMG}伤害`).test(joined) : false;
     const skipperSkipped = skipper
-      ? new RegExp(`${skipper} 没有使用闪`).test(joined) : false;
+      ? new RegExp(`${skipper} 没有打出闪`).test(joined) : false;
     if (isManual) {
       ok = played && allPrompted && distinct >= 2
         && dodgerUsed && dodgerHit === false && skipperHit && skipperSkipped;
       detail = `出闪者[${dodger}]用闪=${dodgerUsed} 被命中=${dodgerHit} / 不出者[${skipper}]被命中=${skipperHit} 放弃=${skipperSkipped}`;
     } else {
       const autoUsed = (r.log || []).some(l => typeof l === "string"
-        && (l.includes("自动使用闪") || l.includes("自动打出杀")));
+        && (l.includes("自动使用闪") || l.includes("自动打出闪")));
       ok = played && r.prompts.length === 0 && autoUsed;
       detail = `无弹窗=${r.prompts.length === 0} 自动出闪=${autoUsed}`;
     }
