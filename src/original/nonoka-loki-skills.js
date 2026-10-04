@@ -99,10 +99,12 @@ window.NonokaLokiSkills = (() => {
     if (dodge) {
       const visualHandBefore = window.BattleCards.visibleHandCount(loki);
       loki.hand.splice(loki.hand.indexOf(dodge), 1); window.BattleCards?.put(state.battle, loki, dodge, "discard", { skipAnim: true });
+      // 出牌区与战报须同口径：按「被响应的威胁牌」判使用/打出。
+      const lokiVerb = window.CardUtils?.isSingleKill?.(card) ? "使用" : "打出";
       window.BattleCards?.queueResponse?.(state.battle, loki,
-        { type: "response", id: `lp${deps.nextAnim()}`, uid: loki.uid, side: loki.side, card: dodge },
+        { type: "response", id: `lp${deps.nextAnim()}`, uid: loki.uid, side: loki.side, card: dodge, action: `${lokiVerb}了` },
         visualHandBefore);
-      window.BattleLog.add(state, `${loki.name} 触发护母心切，代替${target.name}使用闪抵消本次杀。`);
+      window.BattleLog.add(state, `${loki.name} 触发护母心切，代替${target.name}${lokiVerb}闪抵消本次杀。`);
       afterCardResponded(state, loki, actor, dodge, deps);
       return null;
     }
