@@ -77,12 +77,14 @@ window.SakuraRisaCombatSkills = ({
     unit.hand.splice(unit.hand.indexOf(card), 1);
     window.BattleCards?.put(state.battle, unit, card, "discard", { skipAnim: true });
     window.BattleCards?.queueResponse?.(state.battle, unit, {
+      // 描述为「你可以打出此牌」，出牌区须显式给出「打出了」：
+      // 否则走 responseAction 的兜底判据，与战报文案可能不同源。
       type: "response", id: window.GameRandom.id("bf"),
-      uid: unit.uid, side: unit.side, card,
+      uid: unit.uid, side: unit.side, card, action: "打出了",
     }, visualHandBefore);
     const drawn = (api.draw || window.BattleSystem?.draw)?.(unit, 2, state.battle);
     window.NonokaLokiSkills?.afterCardResponded?.(state, unit, actor, card, api);
-    window.BattleLog.add(state, `${unit.name} 使用后空翻，令${actor.name}的${tactic.name}对自己无效，然后${window.BattleDrawFeedback.action(unit, 2, drawn)}。`);
+    window.BattleLog.add(state, `${unit.name} 打出后空翻，令${actor.name}的${tactic.name}对自己无效，然后${window.BattleDrawFeedback.action(unit, 2, drawn)}。`);
     const targets = tactic._targetUids;
     if (!Array.isArray(targets) || targets.length <= 1) return true;
     tactic._targetUids = targets.filter(uid => uid !== unit.uid);
