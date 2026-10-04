@@ -88,9 +88,12 @@ window.BattleEffectHandlers = (() => {
     evt._trailRecorded = true;
     return card;
   }
+  // 使用/打出口径（三国杀）：响应单体【杀】＝使用，响应 AOE／决斗＝打出。
+  // 弹反与【闪】同为响应单体【杀】的响应牌，故记「使用了」；
+  // 无谋冲拳／佯攻／后空翻卡面描述为「打出此牌」，记「打出了」。
   const responseAction = card => card?.type === "slash"
-    || card?.reckless || card?.feint || card?.deflect || card?.backflip
-    || ["无谋冲拳", "佯攻", "弹反", "后空翻"].includes(card?.name)
+    || card?.reckless || card?.feint || card?.backflip
+    || ["无谋冲拳", "佯攻", "后空翻"].includes(card?.name)
       ? "打出了" : "使用了";
   async function revealCards(state, evt, renderStep, active = () => true) {
     state.battle.revealCards = evt; renderStep(); BattleFX.beep(); await wait(evt.duration || REVEAL_WAIT_MS);
