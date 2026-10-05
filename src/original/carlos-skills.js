@@ -38,12 +38,31 @@ window.CarlosSkills = (() => {
     const amount = Math.max(0, stat(actor, "attack"));
     window.BattleLog.add(state,
       `${actor.name} 触发疯狂刺刀，按手牌杀牌数量追加${count}次攻击力伤害。`);
+    // 优先排入反应队列（与幻影剑舞 / 电钻火花同一套机制）：
+    // 交牌、护驾等弹窗期间 battle.locked 为真，裸 for 循环直接调
+    // directDamage 会被 locked 分支整段吞掉 —— 实测 X=3 只打出 2 段、
+    // X=5 同样只剩 2 段（丢 3 段）。入队后由队列在解锁后 flush，
+    // 追加段因此不会丢失。
+    const extraCard = {
+      name: "疯狂刺刀", type: "skill", _drillExtraHit: true,
+    };
+    const actions = [];
+    for (let index = 0; index < count; index += 1) {
+      const action = window.BattleReactionQueue?.directDamageAction?.(
+        actor, target, amount, "疯狂刺刀", { ...extraCard }, 120 * index);
+      if (action) actions.push(action);
+    }
+    if (actions.length && window.BattleReactionQueue?.enqueue?.(state, actions)) {
+      window.BattleReactionQueue.flush(state, api.damage || api.directDamage);
+      return;
+    }
     for (let index = 0; index < count && target.hp > 0; index += 1) {
+      // 兜底：队列不可用时沿用直接调用。
       // 追加段沿用 _drillExtraHit 标识（现仅作标记，受击链已改为逐段结算）：
       // 追加段同样会触发受击方的反击与收益类技能（逐段结算）。
       api.directDamage(
         state, target, amount, "疯狂刺刀", actor, 120 * index,
-        { name: "疯狂刺刀", type: "skill", _drillExtraHit: true });
+        { ...extraCard });
     }
   }
   return { crazyShooting, afterSlashDamage };
