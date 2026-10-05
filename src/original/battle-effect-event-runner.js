@@ -74,7 +74,9 @@ window.BattleEffectEventRunner = handlers => {
   }
 
   async function runEvent(state, event, renderStep, renderThrottled, active) {
-    if (event.type === "initialDrawGroup") {
+    // drawGroup：全体摸牌（物资补给等）与开局摸牌共用同一套并行动画，
+    // 各角色的 drawBatch 同时飞，而不是逐人串行播放。
+    if (event.type === "initialDrawGroup" || event.type === "drawGroup") {
       await initialDrawGroup(event, renderThrottled, active);
     } else if (event.type === "drawBatch") {
       await handlers.finishDraw(event, renderThrottled, active);
