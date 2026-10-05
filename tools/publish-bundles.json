@@ -177,6 +177,8 @@
     "hall-character-actions.js",
     "hall-relic-actions.js",
     "app-hall-bindings.js",
+    "update-notice-recent.js",
+    "update-notice-archive.js",
     "update-notice.js",
     "butler-manual-progress.js",
     "butler-manual.js"
