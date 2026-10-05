@@ -71,6 +71,33 @@ window.HitwellSkills = (() => {
     if (!hasSkill(target, "心血之咒")) return;
     const battle = state?.battle;
     if (!battle || !actor || actor.uid === target.uid || !alive(actor)) return;
+    // 与其他受击类技能（狂战、复仇反击）同口径：把索牌/反击挂到本段受击
+    // 动画的浮字上，等这一段演完再结算。原先在伤害结算的同步链里立刻执行，
+    // 牌会在受击浮字播出前就转移，玩家看到的是"伤害还没跳完牌已经到手"。
+    // 反击分支（伤害来源没有♥红桃牌）结算的是伤害，改为入反应队列而不是
+    // 在回调里直接 directDamage —— 后者会打断链锯等多段的剩余结算（实测
+    // 吞掉"额外结算N次"战报）。入队曾导致伤害滞留不落地，故已让
+    // BattleReactionQueue 支持回调结束后重新 flush（requestFlush），
+    // 延后入队由此可正常结算。
+    const run = () => resolveHeartbloodCurse(state, actor.uid, target.uid, deps);
+    if (!(deps?.damage?.delayUntilHitSettled?.(state, run)
+      || window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, run))) {
+      const schedule = deps?.damage?.scheduleAfterDamage;
+      if (typeof schedule === "function") schedule(run);
+      else run();
+    }
+  }
+
+  // 延后结算的实际执行体：重新按 uid 取人，避免挂起期间有人阵亡/离场。
+  function resolveHeartbloodCurse(state, actorUid, targetUid, deps) {
+    const battle = state?.battle;
+    if (!battle) return false;
+    const roster = (battle.allies || []).concat(battle.enemies || []);
+    const actor = roster.find(item => item.uid === actorUid);
+    const target = roster.find(item => item.uid === targetUid);
+    if (!isHitwell(target) || !alive(target)) return false;
+    if (!hasSkill(target, "心血之咒")) return false;
+    if (!actor || actor.uid === target.uid || !alive(actor)) return false;
     line(state, target, "心血之咒");
     const hearts = heartsOf(actor);
     if (hearts.length) {
@@ -88,15 +115,27 @@ window.HitwellSkills = (() => {
       window.BattleCards?.afterHandLost?.(battle, actor);
       window.BattleLog.add(state,
         `${target.name} 触发心血之咒，${actor.name}交出一张♥${given.name}。`);
-      return;
+      return true;
     }
     const amount = attackOf(target);
-    if (amount <= 0) return;
+    if (amount <= 0) return false;
+    const text = `${target.name} 触发心血之咒，${actor.name}未能交出♥红桃牌，受到${amount}点伤害。`;
+    // 与疯狂刺刀/幻影剑舞/魔之连杀同一机制：入反应队列，由 requestFlush
+    // 在延后回调结束后驱动，多段剩余段不会被打断，伤害也不会滞留。
+    const action = window.BattleReactionQueue?.directDamageAction?.(
+      target, actor, amount, "心血之咒", { name: "心血之咒", type: "skill" }, 0);
+    if (action && window.BattleReactionQueue?.enqueue?.(state, action)) {
+      action.logText = text;
+      window.BattleReactionQueue?.requestFlush?.(
+        state, deps?.damage || window.BattleDamageLifecycle?.damage);
+      return true;
+    }
+    // 兜底：队列不可用时沿用直接调用。
     deps?.directDamage?.(state, actor, amount, "心血之咒", target, 0,
       { name: "心血之咒", type: "skill" });
-    window.BattleLog.add(state,
-      `${target.name} 触发心血之咒，${actor.name}未能交出♥红桃牌，受到${amount}点伤害。`);
+    window.BattleLog.add(state, text);
+    return true;
   }
 
-  return { afterHeal, afterCardPlayed, afterDamage };
+  return { afterHeal, afterCardPlayed, afterDamage, resolveHeartbloodCurse };
 })();
