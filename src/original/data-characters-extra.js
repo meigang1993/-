@@ -69,7 +69,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "nanali", name: "娜娜莉", gender: "female", face: "娜", art: "./assets/images/nanali-portrait.bcf85424.webp", avatar: "./assets/images/nanali-portrait.bcf85424.webp", role: "纯血公主", locked: true, unlockCost: 30,
+    id: "nanali", name: "娜娜莉", gender: "female", face: "娜", art: "./assets/images/nanali-portrait.bcf85424.webp", avatar: "./assets/images/nanali-portrait.bcf85424.webp", role: "纯血公主", locked: true, unlockCost: 15,
     stats: { attack: 4.8, magic: 5, speed: 5.5, maxHp: 55, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "单体爆发与手牌封锁输出核心。魔刀阿波罗暂时扣置目标手牌并补充自身资源，虚弱斩杀惩罚空手目标，依靠高额攻击成长把实体单体【杀】打成一击斩杀。",
     skills: [
