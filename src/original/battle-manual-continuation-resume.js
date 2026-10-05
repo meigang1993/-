@@ -49,6 +49,10 @@ window.BattleManualContinuationResume = deps => {
         await resumeGreenGatling(state, onStep, current);
         continue;
       }
+      if (battle.crazySlaughterResume) {
+        await resumeCrazySlaughter(state, onStep, current);
+        continue;
+      }
       if (cardTail) continue;
       return true;
     }
@@ -78,7 +82,16 @@ window.BattleManualContinuationResume = deps => {
     onStep?.();
     await waitEffects();
   }
+  async function resumeCrazySlaughter(state, onStep, inherited) {
+    const current = actionGuard(state, inherited);
+    if (!current()) return;
+    if (!state.battle?.crazySlaughterResume || state.battle.locked) return;
+    window.BertisGerlotSkills?.resumeCrazySlaughter?.(state);
+    onStep?.();
+    await waitEffects();
+  }
   return {
     resumeInterruptedActions, resumeComboAttack, resumeGreenGatling,
+    resumeCrazySlaughter,
   };
 };
