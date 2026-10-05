@@ -34,8 +34,14 @@ window.BattleDamageLifecycle = ({
       if (!evt || evt.type !== "float" || evt.hitFxId !== hitFxId) continue;
       if (evt.kind !== "damage" && evt.kind !== "hp-loss") continue;
       const prev = evt.onSettled;
+      // 回调结束后重新驱动一次反应队列：延后结算里新入队的伤害动作若无人
+      // 再 flush，会滞留到回合流转被清空（表现为伤害永不落地）。
+      const settle = () => {
+        fn();
+        window.BattleReactionQueue?.requestFlush?.(state, damage);
+      };
       evt.onSettled = typeof prev === "function"
-        ? () => { prev(); fn(); } : fn;
+        ? () => { prev(); settle(); } : settle;
       return true;
     }
     return false;
