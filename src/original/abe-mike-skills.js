@@ -79,9 +79,25 @@ window.AbeMikeSkills = (() => {
     if (!target) return;
     window.BattleLines?.skill(state, unit, "幻影剑舞", target);
     window.BattleLog.add(state, `${unit.name} 发动幻影剑舞，随机指定${target.name}使用${times}张虚拟杀。`);
+    const amount = stat(unit, "attack");
+    // 优先排入反应队列：受击方若带弹窗类受击技能（星野一【半魅魔血】交牌等），
+    // 第一段就会置 battle.locked，原先的直接循环会被 !locked 条件截断，
+    // 剩余段整段丢失（实测 X=3 只打出 1 段）。队列在解锁后才 flush，
+    // X 段因此不会丢失，且每段各自触发一次受击 / 反击类技能。
+    const actions = [];
+    for (let i = 0; i < times; i += 1) {
+      const action = window.BattleReactionQueue?.damageAction?.(
+        unit, target, amount, "幻影剑舞",
+        CardUtils.fromEntity("杀（普攻）", { ignoreResponse: true }));
+      if (action) actions.push(action);
+    }
+    if (actions.length && window.BattleReactionQueue?.enqueue?.(state, actions)) {
+      window.BattleReactionQueue.flush(state, damage);
+      return;
+    }
     for (let i = 0; i < times && target.hp > 0 && !state.battle?.locked; i++) {
       const card = CardUtils.fromEntity("杀（普攻）", { ignoreResponse: true });
-      damage(state, target, stat(unit, "attack"), "幻影剑舞", unit, card);
+      damage(state, target, amount, "幻影剑舞", unit, card);
     }
   }
   return { prepare, dragonSlashMove, useDragonSlash, endTurn };
