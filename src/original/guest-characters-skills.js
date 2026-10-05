@@ -121,12 +121,33 @@ window.GuestCharacterSkills = (() => {
   function resolveEndSpin(state, target, actor, api, count = visible(target).filter(item => black(item) && isSlash(item)).length) {
     const foes = state.battle.enemies.filter(alive);
     line(state, target, "终焉回旋斩", actor);
-    for (let i = 0; i < count; i++) {
-      const targets = foes.filter(alive), slash = virtualCard("魔杀", { allTargets: targets.map(enemy => enemy.uid), aoeLineShown: true });
+    // 优先排入反应队列：受击方若带弹窗类受击技能（星野一【半魅魔血】交牌等），
+    // 第一段即置 battle.locked，而 damage 首行在 locked 时直接返回 hpLoss 0。
+    // 原先的裸循环会把剩余段整段静默吞掉——既不报错也不写日志
+    // （实测 count=3 只打出 1 段）。队列在解锁后才 flush，段因此不会丢失。
+    const actions = [];
+    for (let i = 0; i < count; i += 1) {
+      const targets = foes.filter(alive);
       if (!targets.length) break;
+      const slash = virtualCard("魔杀", { allTargets: targets.map(enemy => enemy.uid), aoeLineShown: true });
       state.battle.animQueue?.push({ type: "virtualPlay", id: window.GameRandom.id("br"), uid: target.uid, side: target.side, targetUids: slash.allTargets, card: slash, slashText: true });
       window.EnemySkills?.beforeKillUsed?.(state, target, slash);
-      targets.forEach(enemy => api.damage(state, enemy, stat(target, "magic"), "终焉回旋斩", target, window.EnemySkills?.prepareGroupKillTarget?.(state, target, enemy, slash) || slash));
+      targets.forEach(enemy => {
+        const action = window.BattleReactionQueue?.damageAction?.(
+          target, enemy, stat(target, "magic"), "终焉回旋斩",
+          window.EnemySkills?.prepareGroupKillTarget?.(state, target, enemy, slash) || slash);
+        if (action) actions.push(action);
+      });
+    }
+    if (actions.length && window.BattleReactionQueue?.enqueue?.(state, actions)) {
+      window.BattleReactionQueue.flush(state, api.damage);
+    } else {
+      // 兜底：队列不可用时沿用直接调用（段可能被吞，但保持旧行为）
+      for (let i = 0; i < count; i++) {
+        const targets = foes.filter(alive), slash = virtualCard("魔杀", { allTargets: targets.map(enemy => enemy.uid), aoeLineShown: true });
+        if (!targets.length) break;
+        targets.forEach(enemy => api.damage(state, enemy, stat(target, "magic"), "终焉回旋斩", target, window.EnemySkills?.prepareGroupKillTarget?.(state, target, enemy, slash) || slash));
+      }
     }
     window.BattleLog.add(state, `${target.name} 发动终焉回旋斩，使用${count}张指定所有敌方角色为目标的虚拟魔杀。`);
   }
