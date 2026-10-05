@@ -7,7 +7,7 @@ window.BattleSaveCheckpointValidation = (() => {
     "cadicisResponsibilityResume", "manualDodge", "manualDodgeResume",
     "manualCounter", "counterTrigger", "counterTriggerQueue",
     "recklessPrompt", "risaEyePrompt", "landmineRpsPrompt", "thunderHammer",
-    "greenGatlingResume", "demonInvasionResume", "groupHealResume",
+    "greenGatlingResume", "crazySlaughterResume", "demonInvasionResume", "groupHealResume",
     "comboAttackResume", "dimensionTransfer", "newMoonShare", "gerdaComfort",
     "millerShare", "kaiichiShare", "kaiichiShareQueue", "reactionQueue",
     "cardResumeQueue", "awaitingExtractUid", "awaitingMimicUid",
