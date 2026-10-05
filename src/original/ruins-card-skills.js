@@ -73,10 +73,30 @@ window.RuinsCardSkills = (() => {
     if (!picks.length) return;
     window.BattleLines?.skill?.(state, actor, "魔之连杀");
     log(state, `${actor.name} 的魔之连杀触发，根据【杀】牌数额外随机指定${picks.length}个目标。`);
-    picks.forEach(pick => damage(state, pick, amount, "魔之连杀", actor, {
+    const chainCard = () => ({
       name: "魔之连杀", type: "slash", scale: "magic", attackType: "magic",
       magicDamage: true, _chainExtra: true, _skill: true,
-    }));
+    });
+    // 额外目标必须逐个结算并感知 locked：任一目标触发受击类弹窗（如半魅魔血交牌）
+    // 会置 battle.locked，而伤害入口在 locked 时直接 return {hpLoss:0}，
+    // 裸 forEach 会把剩余目标整段吞掉——与疯狂刺刀 / 幻影剑舞曾出现的丢段同源。
+    // 命中后若已锁定，把剩余目标排入反应队列，解锁后由 flush 继续结算。
+    for (let i = 0; i < picks.length; i += 1) {
+      const pick = picks[i];
+      if (!pick || pick.hp <= 0) continue;
+      // 关键：锁定检查必须在伤害之前。主目标受击弹窗会先置 locked，
+      // 本函数正是在那之后被调用的，若先打再查，第一个目标就被吞掉了。
+      if (state.battle?.locked) {
+        const rest = picks.slice(i).filter(unit => unit && unit.hp > 0);
+        if (rest.length && window.BattleReactionQueue?.enqueue) {
+          window.BattleReactionQueue.enqueue(state, rest.map(unit =>
+            window.BattleReactionQueue.damageAction(
+              actor, unit, amount, "魔之连杀", chainCard())));
+        }
+        break;
+      }
+      damage(state, pick, amount, "魔之连杀", actor, chainCard());
+    }
   }
 
   // 魅杀：造成伤害后为目标施加脆弱标记（受到伤害+50%）
