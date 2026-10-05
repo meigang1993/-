@@ -68,7 +68,24 @@ window.BattleCardSpecials = (deps, ctx) => {
     return continueTeamHeal(state, prompt);
   }
   function clearHolyScar(state, unit) { if (!unit?.holyScar) return; unit.holyScar = false; unit.statuses = (unit.statuses || []).filter(s => s !== "圣痕"); log(state, `${unit.name} 恢复生命，圣痕解除。`); }
-  function drawTeam(state, actor, card) { const entries = ctx.sameSideUnits(state.battle, actor).filter(u => u.hp > 0).map(unit => ({ unit, cards: deps.draw(unit, card.drawTeam, state.battle) })); log(state, `${actor.name} 使用${card.name}，${window.BattleDrawFeedback.team(entries, card.drawTeam, "己方全体")}。`); }
+  // 全体摸牌（物资补给等 drawTeam 牌）：原先 draw() 会给每个角色各推一条
+  // drawBatch，逐条串行播放——4 人 ×2 张要连播 4 段飞牌动画，整手补给拖得
+  // 很长。改为把各角色的批次收进同一个并发动画事件一次性播放。
+  // 事件类型沿用开局摸牌的并行组（drawGroup，与 initialDrawGroup 同一处理器）。
+  function drawTeam(state, actor, card) {
+    const batches = [];
+    const entries = ctx.sameSideUnits(state.battle, actor).filter(u => u.hp > 0)
+      .map(unit => ({ unit, cards: deps.draw(unit, card.drawTeam, state.battle, batches) }));
+    if (batches.length && state.battle?.animQueue) {
+      state.battle.animQueue.push({
+        id: `tdg${deps.nextAnim()}`,
+        type: "drawGroup",
+        batches,
+        cards: batches.reduce((all, batch) => all.concat(batch.cards || []), []),
+      });
+    }
+    log(state, `${actor.name} 使用${card.name}，${window.BattleDrawFeedback.team(entries, card.drawTeam, "己方全体")}。`);
+  }
   function sweepDamage(state, actor, amount, card, adjustDamage = null) {
     const foes = actor.side === "enemy" ? state.battle.allies : state.battle.enemies, alive = foes.filter(u => u.hp > 0), targetUids = alive.map(u => u.uid), sweepCard = { ...card, targetless: true, allTargets: targetUids, targetUids, aoeLineShown: true, _entitySourceCard: card }, times = card.gatlingRepeats || 1;
     delete sweepCard.lastHpLoss; delete sweepCard.totalHpLoss; window.EdisSkills?.copyTargetedCards?.(state, actor, alive, card);
