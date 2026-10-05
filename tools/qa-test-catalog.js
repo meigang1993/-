@@ -3,6 +3,20 @@ const path = require("path");
 
 const standalone = Object.freeze([]);
 
+// 单脚本超时（秒）：多段/连击类用例要驱动完整回合与动画队列，远超默认 180s，
+// 用统一默认值会被 SIGKILL 误杀，退出码 124 的表现与“浏览器崩溃”一模一样。
+// 在此登记的文件由 run-live-suite.js 按文件覆盖 --timeout。
+const timeouts = Object.freeze({
+  "test-multihit-vs-counter-live.js": 300,
+  "test-crazy-bayonet-multihit-live.js": 300,
+  "test-phantom-sword-dance-live.js": 240,
+  "test-edis-chainsaw-vs-counter-live.js": 240,
+  // 每段各弹一次交牌窗，需等交牌窗挂载并跳过，等待链更长
+  "test-double-and-chain-slash-live.js": 300,
+});
+
+const timeoutFor = (file, fallback) => timeouts[file] || fallback;
+
 const groups = Object.freeze({
   contracts: [
     "test-git-save-guard.js",
@@ -63,7 +77,14 @@ const groups = Object.freeze({
     "test-raff-control-eye-live.js",
     "test-multihit-vs-counter-live.js",
     "test-heartblood-curse-multihit-live.js",
+    "test-heartblood-curse-timing-live.js",
+    "test-supply-drop-team-draw-live.js",
+    "test-phantom-sword-dance-live.js",
+    "test-crazy-bayonet-multihit-live.js",
+    "test-double-and-chain-slash-live.js",
+    "test-multihit-slash-sweep-live.js",
     "test-edis-chainsaw-vs-counter-live.js",
+    "test-dungeon-drop-rate-live.js",
     "test-battle-ai-targeting.js",
     "test-animation-fallback.js",
     "test-battle-effects.js",
@@ -144,6 +165,7 @@ const groups = Object.freeze({
     "test-ruins-landmine-rps-live.js",
     "test-ruins-rest6-manual-live.js",
     "test-ruins-shop-unlock-live.js",
+    "test-dungeon-drops-all-live.js",
     "test-ruins-relic-drops-live.js",
     "test-smart-brain-tactic-live.js",
     "test-soldier-six-phases-live.js",
@@ -163,6 +185,7 @@ const groups = Object.freeze({
     "test-hitwell-skills-strict-live.js",
     "test-card-transfer-anim-live.js",
     "test-nanali-skills.js",
+    "test-nanali-unlock-price-live.js",
     "test-witherer-skills.js",
     "test-bakar-skills.js",
     "test-bakar-relic-conflicts.js",
@@ -270,6 +293,11 @@ function validate(root) {
     ids.add(test.id);
     files.add(test.file);
   }
+  for (const file of Object.keys(timeouts)) {
+    if (!fs.existsSync(path.join(root, "tools", file))) {
+      throw new Error(`Timeout registered for missing QA test file: tools/${file}`);
+    }
+  }
   const known = new Set([...files, ...standalone]);
   const unregistered = fs.readdirSync(path.join(root, "tools"))
     .filter(file => /^test-.*\.js$/.test(file) && !known.has(file));
@@ -295,4 +323,4 @@ function select(selectors) {
   return selected;
 }
 
-module.exports = { groups, standalone, tests, select, validate };
+module.exports = { groups, standalone, tests, timeouts, timeoutFor, select, validate };
