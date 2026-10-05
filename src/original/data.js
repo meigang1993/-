@@ -4,7 +4,7 @@ window.GameData = {
   characters: window.GameDataCharacters,
   unlockHints: {
     lokar: "初始角色", besta_doll: "初始角色",
-    nanali: "消耗精华宝珠 ×30",
+    nanali: "消耗精华宝珠 ×15",
     loki: "首次全军覆没后触发剧情", carlos: "第二次全军覆没后触发剧情", miller: "解锁曼妮后触发剧情", gerlot: "解锁贝尔蒂丝后触发剧情",
     luka: "解锁安洁莉卡后触发剧情", cadicis: "解锁温蒂后触发剧情", ace: "解锁艾尔拉娜后触发剧情",
     little_elrana: "艾尔拉娜在队伍中，首次遭遇艾尔拉娜克隆体时触发剧情",
