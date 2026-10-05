@@ -76,7 +76,19 @@ window.BertisGerlotSkills = (() => {
     actor.usedCrazySlaughter = true;
     const n = Math.max(1, actor.actionCount || 0);
     line(state, actor, "疯狂屠戮");
-    for (let i = 0; i < n; i++) ctx.useCard(state, actor, actor, virtualCard("机枪扫杀", { _skipHandMove: true, skipAfterCardPlayed: true, skipMvpCardCount: true }));
+    // 与格林机枪同一模式：受击方若带弹窗类技能，段中途会置 battle.locked，
+    // 之后继续 useCard 会被吞（实测 n=3 时 3 段全丢）。这里把剩余次数挂起，
+    // 由 battle-manual-continuation-resume 在解锁后续跑。
+    for (let i = 0; i < n; i++) {
+      ctx.useCard(state, actor, actor, virtualCard("机枪扫杀", { _skipHandMove: true, skipAfterCardPlayed: true, skipMvpCardCount: true }));
+      if (state.battle?.locked) {
+        const left = n - i - 1;
+        if (left > 0) {
+          state.battle.crazySlaughterResume = { actorUid: actor.uid, left };
+        }
+        break;
+      }
+    }
     window.BattleLog.add(state, `${actor.name} 发动疯狂屠戮，视为使用${n}张虚拟机枪扫杀。`);
     return true;
   }
@@ -98,7 +110,24 @@ window.BertisGerlotSkills = (() => {
     resolveRevengeTrigger(state, gerlot, actor, 2, api);
   }
   function revengeSlash(state, api, source, target, times) {
-    for (let i = 0; i < times && alive(source) && alive(target); i++) api.damage(state, target, stat(source, "attack"), "复仇反击", source, virtualCard("杀（普攻）", { revengeCounter: true }));
+    // 优先排入反应队列：受击方若带弹窗类受击技能（星野一【半魅魔血】交牌等），
+    // 第一段即置 battle.locked，而 damage 首行在 locked 时直接返回 hpLoss 0
+    // （battle-damage-lifecycle / resolution / utils 均有该分支）。
+    // 原先的裸循环会把剩余段整段静默吞掉——既不报错也不写日志
+    // （实测 times=2 只打出 1 段）。队列在解锁后才 flush，段因此不会丢失。
+    const amount = stat(source, "attack");
+    const actions = [];
+    for (let i = 0; i < times; i += 1) {
+      const action = window.BattleReactionQueue?.damageAction?.(
+        source, target, amount, "复仇反击",
+        virtualCard("杀（普攻）", { revengeCounter: true }));
+      if (action) actions.push(action);
+    }
+    if (actions.length && window.BattleReactionQueue?.enqueue?.(state, actions)) {
+      window.BattleReactionQueue.flush(state, api.damage);
+      return;
+    }
+    for (let i = 0; i < times && alive(source) && alive(target); i++) api.damage(state, target, amount, "复仇反击", source, virtualCard("杀（普攻）", { revengeCounter: true }));
   }
   function resolveRevengeTrigger(state, source, target, times, api, skill = "复仇反击") {
     line(state, source, skill, target);
@@ -139,5 +168,21 @@ window.BertisGerlotSkills = (() => {
       });
     });
   }
-  return { skills, refreshArrogance, beginTurn, endTurn, handleSpecialCard, afterDodge, afterDamage, resolveRevengeTrigger, queueHeadshot, modifyIncomingDamage, afterAnyDeath };
+  function resumeCrazySlaughter(state, ctx = window.BattleSystem) {
+    const pending = state.battle?.crazySlaughterResume;
+    if (!pending || state.battle?.locked) return;
+    state.battle.crazySlaughterResume = null;
+    const actor = (state.battle.allies || []).concat(state.battle.enemies || [])
+      .find(unit => unit.uid === pending.actorUid && unit.hp > 0);
+    if (!actor) return;
+    for (let i = 0; i < pending.left; i++) {
+      ctx.useCard(state, actor, actor, virtualCard("机枪扫杀", { _skipHandMove: true, skipAfterCardPlayed: true, skipMvpCardCount: true }));
+      if (state.battle?.locked) {
+        const left = pending.left - i - 1;
+        if (left > 0) state.battle.crazySlaughterResume = { actorUid: actor.uid, left };
+        return;
+      }
+    }
+  }
+  return { skills, refreshArrogance, beginTurn, endTurn, handleSpecialCard, afterDodge, afterDamage, resolveRevengeTrigger, resumeCrazySlaughter, queueHeadshot, modifyIncomingDamage, afterAnyDeath };
 })();
