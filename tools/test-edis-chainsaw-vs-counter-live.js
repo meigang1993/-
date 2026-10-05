@@ -22,7 +22,11 @@ function check(name, cond, extra = "") {
   else { fail += 1; console.log(`❌ ${name}${extra ? " — " + extra : ""}`); }
 }
 
-const logText = page => page.evaluate(`(() => (window.state.log || [])
+// 注意：window.state.log 是 UI 用的最新 30 条（倒序，且会截断），
+// 心血之咒这类"每段两条战报"的场景总条数远超 30，用它测量会把最早写入的
+// 「额外结算N次」挤掉，误报成"多段没发生"。完整战报在 state.battleLog，
+// 不截断，断言一律以它为准。
+const logText = page => page.evaluate(`(() => (window.state.battleLog || [])
   .map(l => String(l.text || l)))()`);
 
 // 半魅魔血交牌 / 次元转移会置 battle.locked 并弹窗等待选择，未处理时
@@ -72,6 +76,19 @@ function setupEdis(idx, allySetup) {
     e.hp = 3000; e.maxHp = 3000; e.block = 0; e.intent = 1;
     e.hand = Array.from({ length: 9 }, () => ({ name: "杀", type: "kill", suit: "♠" }));
     ${allySetup}
+    // 剔除友方牌堆里的响应牌（【闪】）。
+    // 实测依据：半魅魔血受击会摸 2 张牌，摸到【闪】就会自动响应并抵消后续段，
+    // 使"受击触发次数"在 3~5 之间随机波动（7 轮里出现 1 次 3），令断言间歇失败。
+    // 对照实验（tools/probe-edis-flash.js）：牌堆全闪→触发 2 / 自动用闪 3；
+    // 剔除响应牌→触发 5 / 自动用闪 0。摸到闪是合法结算，不是丢段，
+    // 但它让本用例测的"逐段机制"变成测"摸牌运气"，故隔离。
+    b.allies.forEach(u => {
+      u.pileStats = u.pileStats || {};
+      const deck = u.pileStats.deck || u.deck || [];
+      const kept = deck.filter(c => c && c.type !== "response" && c.name !== "闪");
+      u.pileStats.deck = kept;
+      if (u.deck) u.deck = kept.slice();
+    });
     b.enemies.forEach((u, i) => { if (i !== ${idx}) { u.hand = []; u.hp = 1; } });
     window.__counterOpens = 0;
     if (window.BattleCounterTriggers && !window.__origOpen) {
