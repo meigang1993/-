@@ -203,6 +203,11 @@ async function runDragonCase(browser, errors, key, logNeedle, extraNeedle = null
   const rollMatch = texts.map(t => t.match(/骰子点数(\d)/)).find(Boolean);
   const roll = rollMatch ? +rollMatch[1] : null;
   const drill = texts.filter(t => t.includes("发动电钻火花")).length;
+  // 敌方偶尔连出第 2 张杀 → 两次独立发动，各自骰子点数不同（实测 3 与 4）。
+  // 用「首个骰子 × 发动次数」推总段数会算错，须逐次求和：总段数 = Σ(1+点数)。
+  const rolls = texts.map(t => t.match(/骰子点数(\d)/)).filter(Boolean)
+    .map(m => +m[1]);
+  const totalSeg = rolls.reduce((a, n) => a + n, 0) + drill;
   const hits = texts.filter(t => t.includes(logNeedle)).length;
   const extra = extraNeedle ? texts.filter(t => t.includes(extraNeedle)).length : null;
   const opens = await page.evaluate(`(() => window.__counterOpens || 0)()`);
@@ -213,7 +218,8 @@ async function runDragonCase(browser, errors, key, logNeedle, extraNeedle = null
     console.log(`--- [${key}] 段数=${roll != null ? 1 + roll : "?"} 完整日志 ---`);
     texts.forEach((t, i) => console.log(`  ${i}: ${t}`));
   }
-  return { roll, drill, hits, extra, opens, rage, seg: roll != null ? 1 + roll : null };
+  return { roll, drill, hits, extra, opens, rage, totalSeg,
+    seg: roll != null ? 1 + roll : null };
 }
 
 // 凋零者【外神之眼】构造：我方 2 名存活、敌方 1 名 1312。
@@ -374,13 +380,12 @@ async function runEyeFeed(browser, errors, cardJson) {
       `触发=${r8.hits} 段数=${r8.seg}`);
     // 计数按「攻击次数」归一化：电钻火花可能发动多次（敌方偶尔连出第 2 张杀），
     // 每次独立攻击各触发 1 次才是对的；只要触发数不超过攻击次数，就没有被段数放大。
-    // 【半魅魔血】「多段或连击伤害时逐段结算」已取消（与狂战同口径）：
-    // 多段属同一次攻击，只摸 1 次 2 张。此前 4 段可摸 8 张并连续弹交牌窗。
+    // 用户最终口径：多段与连击对受击/反击类一律逐段结算，半魅魔血每段各摸 1 次。
     // seg 是「单次发动的段数」(1+roll)，不是总段数；总段数 = 发动次数 × 每次段数。
     // 逐段结算时触发数应等于总段数（远超攻击次数）。
-    const r8Total = r8.drill * (r8.seg || 0);
-    check("8.2 半魅魔血逐段结算（每段各摸 1 次）", r8.hits === r8Total,
-      `触发=${r8.hits} 总段数=${r8Total}(发动${r8.drill}×每次${r8.seg})`);
+    check("8.2 半魅魔血逐段结算（每段各摸 1 次）", r8.hits === r8.totalSeg,
+      `触发=${r8.hits} 总段数=${r8.totalSeg}(发动${r8.drill}次，骰子和+${
+        r8.totalSeg - r8.drill})`);
     check("8.2b 摸牌次数超过攻击次数（证明确实按段放大）", r8.hits > r8.drill,
       `触发=${r8.hits} 攻击次数=${r8.drill}（合并时两者应相等）`);
     // 【半魅魔血】已取消逐段，描述里不得再出现这句话，否则与实现不一致。
@@ -391,14 +396,13 @@ async function runEyeFeed(browser, errors, cardJson) {
     const r9 = await runDragonCase(browser, errors, "angelica", "获得1枚狂战标记");
     check("9.0 电钻火花已发动且为多段（非构造失效）", r9.drill > 0 && r9.seg > 1,
       `发动=${r9.drill} 段数=${r9.seg}`);
-    // 【狂战意志】「多段或连击伤害时逐段结算」已取消（与半魅魔血同口径）：
-    // 多段属同一次攻击，只发 1 枚标记。本用例同时校验描述里确实没有这句话。
+    // 同上：狂战意志逐段结算，每段各发 1 枚标记。
     check("9.1 【狂战意志】描述已声明逐段（与实现一致）", berserkDescPerSeg,
       berserkDescPerSeg ? "描述含逐段声明" : "描述缺逐段声明，需同步补回");
     // 与 8.2 同口径：按攻击次数归一化，避免敌方连出第 2 张杀时误判为放大。
-    const r9Total = r9.drill * (r9.seg || 0);
-    check("9.2 狂战标记逐段结算（每段各发 1 枚）", r9.hits === r9Total,
-      `日志标记=${r9.hits} 总段数=${r9Total}(发动${r9.drill}×每次${r9.seg})`);
+    check("9.2 狂战标记逐段结算（每段各发 1 枚）", r9.hits === r9.totalSeg,
+      `日志标记=${r9.hits} 总段数=${r9.totalSeg}(发动${r9.drill}次，骰子和+${
+        r9.totalSeg - r9.drill})`);
     check("9.2b 标记数超过攻击次数（证明确实按段放大）", r9.hits > r9.drill,
       `标记=${r9.hits} 攻击次数=${r9.drill}（合并时两者应相等）`);
     check("9.3 rageMarks 与日志一致", r9.rage === r9.hits,
