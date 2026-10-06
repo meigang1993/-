@@ -10,10 +10,15 @@ window.BattleEffectCardTransfers = U => {
     }
     return unitArt(event.fromUid) || publicZone() || drawOrigin(event.side);
   }
-  // 起终点取不到时回退到公共区/摸牌堆：保证转移动画必定播放，
-  // 避免手牌已转移但动画静默跳过（视觉与手牌数脱节）。
-  function unitEnd(spot, uid, side) {
-    return spot || unitArt(uid) || publicZone() || drawOrigin(side);
+  // 角色间移牌（交牌/偷牌/从他人处获得）统一走角色头像：背面牌从一个角色
+  // 头像飞到另一个角色头像。此前起点终点取手牌区（友方）或头像（敌方），
+  // 两侧不一致，且牌会在落位时翻开——移牌属于手牌流转，不该在动画里摊牌面。
+  function avatarEnd(uid, side) {
+    return unitArt(uid) || publicZone() || drawOrigin(side);
+  }
+  // 带 fromUid 且来源不是获得者本人时，才是真正的角色间移牌。
+  function isUnitTransfer(event) {
+    return !!event.fromUid && event.fromUid !== event.uid;
   }
   function syncIncomingHand(event, uid = event.uid) {
     const battle = window.state?.battle;
@@ -36,33 +41,36 @@ window.BattleEffectCardTransfers = U => {
   }
   async function giveCards(event, renderStep, active) {
     await flight.transfer(event,
-      unitEnd(handSpot(event.fromUid, event.fromSide),
-        event.fromUid, event.fromSide),
-      unitEnd(handSpot(event.toUid, event.toSide), event.toUid, event.toSide),
+      avatarEnd(event.fromUid, event.fromSide),
+      avatarEnd(event.toUid, event.toSide),
       "draw-card-fly give-card-fly", renderStep, true, active, {
-        revealFace: event.toSide !== "enemy",
+        revealFace: false,
         enemy: event.toSide === "enemy",
         onArrive: () => syncIncomingHand(event, event.toUid),
       });
   }
   async function stealCard(event, renderStep, active) {
     await flight.transfer(event,
-      unitEnd(handSpot(event.fromUid, event.fromSide),
-        event.fromUid, event.fromSide),
-      unitEnd(handSpot(event.toUid, event.toSide), event.toUid, event.toSide),
+      avatarEnd(event.fromUid, event.fromSide),
+      avatarEnd(event.toUid, event.toSide),
       "draw-card-fly steal-card-fly", renderStep, true, active, {
-        revealFace: event.toSide !== "enemy",
+        revealFace: false,
         enemy: event.toSide === "enemy",
         onArrive: () => syncIncomingHand(event, event.toUid),
       });
   }
   async function gainCards(event, renderStep, active) {
-    await flight.transfer(event, gainOrigin(event),
-      handSpot(event.uid, event.side) || unitArt(event.uid),
-      "draw-card-fly gain-card-fly", renderStep, true, active, {
-        revealFace: event.side !== "enemy",
-        onArrive: () => syncIncomingHand(event),
-      });
+    // 从公共区/判定区获得的牌不是角色间移牌，保留原起点与翻面行为；
+    // 从其他角色处获得（伊迪斯拷贝、知识吸收等）则与交牌/偷牌同口径。
+    const fromUnit = isUnitTransfer(event);
+    await flight.transfer(event, fromUnit ? avatarEnd(event.fromUid, event.side)
+      : gainOrigin(event),
+    fromUnit ? avatarEnd(event.uid, event.side)
+      : (handSpot(event.uid, event.side) || unitArt(event.uid)),
+    "draw-card-fly gain-card-fly", renderStep, true, active, {
+      revealFace: !fromUnit && event.side !== "enemy",
+      onArrive: () => syncIncomingHand(event),
+    });
   }
   async function discardBatch(event, renderStep, active) {
     await flight.transfer(event,
