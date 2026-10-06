@@ -72,6 +72,7 @@ window.CatherineSkills = (() => {
         window.BattleCards?.syncStatusCards?.(unit);
         battle.animQueue?.push({
           type: "gainCards", uid: unit.uid, side: unit.side,
+          fromUid: actor.uid, fromSide: actor.side,
           cards: [gained], count: 1,
         });
         line(state, unit, "知识吸收");
