@@ -1,6 +1,6 @@
 window.UpdateNotice = (() => {
   // 最新更新日期：公告标题、页脚时间与大厅按钮徽标统一以此为准，修改时只改这里。
-  const latest = { iso: "2026-10-04", label: "2026年10月4日", badge: "2026.10.04" };
+  const latest = { iso: "2026-10-06", label: "2026年10月6日", badge: "2026.10.06" };
     // 公告条目按「常改 / 归档」拆成两个数据文件，避免单文件超过 200 行硬约束：
   //   update-notice-recent.js  —— 最近几期，新条目一律加到该文件第一期
   //   update-notice-archive.js —— 历史归档，条目只增不改
