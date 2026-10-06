@@ -101,19 +101,23 @@ window.GuestAilengSkills = (() => {
   function conquerHit(state, actor) {
     actor.ailengDamageHits = (actor.ailengDamageHits || 0) + 1;
     if (actor.ailengDamageHits <= 7 || !hasSkill(actor, "征服欲望")) return;
-    replaceSkill(state, actor, ["征服欲望"], { name: "战斗之勇", type: "passive", icon: "⭐", text: "锁定技，当你使用实体【杀】或使用【与我一战】时，你从摸牌堆摸一张牌。若以此法摸到【杀】或【与我一战】，你恢复1点杀意。" });
+    replaceSkill(actor, ["征服欲望"], { name: "战斗之勇", type: "passive", icon: "⭐", text: "锁定技，当你使用实体【杀】或使用【与我一战】时，你从摸牌堆摸一张牌。若以此法摸到【杀】或【与我一战】，你恢复1点杀意。" });
     line(state, actor, "征服欲望成功"); window.BattleLog.add(state, `${actor.name} 征服欲望成功，获得战斗之勇。`);
   }
   function onDeath(state) {
     state.battle.allies.filter(unit => unit.ref === "aileng" && alive(unit) && hasSkill(unit, "征服欲望")).forEach(unit => failConquer(state, unit));
   }
   function failConquer(state, actor) {
-    replaceSkill(state, actor, ["征服欲望", "计算下注"], skills({ ref: "aileng", skills: [] })[0]);
+    replaceSkill(actor, ["征服欲望", "计算下注"], skills({ ref: "aileng", skills: [] })[0]);
     line(state, actor, "征服欲望失败"); window.BattleLog.add(state, `${actor.name} 征服欲望失败，获得充能精华。`);
   }
-  function replaceSkill(state, actor, removeNames, addSkill) {
+  // 觉醒只改战斗单位，绝不回写 state.chars。
+  // state.chars 是持久化角色模板（local-core-utils syncScopes 里 chars: true），
+  // battle-setup.js 又用 `skills: c.skills` 直接初始化下一局的单位，
+  // 一旦回写，觉醒就会跨局残留——艾伦格永久失去【计算下注】、开局即觉醒态。
+  function replaceSkill(actor, removeNames, addSkill) {
     const apply = unit => { unit.skills = (unit.skills || []).filter(skill => !removeNames.includes(skill.name)); if (addSkill && !hasSkill(unit, addSkill.name)) unit.skills.push(addSkill); };
-    apply(actor); const character = state.chars?.find(item => item.id === actor.ref); if (character) apply(character);
+    apply(actor);
   }
   return { skills, chargeSkill, normalizeSkills, endTurn, handleSpecialCard, afterCardPlayed, afterDamage, onDeath, resolveBattleDrill };
 })();
