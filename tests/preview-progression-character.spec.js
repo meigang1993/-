@@ -1,11 +1,12 @@
 const { test, expect } = require("@playwright/test");
 const {
-  openGame, startFreshGame,
+  openGame, startFreshGame, dismissOpeningStory,
 } = require("./helpers/preview-game");
 
 test("living room character details preserve page scroll after closing", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-view='livingRoom']").click();
   await page.evaluate(() => {
     window.state.chars.forEach(character => { character.locked = false; });
@@ -24,6 +25,7 @@ test("compact landscape skill panels stay inside the dialog and scroll internall
   await page.setViewportSize({ width: 800, height: 420 });
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-view='livingRoom']").click();
   await page.evaluate(() => {
     window.state.chars.forEach(character => { character.locked = false; });
@@ -58,6 +60,7 @@ test("all playable character skill panels render complete readable content", asy
   await page.setViewportSize({ width: 800, height: 420 });
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-view='livingRoom']").click();
   const characters = await page.evaluate(() => {
     window.state.chars.forEach(character => { character.locked = false; });

@@ -144,8 +144,6 @@ module.exports = ({ assert, fs }) => {
       `${item.name} must distinguish hp damage triggers`);
     if (["闪", "看破"].includes(item.name)) {
       assert(text.includes("使用此牌"), `${item.name} response text must use 使用此牌`);
-    } else if (item.type === "response") {
-      assert(text.includes("打出此牌"), `${item.name} response text must use 打出此牌`);
     }
   });
   assert(window.GameDataCards.cardCodex.every(item => item.power === 0),

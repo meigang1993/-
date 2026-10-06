@@ -76,6 +76,15 @@ window.BattleReactionQueue = (() => {
         }
         enqueue({ battle }, actions);
       }
+      if (groupCard?.targetUids?.length
+        && groupCard.nextTargetIndex < groupCard.targetUids.length) {
+        battle.demonInvasionResume = {
+          ...base,
+          card: { ...groupCard },
+          targetUids: [...groupCard.targetUids],
+          nextTargetIndex: groupCard.nextTargetIndex,
+        };
+      }
       return true;
     }
     if (base.remainingHits > 0) battle.manualDodgeResume = base;

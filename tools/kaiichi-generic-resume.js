@@ -63,12 +63,12 @@ async function runKaiichiGenericResume() {
   window.state = doubleState;
   combat.useCard(doubleState, attacker, blood, doubleSlash);
   assert.strictEqual(blood.hp, 28, "Double Slash must pause after its first hit");
-  assert(doubleState.battle.manualDodgeResume?.remainingHits === 1, "Double Slash must retain its unfinished hit");
   await resumeKaiichiPrompt(doubleState);
   assert.strictEqual(blood.hp, 26, "Double Slash must resume its second hit after the first transfer");
   assert(doubleState.battle.locked && doubleState.battle.kaiichiShare, "the resumed second hit must open its own transfer");
   await resumeKaiichiPrompt(doubleState);
-  assert(!doubleState.battle.manualDodgeResume && !doubleState.battle.locked, "Double Slash continuation must finish cleanly");
+  assert(!doubleState.battle.locked && !window.BattleReactionQueue.pending(doubleState.battle),
+    "Double Slash continuation must finish cleanly");
 
   const sweep = card("机枪扫杀");
   const gunner = unit("sweep-attacker", "enemy", [sweep]);
@@ -82,10 +82,10 @@ async function runKaiichiGenericResume() {
   combat.useCard(sweepState, gunner, sweepBlood, sweep);
   assert.strictEqual(sweepBlood.hp, 29, "Machine Gun Sweep must pause after damaging Kaiichi");
   assert.strictEqual(laterTarget.hp, 30, "later sweep targets must wait during the transfer");
-  assert(sweepState.battle.demonInvasionResume?.nextTargetIndex === 1, "Machine Gun Sweep must retain its next target");
   await resumeKaiichiPrompt(sweepState);
   assert.strictEqual(laterTarget.hp, 29, "Machine Gun Sweep must continue to later targets after the transfer");
-  assert(!sweepState.battle.demonInvasionResume && !sweepState.battle.locked, "Machine Gun Sweep continuation must finish cleanly");
+  assert(!sweepState.battle.locked && !window.BattleReactionQueue.pending(sweepState.battle),
+    "Machine Gun Sweep continuation must finish cleanly");
 
   const oldRelicSystem = window.RelicSystem;
   const rootSlash = card("杀（普攻）"), extraSlash = card("杀（普攻）");

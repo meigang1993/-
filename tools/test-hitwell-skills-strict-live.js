@@ -7,11 +7,10 @@
 //
 // 断言的是「实际效果」：血量真的变化、手牌真的转移、日志真的产生、台词真的播出，
 // 而不是只检查技能名是否在列表里。
-process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
-  || "/data/workspace/.pw-browsers";
+require("./repository-toolchain");
 const path = require("path");
 const { chromium } = require("playwright");
-const { openGame, startFreshGame, startRegressionBattle, collectErrors, relevantErrors } = require(
+const { openGame, startFreshGame, startRegressionBattle, dismissOpeningStory, collectErrors, relevantErrors } = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
 let pass = 0, total = 0;
@@ -88,12 +87,14 @@ const curseTpl = (srcSuit) => `(() => {
   src.hand = [{ name: "来源手牌", type: "slash", suit: "${srcSuit}" }];
   st.log = [];
   let direct = 0, directTarget = null;
+  const damage = () => {};
+  damage.directDamage = (s, unit, amount, srcName, from, flag, payload) => {
+    direct = amount; directTarget = unit ? unit.uid : null;
+    if (unit) unit.hp -= amount;
+  };
   const deps = {
-    damage: () => {},
-    directDamage: (s, unit, amount, srcName, from, flag, payload) => {
-      direct = amount; directTarget = unit ? unit.uid : null;
-      if (unit) unit.hp -= amount;
-    },
+    damage,
+    directDamage: damage.directDamage,
   };
   window.HitwellSkills.afterDamage(st, src, t, { name: "攻击", type: "slash" }, 4, deps);
   return {
@@ -388,6 +389,7 @@ const selfDamageTpl = `(() => {
   const errors2 = collectErrors(page2);
   await openGame(page2);
   await startFreshGame(page2);
+  await dismissOpeningStory(page2);
   await page2.evaluate(`(() => {
     const st = window.state;
     const c = st.chars.find(x => x.id === "hitwell");

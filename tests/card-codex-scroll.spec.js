@@ -1,5 +1,6 @@
 const path = require("path");
 const { test, expect } = require("@playwright/test");
+const { dismissOpeningStory } = require("./helpers/preview-game");
 
 const gameUrl = `file://${path.resolve(__dirname, "../publish/index.html")}`;
 
@@ -8,6 +9,7 @@ async function openCardCodex(page) {
   await page.locator("#view").waitFor({ state: "visible" });
   await page.locator("[data-start-game]").click();
   await page.waitForTimeout(1200);
+  await dismissOpeningStory(page);
   await page.locator('[data-open-modal="deck"]').first().click();
   await page.waitForTimeout(600);
   await page.locator('[data-card-codex="1"]').first().click();

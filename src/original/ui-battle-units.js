@@ -1,6 +1,17 @@
 window.GameUIBattleUnits = (U, I) => {
   const targeting = window.GameUIBattleTargeting;
 
+  document.addEventListener("animationend", event => {
+    if (event.animationName !== "deathFade"
+      || !event.target.matches?.(".unit.death-anim")) return;
+    const battle = window.state?.view === "battle" ? window.state.battle : null;
+    const unitData = battle?.allies.concat(battle.enemies)
+      .find(unit => unit.uid === event.target.dataset.target);
+    if (!unitData?.deathAnimationPending || !event.target.isConnected) return;
+    unitData.deathAnimationPending = false;
+    window.render?.();
+  });
+
   function unit(unitData, battle) {
     const active = battle.activeUid === unitData.uid ? "active-unit" : "";
     const broken = battle.lastArmorBreakUid === unitData.uid
@@ -14,9 +25,17 @@ window.GameUIBattleUnits = (U, I) => {
     const shownHp = unitData.visualHp ?? unitData.hp;
     const isDead = shownHp <= 0 && !window.SakuraRisaSkills?.pendingRevival?.(unitData);
     const dead = isDead ? "dead" : "";
-    const deathAnim = isDead && !unitData.deathShown ? "death-anim" : "";
-    if (isDead) unitData.deathShown = true;
-    else delete unitData.deathShown;
+    if (!isDead) {
+      delete unitData.deathShown;
+      delete unitData.deathAnimationPending;
+    }
+    const deathAnim = isDead
+      && (!unitData.deathShown || unitData.deathAnimationPending)
+      ? "death-anim" : "";
+    if (isDead && !unitData.deathShown) {
+      unitData.deathShown = true;
+      unitData.deathAnimationPending = true;
+    }
     const ready = targeting.prepareTargetReady(unitData, battle);
     const target = (canTarget || ready) && unitData.hp > 0 ? "selectable-target" : "";
     const chosen = battle.pendingTargetUid === unitData.uid || battle.comboPartnerUid === unitData.uid

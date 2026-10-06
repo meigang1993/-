@@ -1,6 +1,6 @@
 const { test, expect } = require("@playwright/test");
 const {
-  collectErrors, relevantErrors, openGame, startFreshGame,
+  collectErrors, relevantErrors, openGame, startFreshGame, dismissOpeningStory,
 } = require("./helpers/preview-game");
 
 test("loading a save during dungeon bundle loading cannot mutate the replacement state", async ({ page }) => {
@@ -224,6 +224,7 @@ test("only milestone changes reach gameplay persistence", async ({ page }) => {
   expect(await page.evaluate(() => window.__settingsSaves[1])).toEqual({ sfxVolume: 42, musicVolume: 67, manualResponse: true });
   await page.locator("[data-close-settings]").click();
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   expect(await page.evaluate(() => window.state.settings.musicVolume)).toBe(67);
   await page.locator("[data-open-modal='team']").click();
   await page.locator("[data-close-modal]").click();
@@ -249,6 +250,7 @@ test("only milestone changes reach gameplay persistence", async ({ page }) => {
   await page.evaluate(() => window.persist({ flush: true }));
   expect(await page.evaluate(() => window.__automaticSaveCalls)).toEqual([
     { method: "overwrite", flush: true },
+    { method: "save", flush: true, trusted: true },
     { method: "save", trusted: true },
     { method: "save", flush: true, trusted: true },
   ]);

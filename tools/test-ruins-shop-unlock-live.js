@@ -1,8 +1,7 @@
 // 实战：首次击败废墟沙城精英/BOSS 后，10 张卡牌是否解锁并能在商店买到
 // 重点：不能只查 unlockedShopCards（名字列表），必须查商店池里的实体牌带不带
 // 有效花色 —— 此前 10 张牌就是"名字在池里、实体无花色"，购买后入库 0 张。
-process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
-  || "/data/workspace/.pw-browsers";
+require("./repository-toolchain");
 const path = require("path");
 const { chromium } = require("playwright");
 const { openGame } = require(path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
@@ -165,24 +164,25 @@ const ALL_CARDS = TARGETS.flatMap(t => t.cards);
   check("商店池含 10 张实体牌且花色有效（rebuildCard 可过）",
     bad.length === 0, bad.length ? bad : pool.map(p => `${p.name}:${p.suits.join("")}`).join(" "));
 
-  // ===== 5. 刷新商店：随机库存里能否刷出 =====
-  const seenNames = new Set();
-  let refreshOk = false;
-  for (let i = 0; i < 25; i++) {
-    const stock = await page.evaluate(async () => {
-      const s = window.state;
-      s.resources.gold = 999999;
-      const ok = await window.ShopSystem?.refresh?.(s);
-      const list = window.ShopSystem?.ensure?.(s) || s.shopCards || [];
-      return { ok, names: (list || []).map(x => x?.card?.name).filter(Boolean) };
-    });
-    if (stock.ok) refreshOk = true;
-    stock.names.forEach(n => seenNames.add(n));
-    if (ALL_CARDS.every(n => seenNames.has(n))) break;
-  }
-  const missing = ALL_CARDS.filter(n => !seenNames.has(n));
-  check("25 次刷新内 10 张牌均出现过（随机库存）", missing.length === 0,
-    { 刷新有效: refreshOk, 未出现: missing });
+  // A bounded random sample cannot prove that every pool entry is selectable.
+  // Pool membership and purchaseability are checked deterministically below.
+  const refreshedStock = await page.evaluate(async () => {
+    const s = window.state;
+    s.resources.gold = 999999;
+    const ok = await window.ShopSystem?.refresh?.(s);
+    const list = window.ShopSystem?.ensure?.(s) || s.shopCards || [];
+    return {
+      ok,
+      size: window.GameEconomy?.shop?.stockSize || 4,
+      names: (list || []).map(item => item?.card?.name).filter(Boolean),
+      allowedNames: [...(s.unlockedShopCards || [])],
+    };
+  });
+  check("刷新生成完整且仅含已解锁牌的库存",
+    refreshedStock.ok
+      && refreshedStock.names.length === refreshedStock.size
+      && refreshedStock.names.every(name => refreshedStock.allowedNames.includes(name)),
+    refreshedStock);
 
   // ===== 6. 实际购买：入库必须真的拿到牌 =====
   // 注意：validShopStock 要求 shopCards.length === stockSize，只塞 1 张会让

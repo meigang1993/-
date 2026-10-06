@@ -1,5 +1,6 @@
 const path = require("path");
 const { expect } = require("@playwright/test");
+const { dismissOpeningStory } = require("./preview-game");
 
 const gameUrl = `file://${path.resolve(__dirname, "../../publish/index.html")}`;
 
@@ -50,6 +51,7 @@ async function startDungeon(page) {
   }))).toEqual({ online: false, dzmm: "undefined" });
   await page.locator("[data-start-game]").click();
   await expect(page.locator(".villa-hall")).toBeVisible();
+  await dismissOpeningStory(page);
   await page.evaluate(() => Promise.all([
     window.GameBundles.load("battle"),
     window.GameBundles.load("dungeon"),

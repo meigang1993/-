@@ -1,6 +1,7 @@
 const { test, expect } = require("@playwright/test");
 const {
   collectErrors, relevantErrors, openGame, startFreshGame, startRegressionBattle,
+  dismissOpeningStory,
 } = require("./helpers/preview-game");
 
 test("battle leave preserves its owner and discards queued stale actions", async ({ page }) => {
@@ -63,6 +64,7 @@ test("runtime cancellation releases pending cards from discarded effect events",
 test("runtime recovery invalidates a battle still preloading", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-open-modal='team']").first().click();
   await page.getByRole("button", { name: "测试战斗" }).click();
   await page.evaluate(() => {
@@ -92,6 +94,7 @@ test("runtime recovery invalidates a battle still preloading", async ({ page }) 
 test("test battle startup failure clears partially initialized battle runtime", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-open-modal='team']").first().click();
   await page.getByRole("button", { name: "测试战斗" }).click();
   await page.evaluate(() => {

@@ -1,6 +1,6 @@
 const { test, expect } = require("@playwright/test");
 const {
-  collectErrors, relevantErrors, openGame, waitForImages, startFreshGame,
+  collectErrors, relevantErrors, openGame, waitForImages, dismissOpeningStory, startFreshGame,
   startRegressionBattle, prepareAoeLineCapture, capturedAoeLineCount,
 } = require("./helpers/preview-game");
 
@@ -50,6 +50,7 @@ test("start and hall layouts match visual baselines", async ({ page }) => {
   });
 
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await waitForImages(page);
   await expect(page).toHaveScreenshot("hall-screen.png", {
     animations: "disabled",

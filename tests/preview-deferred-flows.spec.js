@@ -1,12 +1,13 @@
 /* global GameData, GameStoreSaveLimits */
 const { test, expect } = require("@playwright/test");
 const {
-  openGame, startFreshGame,
+  openGame, startFreshGame, dismissOpeningStory,
 } = require("./helpers/preview-game");
 
 test("offline deferred dungeon accepts the first node press", async ({ page }) => {
   await openGame(page, { loadFeatures: false });
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-open-modal='team']").first().click();
   await page.locator("[data-start='machine_factory'][data-difficulty='normal']").click();
   await expect(page.locator(".dungeon-screen")).toBeVisible();
@@ -31,6 +32,7 @@ test("offline deferred dungeon accepts the first node press", async ({ page }) =
 test("dungeon scene does not drift after entering or leaving", async ({ page }) => {
   await openGame(page, { loadFeatures: false });
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-open-modal='team']").first().click();
   await page.locator("[data-start='machine_factory'][data-difficulty='normal']").click();
   await expect(page.locator(".dungeon-screen")).toBeVisible();
@@ -139,6 +141,7 @@ test("unconfirmed shop stock stays unavailable until a core refresh succeeds", a
 test("full dungeon inventory can free the exact pending card slot and resume", async ({ page }) => {
   await openGame(page, { loadFeatures: false });
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-open-modal='team']").first().click();
   await page.locator("[data-start='machine_factory'][data-difficulty='normal']").click();
   await expect(page.locator(".dungeon-screen")).toBeVisible();

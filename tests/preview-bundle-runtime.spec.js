@@ -1,6 +1,6 @@
 const { test, expect } = require("@playwright/test");
 const {
-  openGame, startFreshGame,
+  openGame, startFreshGame, dismissOpeningStory,
 } = require("./helpers/preview-game");
 const { startupBundlePaths } = require("../tools/publish-bundle-groups");
 
@@ -53,6 +53,7 @@ test("scene bundles stay deferred until requested", async ({ page }) => {
       "save-slots.css",
       "gothic-theme.css",
       "gothic-start.css",
+      "butler-manual.css",
     ],
     stylesVersioned: true,
   });
@@ -211,6 +212,7 @@ test("a failed battle bundle part resumes without reloading completed parts", as
 test("hall collection bundle loads before entering a new game", async ({ page }) => {
   await openGame(page, { loadFeatures: false });
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   expect(await page.evaluate(() => ({
     ready: window.GameBundles.isReady("hall"),
     collection: typeof window.VillaCollectionUI,

@@ -112,6 +112,7 @@ function createRealDraw() {
 
 {
   const draw = createRealDraw();
+  let animationId = 0;
   const sealed = unit("sealed-owner", "ally", []);
   const teammate = unit("next-actor", "ally", []);
   sealed.name = "已结束回合角色";
@@ -129,7 +130,7 @@ function createRealDraw() {
     "Magic Seal must still block end-phase draws before cleanup");
   BattleTurnState.cleanupTurn(state.battle, sealed, true, [sealed, teammate]);
   const specials = BattleCardSpecials(
-    { draw },
+    { draw, nextAnim: () => ++animationId },
     { sameSideUnits: () => state.battle.allies },
   );
   specials.drawTeam(state, teammate, { name: "物资补给", drawTeam: 1 });
@@ -158,6 +159,7 @@ function createRealDraw() {
 
 {
   const draw = createRealDraw();
+  let animationId = 0;
   const open = unit("open-draw", "ally", []);
   const sealed = unit("sealed-draw", "ally", []);
   open.name = "正常角色";
@@ -172,7 +174,7 @@ function createRealDraw() {
     },
   };
   const specials = BattleCardSpecials(
-    { draw },
+    { draw, nextAnim: () => ++animationId },
     { sameSideUnits: () => state.battle.allies },
   );
   specials.drawTeam(state, open, { name: "物资补给", drawTeam: 1 });

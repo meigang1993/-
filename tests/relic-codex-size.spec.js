@@ -1,5 +1,6 @@
 const path = require("path");
 const { test, expect } = require("@playwright/test");
+const { dismissOpeningStory } = require("./helpers/preview-game");
 
 const gameUrl = `file://${path.resolve(__dirname, "../publish/index.html")}`;
 
@@ -7,7 +8,7 @@ async function openRelicCodex(page) {
   await page.goto(gameUrl);
   await page.locator("#view").waitFor({ state: "visible" });
   await page.locator("[data-start-game]").click();
-  await page.waitForTimeout(1200);
+  await dismissOpeningStory(page);
   await page.locator('[data-open-modal="relics"]').first().click();
   await page.waitForTimeout(500);
   await page.locator('[data-relic-codex="1"]').first().click();

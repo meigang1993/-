@@ -4,15 +4,15 @@
 //   混乱 → ♠或♥ 命中 → triggerConfusion（随机对同伴视为使用虚拟杀；无同伴则自伤+跳过出牌）
 //   冰冻 → ♦或♣ 命中 → frozenSlash = true（本回合无法使用【杀】）
 // 判定牌来源：unit.deck.pop()，故直接把 deck 设成单张指定花色即可控制成败。
-process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
-  || "/data/workspace/.pw-browsers";
+require("./repository-toolchain");
 const path = require("path");
 const fs = require("fs");
+const os = require("os");
 const { chromium } = require("playwright");
 const { openGame, startFreshGame, openTestBattle } = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
-const VIDEO_DIR = "/data/workspace/vid-confusion-freeze";
+const VIDEO_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "game2971485-confusion-freeze-"));
 
 async function enterBattle(page) {
   await startFreshGame(page);
@@ -160,12 +160,18 @@ const cases = [
   const files = fs.readdirSync(VIDEO_DIR).filter(f => f.endsWith(".webm"));
   if (files.length) {
     const src = path.join(VIDEO_DIR, files[0]);
-    const dst = "/data/workspace/混乱冰冻实战测试.mp4";
-    fs.copyFileSync(src, "/data/workspace/混乱冰冻实战测试.webm");
-    require("child_process").execSync(
-      `ffmpeg -y -i "${src}" -c:v libx264 -pix_fmt yuv420p -movflags +faststart "${dst}" 2>/dev/null`,
-      { stdio: "ignore" });
-    console.log(`录像: ${dst}`);
+    const dst = path.join(VIDEO_DIR, "混乱冰冻实战测试.mp4");
+    fs.copyFileSync(src, path.join(VIDEO_DIR, "混乱冰冻实战测试.webm"));
+    try {
+      require("child_process").execFileSync("ffmpeg", [
+        "-y", "-i", src, "-c:v", "libx264", "-pix_fmt", "yuv420p",
+        "-movflags", "+faststart", dst,
+      ], { stdio: "ignore" });
+      console.log(`录像: ${dst}`);
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+      console.log(`保留 WebM 录像: ${path.join(VIDEO_DIR, path.basename(src))}`);
+    }
   }
   process.exit(failed.length ? 1 : 0);
 })();

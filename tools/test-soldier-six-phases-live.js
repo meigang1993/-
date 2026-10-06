@@ -1,16 +1,16 @@
 // 实战：贵族军士兵完整 6 阶段（准备/判定/摸牌/出牌/弃牌/结束）
 // 重点：地雷是否误入判定阶段、回合结束是否误消耗、出牌阶段限一次
 // 同时录像供人工复核
-process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
-  || "/data/workspace/.pw-browsers";
+require("./repository-toolchain");
 const path = require("path");
 const fs = require("fs");
+const os = require("os");
 const { chromium } = require("playwright");
 const { openGame, startRegressionBattle } = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
-const VIDEO_DIR = "/data/workspace/.video-soldier";
-const OUT = "/data/workspace/士兵六阶段测试.mp4";
+const VIDEO_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "game2971485-soldier-phases-"));
+const OUT = path.join(VIDEO_DIR, "士兵六阶段测试.mp4");
 
 // 把敌方首位替换成贵族军士兵（保留 uid，避免破坏战斗结构）
 const useSoldier = `(() => {
@@ -49,8 +49,6 @@ const snapshot = `(() => {
 })()`;
 
 (async () => {
-  fs.rmSync(VIDEO_DIR, { recursive: true, force: true });
-  fs.mkdirSync(VIDEO_DIR, { recursive: true });
   const browser = await chromium.launch();
   const context = await browser.newContext({
     viewport: { width: 1280, height: 800 },

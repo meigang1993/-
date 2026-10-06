@@ -1,12 +1,13 @@
 const { test, expect } = require("@playwright/test");
 const {
-  collectErrors, relevantErrors, openGame, startFreshGame, expectImagesLoaded,
+  collectErrors, relevantErrors, openGame, startFreshGame, dismissOpeningStory, expectImagesLoaded,
 } = require("./helpers/preview-game");
 
 test("Flora default portrait uses the uploaded square artwork", async ({ page }) => {
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-view='livingRoom']").click();
   await page.evaluate(() => {
     const flora = window.state.chars.find(character => character.id === "flora");
@@ -33,6 +34,7 @@ test("representative living-room portraits and character panels remain usable", 
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-view='livingRoom']").click();
   const characters = await page.evaluate(() => {
     window.state.chars.forEach(character => { character.locked = false; });
@@ -110,6 +112,7 @@ test("representative living-room portraits and character panels remain usable", 
 test("living-room character panel equips skins and relics", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-view='livingRoom']").click();
   await page.evaluate(() => {
     window.state.ownedSkins.lokar_motherbound = true;

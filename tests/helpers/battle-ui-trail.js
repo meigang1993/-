@@ -1,9 +1,10 @@
 const { expect } = require("@playwright/test");
-const { openGame, startFreshGame } = require("./preview-game");
+const { openGame, startFreshGame, dismissOpeningStory } = require("./preview-game");
 
 async function prepareBattleTrail(page) {
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-open-modal='team']").first().click();
   await page.getByRole("button", { name: "测试战斗" }).click();
   await page.evaluate(() => {

@@ -134,8 +134,8 @@ test("online SDK storage and local core keep progression and balance identical",
     stats: result.online.stats,
   });
   expect(result.scaling).toEqual({
-    king: { hp: 759, attack: 15, magic: 10 },
-    heroic: { hp: 1056, attack: 17, magic: 11 },
+    king: { hp: 741, attack: 22, magic: 15 },
+    heroic: { hp: 932, attack: 26, magic: 18 },
   });
   expect(result.flushed).toBe(true);
   expect(result.functionCalls).toBe(0);

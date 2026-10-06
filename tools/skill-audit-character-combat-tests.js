@@ -60,31 +60,31 @@ module.exports = ({ assert, card, unit, incoming }) => {
   const carlos = unit("carlos", "ally", {
     ref: "carlos", hand: [card("Held Slash", "slash")],
   });
-  let bayonetHits = 0;
-  let bladeHits = 0;
+  const damageSources = [];
   state = { battle: { allies: [carlos, flora], enemies: [plainTarget], animQueue: [] } };
   const slashDamageApi = {
-    directDamage: () => { bayonetHits += 1; },
-    damage: () => { bladeHits += 1; },
+    damage: (...args) => { damageSources.push(args[3]); },
   };
+  window.state = state;
   FloraCarlosSkills.afterSlashDamage(
     state, carlos, plainTarget, { ...incoming }, 1, slashDamageApi);
-  assert(bayonetHits === 1 && bladeHits === 1,
+  assert(damageSources.filter(source => source === "疯狂刺刀").length === 1
+    && damageSources.filter(source => source === "神速飞剑").length === 1,
     "Carlos and Flora must react to virtual single slashes");
   FloraCarlosSkills.afterSlashDamage(
     state, carlos, plainTarget, { ...incoming }, 1, slashDamageApi);
-  assert(bladeHits === 1,
+  assert(damageSources.filter(source => source === "神速飞剑").length === 1,
     "Flora Speed Blade must trigger at most once per target in the same turn");
   state.battle.turn = 1;
   FloraCarlosSkills.afterSlashDamage(
     state, carlos, plainTarget, { ...incoming }, 1, slashDamageApi);
-  assert(bladeHits === 2,
+  assert(damageSources.filter(source => source === "神速飞剑").length === 2,
     "Flora Speed Blade must become available for the same target next turn");
   flora.skills = [];
   state.battle.turn = 2;
   FloraCarlosSkills.afterSlashDamage(
     state, carlos, plainTarget, { ...incoming }, 1, slashDamageApi);
-  assert(bladeHits === 2,
+  assert(damageSources.filter(source => source === "神速飞剑").length === 2,
     "Flora Speed Blade must not trigger after the skill is removed");
   flora.skills = [{ name: "神速飞剑" }];
   const friendlyTarget = unit("friendly-target", "ally");
@@ -93,7 +93,7 @@ module.exports = ({ assert, card, unit, incoming }) => {
     state, carlos, friendlyTarget, { ...incoming }, 1, slashDamageApi);
   FloraCarlosSkills.afterSlashDamage(
     state, flora, plainTarget, { ...incoming }, 1, slashDamageApi);
-  assert(bladeHits === 2,
+  assert(damageSources.filter(source => source === "神速飞剑").length === 2,
     "Flora Speed Blade must reject friendly fire and Flora's own Slash");
 
   const assaultFlora = unit("speed-assault-flora", "ally", {

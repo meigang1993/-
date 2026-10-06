@@ -1,12 +1,14 @@
 const { test, expect } = require("@playwright/test");
 const {
   collectErrors, relevantErrors, openGame, startFreshGame, startRegressionBattle,
+  dismissOpeningStory,
 } = require("./helpers/preview-game");
 
 test("loading a save during battle preload cannot start the stale battle", async ({ page }) => {
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-open-modal='team']").first().click();
   await page.getByRole("button", { name: "测试战斗" }).click();
   await page.evaluate(() => {
@@ -33,6 +35,7 @@ test("loading a save during battle preload cannot start the stale battle", async
 test("battle asset failures show fallback art and a working retry action", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-open-modal='team']").first().click();
   await page.getByRole("button", { name: "测试战斗" }).click();
   await page.evaluate(() => {
@@ -71,6 +74,7 @@ test("battle asset failures show fallback art and a working retry action", async
 test("battle asset retry does not block actions or write into replacement state", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-open-modal='team']").first().click();
   await page.getByRole("button", { name: "测试战斗" }).click();
   await page.evaluate(() => {
@@ -118,6 +122,7 @@ test("battle asset retry does not block actions or write into replacement state"
 test("an old battle asset retry does not block a replacement battle retry", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-open-modal='team']").first().click();
   await page.getByRole("button", { name: "测试战斗" }).click();
   await page.evaluate(() => {
@@ -160,6 +165,7 @@ test("an old battle asset retry does not block a replacement battle retry", asyn
 test("runtime recovery invalidates an old battle asset retry", async ({ page }) => {
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-open-modal='team']").first().click();
   await page.getByRole("button", { name: "测试战斗" }).click();
   await page.evaluate(() => {

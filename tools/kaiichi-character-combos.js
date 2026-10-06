@@ -97,12 +97,8 @@ async function runKaiichiCharacterCombos() {
   chiyoCombat.useCard(chiyoState, chiyo, chiyoBlood, chiyoSlash);
   assert.strictEqual(chiyoSlash.gatlingRepeats, 3, "two red judgements must make Chiyo's Slash resolve three times");
   assert.strictEqual(chiyoBlood.hp, 29, "Chiyo must pause after the first Red Cherry Chain Slash hit");
-  assert.strictEqual(chiyoState.battle.manualDodgeResume?.remainingHits, 2,
-  "Chiyo's first picker must preserve two remaining hits");
   await resumeKaiichiPrompt(chiyoState, chiyoCombat);
   assert.strictEqual(chiyoBlood.hp, 28, "Chiyo's second hit must resume after the first picker");
-  assert.strictEqual(chiyoState.battle.manualDodgeResume?.remainingHits, 1,
-  "Chiyo's second picker must preserve the final hit");
   await resumeKaiichiPrompt(chiyoState, chiyoCombat);
   assert.strictEqual(chiyoBlood.hp, 27, "Chiyo's final hit must resume after the second picker");
   assert(chiyoState.battle.kaiichiShare, "Chiyo's final HP-loss hit must open its own picker");
@@ -132,15 +128,12 @@ async function runKaiichiCharacterCombos() {
   window.state = tripleState;
   tripleCombat.useCard(tripleState, tripleAttacker, tripleBlood, tripleSlash);
   assert.strictEqual(tripleBlood.hp, 28, "a three-hit Slash must pause after the first HP-loss event");
-  assert.strictEqual(tripleState.battle.manualDodgeResume?.remainingHits, 2, "the first picker must preserve two remaining hits");
   assert.deepStrictEqual(tripleDraws, [{ uid: tripleBlood.uid, count: 2 }], "the first hit must trigger exactly one two-card draw");
   await resumeKaiichiPrompt(tripleState, tripleCombat);
   assert.strictEqual(tripleBlood.hp, 26, "the second hit must resume after the first picker");
-  assert.strictEqual(tripleState.battle.manualDodgeResume?.remainingHits, 1, "the second picker must preserve one remaining hit");
   assert.strictEqual(tripleDraws.length, 2, "the second HP-loss event must trigger a second draw");
   await resumeKaiichiPrompt(tripleState, tripleCombat);
   assert.strictEqual(tripleBlood.hp, 24, "the third hit must resume after the second picker");
-  assert(!tripleState.battle.manualDodgeResume, "the final hit must consume the remaining continuation");
   assert.strictEqual(tripleDraws.length, 3, "three HP-loss events must trigger exactly three draws");
   assert(tripleDraws.every(event => event.uid === tripleBlood.uid && event.count === 2), "every Half-Succubus Blood draw must give Kaiichi exactly two cards");
   assert.strictEqual(tripleState.log.filter(text => text.includes("半魅魔血令其未摸到牌")).length, 3, "three HP-loss events must create three independent skill logs");

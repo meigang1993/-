@@ -91,13 +91,17 @@ module.exports = function runAilengCoverage(state, { assert, card, unitFromChara
   const spinState = { battle: { allies: [besta], enemies: [spinEnemy], animQueue: [] } };
   besta.hand = [card("杀（普攻）", "slash", { suit: "♠" }), card("魔杀", "slash", { suit: "♣", scale: "magic" })];
   const spinHits = [];
+  window.state = spinState;
   GuestCharacterSkills.afterDodge(spinState, spinEnemy, besta, card("杀（普攻）", "slash"), {
     damage(_state, victim, amount, source, sourceUnit, damageCard) {
       spinHits.push({ victim, amount, source, sourceUnit, damageCard });
     },
   });
   assert(spinHits.length === 2 && spinHits.every(hit => hit.damageCard.name === "魔杀" && hit.damageCard.virtual && hit.damageCard.allTargets.includes(spinEnemy.uid)), "Final Spin Slash must use all-target virtual Magic Kills");
-  assert(spinHits.every(hit => hit.amount === besta.stats.magic + besta.tempMagic), "Final Spin Slash must scale with Besta's magic");
+  const expectedSpinDamage = (besta.stats.magic || 0) + (besta.tempMagic || 0);
+  assert(spinHits.every(hit => hit.amount === expectedSpinDamage),
+    `Final Spin Slash damage ${JSON.stringify(spinHits.map(hit => hit.amount))} `
+      + `must match Besta's current magic ${expectedSpinDamage}`);
 
   const femaleCharacters = GameData.characters.filter(character => character.gender === "female");
   assert(femaleCharacters.length >= 14, "Expected the full playable female roster");

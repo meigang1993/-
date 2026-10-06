@@ -1,6 +1,6 @@
 const { test, expect } = require("@playwright/test");
 const {
-  collectErrors, relevantErrors, openGame, startFreshGame, expectImagesLoaded,
+  collectErrors, relevantErrors, openGame, startFreshGame, dismissOpeningStory, expectImagesLoaded,
   openTestBattle,
 } = require("./helpers/preview-game");
 
@@ -8,6 +8,7 @@ test("Bertis special art unlocks and equips automatically at level 10", async ({
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-view='livingRoom']").click();
   await page.evaluate(() => {
     const bertis = window.state.chars.find(character => character.id === "bertis");
@@ -55,6 +56,7 @@ test("Nonoka special art unlocks and equips automatically at level 10", async ({
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-view='livingRoom']").click();
   await page.evaluate(() => {
     const nonoka = window.state.chars.find(character => character.id === "nonoka");
@@ -103,6 +105,7 @@ test("additional special art unlocks and equips automatically at level 10", asyn
   ];
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-view='livingRoom']").click();
   await page.evaluate(ids => {
     ids.forEach(id => {
@@ -147,6 +150,7 @@ test("test battle lets Bertis trial special art before level 10", async ({ page 
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await openTestBattle(page);
   await page.evaluate(() => {
     const bertis = window.state.chars.find(character => character.id === "bertis");

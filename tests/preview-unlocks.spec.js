@@ -1,11 +1,12 @@
 const { test, expect } = require("@playwright/test");
 const {
-  collectErrors, relevantErrors, openGame, startFreshGame,
+  collectErrors, relevantErrors, openGame, startFreshGame, dismissOpeningStory,
 } = require("./helpers/preview-game");
 test("offline defeat event can be completed after local settlement", async ({ page }) => {
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.evaluate(async () => {
     await window.ServerCore.call("settleDefeat", { defeatId: "preview-first-defeat" }, window.state);
     window.state.hallModal = "firstDefeat";
@@ -28,6 +29,7 @@ test("pending defeat story resumes after another hall modal closes", async ({ pa
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.evaluate(() => {
     window.state.flags.firstDefeatSeen = true;
     window.state.chars.find(character => character.id === "loki").locked = false;
@@ -44,6 +46,7 @@ test("every unlock event X dispatches its completion action", async ({ page }) =
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   const directActions = {
     littleElranaUnlock: "completeLittleElranaUnlockEvent",
     aceUnlock: "completeAceUnlockEvent",
@@ -103,6 +106,7 @@ test("unlock modal remains locked until its durable save settles", async ({ page
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.evaluate(() => {
     window.state.hallModal = "littleElranaUnlock";
     window.completeLittleElranaUnlockEvent = async () => {
@@ -114,10 +118,11 @@ test("unlock modal remains locked until its durable save settles", async ({ page
     window.render();
   });
   const close = page.locator("[data-close-modal]");
+  const clickClose = () => close.evaluate(button => button.click());
   await expect(close).toBeVisible();
-  await close.click();
+  await clickClose();
   await expect(close).toBeVisible();
-  await close.click();
+  await clickClose();
   await expect(close).toBeVisible();
   expect(await page.evaluate(() =>
     window.AppActionGuard.isActive("unlock-event-completion"))).toBe(true);
@@ -129,6 +134,7 @@ test("bounty modal closes with a left click on its backdrop", async ({ page }) =
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.locator("[data-open-modal='bounty']").click();
   await expect(page.getByRole("heading", { name: "任务列表" })).toBeVisible();
   await page.locator(".villa-modal").click({ position: { x: 2, y: 2 } });
@@ -141,6 +147,7 @@ test("purchased skins can switch to default and back", async ({ page }) => {
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
+  await dismissOpeningStory(page);
   await page.evaluate(() => {
     window.state.resources.essence = 20;
     window.state.hallModal = "skins";
@@ -178,7 +185,8 @@ test("pending underwater train unlock events rebuild from durable flags", async 
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
-  await page.evaluate(() => {
+  await dismissOpeningStory(page);
+  const recovered = await page.evaluate(() => {
     window.state.flags.underwaterTrainFirstClear = true;
     window.state.flags.bestaNurseryUnlockPending = true;
     window.state.flags.opheliaUnlockSeen = false;
@@ -187,6 +195,30 @@ test("pending underwater train unlock events rebuild from durable flags", async 
     window.state.chars.find(character => character.id === "ophelia").locked = true;
     window.state.chars.find(character => character.id === "besta").locked = true;
     window.state.hallModal = null;
+    const recovered = window.StoreUnlockMigrations
+      .recoverPostUnderwaterTrainEvents(window.state);
+    window.render();
+    return {
+      recovered,
+      view: window.state.view,
+      hallModal: window.state.hallModal,
+      underwaterTrainFirstClear: window.state.flags.underwaterTrainFirstClear,
+      opheliaLocked: window.state.chars.find(character => character.id === "ophelia").locked,
+      hasBattle: !!window.state.battle,
+      hasExplore: !!window.state.explore,
+    };
+  });
+  expect(recovered).toMatchObject({
+    recovered: true,
+    view: "hall",
+    hallModal: "opheliaUnlock",
+    underwaterTrainFirstClear: true,
+    opheliaLocked: true,
+    hasBattle: false,
+    hasExplore: false,
+  });
+  await page.evaluate(() => {
+    window.AdvDialogue?.skip?.();
     window.render();
   });
   await expect(page.locator("[data-ophelia-unlock-complete]")).toBeVisible();
@@ -194,6 +226,11 @@ test("pending underwater train unlock events rebuild from durable flags", async 
     window.state.flags.opheliaUnlockSeen = true;
     window.state.chars.find(character => character.id === "ophelia").locked = false;
     window.state.hallModal = null;
+    window.StoreUnlockMigrations.recoverPostUnderwaterTrainEvents(window.state);
+    window.render();
+  });
+  await page.evaluate(() => {
+    window.AdvDialogue?.skip?.();
     window.render();
   });
   await expect(page.locator("[data-besta-nursery-unlock-complete]")).toBeVisible();
