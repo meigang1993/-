@@ -36,7 +36,11 @@ window.GuestAilengSkills = (() => {
     const cards = indexes.map(index => actor.hand.splice(index, 1)[0]);
     ctx.putMany(state, actor, cards, "discard", { showDiscard: true });
     const count = indexes.length + (all ? 1 : 0);
-    const drawn = deps.draw(actor, count, state.battle);
+    // 一次性摸等量牌：默认摸牌动画逐张错峰起飞，弃得越多拖得越久
+    // （10 张要连飞 10 段）。改为把整批收进同一条动画同时起飞。
+    const batches = [];
+    const drawn = deps.draw(actor, count, state.battle, batches);
+    batches.forEach(batch => state.battle?.animQueue?.push({ ...batch, stagger: 0 }));
     if (all) actor.intent = deps.intentMax(actor);
     line(state, actor, "计算下注"); window.BattleLog.add(state, `${actor.name} 发动计算下注，弃置${indexes.length}张牌并${window.BattleDrawFeedback.action(actor, count, drawn)}${all ? "，重置杀意" : ""}。`);
     return true;
