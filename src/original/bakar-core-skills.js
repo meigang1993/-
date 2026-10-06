@@ -60,6 +60,8 @@ window.BakarCoreSkills = (() => {
           type: "gainCards",
           uid: unit.uid,
           side: unit.side,
+          fromUid: actor.uid,
+          fromSide: actor.side,
           cards: [gained],
           count: 1,
         });
