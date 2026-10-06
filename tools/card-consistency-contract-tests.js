@@ -124,6 +124,14 @@ module.exports = ({ assert, fs }) => {
     "Demon Invasion must expose physical and magical composite feedback");
 
   const validAttackTypes = new Set(["physical", "magic"]);
+  const responseVerbs = {
+    闪: "使用此牌",
+    看破: "使用此牌",
+    弹反: "使用此牌",
+    无谋冲拳: "打出此牌",
+    佯攻: "打出此牌",
+    后空翻: "打出此牌",
+  };
   window.GameDataCards.cardCodex.forEach(item => {
     const text = item.text;
     if (item.attackType !== undefined) {
@@ -142,8 +150,17 @@ module.exports = ({ assert, fs }) => {
       `${item.name} must use Arabic numerals for multi-target counts`);
     assert(!/造成伤害后/.test(text),
       `${item.name} must distinguish hp damage triggers`);
-    if (["闪", "看破"].includes(item.name)) {
-      assert(text.includes("使用此牌"), `${item.name} response text must use 使用此牌`);
+    // 响应牌「使用 / 打出」精确契约：口径按三国杀——响应单体【杀】的
+    // 响应牌属「使用」（闪、看破、弹反），其余属「打出」（准备阶段冲拳、
+    // 友方出杀时的佯攻、应对战术牌的后空翻）。此前只校验闪/看破，其他
+    // 响应牌写反也不会报错；现改为全量登记，未登记的响应牌直接失败，
+    // 新增响应牌必须显式声明口径，并禁止同一张牌混用两种动词。
+    if (item.type === "response") {
+      const verb = responseVerbs[item.name];
+      assert(verb, `${item.name} 是响应牌但未登记「使用/打出」口径，请补进 responseVerbs`);
+      assert(text.includes(verb), `${item.name} response text must use ${verb}`);
+      const opposite = verb === "使用此牌" ? "打出此牌" : "使用此牌";
+      assert(!text.includes(opposite), `${item.name} response text must not use ${opposite}`);
     }
   });
   assert(window.GameDataCards.cardCodex.every(item => item.power === 0),
