@@ -22,16 +22,20 @@ window.BattleEffectCardMotion = U => {
     }
   }
 
+  // stagger：多张牌飞行的错峰间隔。默认逐张错峰（STAGGER_MS）；
+  // 传 0 表示整批同时起飞、一次落位——用于「一次性摸等量牌」这类
+  // 张数可多至十余张、逐张飞牌会明显拖长等待的技能。
   async function flyBackCards(options) {
     const {
       cards = [], count = cards.length, from, to, className = "",
       revealFace = true, enemy = false, active = () => true,
+      stagger = STAGGER_MS,
     } = options;
     const start = point(from), end = point(to);
     if (!start || !end || !count) return;
     const total = count;
     const jobs = Array.from({ length: total }, async (_, index) => {
-      if (index) await wait(index * STAGGER_MS);
+      if (index) await wait(index * stagger);
       if (!active()) return;
       const card = window.BattleEffectCardDOM.back(
         cards[index] || {}, enemy, className);
@@ -59,13 +63,14 @@ window.BattleEffectCardMotion = U => {
     const {
       cards = [], count = cards.length, from, to, className = "",
       enemy = false, burn = false, fadeOut = true, active = () => true,
+      stagger = STAGGER_MS,
     } = options;
     const start = point(from), end = point(to);
     if (!start || !end || !count) return;
     const total = Math.max(count, cards.length);
     const list = Array.from({ length: total }, (_, index) => cards[index] || {});
     const jobs = list.map(async (data, index) => {
-      if (index) await wait(index * STAGGER_MS);
+      if (index) await wait(index * stagger);
       if (!active()) return;
       const card = window.BattleEffectCardDOM.front(data, enemy, className);
       window.BattleEffectAnimation.stampCssTiming(card);
@@ -102,6 +107,7 @@ window.BattleEffectCardMotion = U => {
       from, to, className,
       enemy: options.enemy ?? event.side === "enemy", active,
       fadeOut: options.fadeOut !== false,
+      stagger: options.stagger ?? event.stagger,
     };
     if (options.face === "front") await flyFrontCards(shared);
     else {
