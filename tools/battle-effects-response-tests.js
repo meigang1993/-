@@ -18,6 +18,7 @@ async function run() {
   require("../src/original/battle-effect-card-dom.js");
   require("../src/original/battle-effect-card-motion.js");
   require("../src/original/battle-cards-system.js");
+  require("../src/original/battle-effect-card-transfers-exit.js");
   require("../src/original/battle-effect-card-transfers.js");
   require("../src/original/battle-effect-played-card-flight.js");
   require("../src/original/card-utils.js");
