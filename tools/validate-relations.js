@@ -183,7 +183,7 @@ const dependencies = [
   ["bounty-rewards.js", "bounty-task-rewards.js", "bounty-task-generator.js", "bounty-task-repair.js", "bounty-tasks.js"],
   ["battle-line-data.js", "battle-line-intro.js", "battle-speech-controller.js", "battle-caption-controller.js", "battle-lines.js"],
   ["battle-effect-geometry.js", "battle-effect-animation.js", "battle-effect-utils.js", "battle-effect-event-runner.js", "battle-effect-drain-recovery.js", "battle-effect-drain.js", "battle-effects.js"],
-  ["battle-effect-card-dom.js", "battle-effect-card-motion.js", "battle-effect-card-transfers.js", "battle-effect-played-card-flight.js", "battle-effect-card-plays.js", "battle-effect-cards.js", "battle-effect-handlers.js", "battle-effect-event-runner.js", "battle-effect-drain.js", "battle-effects.js"],
+  ["battle-effect-card-dom.js", "battle-effect-card-motion.js", "battle-effect-card-transfers-exit.js", "battle-effect-card-transfers.js", "battle-effect-played-card-flight.js", "battle-effect-card-plays.js", "battle-effect-cards.js", "battle-effect-handlers.js", "battle-effect-event-runner.js", "battle-effect-drain.js", "battle-effects.js"],
   ["battle-effect-play.js", "battle-effect-drain.js", "battle-effects.js"],
   ["battle-damage-audio.js", "battle-damage-fx.js"],
   ["battle-audio-samples.js", "battle-audio.js", "battle-bump-fx.js", "battle-hit-fx-fallback.js", "battle-float-numbers.js", "battle-float-fx.js", "battle-fx.js"],
