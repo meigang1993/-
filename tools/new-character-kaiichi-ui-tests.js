@@ -136,6 +136,9 @@ module.exports = ({
   const shareHtml = GameUIHand.render(bloodState, UICommon);
   assert(shareHtml.includes("星野海一 的手牌"),
     "Kaiichi's hand panel must remain available after Half-Succubus Blood resolves");
+  vm.runInThisContext(fs.readFileSync("./src/original/ui-info-marks.js", "utf8"), {
+    filename: "ui-info-marks.js",
+  });
   vm.runInThisContext(fs.readFileSync("./src/original/ui-info.js", "utf8"), {
     filename: "ui-info.js",
   });
