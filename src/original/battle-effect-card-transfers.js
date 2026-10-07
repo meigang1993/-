@@ -37,6 +37,9 @@ window.BattleEffectCardTransfers = U => {
       "draw-card-fly", renderStep, true, active, {
         revealFace: event.side !== "enemy",
         onArrive: () => syncIncomingHand(event),
+        // 一次性起飞：摸牌张数可多至十余张，逐张错峰（每张 +100ms）会让
+        // 整手补给明显拖长。stagger:0 让整批同时起飞、一次落位。
+        stagger: 0,
       });
   }
   async function giveCards(event, renderStep, active) {
@@ -80,6 +83,8 @@ window.BattleEffectCardTransfers = U => {
         : pileZone(event.side, "discard") || publicZone(),
       "discard-card-fly", renderStep, false, active, {
         face: "front", fadeOut: !event.toPublic,
+        // 同摸牌：整批同时起飞，弃得再多也只有一段飞行时长。
+        stagger: 0,
       });
   }
 
