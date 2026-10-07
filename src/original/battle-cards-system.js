@@ -55,17 +55,33 @@ window.BattleCards = window.BattleCards || (() => {
     delete snapshot.dismantled;
     b.played = [snapshot, ...(b.played || [])];
   }
+  // 弃牌动画去重：逐张 put() 会为每张牌推一条 discardBatch，队列是串行的，
+  // 于是"弃 8 张"要连播 8 段飞行（实测 4565ms，随张数线性变长）。
+  // 这里把紧邻的、同一名角色、同一去向的弃牌并进队尾那条事件，
+  // 使整批只用一段飞行（实测 475ms）。去向不同则不合并，避免
+  // 明弃（toPublic）与暗弃混在一起导致展示错乱。
+  function pushDiscardBatch(b, holder, cards, toPublic) {
+    const queue = b.animQueue;
+    const last = queue[queue.length - 1];
+    if (last && last.type === "discardBatch" && last.uid === holder?.uid
+      && last.side === holder?.side && !!last.toPublic === !!toPublic) {
+      last.count = (last.count || 0) + cards.length;
+      last.cards = (last.cards || []).concat(cards);
+      return;
+    }
+    queue.push({
+      type: "discardBatch", uid: holder?.uid, side: holder?.side,
+      count: cards.length, cards, toPublic: !!toPublic,
+    });
+  }
   function put(b, holder, card, pile = "discard", opts = {}) {
     if (pile === "discard" && (card?.void || card?.copiedByEdis)) pile = "consumed";
     const owner = card?.stolenFromUid && b?.allies.concat(b.enemies).find(u => u.uid === card.stolenFromUid), dest = owner || holder, zone = dest?.pileStats || dest;
     if (!zone || !card) return;
     const trailId = opts.showDiscard || opts.forcedDiscard
       || pile === "consumed" && card._playedFlightDone ? moveId(card) : "";
-    if (!opts.skipAnim && pile === "discard" && b?.animQueue) b.animQueue.push({
-      type: "discardBatch", uid: holder?.uid, side: holder?.side,
-      count: 1, cards: [card],
-      toPublic: !!(opts.showDiscard || opts.forcedDiscard),
-    });
+    if (!opts.skipAnim && pile === "discard" && b?.animQueue) pushDiscardBatch(
+      b, holder, [card], !!(opts.showDiscard || opts.forcedDiscard));
     if (!opts.skipAnim && pile === "consumed" && b?.animQueue) b.animQueue.push({
       type: "burnCard", card, uid: holder?.uid, side: holder?.side,
       fromPublic: !!card._playedFlightDone, trailId,
@@ -86,11 +102,8 @@ window.BattleCards = window.BattleCards || (() => {
     if (!list.length) return 0;
     const discardCards = pile === "discard"
       ? list.filter(card => !card.void && !card.copiedByEdis) : list;
-    if (!opts.skipAnim && pile === "discard" && discardCards.length && b?.animQueue) b.animQueue.push({
-      type: "discardBatch", uid: holder?.uid, side: holder?.side,
-      count: discardCards.length, cards: discardCards,
-      toPublic: !!(opts.showDiscard || opts.forcedDiscard),
-    });
+    if (!opts.skipAnim && pile === "discard" && discardCards.length && b?.animQueue) pushDiscardBatch(
+      b, holder, discardCards, !!(opts.showDiscard || opts.forcedDiscard));
     list.forEach(card => {
       const redirected = pile === "discard" && (card.void || card.copiedByEdis);
       put(b, holder, card, pile, {
