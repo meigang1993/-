@@ -106,6 +106,7 @@ const groups = Object.freeze({
     "test-card-consistency.js",
     "test-card-pool-sync-live.js",
     "test-card-transfer-avatar-flight-live.js",
+    "test-draw-discard-instant-live.js",
     "test-gaincards-fromuid-flight-live.js",
     "test-relic-transfer-flight-live.js",
     "test-card-transfer-ownership-live.js",
