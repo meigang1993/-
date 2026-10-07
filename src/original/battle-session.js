@@ -12,6 +12,20 @@ window.BattleSession = ({
   getCombat,
   getAdvanceToInput,
 }) => {
+  // 摸牌动画去重：连续多次 draw()（补给、技能补牌等）会各推一条 drawBatch，
+  // 队列串行播放，张数或次数一多就明显拖长。这里把紧邻的、同一名角色的
+  // 摸牌并进队尾那条事件，整批一次飞完；换人则另起一条。
+  function mergeDrawBatch(queue, event) {
+    const last = queue[queue.length - 1];
+    if (last && last.type === "drawBatch" && last.uid === event.uid
+      && last.side === event.side) {
+      last.count = (last.count || 0) + event.count;
+      last.cards = (last.cards || []).concat(event.cards || []);
+      return;
+    }
+    queue.push({ id: `db${nextAnim()}`, ...event });
+  }
+
   function draw(unit, count, battle, eventCollector = null) {
     if (unit?.drawLockedThisTurn) return [];
     const cards = [];
@@ -32,16 +46,13 @@ window.BattleSession = ({
     }
     batches.forEach((batch, recipient) => {
       const queue = eventCollector || battle?.animQueue;
-      if (queue) {
-        queue.push({
-          id: `db${nextAnim()}`,
-          type: "drawBatch",
-          uid: recipient.uid,
-          side: recipient.side,
-          count: batch.length,
-          cards: batch,
-        });
-      }
+      if (queue) mergeDrawBatch(queue, {
+        type: "drawBatch",
+        uid: recipient.uid,
+        side: recipient.side,
+        count: batch.length,
+        cards: batch,
+      });
       window.SakuraRisaSkills?.onDrawRedirected?.(
         battle, unit, recipient, batch.length);
     });
