@@ -1,8 +1,33 @@
+// 转移 / 摸牌 / 弃牌类卡牌动画。
+// 退场与消耗类（封印 / 燃烧 / 公共区回收）已拆到
+// battle-effect-card-transfers-exit.js，由本文件在返回前组装回来。
 window.BattleEffectCardTransfers = U => {
   const {
-    publicZone, drawOrigin, pileZone, unitArt, handSpot, hideLine,
+    publicZone, drawOrigin, pileZone, unitArt, handSpot,
   } = U;
   const flight = window.BattleEffectCardMotion(U);
+  // 缺失时显式抛错而非 || {} 兜底：兜底会让封印/燃烧/公共区回收动画
+  // 静默失效（牌不飞但也不报错），排查成本极高。
+  const exit = window.BattleEffectCardTransfersExit;
+  if (typeof exit !== "function") {
+    throw new Error("battle-effect-card-transfers: 缺少子模块 BattleEffectCardTransfersExit");
+  }
+  const { sealCards, burnCard, trailExit } = exit(U);
+
+  // 最小起飞距离：牌堆起点与手牌区落点在某些布局下只差几十像素，360ms
+  // 的飞行在屏幕上几乎看不出位移，玩家会以为牌是「凭空出现」的。
+  // 实测队友摸牌的位移仅 73px，而其他人 205~630px —— 这正是「使用者
+  // 自己没有飞入动画」的由来。不足 MIN_DRAW 时把起点沿反方向推远，
+  // 保证每张牌都飞得看得见；方向不变、终点不变。
+  const MIN_DRAW = 130;
+  function withMinDistance(from, to) {
+    if (!from || !to) return from;
+    const dx = to.x - from.x, dy = to.y - from.y;
+    const dist = Math.hypot(dx, dy);
+    if (!dist || dist >= MIN_DRAW) return from;
+    const k = MIN_DRAW / dist;
+    return { x: to.x - dx * k, y: to.y - dy * k };
+  }
 
   function gainOrigin(event) {
     if (event.fromZone === "public" || !event.fromUid || event.fromUid === event.uid) {
@@ -32,9 +57,9 @@ window.BattleEffectCardTransfers = U => {
   }
 
   async function finishDraw(event, renderStep, active) {
-    await flight.transfer(event, drawOrigin(event.side),
-      handSpot(event.uid, event.side) || unitArt(event.uid),
-      "draw-card-fly", renderStep, true, active, {
+    const destination = handSpot(event.uid, event.side) || unitArt(event.uid);
+    await flight.transfer(event, withMinDistance(drawOrigin(event.side), destination),
+      destination, "draw-card-fly", renderStep, true, active, {
         revealFace: event.side !== "enemy",
         onArrive: () => syncIncomingHand(event),
         // 一次性起飞：摸牌张数可多至十余张，逐张错峰（每张 +100ms）会让
@@ -86,90 +111,6 @@ window.BattleEffectCardTransfers = U => {
         // 同摸牌：整批同时起飞，弃得再多也只有一段飞行时长。
         stagger: 0,
       });
-  }
-
-  async function sealCards(event, renderStep, active) {
-    const from = handSpot(event.uid, event.side) || unitArt(event.uid);
-    const destination = pileZone(event.side, "consumed")
-      || publicZone() || drawOrigin(event.side);
-    if (!active()) return;
-    const moving = !!(from && destination && event.count);
-    const battle = window.state?.battle;
-    const unit = battle?.allies?.concat(battle.enemies || [])
-      .find(item => item.uid === event.uid);
-    if (unit && event.visualHandCount != null) {
-      unit.visualHandCount = event.visualHandCount;
-    }
-    renderStep();
-    if (!active()) return;
-    await flight.flyFrontCards({
-      cards: event.cards || [], count: event.count || 0,
-      from, to: destination, className: "seal-card-fly",
-      enemy: event.side === "enemy", active,
-    });
-    if (!active()) return;
-    if (moving) renderStep();
-    if (event.clearTargetLine && battle?.targetLineHold) {
-      delete battle.targetLineHold;
-      hideLine();
-      renderStep();
-    }
-  }
-
-  async function burnCard(state, event, renderStep, active = () => true) {
-    const origin = event.fromPublic ? publicZone() : handSpot(event.uid, event.side)
-      || unitArt(event.uid) || publicZone() || drawOrigin(event.side);
-    const zone = pileZone(event.side, "consumed")
-      || publicZone() || drawOrigin(event.side);
-    if (!event.card || !origin || !zone) {
-      renderStep();
-      return;
-    }
-    await window.BattleEffectCardMotion(U).flyFrontCards({
-      cards: [event.card], from: origin, to: zone,
-      className: "consume-card-fly", enemy: event.side === "enemy",
-      burn: true, active,
-    });
-    if (!active()) return;
-    if (event.trailId) {
-      const trail = state?.battle?.played;
-      const index = trail?.findIndex(card =>
-        card?._cardAnimationId === event.trailId);
-      if (index >= 0) {
-        const legacyWendyTactic = event.card.type === "tactic"
-          && event.card.temporary && event.card.void
-          && !event.card.copiedByEdis;
-        const keepTrail = !!window.CardUtils?.generatedSource?.(event.card)
-          || legacyWendyTactic;
-        if (keepTrail) trail[index]._destinationSettled = true;
-        else trail.splice(index, 1);
-      }
-    }
-    renderStep();
-  }
-
-  async function trailExit(event, renderStep, active = () => true) {
-    const origin = publicZone();
-    if (!origin || !event.entries?.length) return;
-    const groups = new Map();
-    event.entries.forEach(entry => {
-      const key = `${entry.side}:${entry.pile}`;
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(entry);
-    });
-    await Promise.all([...groups.values()].map(entries => {
-      const first = entries[0];
-      const destination = pileZone(first.side, first.pile)
-        || pileZone(first.side, "discard") || drawOrigin(first.side);
-      return flight.flyFrontCards({
-        cards: entries.map(entry => entry.card),
-        from: origin, to: destination,
-        className: "trail-exit-fly",
-        enemy: first.side === "enemy",
-        burn: first.pile === "consumed", active,
-      });
-    }));
-    if (active()) renderStep();
   }
 
   return {
