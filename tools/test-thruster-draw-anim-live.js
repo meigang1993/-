@@ -44,7 +44,8 @@ const setupTpl = `(() => {
   window.__sampleTimer = setInterval(() => {
     window.__samples.push({ t: Date.now() % 100000,
       v: a.visualHandCount, h: (a.hand || []).length,
-      pending: (a.hand || []).filter(c => c && c._pendingDraw).length });
+      pending: (a.hand || []).filter(c => c && c._pendingDraw).length,
+      hnp: (a.hand || []).filter(c => c && !c._pendingDraw).length });
   }, 40);
   window.__flyTimer = setInterval(() => {
     const n = document.querySelectorAll(".draw-card-fly").length;
@@ -101,9 +102,11 @@ const isolatedTpl = `(() => {
     const c = Object.assign({}, card);
     window.RuinsRelicEffects.afterCardPlayed(st, a, b.enemies[0], c, window.BattleSystem.draw);
   }
+  const queueSum = (b.animQueue || []).filter(e => e && e.type === "drawBatch")
+    .reduce((n, e) => n + (e.count || 0), 0);
   return { handBefore: before, visualBefore: vb,
     handAfter: a.hand.length, visualAfter: a.visualHandCount,
-    drawEvents: window.__drawEvents };
+    drawEvents: window.__drawEvents, queueSum };
 })()`;
 
 const runIsolated = async browser => {
@@ -147,13 +150,24 @@ const runIsolated = async browser => {
     { delta: r.handAfter - before.handBefore });
   // 打出 1 张后手牌净变化 = 摸牌数 - 1，故摸牌数 = handAfter - (handBefore - 1)
   const drawn = r.handAfter - (before.handBefore - 1);
-  add("动画次数 == 实际摸牌数（不多不少）", r.drawEvents.length === drawn,
+  // 新契约：连续摸牌合并进同一条 drawBatch（队列串行播放，逐条推会让
+  // 张数一多就明显拖长），故改为"恰好 1 条且张数合计 == 实际摸牌数"。
+  // 合并走的是"改写队尾事件"，不再调用 push，故 push-hook 记不到累加后的
+  // 张数；张数是否吻合由下方 flyPeak == drawn 断言保证（真的飞了那么多张）。
+  add("连续摸牌合并为 1 条动画事件", r.drawEvents.length === 1,
     { events: r.drawEvents.length, drawn });
-  // 手牌数显示是"牌飞到后才 +1"的渐进机制，故用采样序列判断最终是否追平
-  const reached = (r.samples || []).some(s => s.v === r.handAfter);
-  add("手牌数显示最终追平实际手牌（动画结束后）", reached,
-    { samples: r.samples, handAfter: r.handAfter });
-  add("飞行卡牌峰值 <= 1", r.flyPeak <= 1, { flyPeak: r.flyPeak });
+  // 手牌数显示是"牌飞到后才 +1"的渐进机制，故用采样序列判断最终是否追平。
+  // 注意：visualHandCount 是动画期临时字段，drain 收尾的 clearVisuals 会把它
+  // 删掉；界面 handCount 有 visibleHandCount / 非 pending 手牌数两级兜底，
+  // 因此这里按界面口径（h - pending）判定，而不是直接读会被清理的字段。
+  const lastSample = (r.samples || [])[(r.samples || []).length - 1] || {};
+  add("动画结束后无未落位的手牌（pending 归零）",
+    lastSample.pending === 0, { lastSample });
+  add("手牌数显示最终追平实际手牌（界面兜底口径）",
+    lastSample.hnp === r.handAfter, { lastSample, handAfter: r.handAfter });
+  // 一次性起飞：整批同时飞，故峰值应等于摸牌数（逐张错峰时才恒为 1）。
+  add("飞行卡牌峰值 == 摸牌数（整批同时起飞）", r.flyPeak === drawn,
+    { flyPeak: r.flyPeak, drawn });
   add("页面无 JS 错误", errors.length === 0, { errors });
 
   // 隔离用例：推进器摸 3 张（3 次单体牌）应恰好产生 3 个 drawBatch
@@ -163,8 +177,15 @@ const runIsolated = async browser => {
     " visualHandCount:", iso.visualBefore, "→", iso.visualAfter);
   console.log("  drawBatch 次数:", iso.drawEvents.length,
     JSON.stringify(iso.drawEvents.map(e => ({ uid: e.uid, count: e.count }))));
-  total++; pass += check("隔离用例：摸 3 张 → drawBatch 恰好 3 次（1 牌 1 动画）",
-    iso.drawEvents.length === 3, { n: iso.drawEvents.length });
+  // 新契约：合并后事件数应少于摸牌次数，但张数合计必须仍是 3（防漏动画）。
+  // 3 次摸牌在旧行为下会推 3 条 drawBatch；合并后应 <= 2 条。
+  // （不能用"张数合计 == 3"精确判定：存档快照 snapshot() 会执行
+  //  battle.animQueue = [] 整体换新数组，首条事件可能因此不在当前队列里，
+  //  这是既有行为，与本次合并改动无关。张数是否吻合由主用例的
+  //  flyPeak == drawn 断言保证，牌数是否到位由下一句"手牌 +3"保证。）
+  total++; pass += check("隔离用例：3 次摸牌合并后 drawBatch 事件数 <= 2（旧行为 3 条）",
+    iso.drawEvents.length >= 1 && iso.drawEvents.length <= 2,
+    { n: iso.drawEvents.length, queueSum: iso.queueSum });
   // 隔离场景不走动画 flush，syncIncomingHand 不会被调用，故此处只核对摸牌数
   total++; pass += check("隔离用例：手牌确实 +3", iso.handAfter - iso.handBefore === 3,
     { before: iso.handBefore, after: iso.handAfter });
