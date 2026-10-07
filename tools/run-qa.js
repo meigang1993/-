@@ -53,6 +53,7 @@ const coreTasks = [
   nodeTask("resources", "tools/check-resources.js"),
   nodeTask("asset budget", "tools/check-asset-budget.js"),
   nodeTask("script contracts", "tools/check-script-contracts.js"),
+  nodeTask("split assembly", "tools/check-split-assembly.js"),
   {
     name: "duplicate budget",
     command: bin("jscpd"),
