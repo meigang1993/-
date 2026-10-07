@@ -7,6 +7,7 @@ const {
 installGlobals();
 loadRuntime();
 vm.runInThisContext(fs.readFileSync("./src/original/battle-draw-feedback.js", "utf8"), { filename: "battle-draw-feedback.js" });
+vm.runInThisContext(fs.readFileSync("./src/original/ui-info-marks.js", "utf8"), { filename: "ui-info-marks.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/ui-info.js", "utf8"), { filename: "ui-info.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/battle-card-cleanup.js", "utf8"), { filename: "battle-card-cleanup.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/battle-card-active-relics-core.js", "utf8"), { filename: "battle-card-active-relics-core.js" });
