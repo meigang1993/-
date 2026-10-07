@@ -13,6 +13,7 @@ const timeouts = Object.freeze({
   "test-edis-chainsaw-vs-counter-live.js": 240,
   // 每段各弹一次交牌窗，需等交牌窗挂载并跳过，等待链更长
   "test-double-and-chain-slash-live.js": 300,
+  "test-reaction-queue-guards-live.js": 300,
 });
 
 const timeoutFor = (file, fallback) => timeouts[file] || fallback;
@@ -79,6 +80,7 @@ const groups = Object.freeze({
     "test-heartblood-curse-multihit-live.js",
     "test-heartblood-curse-timing-live.js",
     "test-supply-drop-team-draw-live.js",
+    "test-reaction-queue-guards-live.js",
     "test-aileng-bet-instant-draw-live.js",
     "test-aileng-awaken-persist-live.js",
     "test-phantom-sword-dance-live.js",
