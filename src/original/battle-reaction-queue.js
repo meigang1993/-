@@ -1,33 +1,15 @@
 window.BattleReactionQueue = (() => {
   const LIMIT = 160;
-  const current = state => !window.state || window.state === state;
-  const units = battle => (battle?.allies || []).concat(battle?.enemies || []);
-
-  function enqueue(state, actions) {
-    const battle = state?.battle, list = (Array.isArray(actions) ? actions : [actions]).filter(Boolean);
-    if (!battle || !list.length) return false;
-    if (battle._reactionNested) battle._reactionNested.push(...list);
-    else (battle.reactionQueue ||= []).push(...list);
-    return true;
+  // 子模块由 publish-bundles.json 保证在本文件之前加载。
+  // 缺失时显式抛错而非 || {} 兜底：兜底会让方法静默消失，
+  // 表现为剩余段不结算、且不报错，排查成本极高。
+  const store = window.BattleReactionQueueStore;
+  const runner = window.BattleReactionQueueRun;
+  if (!store || !runner) {
+    throw new Error("battle-reaction-queue: 缺少子模块 BattleReactionQueueStore / BattleReactionQueueRun");
   }
-
-  function prepend(state, actions) {
-    const battle = state?.battle, list = (Array.isArray(actions) ? actions : [actions]).filter(Boolean);
-    if (!battle || !list.length) return false;
-    if (battle._reactionNested) battle._reactionNested.unshift(...list);
-    else (battle.reactionQueue ||= []).unshift(...list);
-    return true;
-  }
-
-  function damageAction(actor, target, amount, source, card) {
-    return { kind: "damage", actorUid: actor?.uid, targetUid: target?.uid, amount, source, card };
-  }
-  function directDamageAction(actor, target, amount, source, card, delay = 0) {
-    return { kind: "directDamage", actorUid: actor?.uid, targetUid: target?.uid, amount, source, card, delay };
-  }
-  function resolvedHitAction(actor, target, amount, source, card) {
-    return { kind: "resolvedHit", actorUid: actor?.uid, targetUid: target?.uid, amount, source, card };
-  }
+  const { current, enqueue, damageAction, pending } = store;
+  const { activateShare, run } = runner;
 
   function captureHitContinuation(battle, actor, target, amount, source, card, remainingHits, group = null) {
     if (!battle || !actor || !target) return false;
@@ -99,48 +81,6 @@ window.BattleReactionQueue = (() => {
     return true;
   }
 
-  function activateShare(state) {
-    const battle = state?.battle;
-    if (!battle || battle.kaiichiShare || !battle.kaiichiShareQueue?.length || battle.locked) return false;
-    return !!window.HoshinoSkills?.activateShare?.(state);
-  }
-
-  function run(state, action, damage) {
-    const battle = state.battle, roster = units(battle);
-    if (action.kind === "damage" || action.kind === "directDamage" || action.kind === "resolvedHit") {
-      const actor = roster.find(unit => unit.uid === action.actorUid);
-      const target = roster.find(unit => unit.uid === action.targetUid && unit.hp > 0);
-      if (actor && target) {
-        if (action.skillName) window.BattleLines?.skill?.(state, actor, action.skillName, target);
-        if (action.logText) window.BattleLog?.add?.(state, action.logText);
-        const card = action.prepareGroupKill
-          ? (window.EnemySkills?.prepareGroupKillTarget?.(state, actor, target, action.card) || action.card)
-          : action.card;
-        const hit = action.kind === "resolvedHit" && damage.hitWithoutDodge
-          ? damage.hitWithoutDodge
-          : action.kind === "directDamage" && damage.directDamage
-            ? damage.directDamage
-            : damage;
-        const result = action.kind === "resolvedHit"
-          ? hit(state, actor, target, action.amount, action.source, card)
-          : action.kind === "directDamage"
-            ? hit(state, target, action.amount, action.source, actor, action.delay || 0, card)
-            : hit(state, target, action.amount, action.source, actor, card);
-        if (result?.dodged && action.edisGroupHealCard?._edisDarkBlocked) action.edisGroupHealCard._edisDarkBlocked.add(target.uid);
-      }
-      return;
-    }
-    if (window.EnemySkills?.resolveReactionAction?.(state, action, damage)) return;
-    if (window.AngelicaLukaSkills?.resolveReactionAction?.(state, action, damage)) return;
-    if (action.kind === "kaiichiBloodHeal") {
-      window.HoshinoSkills?.resolveBloodHeal?.(state, action, {
-        damage,
-        draw: window.BattleSystem?.draw,
-        pushFloat: window.BattleSystem?.pushFloat,
-      });
-    }
-  }
-
   // 异步回调（受击浮字 onSettled 等）里新入队的动作，若没人再触发一次 flush
   // 就会滞留到回合流转被 cleanupPrompts 清空，表现为伤害永不落地。
   // requestFlush 允许这类回调在自身结束后重新驱动一轮结算。
@@ -188,9 +128,15 @@ window.BattleReactionQueue = (() => {
     return !pending(battle) && !battle.locked;
   }
 
-  function pending(battle) {
-    return !!(battle?.reactionQueue?.length || battle?.kaiichiShare || battle?.kaiichiShareQueue?.length);
-  }
-
-  return { enqueue, prepend, damageAction, directDamageAction, resolvedHitAction, captureHitContinuation, flush, requestFlush, pending };
+  return {
+    enqueue: store.enqueue,
+    prepend: store.prepend,
+    damageAction: store.damageAction,
+    directDamageAction: store.directDamageAction,
+    resolvedHitAction: store.resolvedHitAction,
+    captureHitContinuation,
+    flush,
+    requestFlush,
+    pending: store.pending,
+  };
 })();
