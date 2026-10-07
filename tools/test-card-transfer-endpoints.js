@@ -9,6 +9,8 @@ const path = require("path");
 
 const LOCAL = path.join(__dirname, "..", "src", "original",
   "battle-effect-card-transfers.js");
+const EXIT_LOCAL = path.join(__dirname, "..", "src", "original",
+  "battle-effect-card-transfers-exit.js");
 
 function check(name, cond, extra) {
   console.log(`${cond ? "✅" : "❌"} ${name}`
@@ -27,6 +29,9 @@ function loadTransfers(source, label) {
   });
   sandbox.__calls = [];
   const ctx = vm.createContext(sandbox);
+  // 主文件组装时会校验子模块，须先加载 exit
+  vm.runInContext(fs.readFileSync(EXIT_LOCAL, "utf8"), ctx,
+    { filename: "battle-effect-card-transfers-exit.js" });
   vm.runInContext(source, ctx, { filename: label });
   const factory = sandbox.window.BattleEffectCardTransfers;
   return { factory, calls: sandbox.__calls };
@@ -61,14 +66,15 @@ function makeU() {
   const newT = loadTransfers(localSrc, "本地新版");
   const apiNew = newT.factory(u);
 
-  console.log("【1】正常路径：友方手牌区 → 敌方头像（偷窃）");
+  console.log("【1】正常路径：友方头像 → 敌方头像（偷窃，背面飞行）");
   await apiNew.stealCard({
     type: "stealCard", fromUid: "a1", fromSide: "ally",
     toUid: "e1", toSide: "enemy", count: 1, cards: [{}],
   }, () => {}, () => true);
   let c = newT.calls[0];
-  total++; pass += check("起点 = 友方手牌区（未被回退链改动）",
-    c.from?.tag === "active-hand", { from: c.from });
+  // 现行规格：角色间移牌起点为来源角色头像，不再是手牌区
+  total++; pass += check("起点 = 来源角色头像（角色间移牌统一走头像）",
+    c.from?.tag === "ally-art", { from: c.from });
   total++; pass += check("终点 = 敌方头像（未被回退链改动）",
     c.to === els.enemyArt, { to: c.to });
 
@@ -81,8 +87,8 @@ function makeU() {
   c = newT.calls[0];
   total++; pass += check("新版终点回退到公共区（不再为 null）",
     c.to === els.publicEl, { to: c.to });
-  total++; pass += check("新版起点仍为友方手牌区，起终点不同（不会原地飞）",
-    c.from?.tag === "active-hand" && c.from !== c.to,
+  total++; pass += check("起点 = 来源角色头像，起终点不同（不会原地飞）",
+    c.from?.tag === "ally-art" && c.from !== c.to,
     { from: c.from, to: c.to });
 
   console.log("\n【3】极端回退：两端都取不到，且无公共区");
@@ -106,8 +112,9 @@ function makeU() {
     type: "giveCards", fromUid: "a1", fromSide: "ally",
     toUid: "e1", toSide: "enemy", count: 1, cards: [{}],
   }, () => {}, () => true);
-  total++; pass += check("giveCards 正常路径起点=手牌区、终点=敌方头像",
-    t3.calls[0].from?.tag === "active-hand" && t3.calls[0].to?.tag === "enemy-art",
+  // 现行规格：角色间移牌统一走头像（背面飞行），不再是手牌区
+  total++; pass += check("giveCards 正常路径起点=来源角色头像、终点=目标角色头像",
+    t3.calls[0].from?.tag === "ally-art" && t3.calls[0].to?.tag === "enemy-art",
     { from: t3.calls[0].from, to: t3.calls[0].to });
 
   console.log(`\n${pass}/${total}`);
