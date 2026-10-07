@@ -36,6 +36,8 @@ window.RuinsRelicEffects = { missileLauncherBlock: () => true };
   "battle-status-card-registry.js", "battle-status-card-storage.js", "battle-status-card-triggers.js", "battle-status-cards.js",
   "battle-draw-feedback.js", "battle-turn-state.js", "battle-combat-visuals.js",
   "battle-card-playability.js", "battle-combat-targeting.js",
+  "battle-reaction-queue-store.js",
+  "battle-reaction-queue-run.js",
   "battle-reaction-queue.js",
   "battle-card-tactics.js", "battle-card-active-relics-core.js", "battle-card-active-relics-demon.js", "battle-card-active-relics-assassin.js", "battle-card-active-relics-arsenal.js", "battle-card-active-relics.js",
   "battle-card-hand-interactions.js", "battle-card-counter-interactions.js",
