@@ -39,7 +39,21 @@ async function runCase(page, withFrom) {
     const tracks = new Map();
     const timer = setInterval(() => {
       document.querySelectorAll(".card-flight").forEach(el => {
-        if (!el.__id) el.__id = Math.random().toString(36).slice(2);
+        if (!el.__id) {
+          el.__id = Math.random().toString(36).slice(2);
+          // is-front 只在落位后存在约 60ms（翻面 → wait(60) → 移除），16ms
+          // 轮询会整段漏掉。用 MutationObserver 补采 class 变化，否则 B3
+          // 会把"翻了面但没采到"误判成"没翻面"。
+          const rec0 = tracks.get(el.__id) || { pts: [], back: [], front: [] };
+          tracks.set(el.__id, rec0);
+          new MutationObserver(() => {
+            const r = tracks.get(el.__id);
+            if (!r) return;
+            r.back.push(el.classList.contains("is-back"));
+            r.front.push(el.classList.contains("is-front"));
+            r.cls = el.className;
+          }).observe(el, { attributes: true, attributeFilter: ["class"] });
+        }
         const c = center(el);
         const rec = tracks.get(el.__id) || { pts: [], back: [], front: [] };
         rec.pts.push(c);
@@ -57,6 +71,10 @@ async function runCase(page, withFrom) {
     if (withFrom) { evt.fromUid = other.uid; evt.fromSide = "ally"; }
     b.animQueue = b.animQueue || [];
     b.animQueue.push(evt);
+    // 必须显式驱动：推事件只是入队，队列由 render() 触发 drain 才消费；
+    // 不驱动时 drain 可能整轮不跑，"没翻面"其实是"根本没播"。
+    try { window.BattleEffects && window.BattleEffects.recover(st); } catch (e) {}
+    try { window.render && window.render(); } catch (e) {}
     await new Promise(r => setTimeout(r, 2200));
     clearInterval(timer);
 
