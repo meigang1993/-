@@ -56,6 +56,12 @@ window.BattleSession = ({
       window.SakuraRisaSkills?.onDrawRedirected?.(
         battle, unit, recipient, batch.length);
     });
+    // 多角色循环摸牌：队尾一批「不同角色」的 drawBatch 收成一条 drawGroup
+    // 由动画层并行播放，避免逐人串行连播 N 段。技能/饰品因此不必各自记得
+    // 调用打包器——凡是走到 draw() 的多角色摸牌都自动一次性播放。
+    // 开局摸牌走 eventCollector，由 start() 自己包成 initialDrawGroup，
+    // 这里不能打包（外层要的是批次数组，不是一个组）。
+    if (!eventCollector) window.BattleDrawPacker?.packDrawGroup?.(battle);
     window.RuinsRelicEffects?.afterDraw?.(
       window.state?.battle === battle ? window.state : { battle },
       unit, cards, draw, { getCombat });
