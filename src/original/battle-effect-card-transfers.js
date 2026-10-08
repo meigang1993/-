@@ -3,7 +3,7 @@
 // battle-effect-card-transfers-exit.js，由本文件在返回前组装回来。
 window.BattleEffectCardTransfers = U => {
   const {
-    publicZone, drawOrigin, pileZone, unitArt, handSpot,
+    publicZone, drawOrigin, pileZone, unitArt, handSpot, center,
   } = U;
   const flight = window.BattleEffectCardMotion(U);
   // 缺失时显式抛错而非 || {} 兜底：兜底会让封印/燃烧/公共区回收动画
@@ -20,13 +20,30 @@ window.BattleEffectCardTransfers = U => {
   // 自己没有飞入动画」的由来。不足 MIN_DRAW 时把起点沿反方向推远，
   // 保证每张牌都飞得看得见；方向不变、终点不变。
   const MIN_DRAW = 130;
+  // 锚点函数（drawOrigin / handSpot / unitArt）返回的是 **DOM 元素**，不是
+  // 坐标对象。早期版本直接拿 element.x 做差，得到 NaN —— `!NaN` 为真，
+  // 于是函数原样返回起点，最小距离**从未生效**（4 人队实测仍有两张牌只飞
+  // 73px）。必须先把两侧都解析成坐标再算距离。
+  const toPoint = value => value
+    && typeof value.getBoundingClientRect === "function"
+    ? center(value) : value;
   function withMinDistance(from, to) {
-    if (!from || !to) return from;
-    const dx = to.x - from.x, dy = to.y - from.y;
+    const start = toPoint(from), end = toPoint(to);
+    if (!start || !end) return from;
+    const dx = end.x - start.x, dy = end.y - start.y;
     const dist = Math.hypot(dx, dy);
     if (!dist || dist >= MIN_DRAW) return from;
+    // 沿「终点 → 起点」方向把起点往外推：方向与终点都不变，只是飞得更远。
     const k = MIN_DRAW / dist;
-    return { x: to.x - dx * k, y: to.y - dy * k };
+    const pushed = { x: end.x - dx * k, y: end.y - dy * k };
+    // 推出去的起点可能落到视口外（牌会「凭空」从屏幕外飘进来），夹回视口内。
+    const margin = 16;
+    const width = window.innerWidth || 0, height = window.innerHeight || 0;
+    if (width && height) {
+      pushed.x = Math.min(Math.max(pushed.x, margin), width - margin);
+      pushed.y = Math.min(Math.max(pushed.y, margin), height - margin);
+    }
+    return pushed;
   }
 
   function gainOrigin(event) {
@@ -34,6 +51,10 @@ window.BattleEffectCardTransfers = U => {
       return publicZone() || drawOrigin(event.side);
     }
     return unitArt(event.fromUid) || publicZone() || drawOrigin(event.side);
+  }
+  // 从牌堆/公共区到自己手牌的落点也可能只有几十像素，同样要有可辨识的飞行。
+  function gainDestination(event) {
+    return handSpot(event.uid, event.side) || unitArt(event.uid);
   }
   // 角色间移牌（交牌/偷牌/从他人处获得）统一走角色头像：背面牌从一个角色
   // 头像飞到另一个角色头像。此前起点终点取手牌区（友方）或头像（敌方），
@@ -92,9 +113,9 @@ window.BattleEffectCardTransfers = U => {
     // 从其他角色处获得（伊迪斯拷贝、知识吸收等）则与交牌/偷牌同口径。
     const fromUnit = isUnitTransfer(event);
     await flight.transfer(event, fromUnit ? avatarEnd(event.fromUid, event.side)
-      : gainOrigin(event),
+      : withMinDistance(gainOrigin(event), gainDestination(event)),
     fromUnit ? avatarEnd(event.uid, event.side)
-      : (handSpot(event.uid, event.side) || unitArt(event.uid)),
+      : gainDestination(event),
     "draw-card-fly gain-card-fly", renderStep, true, active, {
       revealFace: !fromUnit && event.side !== "enemy",
       onArrive: () => syncIncomingHand(event),
