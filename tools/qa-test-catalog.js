@@ -85,6 +85,7 @@ const groups = Object.freeze({
     "test-reaction-queue-guards-live.js",
     "test-aileng-bet-instant-draw-live.js",
     "test-aileng-bet-instant-discard-live.js",
+    "test-carlos-crazy-shooting-free-live.js",
     "test-aileng-awaken-persist-live.js",
     "test-phantom-sword-dance-live.js",
     "test-crazy-bayonet-multihit-live.js",
