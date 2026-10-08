@@ -361,7 +361,7 @@
     "ruins-relic-ice-dagger.js",
     "ruins-relic-propeller.js",
     "ruins-relic-effects.js",
-    "battle-session.js",
+    "battle-draw-packer.js", "battle-session.js",
     "battle-auto-enemy.js",
     "battle-turn-start.js",
     "battle-turn-input.js",
