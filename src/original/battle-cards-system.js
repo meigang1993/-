@@ -80,8 +80,13 @@ window.BattleCards = window.BattleCards || (() => {
     if (!zone || !card) return;
     const trailId = opts.showDiscard || opts.forcedDiscard
       || pile === "consumed" && card._playedFlightDone ? moveId(card) : "";
-    if (!opts.skipAnim && pile === "discard" && b?.animQueue) pushDiscardBatch(
-      b, holder, [card], !!(opts.showDiscard || opts.forcedDiscard));
+    if (!opts.skipAnim && pile === "discard" && b?.animQueue) {
+      pushDiscardBatch(
+        b, holder, [card], !!(opts.showDiscard || opts.forcedDiscard));
+      // 与摸牌对称：多名角色连续弃牌时把队尾收成 discardGroup 并行播放，
+      // 调用方（技能/饰品）不必各自记得调用打包器。
+      window.BattleDrawPacker?.packDiscardGroup?.(b);
+    }
     if (!opts.skipAnim && pile === "consumed" && b?.animQueue) b.animQueue.push({
       type: "burnCard", card, uid: holder?.uid, side: holder?.side,
       fromPublic: !!card._playedFlightDone, trailId,
@@ -102,8 +107,11 @@ window.BattleCards = window.BattleCards || (() => {
     if (!list.length) return 0;
     const discardCards = pile === "discard"
       ? list.filter(card => !card.void && !card.copiedByEdis) : list;
-    if (!opts.skipAnim && pile === "discard" && discardCards.length && b?.animQueue) pushDiscardBatch(
-      b, holder, discardCards, !!(opts.showDiscard || opts.forcedDiscard));
+    if (!opts.skipAnim && pile === "discard" && discardCards.length && b?.animQueue) {
+      pushDiscardBatch(
+        b, holder, discardCards, !!(opts.showDiscard || opts.forcedDiscard));
+      window.BattleDrawPacker?.packDiscardGroup?.(b);
+    }
     list.forEach(card => {
       const redirected = pile === "discard" && (card.void || card.copiedByEdis);
       put(b, holder, card, pile, {
@@ -118,5 +126,8 @@ window.BattleCards = window.BattleCards || (() => {
   return {
     afterHandLost, countsForHand, visibleHandCount, queueResponse, syncStatusCards,
     showDiscard, showForcedDiscard, put, putMany,
+    // 多角色弃牌的合并入口，实现在 BattleDrawPacker（与摸牌侧同一套逻辑）：
+    // 队尾多个「不同角色」的 discardBatch 收成一条 discardGroup 并行播放。
+    packDiscardGroup: battle => window.BattleDrawPacker?.packDiscardGroup?.(battle) || 0,
   };
 })();
