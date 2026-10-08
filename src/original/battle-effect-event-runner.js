@@ -88,6 +88,17 @@ window.BattleEffectEventRunner = handlers => {
       await handlers.gainCards(event, renderThrottled, active);
     } else if (event.type === "discardBatch") {
       await handlers.discardBatch(event, renderThrottled, active);
+    } else if (event.type === "discardGroup") {
+      // 与 drawGroup 对称：多角色弃牌并行播放，而不是逐人串行连播 N 段。
+      let packFailure = null;
+      await Promise.all((event.batches || []).map(async batch => {
+        try {
+          await handlers.discardBatch(batch, renderThrottled, active);
+        } catch (err) {
+          if (!packFailure) packFailure = err;
+        }
+      }));
+      if (packFailure) throw packFailure;
     } else if (event.type === "sealCards") {
       await handlers.sealCards(event, renderThrottled, active);
     } else if (event.type === "burnCard") {
