@@ -50,6 +50,42 @@ function finishRepeatedAnimations(root, repeated) {
     });
   });
 }
+// 死亡动画跨整屏重建续播。
+//
+// 背景：ui-battle-units 在单位死亡且 deathAnimationPending 期间持续挂
+//   death-anim，而 app-render 用 setHTML 整块重建 DOM —— 死亡结算往往伴随
+//   多条日志/状态变化，同一次死亡会触发多次 render，于是 deathFade 每次都
+//   从 0% 重新播放（实测 3 次），视觉上就是死亡动画反复抽搐。
+//
+// 不能走 repeatableEntryAnimations：那条路径是"重建后直接把动画跳到末尾并
+//   暂停"，用于入场动画；死亡动画必须完整播完，否则玩家看不到渐隐过程。
+//
+// 做法与 preserveCaptionProgress 同构：按单位 uid 记录重建瞬间的 currentTime，
+//   新 DOM 挂载后写回，动画从中断处继续，全程只播一次。
+function preserveDeathAnim(root) {
+  const cache = new Map();
+  root?.querySelectorAll?.(".unit.death-anim").forEach(element => {
+    const uid = element.dataset?.target;
+    if (uid == null) return;
+    const animation = (element.getAnimations?.() || [])
+      .find(item => item.animationName === "deathFade");
+    const time = animation?.currentTime;
+    if (time == null) return;
+    cache.set(uid, time);
+  });
+  return () => {
+    if (!cache.size) return;
+    void root.offsetHeight;
+    root.querySelectorAll(".unit.death-anim").forEach(element => {
+      const time = cache.get(element.dataset?.target);
+      if (time == null) return;
+      const animation = (element.getAnimations?.() || [])
+        .find(item => item.animationName === "deathFade");
+      // 首次死亡的单位没有旧记录，从头播；已播过的从中断处续。
+      if (animation) animation.currentTime = time;
+    });
+  };
+}
 function preserveCaptionProgress(root) {
   const cache = new Map();
   root?.querySelectorAll?.(".skill-caption").forEach(element => {
@@ -93,6 +129,7 @@ function setHTML(el, html) {
   if (!el || el.innerHTML === html) return false;
   const repeated = repeatedAnimations(el);
   const restoreCaptions = preserveCaptionProgress(el);
+  const restoreDeathAnim = preserveDeathAnim(el);
   const restoreMedia = el.dataset?.skipMediaPreservation === "1"
     ? () => {}
     : preserveMedia(el);
@@ -103,6 +140,7 @@ function setHTML(el, html) {
   restoreHandSelection();
   restoreMedia();
   restoreCaptions();
+  restoreDeathAnim();
   restoreFocus();
   restoreModalFocus();
   finishRepeatedAnimations(el, repeated);
