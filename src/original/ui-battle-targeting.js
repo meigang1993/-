@@ -4,6 +4,11 @@ window.GameUIBattleTargeting = (() => {
   const hasMagicBulletCard = unit => window.CardUtils.magicBulletCards(unit).length > 0;
 
   function targetAllowed(unitData, battle, actor, card) {
+    // 无目标牌（疯狂射击、物资补给、机枪扫杀…共 42 处 targetless）不进入任何
+    // 选目标分支：它们要么自动覆盖全体，要么只需再挑一张手牌。
+    // 缺了这层短路，疯狂射击会落到末尾兜底 `side === "enemy"`，
+    // 把敌方全员标成可选，误导玩家以为要手动点敌人。
+    if (card?.targetless) return false;
     const handChoice = card?.bloodPact || card?.elranaBag
       || card?.elranaHeal || card?.idolKiss || card?.mariaHonorBlessing;
     const partnerCard = card?.comboAttack || card?.borrowSlash;
