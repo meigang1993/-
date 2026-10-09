@@ -56,7 +56,11 @@ window.BattleEffects = (() => {
     if (card && arts.length === 1) {
       return setLine(center(card), center(arts[0]), false, enemyLine);
     }
-    if (!uid || !card || !art) return hideLine();
+    // 自我目标技能（疯狂射击、热血契约、贪玩老虎机…共 15 个 target:"self"）
+    // 会把 pendingTargetUid 设成自己。此时目标线连回自己头像没有信息量，
+    // 反而像"要打自己"——疯狂射击在还没选红色手牌时尤其明显。
+    // 注意：只挡单体兜底分支；群体分支（已选定转化牌后指向全体敌方）不受影响。
+    if (!uid || !card || !art || uid === actor?.uid) return hideLine();
     setLine(center(card), center(art), false, enemyLine);
   }
   function choose(state, uid) {
