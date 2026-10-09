@@ -94,7 +94,7 @@ window.GameDataCharactersCore = [
     stats: { attack: 4.8, magic: 2.5, speed: 6.7, maxHp: 55, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 4 },
     evaluation: "红牌转化与单体追加伤害输出。疯狂射击把红色手牌转为群体杀牌且不消耗杀意，疯狂刺刀根据命中后仍持有的【杀】数量追加多段无视护甲伤害。",
     skills: [
-      { name: "疯狂射击", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以将1张红色手牌当【机枪扫杀】使用，并保留该牌原有花色；由此转化出的【机枪扫杀】不消耗杀意。", card: { name: "疯狂射击", type: "tactic", crazyShooting: true, targetless: true, icon: "⚔️", text: "将1张红色手牌当【机枪扫杀】使用，并保留原花色；转化出的【机枪扫杀】不消耗杀意。" } },
+      { name: "疯狂射击", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以将1张红色手牌当【机枪扫杀】使用；由此转化出的【机枪扫杀】不消耗杀意。", card: { name: "疯狂射击", type: "tactic", crazyShooting: true, targetless: true, icon: "⚔️", text: "将1张红色手牌当【机枪扫杀】使用；转化出的【机枪扫杀】不消耗杀意。" } },
       { name: "疯狂刺刀", type: "passive", icon: "⭐", text: "锁定技，当你使用的单体【杀】未被【闪】抵消并造成伤害后（造成护甲值伤害也算），你对目标追加X次等同于你攻击力的无视护甲伤害（X为你当前手牌中的【杀】数）。" }
     ]
   }
