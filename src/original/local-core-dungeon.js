@@ -5,7 +5,12 @@ window.LocalCoreDungeonOps = (() => {
   function startDungeon(core, args) {
     const missionId = String(args.missionId || "machine_factory"), difficultyId = String(args.difficultyId || "normal");
     const mission = GameData.missions?.find(m => m.id === missionId);
-    if (!mission || mission.kind !== "dungeon" || !GameData.difficulties?.[difficultyId] || !core.unlockedDifficulties.includes(difficultyId)) return outcomes.rejected;
+    // 难度解锁按副本独立；core 若来自旧版同步会缺 dungeonUnlocks，先迁移补齐。
+    window.DungeonUnlocks?.migrate?.(core);
+    const difficultyOpen = window.DungeonUnlocks
+      ? window.DungeonUnlocks.has(core, missionId, difficultyId)
+      : (core.unlockedDifficulties || []).includes(difficultyId);
+    if (!mission || mission.kind !== "dungeon" || !GameData.difficulties?.[difficultyId] || !difficultyOpen) return outcomes.rejected;
     if (mission.requiresFlag && !core.flags?.[mission.requiresFlag]) return outcomes.rejected;
     core.pendingRun = { gold: 0, essence: 0, cards: [], relics: [] };
     const runId = String(args.runId || "");
