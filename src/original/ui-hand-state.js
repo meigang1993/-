@@ -103,7 +103,7 @@ window.GameUIHandState = (() => {
   function needsHandChoice(card) {
     return !!(card?.bloodPact || card?.elranaBag
       || card?.armyOrder || card?.elranaHeal || card?.idolKiss || card?.crazyShooting
-      || card?.demonPoker || card?.cadicisPlan || card?.mariaHonorBlessing);
+      || card?.demonPoker || card?.mariaHonorBlessing);
   }
 
   function selectionReady(battle, actor, card, handChoice, soulNeed) {
