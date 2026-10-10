@@ -86,31 +86,6 @@ window.NonokaLokiSkills = (() => {
     window.BattleLog.add(state, `${actor.name} 的杀牌数${own}大于${target.name}的${other}，智障力大使本次杀伤害翻倍。`);
     return amount * 2;
   }
-  function protectNonoka(state, actor, target, card, deps) {
-    if (!isKillCard(card) || card?.lokiProtectDone || target?.ref !== "nonoka") return target;
-    const loki = state.battle.allies.find(unit => unit.ref === "loki" && unit.hp > 0);
-    if (!loki) return target;
-    card.lokiProtectDone = true;
-    // 护母心切是锁定技：洛基「代替诺诺卡使用1张闪」，若未能以此法使用闪则改为
-    // 代替承受伤害。麻痹（noResponse）禁止使用响应牌，故此时按「未能使用闪」处理，
-    // 走承受伤害分支——与技能描述一致，不是让麻痹者照常出闪。
-    const dodge = card?.ignoreResponse || loki.noResponse ? null : loki.hand.find(item => item.name === "闪" && item.type === "response" && !item._pendingDraw && (!card?.blackDodgeOnly || item.suit === "♠" || item.suit === "♣"));
-    line(state, loki, "护母心切");
-    if (dodge) {
-      const visualHandBefore = window.BattleCards.visibleHandCount(loki);
-      loki.hand.splice(loki.hand.indexOf(dodge), 1); window.BattleCards?.put(state.battle, loki, dodge, "discard", { skipAnim: true });
-      // 出牌区与战报须同口径：按「被响应的威胁牌」判使用/打出。
-      const lokiVerb = window.CardUtils?.isSingleKill?.(card) ? "使用" : "打出";
-      window.BattleCards?.queueResponse?.(state.battle, loki,
-        { type: "response", id: `lp${deps.nextAnim()}`, uid: loki.uid, side: loki.side, card: dodge, action: `${lokiVerb}了` },
-        visualHandBefore);
-      window.BattleLog.add(state, `${loki.name} 触发护母心切，代替${target.name}${lokiVerb}闪抵消本次杀。`);
-      afterCardResponded(state, loki, actor, dodge, deps);
-      return null;
-    }
-    window.BattleLog.add(state, `${loki.name} 触发护母心切，${card?.ignoreResponse ? "但本次杀不可响应，" : loki.noResponse ? "但无法使用响应牌，" : "没有闪，"}}}代替${target.name}承受本次杀。`);
-    return loki;
-  }
   function sourceLabel(battle, actor, source) {
     const mimic = sourceActor(battle, actor);
     return mimic ? `${mimic.name}（${source}）` : source;
@@ -125,6 +100,6 @@ window.NonokaLokiSkills = (() => {
     endTurn: window.NonokaNewMoonSkills.endTurn,
     toggleNewMoonCard: window.NonokaNewMoonSkills.toggleCard,
     resolveNewMoonShare: window.NonokaNewMoonSkills.resolveShare,
-    modifySlashDamage, protectNonoka, sourceLabel, sourceActor,
+    modifySlashDamage, sourceLabel, sourceActor,
   };
 })();
