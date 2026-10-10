@@ -279,7 +279,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 暴走: all red hand cards, including response cards, visibly display as 【杀（普攻）】 and can be actively used as no-intent-cost 普攻杀, creating stable offensive pressure. Active selection, targeting, animation, and resolution must use the converted normal-kill form rather than the original card's target or effect flags. This display conversion is transient: the original card fields are restored after resolution, and the preview disappears immediately after switching away from 暴走 or when the state expires at the next turn start.
 - Intent rule: 暴走 red cards and 杀欲窥视 copied kill cards must remain playable at 0 杀意 because both are no-intent-cost kill effects.
 - 极速: black cards used by XX型凋零者1124号 are unresponsive, and black cards can also be used as 闪 or 看破, improving offense pressure, defense, and counterplay.
-- Unresponsive rule: 不可响应 blocks 闪, 看破, and proxy dodge effects such as 护母心切 or 为我护驾 using 闪 to cancel the card.
+- Unresponsive rule: 不可响应 blocks 闪, 看破, and the proxy dodge effect 为我护驾 using 闪 to cancel the card.
 - Switch rule: 暴走与极速 is no longer once per turn. Red cards greater than or equal to black cards selects 暴走; black cards greater than red cards selects 极速. It can be used again whenever this would change the current form.
 - Important rule: 暴走 and 极速 must only be cleared at the beginning of that unit's next turn. Do not clear them during the same turn or at turn end.
 - UI rule: do not render an extra 暴走/极速 floating label. The existing status marker is enough.
@@ -626,12 +626,11 @@ gameplay values and behavior remain here rather than being duplicated in
 - 角色与怪物技能的完整名称、类型、图标、公开描述和衍生技能以角色/敌人数据源为准；运行时技能模块实现这些公开设定，`game-settings.md`记录跨模块展示与交互契约。新增或修改技能时必须同步数据、运行时和本节契约，不能只改其中一处。
 - 当前正式内容包括26名可玩角色、71项角色技能、24类敌人、54项敌人技能和30件正式饰品；30件饰品均须保留独立运行契约，其中3件为主动饰品、1件为触发饰品。增删内容时必须同步更新数据总数和技能展示契约。
 - 所有我方角色主动技能必须只匹配一个规范主动技能身份，并由当前战斗中仍存活、持有同名且携带对应规范技能牌的当前行动角色发动；同时携带多个主动技能标记的混合伪造牌、只有同名但缺失规范技能牌的损坏技能对象、没有当前行动权的角色都直接拒绝。准备阶段技能只接受其准备窗口，出牌阶段技能只接受出牌阶段。自用技能只接受发动者本人，敌方目标、任意其他角色、其他友方、友方男性和友方女性目标分别按技能公开描述校验，倒下或不属于当前战斗的目标一律拒绝。需要单张费用或多张费用的技能必须确认所选实体手牌仍存在、可见且满足花色/牌型要求。任一角色、技能所有权、行动权、阶段、目标、次数、资源或费用校验失败，都必须在公共出牌区、战斗日志、出牌计数、手牌移动、使用标记和派生效果之前返回失败。上述统一契约由`src/original/character-skill-access.js`、`battle-card-playability.js`与`battle-combat.js`共同负责。
-- 受限手牌费用必须在同一共享规则下同时约束手牌禁用态、点击/拖拽选择和最终结算，不得只在发动末端报错。当前规则为：【偶像之吻】仅可选`♥`牌，【疯狂射击】仅可选`♥/♦`红牌，【战场指挥官】仅可选【杀】或战术牌，【鬼王扑克】仅可选非战术牌，【军令状】首张必须为标准花色且第二张必须与其花色完全相同；已选的【军令状】费用牌仍可点击取消。非法候选不得改写已选索引、待定目标或多选列表，脚本调用和旧状态仍须在最终结算再次拒绝。
+- 受限手牌费用必须在同一共享规则下同时约束手牌禁用态、点击/拖拽选择和最终结算，不得只在发动末端报错。当前规则为：【偶像之吻】仅可选`♥`牌，【疯狂射击】仅可选`♥/♦`红牌，【鬼王扑克】仅可选非战术牌，【军令状】首张必须为标准花色且第二张必须与其花色完全相同；已选的【军令状】费用牌仍可点击取消。非法候选不得改写已选索引、待定目标或多选列表，脚本调用和旧状态仍须在最终结算再次拒绝。
 - 曼妮军火库衍生的`巴特雷`属于角色衍生技能，来源固定为`derived`，不得伪装成饰品技能或进入饰品主动技选择链。诺诺卡的`新月之歌`固定为被动技能，角色主动技可用性与AI不得保留不存在的`newMoonSong`主动牌分支。
 - 索尼娅与凋零者的`杀欲窥视`为主动技且每回合限一次；指定一名敌方角色后，直接复制其每张可见【杀】为同名同花色的临时消耗牌，不打开或排队任何展示手牌界面。复制牌保留`generatedBySkill`来源且不消耗杀意。首次执行后，可用性层、AI与执行器都必须读取`usedWithererPeek`并拒绝同回合再次发动，重复调用不得再次生成临时【杀】。
 - 技能图标按已确认语义保持：普通主动技`⚔️`、自动锁定技默认`⭐`、可选触发/响应技可使用`🔵`、限定技`🔺`、觉醒/使命技`💰`、转换技`🔄`。已记录的专用图标优先，例如榨取精华固定为`🔵`；不能仅根据`type`字段批量覆盖这些例外。
 - 芙萝娅的`神速之翼`、`神速飞剑`，卡迪西斯的`重火力支援`，拉芙的`鬼牌狂欢`均为自动锁定技，固定使用`⭐`。我方的`复仇之刃`、`终焉回旋斩`、`刺刀AK47`及`血色刺伞`为蓝色触发技，由玩家决定是否发动；敌方的`剑盾反攻`等反击效果也使用蓝色触发技图标和文案，但仍由敌方 AI 自动决定。机器魅魔的`爱之鞭挞`由准备阶段自动执行，数据类型固定为`passive`并使用`⭐`，不得显示为可主动发动的`⚔️`技能。
-- 卡迪西斯的`战场指挥官`记录【杀】或战术牌牌名；其他友方角色使用同名【杀】或战术牌时，该牌不可被响应且其造成的每次伤害翻倍。公开技能与技能牌描述必须同时覆盖这两类牌，不能继续只写同名【杀】。
 - 卡迪西斯的`重火力支援`只由其使用实体【杀】触发，对所有存活敌人造成等同于其攻击力的无视护甲伤害。该附加伤害继承触发【杀】的毒、雷、火、圣、暗、冰等伤害属性及物理/魔法类别，用于伤害反馈和对应防御判定；不重复附加原【杀】的中毒、感电、圣痕等后续状态效果。
 - 拉芙的`鬼牌狂欢`必须在判定动画结束后保存该次实际标准花色，并在她的战场头像与行动区头像上同步显示对应`♥/♦/♠/♣`圆形徽记；判定动画播放期间不得提前显示新花色。红色花色与黑色花色使用不同牌面配色，悬停提示同时说明当前大鬼牌或小鬼牌模式。后续判定在动画结束时替换旧花色，不得因同屏重绘丢失。
 - 杰洛特的`爆头一击`适用于实体、虚拟、转换、单体与群体【杀】。每张【杀】在首次未被【闪】抵消且即将造成伤害时只进行一次判定；若该【杀】与判定牌颜色相同，该【杀】本次造成的伤害固定变为2倍，群体与多段结算沿用同一次判定结果。
