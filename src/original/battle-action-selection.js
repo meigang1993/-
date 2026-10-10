@@ -81,7 +81,7 @@ async function confirmBattleCard() {
 function needsHandChoice(card) {
   return !!(card?.bloodPact || card?.elranaBag
     || card?.armyOrder || card?.elranaHeal || card?.idolKiss || card?.crazyShooting
-    || card?.demonPoker || card?.cadicisPlan);
+    || card?.demonPoker);
 }
 
 async function quickPlayTargetless(index) {
