@@ -132,7 +132,13 @@ window.LocalCoreDungeonOps = (() => {
       if (card) result.cards.push({ ...card });
     } else {
       const relic = window.RelicSystem?.randomElite?.(enemyId, new Set(core.resources.relics || []), core);
+      // 该敌人的饰品已全部拥有时池为空，此前直接什么都不发，玩家看到「打完精英没奖励」。
+      // 回退到该敌人的卡牌掉落，保证稀有奖励位不落空（仍遵循已拥有不重复的原则）。
       if (relic) result.relics.push(relic);
+      else if (names.length) {
+        const card = sample((GameData.eliteCards || []).filter(item => names.includes(item.name)), core);
+        if (card) result.cards.push({ ...card });
+      }
     }
     return result;
   }
