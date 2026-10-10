@@ -73,6 +73,9 @@ window.DungeonUnlocks = (() => {
   function cleared(state, missionId, difficultyId) {
     const progress = window.ButlerManualProgress;
     if (!progress?.has) return null;
+    // 通关记录缺失（例如本地核心的字段快照里没带上 butlerFeats）时无法判定，
+    // 必须返回 null 让调用方保持原值不动——否则会被误读成「没通关」而回收难度。
+    if (!Array.isArray(state?.butlerFeats)) return null;
     return !!progress.has(state, "clear", missionId, difficultyId);
   }
   // 按通关记录递推：普通级恒解锁，此后每一档都必须真的通关了上一档。
