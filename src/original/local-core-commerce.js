@@ -44,6 +44,26 @@ window.LocalCoreCommerceOps = (() => {
     core.shopAuthorityVersion = authority + SHOP_AUTHORITY_VERSION;
     return outcomes.changed;
   }
+  const stockKey = (core) => (core.shopCards || []).map(s => `${s?.card?.name || ""}|${s?.card?.suit || ""}|${s?.sold ? 1 : 0}`).join(";");
+  // 商店手动刷新商品：花固定费用重摇全部库存（含已售位置）。
+  function refreshShop(core) {
+    const cost = Number(economy?.shop?.refreshCost) || 500;
+    const gold = Number(core.resources?.gold) || 0;
+    const pool = shopPool(core);
+    // 无可售商品池或莉莉丝元不足：拒绝且不扣费。
+    if (!pool.length || gold < cost) return outcomes.rejected;
+    const before = stockKey(core);
+    let changed = false;
+    // 最多重摇若干次，避免玩家付了费却拿到一模一样的库存。
+    for (let attempt = 0; attempt < 8; attempt += 1) {
+      shopRefresh(core);
+      if (stockKey(core) !== before) { changed = true; break; }
+    }
+    if (!changed) return outcomes.rejected;
+    core.resources.gold = gold - cost;
+    core.lastShopRefresh = { cost, stock: (core.shopCards || []).length };
+    return outcomes.changed;
+  }
   function newGame(core) {
     return shopRefresh(core);
   }
@@ -127,5 +147,5 @@ window.LocalCoreCommerceOps = (() => {
     core.equippedSkins[charId] = id;
     return outcomes.changed;
   }
-  return { newGame, shopRefresh, shopBuy, shopDelete, smeltRelic, buySkin, equipSkin };
+  return { newGame, shopRefresh, refreshShop, shopBuy, shopDelete, smeltRelic, buySkin, equipSkin };
 })();
