@@ -18,13 +18,7 @@ window.BattleDamageResolution = ({
       window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, card);
       return { dodged: false, hpLoss: 0, blockLoss: 0 };
     }
-    const protectedTarget = window.NonokaLokiSkills?.protectNonoka?.(
-      state, actor, target, card, deps);
-    if (protectedTarget === null) {
-      window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, card);
-      return { dodged: true, hpLoss: 0 };
-    }
-    target = protectedTarget || target;
+
     const effectiveCard = card?.krowFemaleTarget && target?.gender !== "female"
       ? {
         ...card, krowFemaleTarget: false,
@@ -47,8 +41,6 @@ window.BattleDamageResolution = ({
     }
     const effectiveActor =
       window.NonokaLokiSkills?.sourceActor?.(state.battle, actor) || actor;
-    amount = window.WendyCadicisSkills?.modifyTacticDamage?.(
-      state, effectiveActor, target, amount, effectiveCard) ?? amount;
     // 智能大脑（战术牌造成的伤害翻倍）：放在统一伤害结算链里，
     // 才能覆盖与我一战 / 魔法对决 / 魔弹特攻 / 魔王军入侵等不走攻击流程的战术牌。
     amount = window.RuinsRelicEffects?.tacticDamage?.(
