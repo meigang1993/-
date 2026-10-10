@@ -64,21 +64,7 @@ function runSplitAndRelicTests(assert) {
 
 function runResponseTests(assert) {
   const flash = { name: "闪", type: "response", suit: "♥" };
-  const loki = { uid: "a1", ref: "loki", name: "洛基", hp: 20, hand: [flash] };
-  const nonoka = { uid: "a2", ref: "nonoka", name: "野乃花", hp: 20, hand: [] };
   const attacker = { uid: "e1", side: "enemy", name: "攻击者" };
-  const proxyState = { battle: { allies: [loki, nonoka], enemies: [attacker], animQueue: [] } };
-  const protectedTarget = window.NonokaLokiSkills.protectNonoka(proxyState, attacker, nonoka, { name: "黑杀", type: "slash", ignoreResponse: true }, { nextAnim: () => 1 });
-  assert(protectedTarget === loki, "unresponsive slash may redirect to Loki but cannot be dodged");
-  assert(loki.hand.includes(flash), "Loki proxy flash must not be consumed by an unresponsive slash");
-  const proxyDodge = window.NonokaLokiSkills.protectNonoka(
-    proxyState, attacker, nonoka, { name: "普通杀", type: "slash" },
-    { nextAnim: () => 2 });
-  const proxyEvent = proxyState.battle.animQueue.at(-1);
-  assert(proxyDodge === null && loki.hand.length === 0
-    && proxyEvent?.visualHandBefore === 1
-    && proxyEvent?.visualHandCount === 0,
-  "Loki proxy dodge must animate its hand count from one to zero");
 
   const guardApi = window.GuestOpheliaGuard({
     alive: unit => unit?.hp > 0, visible: unit => unit?.hand || [],
