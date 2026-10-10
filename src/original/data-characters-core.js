@@ -50,10 +50,9 @@ window.GameDataCharactersCore = [
   {
     id: "loki", name: "洛基", gender: "male", face: "洛", art: "./assets/images/loki-portrait.e4c2018a.webp", avatar: "./assets/images/loki-portrait.e4c2018a.webp", role: "偶像之子", locked: true,
     stats: { attack: 4.8, magic: 2.5, speed: 5.5, maxHp: 72, bloodlust: 2, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
-    evaluation: "禁用战术牌的纯杀牌输出。手中可见【杀】数量占优时可使杀牌伤害翻倍，并能替诺诺卡响应或承受杀牌伤害；青春草原提供永久成长。",
+    evaluation: "禁用战术牌的纯杀牌输出。手中可见【杀】数量占优时可使杀牌伤害翻倍；青春草原提供永久攻击与资源成长。",
     skills: [
       { name: "智障力大", type: "passive", icon: "⭐", text: "锁定技，你不能使用战术牌。当你使用【杀】造成伤害时，若你手牌中的可见【杀】数加上此次使用的【杀】多于目标手牌中的可见【杀】数，此伤害翻倍。" },
-      { name: "护母心切", type: "passive", icon: "⭐", text: "锁定技，当诺诺卡成为【杀】的目标时，你代替她使用1张【闪】；若你未能以此法使用【闪】，你代替她承受此次伤害。" },
       { name: "青春草原", type: "passive", icon: "⭐", text: "锁定技，当诺诺卡对其他男性角色发动【偶像之吻】后，你获得1枚“绿帽”标记，至多5枚。每枚标记令你的手牌上限、杀意上限各+1，攻击力+30%。" }
     ]
   },
@@ -82,9 +81,8 @@ window.GameDataCharactersCore = [
   {
     id: "cadicis", name: "卡迪西斯", gender: "male", face: "卡", art: "./assets/images/cadicis-portrait.0c2fa8f8.webp", avatar: "./assets/images/cadicis-portrait.0c2fa8f8.webp", role: "教师之子", locked: true,
     stats: { attack: 4.8, magic: 5, speed: 5.5, maxHp: 62, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
-    evaluation: "牌名强化与群体火力支援角色。战场指挥官强化友方同名杀牌与战术牌，指挥官责任在队友受击前调配手牌，重火力支援使实体杀牌附带继承其伤害属性的全体直伤。",
+    evaluation: "单体杀牌与全体直伤输出角色。指挥官责任在队友受击前调配手牌，重火力支援使实体杀牌附带继承其伤害属性的全体直伤。",
     skills: [
-      { name: "战场指挥官", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以展示1张【杀】或战术牌并记录其牌名。其他友方角色使用同名【杀】或战术牌时，该牌造成的伤害翻倍且不可响应。", card: { name: "战场指挥官", type: "tactic", cadicisPlan: true, targetless: true, icon: "⚔️", text: "展示1张【杀】或战术牌并记录牌名，强化其他友方角色使用的同名【杀】或战术牌。" } },
       { name: "指挥官责任", type: "trigger", icon: "🔵", text: "当一名其他友方角色成为单体【杀】的目标时，你可以摸1张牌，然后交给其1张手牌。若该角色为温蒂，改为摸2张牌并交给其2张手牌。" },
       { name: "重火力支援", type: "passive", icon: "⭐", text: "锁定技，当你使用一张实体【杀】后，你对所有存活的敌方角色各造成等同于你攻击力的无视护甲伤害；该伤害继承此【杀】的伤害属性与物理/魔法类别。" }
     ]
