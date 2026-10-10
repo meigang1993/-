@@ -9,6 +9,12 @@ window.ServerCoreApply = (() => {
     if (scope.defeatedElites) state.defeatedElites = [...(core.defeatedElites || [])];
     if (scope.unlockedShopCards) state.unlockedShopCards = [...(core.unlockedShopCards || [])];
     if (scope.unlockedDifficulties) state.unlockedDifficulties = [...(core.unlockedDifficulties || [])];
+    if (scope.dungeonUnlocks) {
+      const table = core.dungeonUnlocks;
+      state.dungeonUnlocks = table && typeof table === "object" && !Array.isArray(table)
+        ? JSON.parse(JSON.stringify(table)) : {};
+      window.DungeonUnlocks?.migrate?.(state);
+    }
     if (scope.flags) state.flags = { ...(core.flags || {}) };
     if (scope.unlockEvents) state.unlockEvents = window.UnlockEventProgress.snapshot(core);
     if (scope.skins) {
