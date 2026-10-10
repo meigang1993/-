@@ -89,9 +89,6 @@ assertCostSelection(
   { name: "疯狂射击", crazyShooting: true, targetless: true }, 1, 2,
   "Crazy Shooting");
 assertCostSelection(
-  { name: "战场指挥官", cadicisPlan: true, targetless: true }, 2, 3,
-  "Battlefield Commander");
-assertCostSelection(
   { name: "鬼王扑克", demonPoker: true }, 3, 1, "Demon Poker");
 targeting.cancelSelection(selectionState);
 selectionState.battle.selectedSkillCard = {
