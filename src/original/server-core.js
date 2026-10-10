@@ -1,5 +1,5 @@
 window.ServerCore = (() => {
-  const methods = new Set(["newGame", "unlockChar", "shopRefresh", "shopBuy", "shopDelete", "smeltRelic", "startDungeon", "settleDungeon", "bankRun", "claimBounty", "settleDefeat", "unlockEvent", "buySkin", "equipSkin"]);
+  const methods = new Set(["newGame", "unlockChar", "shopRefresh", "refreshShop", "shopBuy", "shopDelete", "smeltRelic", "startDungeon", "settleDungeon", "bankRun", "claimBounty", "refreshBounty", "settleDefeat", "unlockEvent", "buySkin", "equipSkin"]);
   const offlineOnly = () => true;
   const apply = (state, core, context) => window.ServerCoreApply.apply(state, core, context);
   let queue = Promise.resolve();
