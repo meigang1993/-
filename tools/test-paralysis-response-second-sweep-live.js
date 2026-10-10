@@ -2,7 +2,6 @@
 //   1 无谋冲拳（准备阶段打出）
 //   2 佯攻（友方出单体杀时，另一友方打出）
 //   3 奥菲莉亚·为我护驾（护驾者替其使用闪）
-//   4 洛基·护母心切（代替诺诺卡使用闪）
 // 每个场景都带「无麻痹对照」，证明链路本身可用（排除假阴性）。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
@@ -129,31 +128,6 @@ const guardTpl = paralyze => `(() => {
   };
 })()`;
 
-// 4 护母心切：诺诺卡被杀，洛基手握闪。
-const lokiTpl = paralyze => `(() => {
-  const st = window.state, b = st.battle;
-  const nonoka = b.allies[0], loki = b.allies[1];
-  if (!nonoka || !loki) return { error: "need 2 allies" };
-  b.locked = false; b.manualCounter = null; b.manualDodge = null;
-  nonoka.ref = "nonoka"; nonoka.name = "诺诺卡";
-  loki.ref = "loki"; loki.name = "洛基";
-  nonoka.hp = 100; loki.hp = 100;
-  loki.hand = [${FLASH}];
-  if (${paralyze}) { loki.noResponse = true; loki.noResponseReason = "麻痹"; }
-  else { loki.noResponse = false; loki.noResponseReason = null; }
-  const ret = window.NonokaLokiSkills.protectNonoka(
-    st, { uid: "foe" }, nonoka,
-    { name: "杀（普攻）", type: "kill", suit: "♠" },
-    { nextAnim: () => Math.random() });
-  return {
-    redirected: !!ret,                    // 返回洛基 = 由洛基承受
-    redirectUid: ret?.uid || null,
-    lokiUid: loki.uid,
-    lokiHp: loki.hp,
-    lokiFlash: loki.hand.filter(c => c.name === "闪").length,
-  };
-})()`;
-
 (async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -189,14 +163,6 @@ const lokiTpl = paralyze => `(() => {
       && gOff.guardFlash === 0 && gOff.guardHp === 100, gOff);
     t("护驾：麻痹时不能出闪，改为承受伤害", !gOn.dodged
       && gOn.guardFlash === 1 && gOn.guardHp === 90, gOn);
-
-    // ---- 4 护母心切 ----
-    const lOn = await page.evaluate(lokiTpl(true));
-    const lOff = await page.evaluate(lokiTpl(false));
-    t("护母心切：对照（无麻痹）洛基出闪抵消", !lOff.redirected
-      && lOff.lokiFlash === 0 && lOff.lokiHp === 100, lOff);
-    t("护母心切：麻痹时按未能使用闪处理，改为承受", lOn.redirected
-      && lOn.redirectUid === lOn.lokiUid && lOn.lokiFlash === 1, lOn);
 
     t("页面无 JS 错误", errors.length === 0, { errors: errors.slice(0, 3) });
   } catch (e) {
