@@ -8,7 +8,7 @@ window.BattleCardPlayability = deps => {
   const needsSingleHand = card => !!(card?.bloodPact || card?.idolKiss
     || card?.crazyShooting || card?.demonPoker
     || card?.succubusFork || card?.assassinLatex
-    || card?.cadicisPlan || card?.elranaHeal);
+    || card?.elranaHeal);
   const needsHandChoice = card => needsSingleHand(card) || !!card?.elranaBag || card?.armyOrder || card?.ailengBet || !!card?.mariaHonorBlessing;
   const standardSuits = new Set(["♥", "♦", "♠", "♣"]);
   function canSelectHandCost(actor, skillCard, candidate, battle, cardIndex) {
@@ -17,9 +17,6 @@ window.BattleCardPlayability = deps => {
     if (skillCard?.crazyShooting) return ["♥", "♦"].includes(candidate.suit);
     if (skillCard?.succubusFork) return candidate.suit === "♥";
     if (skillCard?.assassinLatex) return candidate.suit === "♠" || candidate.suit === "♣";
-    if (skillCard?.cadicisPlan) {
-      return deps.isKillCard(candidate) || candidate.type === "tactic";
-    }
     if (skillCard?.demonPoker) return candidate.type !== "tactic";
     if (skillCard?.mariaHonorBlessing) {
       const picked = battle?.selectedBagIndexes || [];
@@ -82,7 +79,6 @@ window.BattleCardPlayability = deps => {
       || card.bertisTakeFood && actor.usedTakeFood
       || card.crazySlaughter && actor.usedCrazySlaughter
       || card.wendyTutor && actor.usedWendyTutor
-      || card.cadicisPlan && actor.usedCadicisPlan
       || card.demonPoker && actor.usedDemonPoker
       || card.succubusFork && actor.usedSuccubusFork
       || card.assassinLatex && actor.usedAssassinLatex
@@ -108,8 +104,6 @@ window.BattleCardPlayability = deps => {
     if (card.armyOrder && !window.BakarSkills?.armyOrderIndexes?.(actor).length) return true;
     if (card.bestaEndSlash && !actor.hand.some(item => !item._pendingDraw && ["♠", "♣"].includes(item.suit))) return true;
     if (card.idolKiss && !actor.hand.some(item => item.suit === "♥" && !item._pendingDraw)) return true;
-    if (card.cadicisPlan && !actor.hand.some(item => !item._pendingDraw
-      && (deps.isKillCard(item) || item.type === "tactic"))) return true;
     return false;
   }
 
