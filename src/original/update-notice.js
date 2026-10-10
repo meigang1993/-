@@ -1,6 +1,6 @@
 window.UpdateNotice = (() => {
   // 最新更新日期：公告标题、页脚时间与大厅按钮徽标统一以此为准，修改时只改这里。
-  const latest = { iso: "2026-10-06", label: "2026年10月6日", badge: "2026.10.06" };
+  const latest = { iso: "2026-10-10", label: "2026年10月10日", badge: "2026.10.10" };
     // 公告条目按「常改 / 归档」拆成两个数据文件，避免单文件超过 200 行硬约束：
   //   update-notice-recent.js  —— 最近几期，新条目一律加到该文件第一期
   //   update-notice-archive.js —— 历史归档，条目只增不改
@@ -29,7 +29,7 @@ window.UpdateNotice = (() => {
           </div>
         <time datetime="${latest.iso}">更新至${latest.label}</time>
       </header>
-        <p class="update-notice-summary">本次更新新增副本【废墟沙城】，带来四名普通怪物、三名精英怪物与两名首领，并新增10张卡牌与10件饰品。</p>
+        <p class="update-notice-summary">本次更新修复副本难度解锁互相串味的问题，并删除【洛基】【护母心切】与【卡迪西斯】【战场指挥官】两个技能，两名角色改为输出定位。</p>
         <div class="update-notice-list">${sections}</div>
       </section>
     `;
