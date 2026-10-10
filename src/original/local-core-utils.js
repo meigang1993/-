@@ -16,13 +16,19 @@ window.LocalCoreUtils = (() => {
   const scopes = Object.freeze({
     unlockChar: { resources: true, chars: true, flags: true },
     shopRefresh: { random: true, shopCards: true, defeatedElites: true, unlockedShopCards: true, shopAuthority: true },
+    // 手动刷新商品：要扣莉莉丝元并重摇库存，因此必须带 resources。
+    refreshShop: { random: true, resources: true, shopCards: true, defeatedElites: true, unlockedShopCards: true, shopAuthority: true },
     shopBuy: { resources: true, deck: true, shopCards: true, shopAuthority: true },
     shopDelete: { resources: true, deck: true, inventoryLedger: true },
     smeltRelic: { resources: true, inventoryLedger: true },
-    startDungeon: { unlockedDifficulties: true, dungeonUnlocks: true, flags: true, pendingRun: true, localRunState: true },
+    startDungeon: { unlockedDifficulties: true, dungeonUnlocks: true, flags: true, pendingRun: true, localRunState: true, butlerFeats: true },
     settleDungeon: { random: true, resources: true, chars: true, pendingRun: true, localRunState: true, defeatedElites: true, unlockedShopCards: true },
     bankRun: { resources: true, deck: true, pendingRun: true, localRunState: true },
     claimBounty: { resources: true, deck: true, bountyLedger: true },
+    // 手动刷新任务：需要扣莉莉丝元并重摇未接取任务，因此必须带 resources/bounties。
+    // random 用于新任务的 uid 与奖励抽取；chars/flags/defeatedElites 走引用读取
+    // （不列入 scope 即不写回），避免刷新动作顺带改动角色或解锁状态。
+    refreshBounty: { random: true, resources: true, bounties: true },
     settleDefeat: { chars: true, flags: true, pendingRun: true, localRunState: true, defeatLedger: true },
     unlockEvent: { chars: true, flags: true, defeatedElites: true, unlockEvents: true },
     buySkin: { resources: true, chars: true, skins: true },
@@ -116,6 +122,12 @@ window.LocalCoreUtils = (() => {
       defeatLedger, defeatCounter: scope.defeatLedger ? window.ReceiptLedger.safeCounter(state._localDefeatCounter, defeatLedger.through) : state._localDefeatCounter,
       inventoryLedger, inventoryOperationCounter: scope.inventoryLedger ? window.ReceiptLedger.safeCounter(state._localInventoryOperationCounter, inventoryLedger.through) : state._localInventoryOperationCounter,
       inventoryRevision: n(state._localInventoryRevision),
+      // 难度解锁按「通关记录」重算（DungeonUnlocks.migrate / chain 读 butlerFeats）。
+      // 此前 core 快照不含该字段，出征时被判定为「无任何通关记录」，
+      // 会把已解锁难度整体回收到普通级并写回存档——玩家进度被清空。
+      butlerFeats: scope.butlerFeats ? [...(state.butlerFeats || [])] : state.butlerFeats,
+      // 任务列表只在刷新任务时进入快照；core 上重摇后再由 apply 写回 state。
+      bounties: scope.bounties ? clone(state.bounties || []) : (state.bounties || []),
       ownedSkins: scope.skins ? { ...initialSkins(state), ...(state.ownedSkins || {}) } : (state.ownedSkins || {}),
       equippedSkins: scope.skins ? { ...(state.equippedSkins || {}) } : (state.equippedSkins || {}),
     };
