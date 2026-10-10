@@ -22,6 +22,7 @@ window.LocalCore = (() => {
       smeltRelic: "拆解未生效：饰品不存在。",
       settleDungeon: "副本结算未生效：节点状态或战斗结果无效。",
       claimBounty: "任务奖励未生效：没有可结算的有效奖励。",
+      refreshBounty: "刷新任务未生效：莉莉丝元不足、已接取任务已满或没有可刷新的任务。",
       unlockEvent: "剧情解锁未生效：事件无效或已经完成。",
       buySkin: "皮肤兑换未生效：条件不满足或精华宝珠不足。",
       equipSkin: "皮肤装备未生效：尚未拥有、角色未解锁或已装备。",
