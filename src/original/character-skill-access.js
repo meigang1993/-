@@ -9,7 +9,6 @@ window.CharacterSkillAccess = (() => {
     { flags: ["idolKiss"], name: "偶像之吻", target: "friendlyOther", cost: "heart" },
     { flags: ["speedAssault"], name: "神速之袭", target: "enemy", prepare: "awaitingSpeedAssaultUid" },
     { flags: ["wendyTutor"], name: "解答迷惑", target: "self" },
-    { flags: ["cadicisPlan"], name: "战场指挥官", target: "self", cost: "attack" },
     { flags: ["crazyShooting"], name: "疯狂射击", target: "self", cost: "red" },
     { flags: ["bertisWhip"], name: "苦肉鞭笞", target: "friendlyOther" },
     { flags: ["crazySlaughter"], name: "疯狂屠戮", target: "self" },
