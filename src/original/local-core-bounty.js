@@ -60,5 +60,31 @@ window.LocalCoreBountyOps = (() => {
     return additions;
   }
 
-  return { claimBounty };
+  // 手动刷新任务列表：扣除固定莉莉丝元，只重摇「未接取」的任务。
+  // 已接取的任务必须保留——玩家花了行动力接下的任务被刷新清空是不可接受的。
+  function refreshBounty(core) {
+    const cost = Number(window.GameEconomy?.bounty?.refreshCost) || 500;
+    const gold = Number(core.resources?.gold) || 0;
+    const max = window.BountyTasks?.maxCount?.(core) || 4;
+    const current = Array.isArray(core.bounties) ? core.bounties : [];
+    const kept = current.filter(task => task?.accepted);
+    // 已接取任务已占满上限时无可刷新位置，或莉莉丝元不足：拒绝且不扣费。
+    if (kept.length >= max || gold < cost) return outcomes.rejected;
+    const next = [...kept];
+    // 用「保留下来的任务」计算已占用目标，避免新任务与已接取任务撞目标。
+    const used = window.BountyTasks.usedTargets({ ...core, bounties: next });
+    while (next.length < max) {
+      const task = window.BountyTasks.generate(core, used);
+      if (!task) break;
+      next.push(task);
+    }
+    // 一个都没重摇出来时不扣费，避免玩家白白损失莉莉丝元。
+    if (next.length <= kept.length) return outcomes.rejected;
+    core.bounties = next;
+    core.resources.gold = gold - cost;
+    core.lastBountyRefresh = { cost, replaced: next.length - kept.length };
+    return outcomes.changed;
+  }
+
+  return { claimBounty, refreshBounty };
 })();
