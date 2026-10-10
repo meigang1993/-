@@ -43,7 +43,10 @@ async function startMission(id, difficulty = "normal", actionCurrent = null) {
   if (actionState.sortieStarting) return;
   const m = GameData.missions.find(x => x.id === id);
   if (!m) return;
-  if (!actionState.unlockedDifficulties.includes(difficulty)) return log("该难度尚未解锁。"), render();
+  const difficultyOpen = window.DungeonUnlocks
+    ? window.DungeonUnlocks.has(actionState, id, difficulty)
+    : (actionState.unlockedDifficulties || []).includes(difficulty);
+  if (!difficultyOpen) return log("该难度尚未解锁。"), render();
   if (m.requiresFlag && !actionState.flags?.[m.requiresFlag]) return log(m.lockedHint || "该副本尚未解锁。"), render();
   if (!(actionState.party || []).length) return log("请先选择至少1名出战角色。"), render();
   if (m.kind === "dungeon" && window.GameBundles && !window.GameBundles.isReady("dungeon")) {
