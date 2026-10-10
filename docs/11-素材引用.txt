@@ -186,7 +186,6 @@
   skill-art-answer-confusion.4b87bb39.webp     -> 解答迷惑
   skill-art-artina-sniper.b1dba20c.webp        -> 亚缇娜狙击目标（未完成角色）
   skill-art-barrett.9263336b.webp              -> 巴特雷
-  skill-art-battlefield-commander.7eb264a3.webp -> 战场指挥官
   skill-art-battlefield-sweep.dc085e1b.webp    -> 战场扫射
   skill-art-berserker-will.51f36fec.webp       -> 狂战意志
   skill-art-berserk-speed-shift.aa36282b.webp  -> 暴走与极速
