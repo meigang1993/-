@@ -97,11 +97,14 @@ function testUnlockChain() {
 }
 
 // C. 迁移与已通关记录的一致性。
-// 已开放的副本继承全局进度 → 已通关过的高难度仍可再打，手册与实际不脱节。
+// 迁移按通关记录逐档递推：打过普通级才有冒险级、打过冒险级才有勇士级。
+// 真实流程里通关勇士级必然先打过前两档，故这里把整条链的记录补齐。
 function testMigrateConsistency() {
   const s = fresh();
   s.unlockedDifficulties = ["normal", "adventure", "warrior"];
   delete s.dungeonUnlocks;
+  P.recordClear(s, "underwater_train", "normal");
+  P.recordClear(s, "underwater_train", "adventure");
   P.recordClear(s, "underwater_train", "warrior");
   U.migrate(s);
 
