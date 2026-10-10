@@ -125,7 +125,6 @@ window.BattleCombat = (deps) => {
     card._countAsPlayed = true;
     window.BattleLog.add(state,`${actor.name} 使用${card.suit || ""}${card.name}。`);
     window.BattleLines?.skill(state, actor, card.name, target);
-    window.WendyCadicisSkills?.applyPlan?.(state, actor, target, card);
     if (specials.counterTactic(state, actor, target, card)) return;
     resolver.continueAfterCounter(state, actor, target, card);
   }
