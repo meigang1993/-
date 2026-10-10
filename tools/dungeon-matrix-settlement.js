@@ -6,6 +6,7 @@ const {
   DungeonMap,
   DungeonRewardPayload,
   DungeonRewards,
+  DungeonUnlocks,
   GameStoreStateFactory,
   seeded,
   ServerCore,
@@ -93,6 +94,8 @@ async function completeRun(missionId, difficultyId, seed) {
     state.unlockedDifficulties = difficultyIds.slice(0, difficultyIndex + 1);
     state.flags.underwaterTrainUnlocked = true;
     state.flags.orcDungeonUnlocked = true;
+    // 难度解锁已改为按副本独立，需要把测试预置的全局进度迁移进副本解锁表。
+    DungeonUnlocks.migrate(state);
     const label = `${missionId}/${difficultyId}`;
     const start = await ServerCore.call("startDungeon", { missionId, difficultyId }, state);
     assert(start.ok, `${label}: local core rejected start`);
