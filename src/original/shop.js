@@ -2,6 +2,7 @@ window.ShopSystem = (() => {
   const economy = window.GameEconomy.shop;
   const BUY_COST = economy.defaultCardPrice;
   const DELETE_COST = economy.deleteCost;
+  const REFRESH_COST = Number(economy.refreshCost) || 500;
   const AUTHORITY_VERSION = 1;
   const STOCK_SIZE = state => (state.defeatedElites || []).includes("shark_captain_mordio") ? economy.expandedStockSize : economy.stockSize;
   const clone = (card) => ({ ...card });
@@ -57,6 +58,18 @@ window.ShopSystem = (() => {
     if (result.stale) return false;
     return result?.ok === true && confirmed(state)
       && Number(state.shopAuthorityVersion) > authority;
+  }
+  function refreshCost() { return REFRESH_COST; }
+  // 付费刷新商品：扣费并整批重摇库存；金币不足或摇不出变化时失败且不扣费。
+  async function refreshShop(state) {
+    const gold = Number(state?.resources?.gold) || 0;
+    if (gold < REFRESH_COST) return false;
+    const key = (st) => (st.shopCards || []).map(s => `${s?.card?.name || ""}|${s?.card?.suit || ""}|${s?.sold ? 1 : 0}`).join(";");
+    const before = key(state);
+    const authority = Math.max(0, Number(state.shopAuthorityVersion) || 0);
+    const result = await window.ServerCore.call("refreshShop", {}, state);
+    if (result?.stale || result?.ok !== true) return false;
+    return key(state) !== before && Number(state.shopAuthorityVersion) > authority;
   }
   function normalizeSlot(item) {
     if (!item?.card || typeof item.sold !== "boolean") return null;
@@ -117,7 +130,7 @@ window.ShopSystem = (() => {
     }
   }
   return {
-    BUY_COST, DELETE_COST, STOCK_SIZE, shopPool, refresh, ensure,
+    BUY_COST, DELETE_COST, REFRESH_COST, STOCK_SIZE, shopPool, refresh, refreshShop, refreshCost, ensure,
     buy, deleteCard, canDeleteCard, recoveryPressure, deletionContext,
     confirmed, needsRefresh, refreshPending,
   };
