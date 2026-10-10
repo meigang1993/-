@@ -63,7 +63,6 @@ window.GameUIHandView = (() => {
     if (card?.elranaHeal) return "选择一张手牌弃置，再指定我方角色发动回春之手";
     if (card?.idolKiss) return "选择一张♥红桃手牌，再指定我方其他角色发动偶像之吻";
     if (card?.crazyShooting) return "选择一张红色手牌，转化为机枪扫杀使用";
-    if (card?.cadicisPlan) return "选择一张杀牌或战术牌作为作战计划，再点击使用";
     if (card?.armyOrder) return `选择2张花色完全相同的手牌当【魔王军入侵】使用；当前已选${(battle.selectedBagIndexes || []).length}张`;
     if (card?.elranaBag) return `选择任意张手牌弃置后摸等量牌；当前已选${(battle.selectedBagIndexes || []).length}张`;
     if (card?.mariaHonorBlessing) return `选择1至4张花色各不相同的手牌弃置；当前已选${(battle.selectedBagIndexes || []).length}张`;
