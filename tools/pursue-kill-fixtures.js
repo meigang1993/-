@@ -44,7 +44,7 @@ window.RuinsRelicEffects = { missileLauncherBlock: () => true };
   "battle-card-interactions.js",
   "battle-card-specials.js", "battle-card-resume-state.js",
   "battle-card-resume-hooks.js", "battle-card-resume-flow.js", "battle-card-resume.js",
-  "edis-skills.js", "wendy-skills.js", "cadicis-skill-utils.js", "cadicis-card-plan.js", "cadicis-heavy-fire.js", "cadicis-responsibility.js", "cadicis-skills.js",
+  "edis-skills.js", "wendy-skills.js", "cadicis-skill-utils.js", "cadicis-heavy-fire.js", "cadicis-responsibility.js", "cadicis-skills.js",
   "wendy-cadicis-skills.js", "battle-damage-utils.js",
   "battle-damage-triggers.js", "battle-thunder-hammer-response.js",
   "battle-dodge-cards.js", "battle-dodge-resume.js", "battle-dodge-deflect.js",
