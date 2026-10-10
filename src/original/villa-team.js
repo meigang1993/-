@@ -2,7 +2,10 @@ window.VillaTeamUI = (() => {
   const U = window.UICommon;
   function difficultyCard(state, mission, id, d) {
     const missionOpen = !mission.requiresFlag || state.flags?.[mission.requiresFlag];
-    const unlocked = missionOpen && state.unlockedDifficulties.includes(id), ready = unlocked && (state.party || []).length && !state.sortieStarting, lock = unlocked ? "" : "<span class=\"difficulty-lock\">🔒</span>";
+    const difficultyOpen = window.DungeonUnlocks
+      ? window.DungeonUnlocks.has(state, mission.id, id)
+      : (state.unlockedDifficulties || []).includes(id);
+    const unlocked = missionOpen && difficultyOpen, ready = unlocked && (state.party || []).length && !state.sortieStarting, lock = unlocked ? "" : "<span class=\"difficulty-lock\">🔒</span>";
     const recommended = !!window.Onboarding?.active?.(state) && mission.id === "machine_factory" && id === "normal";
     const text = state.sortieStarting ? "出征中…" : !missionOpen ? "副本锁定" : unlocked ? ((state.party || []).length ? "确认出征" : "先选择队伍") : "未解锁";
     const hint = !missionOpen ? `<p class="muted">${U.esc(mission.lockedHint || "该副本尚未解锁。")}</p>` : "";
