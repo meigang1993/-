@@ -13,8 +13,9 @@ module.exports = ({ assert, unit }) => {
   assert(GameData.characters.length === 30,
     "skill audit must cover all 30 playable characters");
   assert(enemies.length === 36, "skill audit must cover all 36 enemies");
-  assert(GameData.characters.flatMap(template => template.skills || []).length === 80,
-    "skill audit must cover all 80 playable-character skills");
+  // 80 → 78：删除洛基「护母心切」与卡迪西斯「战场指挥官」各 1 项。
+  assert(GameData.characters.flatMap(template => template.skills || []).length === 78,
+    "skill audit must cover all 78 playable-character skills");
   assert(enemies.flatMap(template => template.skills || []).length === 72,
     "skill audit must cover all 72 enemy skills");
   assert(relics.length === 30, "relic audit must cover all 30 formal relics");
@@ -74,8 +75,9 @@ module.exports = ({ assert, unit }) => {
   ];
   const namedActiveSkills = new Map();
   activeSkills.forEach(skill => namedActiveSkills.set(skill.name, skill));
-  assert(namedActiveSkills.size === 47,
-    "skill artwork audit must cover all 47 named active skills");
+  // 47 → 46：删除卡迪西斯主动技「战场指挥官」（带技能立绘）。
+  assert(namedActiveSkills.size === 46,
+    "skill artwork audit must cover all 46 named active skills");
   const artOwners = new Map();
   const hashOwners = new Map();
   namedActiveSkills.forEach((skill, name) => {
@@ -120,11 +122,7 @@ module.exports = ({ assert, unit }) => {
       `${name} must use the player-facing trigger presentation`);
   });
   const cadicis = GameData.characters.find(character => character.id === "cadicis");
-  const commander = cadicis.skills.find(skill => skill.name === "战场指挥官");
   const heavyFire = cadicis.skills.find(skill => skill.name === "重火力支援");
-  assert(commander.text.includes("同名【杀】或战术牌")
-    && commander.card.text.includes("同名【杀】或战术牌"),
-  "Battlefield Commander public descriptions must include recorded tactics");
   assert(heavyFire.text.includes("继承此【杀】的伤害属性与物理/魔法类别"),
   "Heavy Fire Support public description must state its inherited damage profile");
 };
