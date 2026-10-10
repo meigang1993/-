@@ -94,7 +94,16 @@ async function completeRun(missionId, difficultyId, seed) {
     state.unlockedDifficulties = difficultyIds.slice(0, difficultyIndex + 1);
     state.flags.underwaterTrainUnlocked = true;
     state.flags.orcDungeonUnlocked = true;
-    // 难度解锁已改为按副本独立，需要把测试预置的全局进度迁移进副本解锁表。
+    // 难度解锁已改为按副本独立，且每次加载都会按「通关记录」重算：
+    // 仅设置全局数组会被 migrate/startDungeon 判定为外溢并回收，导致 start 被拒。
+    // 故此处沿真实的 unlock 链逐档写入通关记录（解锁 X 需要通关 X 的上一档）。
+    const nextOf = id => Object.entries(window.GameData.difficulties || {})
+      .find(([, d]) => d.unlock === id)?.[0] || null;
+    let step = "normal";
+    while (step && step !== difficultyId) {
+      window.ButlerManualProgress?.recordClear?.(state, missionId, step);
+      step = nextOf(step);
+    }
     DungeonUnlocks.migrate(state);
     const label = `${missionId}/${difficultyId}`;
     const start = await ServerCore.call("startDungeon", { missionId, difficultyId }, state);
