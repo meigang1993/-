@@ -1195,27 +1195,6 @@
       "createdAt": "2026-07-27T05:55:28Z"
     },
     {
-      "name": "skill-art-battlefield-commander",
-      "label": "战场指挥官",
-      "status": "success",
-      "path": "publish/assets/generated/cards/skill-art-battlefield-commander.7eb264a3.webp",
-      "contentHash": "8854b38c",
-      "revisedPrompt": "Dedicated illustration-only artwork for the real active skill card named 战场指挥官 in a dark gothic anime card battle game. Create a 1024x1024 square, opaque, highly readable at 86x122 thumbnail scale. One clear central action and signature object: a commanding armored gauntlet pointing decisively over a tactical battlefield grid, while one marked attack card emits synchronized golden command rays/orders to allies. Strong simple silhouette, single focal point, centered square vignette, close crop, dark low-detail background, generous safe margin, readable at thumbnail size. Detailed dark fantasy anime card illustration, polished cinematic painting, gothic atmosphere, dramatic rim light, glossy highlights, high contrast edges. Palette centered on #0b0d14 #4b1024 #b4163a #d8b56d #6f8cff. Battlefield hints only, no clutter. Match a formal card illustration set in detail, contrast, and lighting. No card frame, no interface, no suit symbols, no letters, no numbers, no readable writing, no logo, no watermark.",
-      "model": "gpt-image-2",
-      "size": "1254x1254",
-      "wantsTransparent": false,
-      "outputFormat": "webp",
-      "compressionProfile": "lossy_q80_opaque",
-      "originalBytes": 2265264,
-      "finalBytes": 170554,
-      "usage": {
-        "inputTokens": 224,
-        "outputImageTokens": 2058
-      },
-      "traceId": "trace_ms2tc9a0_qcq6eoed",
-      "createdAt": "2026-07-27T05:56:55Z"
-    },
-    {
       "name": "skill-art-crazy-shooting",
       "label": "疯狂射击",
       "status": "success",
