@@ -21,7 +21,6 @@ vm.runInThisContext(fs.readFileSync("src/original/card-utils.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/battle-card-playability.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/wendy-skills.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/cadicis-skill-utils.js", "utf8"));
-vm.runInThisContext(fs.readFileSync("src/original/cadicis-card-plan.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/cadicis-heavy-fire.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/cadicis-responsibility.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/cadicis-skills.js", "utf8"));
@@ -204,10 +203,6 @@ assert(enabledCost(costHtml, 0) && disabledCost(costHtml, 1),
 costHtml = costHandHtml({ name: "疯狂射击", crazyShooting: true, targetless: true });
 assert(enabledCost(costHtml, 1) && disabledCost(costHtml, 2),
   "Crazy Shooting must enable only red hand cards");
-costHtml = costHandHtml({ name: "战场指挥官", cadicisPlan: true, targetless: true });
-assert(enabledCost(costHtml, 1) && enabledCost(costHtml, 2)
-  && disabledCost(costHtml, 3) && disabledCost(costHtml, 4),
-"Battlefield Commander must enable only Kill or tactic cards");
 costHtml = costHandHtml({ name: "鬼王扑克", demonPoker: true }, []);
 assert(disabledCost(costHtml, 1) && enabledCost(costHtml, 3),
   "Demon Poker must disable tactic cards and allow non-tactics");
