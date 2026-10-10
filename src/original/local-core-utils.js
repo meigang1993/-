@@ -9,7 +9,7 @@ window.LocalCoreUtils = (() => {
   const fullScope = Object.freeze({
     full: true, random: true, resources: true, chars: true, deck: true,
     shopCards: true, defeatedElites: true, unlockedShopCards: true,
-    unlockedDifficulties: true, flags: true, unlockEvents: true, pendingRun: true,
+    unlockedDifficulties: true, dungeonUnlocks: true, flags: true, unlockEvents: true, pendingRun: true,
     localRunState: true, bountyLedger: true, defeatLedger: true,
     inventoryLedger: true, skins: true, shopAuthority: true,
   });
@@ -19,7 +19,7 @@ window.LocalCoreUtils = (() => {
     shopBuy: { resources: true, deck: true, shopCards: true, shopAuthority: true },
     shopDelete: { resources: true, deck: true, inventoryLedger: true },
     smeltRelic: { resources: true, inventoryLedger: true },
-    startDungeon: { unlockedDifficulties: true, flags: true, pendingRun: true, localRunState: true },
+    startDungeon: { unlockedDifficulties: true, dungeonUnlocks: true, flags: true, pendingRun: true, localRunState: true },
     settleDungeon: { random: true, resources: true, chars: true, pendingRun: true, localRunState: true, defeatedElites: true, unlockedShopCards: true },
     bankRun: { resources: true, deck: true, pendingRun: true, localRunState: true },
     claimBounty: { resources: true, deck: true, bountyLedger: true },
@@ -104,6 +104,7 @@ window.LocalCoreUtils = (() => {
       unlockedShopCards: scope.unlockedShopCards
         ? cleanShopUnlocks(state) : (state.unlockedShopCards || []),
       unlockedDifficulties: scope.unlockedDifficulties ? uniq(state.unlockedDifficulties || ["normal"]) : (state.unlockedDifficulties || []),
+      dungeonUnlocks: scope.dungeonUnlocks ? clone(window.DungeonUnlocks?.table?.(state) || {}) : (state.dungeonUnlocks || {}),
       flags: scope.flags ? { ...(state.flags || {}) } : (state.flags || {}),
       unlockEvents: scope.unlockEvents
         ? window.UnlockEventProgress.snapshot(state) : state.unlockEvents,
