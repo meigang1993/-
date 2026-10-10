@@ -23,6 +23,7 @@ window.ServerCoreApply = (() => {
     }
     if (scope.full) state.currentSaveSlot = core.currentSaveSlot ?? state.currentSaveSlot ?? null;
     if (scope.localRunState) state._localRunState = core.localRunState || null;
+    if (scope.bounties) applyBounties(state, core);
     if (scope.bountyLedger) applyBountyLedger(state, core);
     if (scope.defeatLedger) applyDefeatLedger(state, core);
     if (scope.inventoryLedger) applyInventoryLedger(state, core);
@@ -47,6 +48,12 @@ window.ServerCoreApply = (() => {
     if (Number.isInteger(removal) && removal >= 0) state.deck.splice(removal, 1);
     const additions = repairCards(core.deckAdditions || []);
     if (additions.length) state.deck.push(...additions);
+  }
+  function applyBounties(state, core) {
+    state.bounties = Array.isArray(core.bounties)
+      ? JSON.parse(JSON.stringify(core.bounties)) : [];
+    // 写回后跑一次修复，丢弃非法/重复任务并补足到上限，保证界面渲染安全。
+    window.BountyTasks?.ensure?.(state);
   }
   function applyBountyLedger(state, core) {
     state._localBountyLedger = window.BountyLedger.normalize(core.bountyLedger);
