@@ -43,7 +43,7 @@ window.BattleAISkillMoves = (() => {
       ? targetByPolicy(foes)
       : evaluation.skillTarget(actor, skill, team, foes);
     const cost = evaluation.skillCost(actor, skill);
-    const needsCost = skill.idolKiss || skill.elranaHeal || skill.cadicisPlan
+    const needsCost = skill.idolKiss || skill.elranaHeal
       || skill.bloodPact || skill.demonPoker || skill.crazyShooting;
     return target && (!needsCost || cost)
       ? { card: skill, target, costCard: cost }
