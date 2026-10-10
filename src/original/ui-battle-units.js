@@ -90,14 +90,11 @@ window.GameUIBattleUnits = (U, I) => {
     const mimic = unitData.mimicName
       ? `<div class="target-mark mimic-name" title="模仿之音记录：${U.esc(unitData.mimicName)}">仿：${U.esc(unitData.mimicName)}</div>`
       : "";
-    const command = unitData.cadicisPlanName
-      ? `<div class="target-mark command-name" title="战场指挥官记录：${U.esc(unitData.cadicisPlanName)}">指挥：${U.esc(unitData.cadicisPlanName)}</div>`
-      : "";
     const relicTip = unitData.battleRelics?.map(name => RelicSystem.statText(name)).join("\n\n");
     const relics = unitData.battleRelics?.length
       ? `<span class="enemy-relic-badge" title="${U.esc(relicTip)}">饰×${unitData.battleRelics.length}</span>`
       : "";
-    const marks = `${status}${moon}${mimic}${command}${targetButtons(battle, unitData)}`;
+    const marks = `${status}${moon}${mimic}${targetButtons(battle, unitData)}`;
     const gender = unitData.gender === "female" ? "♀" : unitData.gender === "male" ? "♂" : "";
     const count = (unitData.actionCount || 0)
       + (battle.activeUid === unitData.uid && battle.phase > 0 && battle.phase < 6 ? 1 : 0);
@@ -173,10 +170,7 @@ window.GameUIBattleUnits = (U, I) => {
     const mimic = shown.mimicName
       ? `<div class="target-mark mimic-name" title="模仿之音记录：${U.esc(shown.mimicName)}">仿：${U.esc(shown.mimicName)}</div>`
       : "";
-    const command = shown.cadicisPlanName
-      ? `<div class="target-mark command-name" title="战场指挥官记录：${U.esc(shown.cadicisPlanName)}">指挥：${U.esc(shown.cadicisPlanName)}</div>`
-      : "";
-    return `<aside class="active-info">${skills.length ? `<div class="skill-list active-skills">${skills.join("")}</div>` : ""}<div class="active-portrait-shell" data-active-info="${U.esc(shown.uid)}" role="button" tabindex="0" aria-label="查看${U.esc(shown.name)}角色详情">${U.artBox(shown, "portrait large", shown.art, shown.face || shown.name[0])}${badgeStack(shown)}${I.jokerSuitMark(shown)}${conquerMark(shown)}${mimic}${command}<span class="hand-count unit-hand"><i></i>${U.handCount(shown)}/${U.handLimit(shown)}<i></i></span></div>${U.combatBar(shown)}</aside>`;
+    return `<aside class="active-info">${skills.length ? `<div class="skill-list active-skills">${skills.join("")}</div>` : ""}<div class="active-portrait-shell" data-active-info="${U.esc(shown.uid)}" role="button" tabindex="0" aria-label="查看${U.esc(shown.name)}角色详情">${U.artBox(shown, "portrait large", shown.art, shown.face || shown.name[0])}${badgeStack(shown)}${I.jokerSuitMark(shown)}${conquerMark(shown)}${mimic}<span class="hand-count unit-hand"><i></i>${U.handCount(shown)}/${U.handLimit(shown)}<i></i></span></div>${U.combatBar(shown)}</aside>`;
   }
 
   return { unit, activeInfo };
