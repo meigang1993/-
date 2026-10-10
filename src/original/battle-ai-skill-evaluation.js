@@ -35,10 +35,6 @@ window.BattleAISkillEvaluation = (() => {
         ? 35 + (target.ref === "besta" ? visible(actor) * 4 : hearts(actor) * 12)
         : 0;
     }
-    if (card.cadicisPlan) {
-      return actor.hand.some(item =>
-        !item._pendingDraw && (isKill(item) || item.type === "tactic")) ? 60 : 0;
-    }
     if (card.bloodPact || card.crazyShooting) {
       return skillCost(actor, card) ? 50 : 0;
     }
@@ -66,7 +62,7 @@ window.BattleAISkillEvaluation = (() => {
     if (card.elranaBag || card.armyOrder || card.targetless || card.block
       || card.charge || card.drawCards || card.mannyArmory || card.mannyBarrett
       || card.millerSlot || card.crimsonRampage
-      || card.cadicisPlan || card.wendyTutor) return actor;
+      || card.wendyTutor) return actor;
     return targetByPolicy(foes);
   }
 
@@ -89,10 +85,6 @@ window.BattleAISkillEvaluation = (() => {
     if (card.idolKiss) return costCard(hand, card, item => item.suit === "♥");
     if (card.elranaHeal || card.bloodPact) {
       return costCard(hand, card);
-    }
-    if (card.cadicisPlan) {
-      return costCard(hand, card,
-        item => isKill(item) || item.type === "tactic");
     }
     if (card.demonPoker) {
       return costCard(hand, card, item => item.type !== "tactic" && !item._skill);
