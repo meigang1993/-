@@ -74,6 +74,8 @@ window.GameStoreMigrations = (() => {
     delete state.resources.shards;
     delete state.resources.cores;
     state.unlockedDifficulties = migrateDifficulties(state.unlockedDifficulties);
+    // 难度解锁改为按副本独立；老存档的全局数组迁移到 state.dungeonUnlocks。
+    window.DungeonUnlocks?.migrate?.(state);
     state.battleLog = Array.isArray(state.battleLog) ? state.battleLog : [];
     state.defeatedElites ||= [];
     normalizers.normalizeShopUnlocks(state, markForSave);
