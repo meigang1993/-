@@ -71,6 +71,17 @@ window.GameStoreSaveValidation = ({ limits, serializedBytes }) => {
         ...runRewards].every(formalRewardRelics);
   }
 
+  // 按副本的难度解锁表：{ [missionId]: string[] }，键必须是副本，值必须是合法难度。
+  function validDungeonUnlocks(raw) {
+    if (!record(raw) || Array.isArray(raw)) return false;
+    const missions = new Set((window.GameData?.missions || [])
+      .filter(m => m?.kind === "dungeon").map(m => m.id));
+    const difficulties = new Set(Object.keys(window.GameData?.difficulties || {}));
+    return Object.entries(raw).every(([missionId, list]) => missions.has(missionId)
+      && Array.isArray(list) && list.length <= 64
+      && list.every(id => typeof id === "string" && difficulties.has(id)));
+  }
+
   function validShape(raw, checkBytes) {
     if (!record(raw) || !boundedStructure(raw)) return false;
     if (!window.GameStoreSaveSchema.validPersistedState(raw, checkBytes)) return false;
@@ -78,6 +89,7 @@ window.GameStoreSaveValidation = ({ limits, serializedBytes }) => {
     if (["settings", "resources", "flags", "unlockEvents", "equipment", "testEquipment", "ownedSkins", "equippedSkins", "testSkins", "_localBountyLedger"].some(key => raw[key] != null && !record(raw[key]))) return false;
     if (raw.unlockEvents != null
       && !window.UnlockEventProgress.validPersisted(raw.unlockEvents)) return false;
+    if (raw.dungeonUnlocks != null && !validDungeonUnlocks(raw.dungeonUnlocks)) return false;
     if (raw.updatedAt != null && !boundedInteger(raw.updatedAt, limits.timestamp)) return false;
     if (raw._saveVersion != null && !boundedInteger(raw._saveVersion)) return false;
     if (raw.shopAuthorityVersion != null && !boundedInteger(raw.shopAuthorityVersion)) return false;
