@@ -63,7 +63,7 @@ window.DungeonRunRewards = (() => {
     if (!run?.complete || run.rewardPopup) return;
     if (!await bank(state, run)) return;
     window.NewCharacterUnlockEvents?.recordDungeonClear?.(state, run);
-    unlockNext(state, run.difficultyId);
+    unlockNext(state, run.missionId, run.difficultyId);
     healParty(state);
     const key = run.focusId || `${run.missionId}:${run.difficultyId}`;
     window.DungeonSettlementActions?.queueDungeonCompletion?.(state, run);
@@ -82,11 +82,10 @@ window.DungeonRunRewards = (() => {
     window.NewCharacterUnlockEvents?.triggerPending?.(state);
   }
 
-  function unlockNext(state, difficultyId) {
-    const next = Object.entries(GameData.difficulties)
-      .find(([, difficulty]) => difficulty.unlock === difficultyId)?.[0];
-    if (!next || state.unlockedDifficulties.includes(next)) return;
-    state.unlockedDifficulties.push(next);
+  // 难度解锁按副本独立：只推进本次通关副本的难度链，不影响其他副本。
+  function unlockNext(state, missionId, difficultyId) {
+    const next = window.DungeonUnlocks?.unlockNext?.(state, missionId, difficultyId);
+    if (!next) return;
     state.log.unshift(`新难度已解锁：${GameData.difficulties[next].name}。`);
   }
 
