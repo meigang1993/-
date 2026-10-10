@@ -4,7 +4,6 @@ window.WendyCadicisSkills = (() => {
 
   function handleSpecialCard(state, actor, target, card, deps) {
     if (card.wendyTutor) return wendy.tutor(state, actor, deps);
-    if (card.cadicisPlan) return cadicis.plan(state, actor, deps);
     return false;
   }
 
@@ -19,10 +18,7 @@ window.WendyCadicisSkills = (() => {
     afterDiscard: wendy.afterDiscard,
     chooseTutorCard: wendy.chooseTutorCard,
     tutorPool: wendy.tutorPool,
-    applyPlan: cadicis.applyPlan,
     beforeKillTargeted: cadicis.beforeKillTargeted,
-    modifySlashDamage: cadicis.modifySlashDamage,
-    modifyTacticDamage: cadicis.modifyTacticDamage,
     responsibilityVisible: cadicis.responsibilityVisible,
     resolveResponsibility: cadicis.resolveResponsibility,
     skipResponsibility: cadicis.skipResponsibility,
