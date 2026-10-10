@@ -5,9 +5,15 @@ window.GameEconomy = Object.freeze({
     deleteCost: 700,
     stockSize: 6,
     expandedStockSize: 7,
+    // 商店手动刷新商品（重摇全部库存）的固定费用（莉莉丝元）。
+    refreshCost: 500,
   }),
   relic: Object.freeze({
     smeltGold: 180,
+  }),
+  bounty: Object.freeze({
+    // 任务界面/商店手动刷新任务列表的固定费用（莉莉丝元）。
+    refreshCost: 500,
   }),
   dungeonGold: Object.freeze({
     normal: Object.freeze([90, 130]),
