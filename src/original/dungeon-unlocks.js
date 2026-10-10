@@ -18,9 +18,6 @@ window.DungeonUnlocks = (() => {
   function validDifficulty(id) {
     return !!window.GameData?.difficulties?.[id];
   }
-  function isOpen(state, mission) {
-    return !mission.requiresFlag || !!state?.flags?.[mission.requiresFlag];
-  }
   function table(state) {
     if (!state) return {};
     const own = state.dungeonUnlocks;
@@ -67,17 +64,45 @@ window.DungeonUnlocks = (() => {
     if (!next) return null;
     return unlock(state, missionId, next) ? next : null;
   }
+  function nextOf(difficultyId) {
+    return Object.entries(window.GameData.difficulties || {})
+      .find(([, difficulty]) => difficulty.unlock === difficultyId)?.[0] || null;
+  }
+  // 该副本该难度是否真有通关记录（成果记录形如 "clear:副本id@难度id"）。
+  // 返回 null 表示通关记录模块缺失、无法判定——此时绝不回收，避免误锁玩家进度。
+  function cleared(state, missionId, difficultyId) {
+    const progress = window.ButlerManualProgress;
+    if (!progress?.has) return null;
+    return !!progress.has(state, "clear", missionId, difficultyId);
+  }
+  // 按通关记录递推：普通级恒解锁，此后每一档都必须真的通关了上一档。
+  // 由全局数组外溢得来的难度没有任何该副本的通关记录，会被锁回普通级。
+  // 无法判定时返回 null，调用方保持原值不动。
+  function chain(state, missionId) {
+    const result = [DEFAULT_ID];
+    let current = DEFAULT_ID;
+    for (;;) {
+      const next = nextOf(current);
+      if (!next) break;
+      const ok = cleared(state, missionId, current);
+      if (ok === null) return null;
+      if (!ok) break;
+      result.push(next);
+      current = next;
+    }
+    return result;
+  }
   // 老存档迁移：数组形态 → 按副本独立。
-  // 已开放的副本继承原全局进度（不丢档）；未开放的副本只给普通级，需自行从头推进。
+  // 每次加载都按通关记录重算一遍，因此已经写入过 dungeonUnlocks 的存档
+  // 若含有外溢来的难度，也会在本次加载时被回收。
   function migrate(state) {
     if (!state || typeof state !== "object") return state;
-    const legacy = clean(state.unlockedDifficulties);
+    // 先整体算完：只要有一个副本无法判定，就整份跳过，
+    // 避免写入半套数据后 syncLegacy 把旧数组清空，造成进度丢失。
+    const chains = missions().map(mission => ({ id: mission.id, next: chain(state, mission.id) }));
+    if (!chains.length || chains.some(item => !item.next)) return state;
     const own = table(state);
-    const filled = missions().filter(m => Object.prototype.hasOwnProperty.call(own, m.id));
-    missions().forEach(mission => {
-      if (filled.includes(mission)) return;
-      own[mission.id] = isOpen(state, mission) && legacy.length ? [...legacy] : [DEFAULT_ID];
-    });
+    chains.forEach(item => { own[item.id] = item.next; });
     syncLegacy(state);
     return state;
   }
