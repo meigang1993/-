@@ -15,7 +15,10 @@ window.VillaCollectionUI = ({ U, cardTypeLabel }) => {
       : "";
     const empty = !goods && !notice ? '<div class="empty-state">暂无可用商品。</div>' : "";
     const full = capacity.remaining === 0 ? `<p class="muted">牌库已满，请先删除卡牌再购买或领取卡牌奖励。</p>` : "";
-    return `<h2>别墅商店</h2><p class="muted">商店展示${stockSize}张卡牌；副本通关、撤退或全军覆没返回别墅时会全部刷新。购买后该位置变为已售。</p><div class="actions"><span class="tag">莉莉丝元 ${state.resources.gold}</span><span class="tag">库存 ${slots.filter(s => !s.sold).length}/${stockSize}</span><span class="tag">牌库 ${capacity.current}/${capacity.max}</span></div>${notice}${full}<div class="card-grid shop-grid">${goods || empty}</div><h3>删除卡牌服务</h3><p class="muted">固定费用${ShopSystem.DELETE_COST}莉莉丝元/次，不占用商品位。</p><div class="actions"><button data-open-modal="deleteDeck" ${state.resources.gold < ShopSystem.DELETE_COST || (state.deck || []).length <= 1 ? "disabled" : ""}>浏览牌库并删除</button></div>`;
+    // 付费刷新商品：与免费修复库存的「刷新库存」按钮区分开，价格固定。
+    const gold = Number(state.resources?.gold) || 0;
+    const paidRefresh = `<h3>刷新商品服务</h3><p class="muted">花费${ShopSystem.REFRESH_COST}莉莉丝元重摇全部商品，已售出的位置也会重新上架。</p><div class="actions"><button data-shop-paid-refresh="1" ${gold < ShopSystem.REFRESH_COST ? "disabled" : ""}>刷新商品：${ShopSystem.REFRESH_COST}莉莉丝元</button></div>`;
+    return `<h2>别墅商店</h2><p class="muted">商店展示${stockSize}张卡牌；副本通关、撤退或全军覆没返回别墅时会全部刷新。购买后该位置变为已售。</p><div class="actions"><span class="tag">莉莉丝元 ${state.resources.gold}</span><span class="tag">库存 ${slots.filter(s => !s.sold).length}/${stockSize}</span><span class="tag">牌库 ${capacity.current}/${capacity.max}</span></div>${notice}${full}<div class="card-grid shop-grid">${goods || empty}</div><h3>删除卡牌服务</h3><p class="muted">固定费用${ShopSystem.DELETE_COST}莉莉丝元/次，不占用商品位。</p><div class="actions"><button data-open-modal="deleteDeck" ${state.resources.gold < ShopSystem.DELETE_COST || (state.deck || []).length <= 1 ? "disabled" : ""}>浏览牌库并删除</button></div>${paidRefresh}`;
   }
   function goodCard(slot, i, state) {
     const c = slot.card, cost = c.price || ShopSystem.BUY_COST;
