@@ -79,7 +79,6 @@ window.CardArt = (() => {
     "偶像之吻": "./assets/generated/cards/skill-art-idol-kiss.03ce3e80.webp",
     "神速之袭": "./assets/generated/cards/skill-art-speed-assault.2df815af.webp",
     "解答迷惑": "./assets/generated/cards/skill-art-answer-confusion.4b87bb39.webp",
-    "战场指挥官": "./assets/generated/cards/skill-art-battlefield-commander.7eb264a3.webp",
     "疯狂射击": "./assets/generated/cards/skill-art-crazy-shooting.cce6591a.webp",
     "苦肉鞭笞": "./assets/generated/cards/skill-art-self-punishing-whip.1afab66d.webp",
     "疯狂屠戮": "./assets/generated/cards/skill-art-crazy-slaughter.7dbbf054.webp",
