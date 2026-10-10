@@ -15,7 +15,7 @@ window.GameCombatRoles = (() => {
     loki: ["输出"],
     flora: ["输出"],
     wendy: ["辅助/续航"],
-    cadicis: ["辅助/续航"],
+    cadicis: ["输出"],
     carlos: ["输出"],
     bertis: ["成长/资源"],
     gerlot: ["输出"],
