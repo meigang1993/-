@@ -102,21 +102,46 @@ async function testUnknownIdsRejected() {
 }
 
 async function testLegacyMigration() {
-  // 老存档（数组形态）迁移：已开放副本保留原有进度，未开放副本只给普通级。
+  // 老存档迁移：全局数组里的难度若没有该副本自己的通关记录支撑，必须锁回普通级。
+  // 背景 BUG：旧逻辑让已开放副本直接继承全局数组，于是通关 machine_factory 普通级
+  // 得来的 adventure 会外溢到水下列车、兽人地下城——玩家根本没打过普通级却显示已解锁。
+  if (!global.DungeonUnlocks?.migrate || !global.ButlerManualProgress?.recordClear) return;
+
+  // F1 无通关记录的旧档：三个副本全部锁回普通级。
   const state = GameStoreStateFactory.freshState();
-  if (!global.DungeonUnlocks?.migrate) return;
   state.unlockedDifficulties = ["normal", "adventure", "warrior"];
   state.flags.underwaterTrainUnlocked = true;
   state.flags.orcDungeonUnlocked = false;
   global.DungeonUnlocks.migrate(state);
-  const open = global.DungeonUnlocks.list(state, "machine_factory");
-  assert(open.includes("normal") && open.includes("adventure") && open.includes("warrior"),
-    `F1 已开放副本应继承旧进度（当前=${JSON.stringify(open)}）`);
-  const train = global.DungeonUnlocks.list(state, "underwater_train");
-  assert(train.includes("adventure"), "F2 已开放的水下列车应继承旧进度");
-  const orc = global.DungeonUnlocks.list(state, "orc_dungeon");
-  assert(orc.length === 1 && orc[0] === "normal",
-    `F3 未开放副本应只保留普通级（当前=${JSON.stringify(orc)}）`);
+  ["machine_factory", "underwater_train", "orc_dungeon"].forEach(id => {
+    const list = global.DungeonUnlocks.list(state, id);
+    assert(list.length === 1 && list[0] === "normal",
+      `F1 ${id} 无通关记录应锁回普通级（当前=${JSON.stringify(list)}）`);
+  });
+
+  // F2 有通关记录的副本：严格按记录递推，只保留打出来的那一档。
+  const s2 = GameStoreStateFactory.freshState();
+  s2.unlockedDifficulties = ["normal", "adventure", "warrior"];
+  s2.flags.underwaterTrainUnlocked = true;
+  global.ButlerManualProgress.recordClear(s2, "machine_factory", "normal");
+  global.DungeonUnlocks.migrate(s2);
+  const mf = global.DungeonUnlocks.list(s2, "machine_factory");
+  assert(mf.includes("adventure"), `F2 通关普通级应保留冒险级（当前=${JSON.stringify(mf)}）`);
+  assert(!mf.includes("warrior"),
+    `F2b 未通关冒险级不得保留勇士级（当前=${JSON.stringify(mf)}）`);
+  const train2 = global.DungeonUnlocks.list(s2, "underwater_train");
+  assert(train2.length === 1 && train2[0] === "normal",
+    `F2c 水下列车无自身记录仍应锁回普通级（当前=${JSON.stringify(train2)}）`);
+
+  // F3 已经写过外溢值的存档：再次加载时被回收。
+  const s3 = GameStoreStateFactory.freshState();
+  s3.dungeonUnlocks = { underwater_train: ["normal", "adventure", "warrior"] };
+  s3.unlockedDifficulties = ["normal", "adventure", "warrior"];
+  s3.flags.underwaterTrainUnlocked = true;
+  global.DungeonUnlocks.migrate(s3);
+  const train3 = global.DungeonUnlocks.list(s3, "underwater_train");
+  assert(train3.length === 1 && train3[0] === "normal",
+    `F3 已污染存档应被回收（当前=${JSON.stringify(train3)}）`);
 }
 
 module.exports = {
