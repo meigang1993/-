@@ -4,7 +4,10 @@ window.DungeonEvents = (() => {
     return `${missionId}-${difficultyId}-${window.GameRandom.persistentId("run-", state)}`;
   }
   function start(state, missionId, difficultyId = "normal", runId = "") {
-    if (!state.unlockedDifficulties.includes(difficultyId)) return;
+    const difficultyOpen = window.DungeonUnlocks
+      ? window.DungeonUnlocks.has(state, missionId, difficultyId)
+      : (state.unlockedDifficulties || []).includes(difficultyId);
+    if (!difficultyOpen) return;
     const diff = GameData.difficulties[difficultyId], mission = GameData.missions.find(m => m.id === missionId), layers = map().buildLayers(mission, diff, state);
     layers.flat().forEach(n => { if (["normal", "elite", "boss"].includes(n.type)) n.enemies = window.DungeonEnemyGroups.enemiesFor({ missionId, difficultyId }, n.type, state); });
     map().connect(layers, state); layers[0][0].done = true;
