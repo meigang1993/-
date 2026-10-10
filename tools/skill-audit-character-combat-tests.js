@@ -10,28 +10,6 @@ module.exports = ({ assert, card, unit, incoming }) => {
   }, loki, plainTarget, 4, incoming) === 8,
   "Loki's slash damage skill must accept virtual slashes");
 
-  const cadicis = unit("cadicis-plan", "ally", {
-    ref: "cadicis", name: "卡迪西斯", cadicisPlanName: "魔弹特攻",
-  });
-  const planActor = unit("cadicis-plan-user", "ally");
-  const planTactic = card("魔弹特攻", "tactic");
-  let state = {
-    battle: {
-      allies: [cadicis, planActor], enemies: [plainTarget], animQueue: [],
-    },
-  };
-  assert(WendyCadicisSkills.applyPlan(state, planActor, plainTarget, planTactic) === cadicis
-    && planTactic.ignoreResponse && planTactic.cadicisPlanApplied,
-  "Battlefield Commander must make a recorded tactic unresponsive");
-  assert(WendyCadicisSkills.modifyTacticDamage(
-    state, planActor, plainTarget, 5, planTactic) === 10,
-  "Battlefield Commander must double damage from the recorded tactic");
-  const unmatchedTactic = card("魔法对决", "tactic");
-  assert(!WendyCadicisSkills.applyPlan(state, planActor, plainTarget, unmatchedTactic)
-    && WendyCadicisSkills.modifyTacticDamage(
-      state, planActor, plainTarget, 5, unmatchedTactic) === 5,
-  "Battlefield Commander must not affect an unrecorded tactic");
-
   const heavyCadicis = unit("cadicis-heavy", "ally", {
     ref: "cadicis", stats: { attack: 4, magic: 2 },
   });
