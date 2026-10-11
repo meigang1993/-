@@ -41,6 +41,7 @@ const checks = [
   { name: "check:resources",    cmd: ["node", "tools/check-resources.js"] },
   { name: "check:asset-budget", cmd: ["node", "tools/check-asset-budget.js"] },
   { name: "check:scripts",      cmd: ["node", "tools/check-script-contracts.js"] },
+  { name: "check:module-deps",  cmd: ["node", "tools/check-test-module-deps.js"] },
   { name: "check:lines",        cmd: ["node", "tools/line-count.js", "--short"] },
 ];
 
