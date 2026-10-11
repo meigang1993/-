@@ -26,6 +26,7 @@ function loadRuntime(file) {
   "battle-save-checkpoint-snapshot.js", "battle-save-checkpoint.js",
   "store-save-schema.js", "store-save-validation.js", "store-save-limits.js",
   "store-compact.js", "store-unlock-recovery.js", "store-unlock-migrations.js",
+  "save-epoch.js",
   "store-state-factory.js",
   "store-bounty-repairs.js", "store-repairs.js", "store-migration-characters.js",
   "store-migration-runs.js", "store-migration-normalizers.js",
