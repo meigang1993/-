@@ -29,7 +29,7 @@ function load(file) {
   "data-world.js", "data.js",
   "dungeon-unlocks.js",
   "relics.js", "bounty-ledger.js", "receipt-ledger.js",
-  "unlock-event-progress.js", "store-state-factory.js",
+  "unlock-event-progress.js", "save-epoch.js", "store-state-factory.js",
   "orc-unlock-events.js",
   "butler-manual-progress.js",
 ].forEach(file => load(`./src/original/${file}`));
