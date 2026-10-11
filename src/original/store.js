@@ -2,6 +2,23 @@ window.GameStore = (() => {
   const { freshState, migrate, baseStats } = window.GameStoreMigrations;
   const main = window.GameStoreMainSave({ freshState, migrate });
   const slots = window.GameStoreSlotsData({ main });
+  // 惰性装配：打包顺序要求 store.js 先于 store-legacy-purge.js 加载，
+  // 因此不能在模块初始化时就取该模块，改为首次调用时装配。
+  let legacyPurge = null;
+  function getLegacyPurge() {
+    if (!legacyPurge) {
+      legacyPurge = window.GameStoreLegacyPurge({
+        key: window.GameStoreIO.key,
+        slotKey: window.GameStoreIO.slotKey,
+        slotIds: window.GameStoreIO.slotIds,
+        getRawDetails: window.GameStoreIO.getRawDetails,
+        getLocalDetails: window.GameStoreIO.getLocalDetails,
+        delRaw: window.GameStoreIO.delRaw,
+        isLegacy: window.GameSaveEpoch.isLegacy,
+      });
+    }
+    return legacyPurge;
+  }
   let pauseGeneration = 0;
   async function pauseSaving() {
     const generation = ++pauseGeneration;
@@ -60,6 +77,7 @@ window.GameStore = (() => {
     loadAuto: slots.loadAuto,
     loadSlot: slots.loadSlot,
     deleteSlot: slots.deleteSlot,
+    purgeLegacySaves: () => getLegacyPurge().purge(),
     pauseSaving,
     resumeSaving,
     acceptRestored,
