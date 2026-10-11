@@ -34,7 +34,7 @@ function load(file) {
 load("butler-manual-progress.js");
 [
   "relics.js", "bounty-ledger.js", "receipt-ledger.js",
-  "unlock-event-progress.js", "store-state-factory.js",
+  "unlock-event-progress.js", "save-epoch.js", "store-state-factory.js",
   "store-save-schema.js", "local-core-utils.js",
   "local-core-character.js", "local-core-commerce.js",
   "local-core-bounty.js", "local-core-dungeon.js", "local-core-events.js", "local-core.js",
