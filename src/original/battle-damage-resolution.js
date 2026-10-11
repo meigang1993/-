@@ -49,6 +49,9 @@ window.BattleDamageResolution = ({
       state, actor, amount, effectiveCard, effectiveActor) ?? amount;
     amount = window.BondiSkills?.modifyOutgoingDamage?.(
       state, actor, amount, effectiveCard) ?? amount;
+    // 力量爆发：实体【杀】结算完成后累积的伤害增益，作用于安洁莉卡造成的所有伤害。
+    amount = window.AngelicaLukaSkills?.modifyOutgoingDamage?.(
+      state, effectiveActor, amount, effectiveCard) ?? amount;
     // 魅魔吸精术「对无性别角色造成的伤害为2倍」：需拿到被打者才能判性别，
     // 故与 BakarSkills / BondiSkills 同走 outgoing 链。
     amount = window.RuinsWithererSkills?.modifyOutgoingDamage?.(
