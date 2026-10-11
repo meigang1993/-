@@ -6,23 +6,33 @@ window.AngelicaLukaSkills = (() => {
     && !card.virtual && !card.convertedFrom && !card.withererBerserkKill;
   const line = (state, unit, name, target) => window.BattleLines?.skill(state, unit, name, target);
   const wolfCard = () => ({ name: "狼牙杀", type: "slash", suit: "", power: 0, scale: "attack", noIntentCost: true, lukaWolfFang: true, text: "指定一名敌方角色为目标，对其造成等同于攻击力的伤害；此牌不消耗杀意。" });
-  function beforeCardPlayed(state, actor, card) {
-    if (actor?.ref !== "angelica" || !isEntitySlash(card)) return;
+  function ensureMightTurn(state, actor) {
     const turn = state?.battle?.turn;
     if (actor.angelicaMightTurn !== turn) {
       actor.angelicaMightTurn = turn;
       actor.angelicaSlashCount = 0;
+      actor.angelicaMightBonus = 0;
     }
+  }
+  function beforeCardPlayed(state, actor, card) {
+    // 力量爆发改为「实体【杀】结算完成后累积」，出牌前只做回合边界重置。
+    if (actor?.ref === "angelica") ensureMightTurn(state, actor);
+  }
+  // 实体【杀】结算完成后 +50% 伤害增益（可叠加），回合结束清空。
+  function grantMightBonus(state, actor, card) {
+    if (actor?.ref !== "angelica" || !isEntitySlash(card)) return;
+    ensureMightTurn(state, actor);
     actor.angelicaSlashCount = (actor.angelicaSlashCount || 0) + 1;
-    // 第1张×1.5，此后每多一张 +1（×2.5、×3.5…）
-    card.angelicaMight = 1.5 + (actor.angelicaSlashCount - 1);
+    actor.angelicaMightBonus = (actor.angelicaMightBonus || 0) + 0.5;
     line(state, actor, "力量爆发");
     window.AngelicaBerserkerSkinFX?.might?.(state, actor, card);
-    window.BattleLog.add(state, `${actor.name} 力量爆发：本回合第${actor.angelicaSlashCount}张实体【杀】，伤害×${Number(card.angelicaMight).toFixed(1)}。`);
+    window.BattleLog.add(state, `${actor.name} 力量爆发：本回合已使用${actor.angelicaSlashCount}张实体【杀】，之后造成的伤害+${Math.round(actor.angelicaMightBonus * 100)}%（回合结束清空）。`);
   }
-  function modifyDamage(state, actor, amount, card) {
-    if (!amount || actor?.ref !== "angelica" || !card?.angelicaMight) return amount;
-    return amount * card.angelicaMight;
+  // 挂在统一伤害结算链的 outgoing 段：覆盖杀、战术牌、技能等所有伤害来源。
+  function modifyOutgoingDamage(state, actor, amount) {
+    if (!amount || actor?.ref !== "angelica") return amount;
+    const bonus = actor.angelicaMightBonus || 0;
+    return bonus ? amount * (1 + bonus) : amount;
   }
   function canPayIntentWithRage(actor, card) {
     return actor?.ref === "angelica" && isEntitySlash(card)
@@ -118,10 +128,21 @@ window.AngelicaLukaSkills = (() => {
     if (unit?.ref === "luka") recoverWolf(state, unit, true, "all");
     if (unit?.ref === "angelica") {
       unit.angelicaSlashCount = 0;
+      unit.angelicaMightBonus = 0;
       unit.angelicaMightTurn = null;
     }
   }
-  function afterCardPlayed(state, actor, card) { if (actor?.ref === "luka" && card?.type === "tactic" && !card._lukaChecked) { card._lukaChecked = true; recoverWolf(state, actor, true, "discard"); } }
+  function endTurn(state, unit) {
+    if (unit?.ref !== "angelica") return;
+    if (!unit.angelicaMightBonus && !unit.angelicaSlashCount) return;
+    unit.angelicaSlashCount = 0;
+    unit.angelicaMightBonus = 0;
+    unit.angelicaMightTurn = null;
+  }
+  function afterCardPlayed(state, actor, card) {
+    if (actor?.ref === "luka" && card?.type === "tactic" && !card._lukaChecked) { card._lukaChecked = true; recoverWolf(state, actor, true, "discard"); }
+    grantMightBonus(state, actor, card);
+  }
   function recoverWolf(state, unit, speak, mode) {
     const inHand = unit.hand.filter(c => c.lukaWolfFang);
     const sources = mode === "discard" ? [unit.discard] : [unit.discard, unit.consumed, unit.deck];
@@ -135,5 +156,5 @@ window.AngelicaLukaSkills = (() => {
       if (speak) line(state, unit, "狼牙回战");
     }
   }
-  return { beforeCardPlayed, modifyDamage, canPayIntentWithRage, beforeIntentCost, canUseCrimsonRampage, handleSpecialCard, afterDamage, battleStart, beginTurn, afterCardPlayed };
+  return { beforeCardPlayed, modifyOutgoingDamage, canPayIntentWithRage, beforeIntentCost, canUseCrimsonRampage, handleSpecialCard, afterDamage, battleStart, beginTurn, endTurn, afterCardPlayed };
 })();
