@@ -14,10 +14,11 @@ window.AngelicaLukaSkills = (() => {
       actor.angelicaSlashCount = 0;
     }
     actor.angelicaSlashCount = (actor.angelicaSlashCount || 0) + 1;
-    card.angelicaMight = actor.angelicaSlashCount + 1;
+    // 第1张×1.5，此后每多一张 +1（×2.5、×3.5…）
+    card.angelicaMight = 1.5 + (actor.angelicaSlashCount - 1);
     line(state, actor, "力量爆发");
     window.AngelicaBerserkerSkinFX?.might?.(state, actor, card);
-    window.BattleLog.add(state, `${actor.name} 力量爆发：本回合第${actor.angelicaSlashCount}张实体【杀】，伤害×${card.angelicaMight}。`);
+    window.BattleLog.add(state, `${actor.name} 力量爆发：本回合第${actor.angelicaSlashCount}张实体【杀】，伤害×${Number(card.angelicaMight).toFixed(1)}。`);
   }
   function modifyDamage(state, actor, amount, card) {
     if (!amount || actor?.ref !== "angelica" || !card?.angelicaMight) return amount;
