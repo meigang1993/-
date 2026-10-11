@@ -136,6 +136,10 @@ async function boot() {
     sessionOnly = false;
     showBoot();
     await finishBoot(window.GameStore, attempt);
+    // 旧存档清理不能沿用 isActiveBoot 守卫：它在 boot 正常上报就绪后恒为 false，
+    // 会把清理整段跳过。这里只判断有没有更新的 boot 接手（清理本身幂等）。
+    if (attempt !== bootAttempt) return;
+    await purgeLegacySavesOnStart();
   } catch (error) {
     failBoot(error, attempt, error?.bootMessage);
   }
