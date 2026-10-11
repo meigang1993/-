@@ -21,7 +21,11 @@ window.GameStoreIOMutations = deps => {
   async function putRawDetailed(key, value, opts = {}) {
     const cloudAvailable = !!window.dzmm?.kv?.put;
     const savedCloud = cloudAvailable ? await putCloudRaw(key, value, opts) : null;
-    const localAttempted = !cloudAvailable || savedCloud;
+    // 本地必须总是尝试写入：原先只在云端成功时才写本地，一旦云端故障
+    // （无网络 / kv 报错），本地副本就完全没有落盘，玩家进度直接丢失。
+    // 两边都写后再由读取侧按 _saveVersion / updatedAt 选取较新的一份，
+    // 因此本地写入不会覆盖掉云端的更新进度。
+    const localAttempted = true;
     const savedLocal = localAttempted ? putLocalRaw(key, value) : false;
     return {
       key,
@@ -60,9 +64,12 @@ window.GameStoreIOMutations = deps => {
         cloudError.cause = error;
       }
     }
+    // 云端副本删不掉时绝不能先删本地：本地没了、云端还在，下次读取会
+    // 把云端的旧数据重新读回来（已删的存档位复活 / 旧档清了又回来）。
+    // 因此云端删除未成功就原样抛出，本地保持不动，由调用方重试。
+    if (cloudError) throw cloudError;
     const localResult = removeLocalRaw(key);
     const localError = localResult.ok ? null : localResult.error;
-    if (cloudError) throw cloudError;
     if (localError
       && (opts.requireAll ? !localResult.unavailable : !cloudKv?.delete)) {
       const error = new Error("LOCAL_DELETE_FAILED");
