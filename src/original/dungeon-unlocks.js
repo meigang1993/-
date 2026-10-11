@@ -33,13 +33,8 @@ window.DungeonUnlocks = (() => {
     const own = table(state);
     const mine = clean(own[missionId]);
     if (mine.length) return mine.includes(DEFAULT_ID) ? mine : [DEFAULT_ID, ...mine];
-    // 整张表还是空的 = 这份 state 从未走过按副本迁移（老存档未迁移 / 测试夹具）。
-    // 此时回退到旧的全局数组，避免误锁；一旦表里有了任一副本的记录，
-    // 就严格按副本独立，未记录的副本只给普通级，不允许外溢。
-    if (!Object.keys(own).length) {
-      const legacy = clean(state.unlockedDifficulties);
-      return legacy.length ? legacy : [DEFAULT_ID];
-    }
+    // 表里没有该副本的记录时一律只给普通级，不回退全局数组——
+    // 全局数组是所有副本的并集，用它兜底会让任一副本的进度外溢到所有副本。
     return [DEFAULT_ID];
   }
   function has(state, missionId, difficultyId) {
