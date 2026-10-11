@@ -7,7 +7,7 @@ window.AppRenderOverlays = (() => {
       ? `<div class="save-warning" role="alert"><span>临时试玩模式：不会读取、覆盖或保存任何云端进度，刷新后本次进度消失。</span></div>` : "";
     const load = sessionOnly ? "" : `<button class="start-command" data-start-load="1"${busy}><span aria-hidden="true">◆</span><b>读档</b></button>`;
     const newGameLabel = sessionOnly ? "开始临时试玩" : "新游戏";
-    return `<div class="start-screen"><section class="start-card" aria-label="魅魔杀"${creditsLock}><div class="start-emblem"><h2>魅魔杀</h2></div>${temporary}<div class="start-actions"><button class="start-command primary" data-start-game="1"${busy}><span aria-hidden="true">✦</span><b>${newGameLabel}</b></button>${load}<button class="start-command" data-start-settings="1"${busy}><span aria-hidden="true">⚙</span><b>设置</b></button></div></section><button class="credits-button" data-open-credits="1"${creditsLock}><span aria-hidden="true">❦</span><b>制作名单</b></button>${creditsPanel()}</div>`;
+    return `<div class="start-screen"><section class="start-card" aria-label="魅魔杀"${creditsLock}><div class="start-emblem"><h2>魅魔杀</h2></div>${temporary}${startNotice ? `<div class="save-warning" role="alert"><span>${UICommon.esc(startNotice)}</span></div>` : ""}<div class="start-actions"><button class="start-command primary" data-start-game="1"${busy}><span aria-hidden="true">✦</span><b>${newGameLabel}</b></button>${load}<button class="start-command" data-start-settings="1"${busy}><span aria-hidden="true">⚙</span><b>设置</b></button></div></section><button class="credits-button" data-open-credits="1"${creditsLock}><span aria-hidden="true">❦</span><b>制作名单</b></button>${creditsPanel()}</div>`;
   }
   function creditsPanel() {
     if (!creditsOpen) return "";
