@@ -68,6 +68,9 @@ window.GameStoreSlotReads = deps => {
     if (selected.corrupt) throw new Error(`${source === "local" ? "本地" : "云端"}自动存档副本损坏`);
     if (!selected.data) throw new Error(`${source === "local" ? "本地" : "云端"}自动存档副本不存在`);
     const loaded = selected.data;
+    if (window.GameSaveEpoch?.isLegacy?.(loaded)) {
+      throw new Error("该存档为旧版格式，本次更新后不再支持，已清除。请开始新游戏。");
+    }
     if (details.cloudReadFailed) Object.defineProperty(loaded, "__slotCloudUnknown",
       { value: true, configurable: true });
     return loaded;
@@ -93,6 +96,9 @@ window.GameStoreSlotReads = deps => {
       return null;
     }
     const loaded = chosen.data;
+    if (window.GameSaveEpoch?.isLegacy?.(loaded)) {
+      throw new Error("该存档为旧版格式，本次更新后不再支持，已清除。请开始新游戏。");
+    }
     loaded.currentSaveSlot = id;
     if (details.cloudReadFailed) Object.defineProperty(loaded, "__slotCloudUnknown",
       { value: true, configurable: true });
