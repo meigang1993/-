@@ -23,7 +23,7 @@ function assert(condition, message) {
   "relics.js", "bounty-ledger.js", "receipt-ledger.js",
   "unlock-event-progress.js", "store-save-schema.js", "store-compact.js",
   "store-unlock-recovery.js", "store-unlock-migrations.js",
-  "store-state-factory.js", "store-bounty-repairs.js", "store-repairs.js",
+  "save-epoch.js", "store-state-factory.js", "store-bounty-repairs.js", "store-repairs.js",
   "store-migration-characters.js", "store-migration-runs.js",
   "store-migration-normalizers.js", "store-migrations-characters.js", "store-migrations-unlocks.js", "store-migrations.js",
   "local-core-utils.js", "local-core-character.js", "local-core-commerce.js",
