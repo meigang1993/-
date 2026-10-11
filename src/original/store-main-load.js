@@ -48,6 +48,11 @@ window.GameStoreMainLoad = ({ freshState, migrate, noteSaveMeta, noteLoadRecover
       ? { source: damaged[0] || stale, data: selected.copy.data }
       : null);
     const loaded = selected.copy.data;
+    // 旧档不再兼容：即使清理未生效，也不能把旧档读进游戏，直接给新档
+    if (window.GameSaveEpoch?.isLegacy?.(loaded)) {
+      noteLoadRecovery(null);
+      return freshState();
+    }
     noteSaveMeta(loaded);
     return loaded;
   }
