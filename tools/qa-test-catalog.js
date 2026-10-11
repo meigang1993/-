@@ -301,6 +301,8 @@ const groups = Object.freeze({
     "test-elrana-fallen-physician-skin.js",
     "test-flora-sonic-skin.js",
     "test-angelica-berserker-skin.js",
+    "test-angelica-might-accumulate-live.js",
+    "test-angelica-might-turnclear-live.js",
     "test-nonoka-idol-skin.js",
     "test-wendy-teacher-skin.js",
     "test-battle-effect-anchors.js",
