@@ -16,7 +16,7 @@ require("../src/original/angelica-luka-skills.js");
 window.BattleLines = { skill() {} };
 const turnState = { battle: { turn: 1 } };
 
-// 力量爆发（重做后）：本回合每张实体【杀】倍率递增，首张 ×2。
+// 力量爆发（重做后）：本回合每张实体【杀】倍率递增，首张 ×1.5。
 const mightActor = { ref: "angelica", name: "安洁莉卡" };
 const mightRows = [1, 2, 3].map(() => {
   const card = { name: "杀（普攻）", type: "slash", power: 0 };
@@ -28,9 +28,9 @@ const mightRows = [1, 2, 3].map(() => {
   };
 });
 assert.deepStrictEqual(mightRows, [
-  { count: 1, might: 2, damage: 20 },
-  { count: 2, might: 3, damage: 30 },
-  { count: 3, might: 4, damage: 40 },
+  { count: 1, might: 1.5, damage: 15 },
+  { count: 2, might: 2.5, damage: 25 },
+  { count: 3, might: 3.5, damage: 35 },
 ], "力量爆发 must scale damage by the number of entity slashes used this turn");
 
 // 非实体杀（锦囊 / 虚拟杀 / 转换杀）既不触发倍率，也不计入本回合计数。
@@ -49,8 +49,8 @@ assert(mightActor.angelicaSlashCount === 3 && !tacticCard.angelicaMight
 AngelicaLukaSkills.beginTurn(turnState, mightActor);
 const nextTurnCard = { name: "杀（普攻）", type: "slash" };
 AngelicaLukaSkills.beforeCardPlayed(turnState, mightActor, nextTurnCard);
-assert(nextTurnCard.angelicaMight === 2 && mightActor.angelicaSlashCount === 1,
-  "力量爆发 must restart at x2 on a new turn");
+assert(nextTurnCard.angelicaMight === 1.5 && mightActor.angelicaSlashCount === 1,
+  "力量爆发 must restart at x1.5 on a new turn");
 
 // 狂战意志（重做后）：每次伤害事件独立结算，各获得 1 枚标记。
 const rageState = { battle: { turn: 1 } };
