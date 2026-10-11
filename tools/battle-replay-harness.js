@@ -65,7 +65,7 @@ function loadRuntime() {
   // Load 190 logic modules across 5 battle bundles + 4 store files (setup deps).
   const bundles = JSON.parse(fs.readFileSync(path.join(__dirname, "publish-bundles.json"), "utf8"));
   const logicBundles = ["startup", "battle-rules", "battle-skills", "battle-flow", "battle-ai"];
-  const extraStore = ["bounty-ledger.js", "receipt-ledger.js", "unlock-event-progress.js", "store-state-factory.js"];
+  const extraStore = ["bounty-ledger.js", "receipt-ledger.js", "unlock-event-progress.js", "save-epoch.js", "store-state-factory.js"];
   for (const bundle of logicBundles) {
     for (const file of bundles[bundle]) {
       const full = path.join(root, "src", "original", file);
