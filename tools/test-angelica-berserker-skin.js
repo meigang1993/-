@@ -16,41 +16,85 @@ require("../src/original/angelica-luka-skills.js");
 window.BattleLines = { skill() {} };
 const turnState = { battle: { turn: 1 } };
 
-// 力量爆发（重做后）：本回合每张实体【杀】倍率递增，首张 ×1.5。
+// 力量爆发：实体【杀】结算完成后 +50% 伤害增益（叠加），回合结束清空。
+// 故第1张杀按基础伤害结算，后续每张享受此前累积的增益。
 const mightActor = { ref: "angelica", name: "安洁莉卡" };
 const mightRows = [1, 2, 3].map(() => {
   const card = { name: "杀（普攻）", type: "slash", power: 0 };
   AngelicaLukaSkills.beforeCardPlayed(turnState, mightActor, card);
+  const damage = AngelicaLukaSkills.modifyOutgoingDamage(turnState, mightActor, 10, card);
+  // 结算完成后才累积增益
+  AngelicaLukaSkills.afterCardPlayed(turnState, mightActor, card);
   return {
     count: mightActor.angelicaSlashCount,
-    might: card.angelicaMight,
-    damage: AngelicaLukaSkills.modifyDamage(turnState, mightActor, 10, card),
+    bonus: mightActor.angelicaMightBonus,
+    damage,
   };
 });
 assert.deepStrictEqual(mightRows, [
-  { count: 1, might: 1.5, damage: 15 },
-  { count: 2, might: 2.5, damage: 25 },
-  { count: 3, might: 3.5, damage: 35 },
-], "力量爆发 must scale damage by the number of entity slashes used this turn");
+  { count: 1, bonus: 0.5, damage: 10 },
+  { count: 2, bonus: 1, damage: 15 },
+  { count: 3, bonus: 1.5, damage: 20 },
+], "力量爆发 must grant +50% damage after each entity slash resolves");
 
-// 非实体杀（锦囊 / 虚拟杀 / 转换杀）既不触发倍率，也不计入本回合计数。
+// 增益作用于后续的所有伤害，不只是【杀】。
+const followUpCard = { name: "火攻", type: "tactic" };
+assert(AngelicaLukaSkills.modifyOutgoingDamage(
+  turnState, mightActor, 10, followUpCard) === 25,
+  "the accumulated bonus must apply to any subsequent damage, not only slashes");
+
+// 非实体杀（锦囊 / 虚拟杀 / 转换杀）既不触发增益，也不计入本回合计数。
+const bonusBefore = mightActor.angelicaMightBonus;
+const countBefore = mightActor.angelicaSlashCount;
 const tacticCard = { type: "tactic", drawCards: 2 };
 const virtualCard = { name: "杀（普攻）", type: "slash", virtual: true };
 const convertedCard = {
   name: "杀（普攻）", type: "slash", convertedFrom: "火杀", withererBerserkKill: true,
 };
 [tacticCard, virtualCard, convertedCard].forEach(card =>
-  AngelicaLukaSkills.beforeCardPlayed(turnState, mightActor, card));
-assert(mightActor.angelicaSlashCount === 3 && !tacticCard.angelicaMight
-  && !virtualCard.angelicaMight && !convertedCard.angelicaMight,
+  AngelicaLukaSkills.afterCardPlayed(turnState, mightActor, card));
+assert(mightActor.angelicaSlashCount === countBefore
+  && mightActor.angelicaMightBonus === bonusBefore,
   "non-entity slashes must neither trigger nor count toward 力量爆发");
 
-// 新回合重置，倍率回到 ×2。
+// 新回合重置：增益清空，第1张杀回到基础伤害。
 AngelicaLukaSkills.beginTurn(turnState, mightActor);
 const nextTurnCard = { name: "杀（普攻）", type: "slash" };
 AngelicaLukaSkills.beforeCardPlayed(turnState, mightActor, nextTurnCard);
-assert(nextTurnCard.angelicaMight === 1.5 && mightActor.angelicaSlashCount === 1,
-  "力量爆发 must restart at x1.5 on a new turn");
+assert(!mightActor.angelicaMightBonus
+  && AngelicaLukaSkills.modifyOutgoingDamage(turnState, mightActor, 10, nextTurnCard) === 10,
+  "力量爆发 must reset to no bonus on a new turn");
+AngelicaLukaSkills.afterCardPlayed(turnState, mightActor, nextTurnCard);
+assert(mightActor.angelicaSlashCount === 1 && mightActor.angelicaMightBonus === 0.5,
+  "a new turn must restart the slash count at 1 with +50%");
+
+// 回合结束清空（关键）：结束阶段钩子必须清掉增益，
+// 否则增益会外溢到别人的回合——反击/技能等非出牌伤害也吃加成（modifyOutgoingDamage 挂在统一伤害链上）。
+require("../src/original/battle-end-phase.js");
+const endActor = { ref: "angelica", name: "安洁莉卡", uid: "a0", hp: 30, maxHp: 30 };
+const endState = {
+  battle: { turn: 3, phase: 6, allies: [endActor], enemies: [] },
+};
+window.BattleTurnState = { cleanupTurn: () => {} };
+const endSlash = { name: "杀（普攻）", type: "slash" };
+AngelicaLukaSkills.beforeCardPlayed(endState, endActor, endSlash);
+AngelicaLukaSkills.afterCardPlayed(endState, endActor, endSlash);
+assert(endActor.angelicaMightBonus === 0.5
+  && AngelicaLukaSkills.modifyOutgoingDamage(endState, endActor, 10, endSlash) === 15,
+  "the bonus must be live before the end phase runs");
+const endPhase = window.BattleEndPhase({
+  allUnits: () => [endActor],
+  combat: { damage: {}, pushFloat: () => {} },
+  draw: () => 0,
+});
+endPhase.run(endState, endActor);
+assert(!endActor.angelicaMightBonus && !endActor.angelicaSlashCount
+  && endActor.angelicaMightTurn === null,
+  "力量爆发 must be cleared by the end-phase hook");
+// 清空后，非出牌来源的伤害（反击/技能）不再吃加成。
+assert(AngelicaLukaSkills.modifyOutgoingDamage(
+  endState, endActor, 10, undefined) === 10,
+  "after the end phase, non-card damage must not carry the accumulated bonus");
 
 // 狂战意志（重做后）：每次伤害事件独立结算，各获得 1 枚标记。
 const rageState = { battle: { turn: 1 } };
