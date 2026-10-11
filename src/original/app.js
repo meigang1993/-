@@ -12,6 +12,7 @@ let creditsClosing = false;
 let startOpen = true;
 let startActionBusy = false;
 let startLoadError = "";
+let startNotice = "";
 let sessionOnly = false;
 let saveWarningShown = false;
 let settingsSaveTimer = null;
