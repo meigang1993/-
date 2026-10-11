@@ -54,8 +54,6 @@ window.BattleCombatAttackValues = api => {
       state, actor, target, amount, card) ?? amount;
     amount = window.ArtinaMariaSkills?.modifySlashDamage?.(
       state, actor, target, amount, card) ?? amount;
-    amount = window.AngelicaLukaSkills?.modifyDamage?.(
-      state, actor, amount, card) ?? amount;
     amount = window.SakuraRisaSkills?.modifyRevengeDamage?.(
       state, actor, amount, card) ?? amount;
     // 智能大脑此前挂在这里，但只有走攻击流程的战术牌（如带 sweep 的枪林弹雨）会经过本函数；
