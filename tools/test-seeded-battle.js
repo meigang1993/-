@@ -37,6 +37,7 @@ function assert(condition, message) {
   "./src/original/bounty-ledger.js",
   "./src/original/receipt-ledger.js",
   "./src/original/unlock-event-progress.js",
+  "./src/original/save-epoch.js",
   "./src/original/store-state-factory.js",
   "./src/original/battle-setup.js",
 ].forEach(load);
