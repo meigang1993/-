@@ -19,8 +19,11 @@ window.GameStoreSlotsData = ({ main }) => {
       .some(copy => copy?.attempted && copy.ok);
   }
   function groupSaved(group) { if (!group || group.stale) return !!group?.stale;
-    const required = group.cloud?.attempted ? group.cloud : group.local;
-    return !!required?.attempted && required.ok; }
+    // 云端可用但写入失败时本地副本仍可能已落盘（putRawDetailed 总是写本地）。
+    // 只要任一副本成功就算保存成功，否则会被判成不可恢复错误并回滚存档位元数据，
+    // 玩家看到「保存失败」但数据其实已经写好了。
+    // 云端未同步由 requiredCopies 判为 SAVE_PARTIAL（可恢复）单独提示。
+    return [group.local, group.cloud].some(copy => !!copy?.attempted && copy.ok); }
   function compareMeta(left, right) {
     const version = Number(left?._saveVersion || 0) - Number(right?._saveVersion || 0);
     return version || Number(left?.updatedAt || 0) - Number(right?.updatedAt || 0);
