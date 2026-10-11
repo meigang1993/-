@@ -15,7 +15,7 @@ module.exports = ({ assert, card, unit, incoming }) => {
   });
   const heavyTargets = [unit("heavy-target-a", "enemy"), unit("heavy-target-b", "enemy")];
   const heavyHits = [];
-  state = { battle: { allies: [heavyCadicis], enemies: heavyTargets, animQueue: [] } };
+  let state = { battle: { allies: [heavyCadicis], enemies: heavyTargets, animQueue: [] } };
   WendyCadicisSkills.afterCardPlayed(
     state, heavyCadicis, heavyTargets[0],
     card("雷杀", "slash", { shock: true }),
