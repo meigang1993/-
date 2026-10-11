@@ -39,6 +39,8 @@ window.GameStoreMainSnapshot = ({ meta }) => {
     );
     const snapshot = cloneRuntimeState(state, options);
     delete snapshot._saveHeads;
+    // 存档纪元在写入时强制标记，避免任何写入路径漏掉（否则新档下次启动会被误判为旧档）
+    window.GameSaveEpoch?.mark?.(snapshot);
     snapshot.updatedAt = updatedAt;
     snapshot._saveVersion = saveVersion;
     const data = finalizeSaveSnapshot(snapshot);
