@@ -60,6 +60,12 @@ window.CardUtils = (() => {
   const isEntitySingleKill = card => isEntityKillCard(card) && isSingleTargetCard(card);
   const isSingleKillCard = card => isSingleKill(card) && !card._pendingDraw;
   const isCounterableTactic = card => !!(card?.type === "tactic" && !card.ignoreResponse && (!card._skill || card.virtual || card.convertedFrom));
+  // 出牌文案口径：只有技能才是「发动」，战术牌与实体牌一律「使用」。
+  // （响应 AOE/决斗打出的牌才记「打出」，由响应链显式标注，不在此处判定。）
+  // 此前战术牌被误归入「发动」，且出牌区/战报两处各写一份导致口径分叉，
+  // 现统一由本函数提供唯一判据。
+  const isSkillPlay = card => !!(card?._skill || card?.type === "skill");
+  const playVerb = card => (isSkillPlay(card) ? "发动了" : "使用了");
   const canRespondTo = (required, card) => required === "slash" ? isSingleKillCard(card) : !card?._pendingDraw && ((card?.type === "response" && card.name === "闪" || (required?.singleKill !== false && card?.deflect) || card?.withererSpeedResponse) && (!required?.blackDodgeOnly || card.suit === "♠" || card.suit === "♣"));
   const standardSuits = new Set(["♥", "♦", "♠", "♣"]);
   const canMagicBulletDisplay = card => !!card && !card._pendingDraw
@@ -110,6 +116,7 @@ window.CardUtils = (() => {
     targetScope, isGroupKillCard, isSingleKill, isPhysicalSingleKill,
     isEntitySingleKill,
     isSingleKillCard, isCounterableTactic, canRespondTo, generatedSource,
+    isSkillPlay, playVerb,
     canMagicBulletDisplay, magicBulletCards, battleView, damageStatKey,
   };
 })();

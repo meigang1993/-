@@ -1,6 +1,6 @@
 window.UpdateNotice = (() => {
   // 最新更新日期：公告标题、页脚时间与大厅按钮徽标统一以此为准，修改时只改这里。
-  const latest = { iso: "2026-10-11", label: "2026年10月11日", badge: "2026.10.11" };
+  const latest = { iso: "2026-10-12", label: "2026年10月12日", badge: "2026.10.12" };
     // 公告条目按「常改 / 归档」拆成两个数据文件，避免单文件超过 200 行硬约束：
   //   update-notice-recent.js  —— 最近几期，新条目一律加到该文件第一期
   //   update-notice-archive.js —— 历史归档，条目只增不改
@@ -29,7 +29,7 @@ window.UpdateNotice = (() => {
           </div>
         <time datetime="${latest.iso}">更新至${latest.label}</time>
       </header>
-        <p class="update-notice-summary">本次更新不再支持旧版存档（启动自动清除并严格防误删），修复云端存档的三处故障隐患，排除副本难度解锁的最后一处隐患并逐副本复查；【安洁莉卡】【力量爆发】重做为削弱向的“结算后累积增伤”：每张实体【杀】结算完成后叠加+50%伤害（基础10点为10/15/20），回合结束清空。</p>
+        <p class="update-notice-summary">本次更新统一出牌文案口径（技能才记“发动”，战术牌与实体牌一律记“使用”，敌方出牌不再显示“打出”），修复战斗中出战位置不跟随编队、动画被打断后血量数字停在旧值两个问题。</p>
         <div class="update-notice-list">${sections}</div>
       </section>
     `;

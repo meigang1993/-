@@ -39,7 +39,7 @@ window.UICommonCards = deps => {
       : card?.convertedFrom ? "转换" : card?.virtual ? "虚拟" : "";
     const skill = !kind ? card?.skillName || "" : "";
     const by = card?._playedByName
-      ? `<em>${esc(card._playedByName)} ${esc(card._playedAction || "发动了")}</em>` : "";
+      ? `<em>${esc(card._playedByName)} ${esc(card._playedAction || window.CardUtils?.playVerb?.(card) || "使用了")}</em>` : "";
     const kindClass = kind === "转换" ? "converted" : kind === "被拆" ? "dismantled"
         : kind === "协攻" ? "combo" : "virtual";
     const kindTag = kind

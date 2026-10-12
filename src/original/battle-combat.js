@@ -38,7 +38,7 @@ window.BattleCombat = (deps) => {
     if (card?._cardResolutionId) {
       snapshot._cardAnimationId = card._cardResolutionId;
     }
-    return { ...snapshot, _playedByName: actor.name, _playedAction: card?._skill || card?.type === "tactic" ? "发动了" : "使用了" };
+    return { ...snapshot, _playedByName: actor.name, _playedAction: window.CardUtils?.playVerb?.(card) || (card?._skill ? "发动了" : "使用了") };
   }
   let resolver, cardResume;
 
@@ -59,7 +59,7 @@ window.BattleCombat = (deps) => {
       const counted = !!card?._countAsPlayed;
       if (counted) {
         card._playedByName = actor.name;
-        card._playedAction = card._skill || card.type === "tactic" ? "发动了" : "使用了";
+        card._playedAction = window.CardUtils?.playVerb?.(card) || (card._skill ? "发动了" : "使用了");
         if (!card.skipMvpCardCount) window.BattleStats?.cardPlayed?.(battleAtStart, actor);
         window.WithererSkills?.refreshShiftState?.(actor);
       }
@@ -118,7 +118,7 @@ window.BattleCombat = (deps) => {
     if (window.GuestCharacterSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat, intentMax: deps.intentMax }, specialCtx)) { card._countAsPlayed = true; return true; }
     // 兜底：牌不在手牌时 indexOf 返回 -1，splice(-1,1) 会误删手牌最后一张。
     if (!card._skill && !card._skipHandMove) { const handIndex = actor.hand.indexOf(card); if (handIndex >= 0) actor.hand.splice(handIndex, 1); const pile = card.type === "consume" || card.copiedByEdis || card.void ? "consumed" : "discard"; putCard(state, actor, card, pile, { skipAnim: pile === "discard" && !!card._playedFlightDone }); }
-    card._playedByName = actor.name; card._playedAction = card.type === "tactic" ? "发动了" : "使用了";
+    card._playedByName = actor.name; card._playedAction = window.CardUtils && window.CardUtils.playVerb ? window.CardUtils.playVerb(card) : "使用了";
     // 出牌阶段限一次的技能：守卫命中时连「使用」日志一起拦掉，避免出现
     // 日志里用了多次、实际只生效一次的误导。
     if (window.RuinsEnemySkills?.isSkillBlocked?.(actor, card)) return false;

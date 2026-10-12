@@ -55,7 +55,13 @@ window.BattleRuntimeHelpers = () => {
     const actor = event?.uid && allUnits(battle).find(unit => unit.uid === event.uid);
     if (actor) {
       card._playedByName = actor.name;
-      card._playedAction = card._skill || card.type === "tactic" ? "发动了" : "打出了";
+      // 出牌区文案必须与战报同源，统一取 CardUtils.playVerb 的口径：
+      // 技能→「发动了」，战术牌/实体牌→「使用了」。此前此处写死「打出了」，
+      // 而 enemyPlay/virtualPlay 走的都是主动出牌，于是敌方出【杀】显示「打出了」、
+      // 玩家出【杀】显示「使用了」，两侧不一致。
+      // 仅当该牌已由响应链显式标注（如决斗打出的杀记为「打出了」）时沿用原值。
+      card._playedAction = card._playedAction
+        || window.CardUtils?.playVerb?.(card) || (card._skill ? "发动了" : "使用了");
       if (!card.skillName && card._skill && !card.virtual && !card.convertedFrom) card.skillName = card.name;
     }
     const trailId = card._cardResolutionId || card._cardAnimationId

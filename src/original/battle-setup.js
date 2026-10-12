@@ -61,7 +61,10 @@ window.BattleSetup = () => {
     const party = (context.test ? (context.allyIds || []) : (context.exploration ? state.explore?.activeParty || state.party : state.party)).slice(0, 4), source = context.enemies || GameData.enemies[missionId];
     const baseDeck = context.deck || state.deck || GameData.baseDeck, earned = context.exploration ? (state.explore?.earned?.cards || []) : [];
     const sharedDeck = battleDeck(baseDeck, earned);
-    const allyRefs = state.chars.filter(c => party.includes(c.id) && (context.test || (!c.locked && (!context.exploration || c.hp > 0))));
+    // 出战顺序必须跟随 state.party（玩家编队顺序），不能按 state.chars 的固定定义顺序。
+    const allyRefs = [...new Set(party)]
+      .map(id => state.chars.find(c => c.id === id))
+      .filter(c => c && (context.test || (!c.locked && (!context.exploration || c.hp > 0))));
     // 新手引导首战锁定：贝丝妲魔偶不入场，只由罗卡尔单独出战。
     const soloRefs = window.Onboarding?.at?.(state, "battle")
       ? allyRefs.filter(c => c.id === "lokar")

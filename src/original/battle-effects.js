@@ -115,6 +115,10 @@ window.BattleEffects = (() => {
     });
     document.body.classList.remove("card-dragging");
     hideLine();
+    // clearVisuals 只清掉了动画期临时字段（visualHp 等），若到此为止不重绘，
+    // 单位卡上的血量数字会停在受伤前的旧值：cancel/restart 打断动画时没有后续
+    // renderStep，玩家就会看到"血数字没变，实际血量早已结算"。
+    if (state?.view === "battle" && state?.battle) window.render?.();
     if (releaseIdle) resolveIdle();
   }
   const drain = window.BattleEffectDrain({ runtime, isCurrent, resolveIdle, recover });
