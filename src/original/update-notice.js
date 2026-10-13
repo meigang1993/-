@@ -1,6 +1,6 @@
 window.UpdateNotice = (() => {
   // 最新更新日期：公告标题、页脚时间与大厅按钮徽标统一以此为准，修改时只改这里。
-  const latest = { iso: "2026-10-12", label: "2026年10月12日", badge: "2026.10.12" };
+  const latest = { iso: "2026-10-13", label: "2026年10月13日", badge: "2026.10.13" };
     // 公告条目按「常改 / 归档」拆成两个数据文件，避免单文件超过 200 行硬约束：
   //   update-notice-recent.js  —— 最近几期，新条目一律加到该文件第一期
   //   update-notice-archive.js —— 历史归档，条目只增不改
@@ -29,7 +29,7 @@ window.UpdateNotice = (() => {
           </div>
         <time datetime="${latest.iso}">更新至${latest.label}</time>
       </header>
-        <p class="update-notice-summary">本次更新统一出牌文案口径（技能才记“发动”，战术牌与实体牌一律记“使用”，敌方出牌不再显示“打出”），修复战斗中出战位置不跟随编队、动画被打断后血量数字停在旧值两个问题。</p>
+        <p class="update-notice-summary">本次更新修复【希特威】解锁事件「贝丝妲的玩具」的「带希特威同行」按钮点了没反应（该事件此前无法完成、角色永远无法解锁），并修复回合结束后出牌区的牌逐张飞入弃牌堆、拖长等待的问题（现整批同时起飞、一次落位）；另已对全部 20 个解锁事件做统一排查，确认仅有此一处遗漏。</p>
         <div class="update-notice-list">${sections}</div>
       </section>
     `;

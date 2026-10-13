@@ -53,6 +53,12 @@ const CASES = [
     setup: `s.flags.hoshinoFamilyUnlockPending = true;` },
   { modal: "ruinsSandCityUnlock", id: "ruins_sand_city", expect: { chars: ["artina", "maria"], flags: ["ruinsSandCityUnlocked"] },
     setup: `s.flags.ruinsSandCityUnlockPending = true;` },
+  // 希特威：此前漏绑完成按钮，玩家点了没反应；本条把它纳入统一框架防止回归
+  { modal: "hitwellUnlock", id: "hitwell", expect: { chars: ["hitwell"], flags: ["hitwellUnlockSeen"] },
+    setup: `s.defeatedElites.push("pursuer_edis");` },
+  // 两个纯剧情事件：不调 ServerCore.unlockEvent，只置 flag，故不校验 unlockEvents
+  { modal: "newGameIntro", id: "new_game_intro", story: true, expect: { flags: ["newGameIntroSeen"] }, setup: `` },
+  { modal: "firstVictory", id: "first_victory", story: true, expect: { flags: ["firstVictorySeen"] }, setup: `` },
 ];
 
 const resetAndSetup = (page, modal, setupSrc) => page.evaluate(({ modal, setupSrc, noPre }) => {
@@ -102,6 +108,20 @@ const probe = page => page.evaluate(() => {
   await startFreshGame(page);
   await page.waitForTimeout(400);
 
+  // —— 0. 绑定健全性：完成按钮的处理器必须「已定义为函数」——
+  // hitwell 的 BUG 正是：selector 有绑定，但取值时 window.completeXxx 还不存在，
+  // 而 AppActionGuard 用 action?.() 静默吞掉，玩家表现为「点了没反应且不报错」。
+  // 静态比对 selector 与函数声明查不出这一类，必须在运行时断言函数真的存在。
+  const NAMED = ["LittleElranaUnlockEvent", "AceUnlockEvent", "UnderwaterTrainUnlockEvent",
+    "OpheliaUnlockEvent", "BestaNurseryUnlockEvent", "OrcDungeonUnlockEvent",
+    "SoniaNurseryUnlockEvent", "ChiyoRecruitUnlockEvent", "GerdaNurseryUnlockEvent",
+    "HoshinoFamilyUnlockEvent", "RuinsSandCityUnlockEvent", "HitwellUnlockEvent",
+    "NewGameIntroEvent", "FirstVictoryEvent"];
+  for (const n of NAMED) {
+    const ok = await page.evaluate(k => typeof window["complete" + k] === "function", n);
+    T(`window.complete${n} 已定义为函数`, ok, { got: ok ? "function" : typeof 0 });
+  }
+
   for (const c of CASES) {
     await resetAndSetup(page, c.modal, c.setup);
     await page.waitForSelector(".adv-box", { timeout: 5000 });
@@ -121,8 +141,8 @@ const probe = page => page.evaluate(() => {
     await page.waitForTimeout(500);
     const after = await probe(page);
 
-    // 断言 1：进度记录为该事件已完成
-    T(`${c.modal}：unlockEvents 记录 ${c.id}=true`, after.completed[c.id] === true, after.completed);
+    // 断言 1：进度记录为该事件已完成（纯剧情事件只置 flag，不走 unlockEvent）
+    if (!c.story) T(`${c.modal}：unlockEvents 记录 ${c.id}=true`, after.completed[c.id] === true, after.completed);
     // 断言 2：目标角色解锁
     (c.expect.chars || []).forEach(id => {
       T(`${c.modal}：角色 ${id} 已解锁`, after.locked[id] === false, { locked: after.locked[id] });

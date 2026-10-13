@@ -227,6 +227,7 @@ const groups = Object.freeze({
   characters: [
     "test-hitwell-skills-strict-live.js",
     "test-card-transfer-anim-live.js",
+    "test-trail-exit-once-live.js",
     "test-nanali-skills.js",
     "test-nanali-unlock-price-live.js",
     "test-witherer-skills.js",
@@ -290,6 +291,7 @@ const groups = Object.freeze({
     "test-tailgun-bayonet-live.js",
     "test-trail-duel-relic-live.js",
     "test-unlock-adv-dialogue-live.js",
+    "test-unlock-complete-button-live.js",
     "test-unlock-event-cast-coverage-live.js",
     "test-unlock-event-modal-size-live.js",
   ],

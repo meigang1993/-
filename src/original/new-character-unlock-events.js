@@ -119,5 +119,6 @@ window.NewCharacterUnlockEvents = (() => {
   window.completeGerdaNurseryUnlockEvent = () => complete("gerda_nursery", "格尔达已在孕育殿堂开放兑换。", "gerda");
   window.completeHoshinoFamilyUnlockEvent = () => complete("hoshino_family", "星野依与星野海一加入角色栏。", "hoshino_yi");
   window.completeRuinsSandCityUnlockEvent = () => complete("ruins_sand_city", "废墟沙城已解锁，亚缇娜与玛利亚加入角色栏。", "artina");
+  window.completeHitwellUnlockEvent = () => complete("hitwell", "希特威加入角色栏。", "hitwell");
   return { gerdaUnlock, hoshinoUnlock, ruinsSandCityUnlock, hitwellUnlock, recordDungeonClear, triggerPending };
 })();

@@ -86,6 +86,10 @@ window.BattleEffectCardTransfersExit = U => {
         className: "trail-exit-fly",
         enemy: first.side === "enemy",
         burn: first.pile === "consumed", active,
+        // 与「一次性摸等量牌」同理：出牌区回收是回合结束的清理动画，
+        // 一回合可能打出多张，逐张错峰（默认每张 +100ms）会把回合流转
+        // 拖得很长。stagger:0 让整批同时起飞、一次落位。
+        stagger: 0,
       });
     }));
     if (active()) renderStep();
