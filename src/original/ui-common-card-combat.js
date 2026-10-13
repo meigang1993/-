@@ -1,11 +1,20 @@
 window.UICommonCardCombat = ({ statValue }) => {
   function combatBar(unit) {
-    const hp = unit.visualHp ?? unit.hp;
-    const block = unit.visualBlock ?? unit.block;
+    // 血条高度（hpPct）早就做了 clamp，但 <b> 里的数字和 title 没有——两者不对称。
+    // 一旦 visualHp 被任何路径写成异常值（典型如字符串拼接产生的大数），就会出现
+    // "血条看着正常、数字却爆成 999999" 的错位，而 unit.hp 本身始终是对的。
+    // 血量在语义上不可能超过 maxHp，故在此强制收敛；护甲可合法高于 maxHp，
+    // 只做"必须是有限数字"的保护，不压上限。
+    const max = Math.max(1, Number(unit.maxHp || unit.stats?.maxHp) || 1);
+    const num = (v, fallback = 0) => {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    };
+    const hp = Math.max(0, Math.min(max, Math.round(num(unit.visualHp ?? unit.hp))));
+    const block = Math.max(0, Math.round(num(unit.visualBlock ?? unit.block)));
     const hasDefense = unit.ai === "mechanical_bull_king";
     const defenseValue = hasDefense
-      ? (unit.visualDefense ?? unit.defenseSystem) : 0;
-    const max = Math.max(1, unit.maxHp || unit.stats?.maxHp || 1);
+      ? Math.max(0, Math.round(num(unit.visualDefense ?? unit.defenseSystem))) : 0;
     const hpPct = Math.max(0, Math.min(100, (hp / max) * 100));
     const armorPct = block > 0
       ? Math.max(8, Math.min(100, (block / max) * 100)) : 0;

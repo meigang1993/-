@@ -99,7 +99,7 @@ async function main() {
       const cur = CHAIN[i];
       const next = CHAIN[i + 1];
       // 通关记录：真实链路里 finish 前由 recordDungeonClear 写入。
-      P.mark?.(s, "clear", self, cur);
+      P.recordClear(s, self, cur);
       s.explore = makeRun(s, self, cur, `t-${self}-${cur}`);
       await R.finish(s);
       const selfList = U.list(s, self);
@@ -127,7 +127,7 @@ async function main() {
     for (const [id, times] of plan) {
       for (let i = 0; i < times; i += 1) {
         const cur = U.list(s, id)[U.list(s, id).length - 1];
-        P.mark?.(s, "clear", id, cur);
+        P.recordClear(s, id, cur);
         s.explore = makeRun(s, id, cur, `x-${id}-${i}`);
         await R.finish(s);
       }
@@ -143,7 +143,7 @@ async function main() {
     const s = fresh();
     s.flags = s.flags || {};
     ["underwaterTrainUnlocked", "orcDungeonUnlocked", "ruinsSandCityUnlocked"].forEach(f => { s.flags[f] = true; });
-    P.mark?.(s, "clear", "machine_factory", "normal");
+    P.recordClear(s, "machine_factory", "normal");
     s.explore = makeRun(s, "machine_factory", "normal", "d1");
     await R.finish(s);
     const merged = s.unlockedDifficulties;
@@ -157,7 +157,7 @@ async function main() {
     const s = fresh();
     s.flags = s.flags || {};
     ["underwaterTrainUnlocked", "orcDungeonUnlocked", "ruinsSandCityUnlocked"].forEach(f => { s.flags[f] = true; });
-    P.mark?.(s, "clear", "orc_dungeon", "normal");
+    P.recordClear(s, "orc_dungeon", "normal");
     s.explore = makeRun(s, "orc_dungeon", "normal", "e1");
     await R.finish(s);
     const json = JSON.stringify(s.dungeonUnlocks);
