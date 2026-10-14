@@ -15,6 +15,14 @@ window.GameUIBattleTargeting = (() => {
     const handInteraction = card?.discardTarget || card?.stealCard;
     const allyTarget = card?.ailengCharge || card?.kaiichiMilk
       ? unitData.side === actorSide(battle) && unitData.gender === "female"
+      // 女王榨取只认我方男性：此前与其余 allyTarget 牌共用「同阵营即可」，
+      // 女性队友、普雷希自己甚至敌方都会被标成可选，点了静默无反应
+      // （与【狙击目标】空手牌目标同一类）。性别在此与【榨取精华】同口径。
+        // 女王榨取只认我方男性：此前与其余 allyTarget 牌共用「同阵营即可」，
+      // 女性队友、普雷希自己甚至敌方都会被标成可选，点了静默无反应
+      // （与【狙击目标】空手牌目标同一类）。性别在此与【榨取精华】同口径。
+      : card?.preshiDrain ? unitData.side === actorSide(battle)
+        && unitData.gender === "male" && unitData.uid !== battle.activeUid
       : card?.allyTarget ? unitData.side === actorSide(battle) : false;
     const comboPartnerReady = !partnerCard
       || battle.allies.some(unit => unit.uid !== battle.activeUid && unit.hp > 0
@@ -68,6 +76,12 @@ window.GameUIBattleTargeting = (() => {
     else if (card?.artinaSniper || card?.ruinsSnipe) allowed = unitData.side === "enemy"
       && unitData.hp > 0 && hasVisibleHand(unitData);
     else allowed = comboPartnerReady && unitData.side === "enemy";
+    // 女王榨取收口：allyTarget 分支只覆盖同阵营，敌方单位会落到末尾兜底
+    // （side === "enemy"）而仍被标成可选，故在此统一按「我方男性且非自己」收口。
+    // 女王榨取收口：allyTarget 分支只覆盖同阵营，敌方单位会落到末尾兜底
+    // （side === "enemy"）而仍被标成可选，故在此统一按「我方男性且非自己」收口。
+    if (card?.preshiDrain) allowed = unitData.side === actorSide(battle)
+      && unitData.gender === "male" && unitData.uid !== battle.activeUid;
     // 隐身中的希尔德不可被单体【杀】指定：与逻辑层 chooseTarget 同一判定源，
     // 否则会出现「点得到但点了没反应」。
     if (allowed && window.RuinsEnemySkills?.blocksKillTarget?.(unitData, card)) allowed = false;

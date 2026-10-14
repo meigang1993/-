@@ -26,6 +26,7 @@ window.CharacterSkillAccess = (() => {
     { flags: ["bertisTakeFood"], name: "取粮", target: "self" },
     { flags: ["ailengCharge"], name: "充能精华", target: "friendlyFemale" },
     { flags: ["catherineSteal"], name: "窃取", target: "enemy" },
+    { flags: ["preshiDrain"], name: "女王榨取", target: "friendlyMale" },
   ];
   const matchesOf = card => definitions.filter(def =>
     def.flags.some(flag => card?.[flag]));

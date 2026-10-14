@@ -338,7 +338,8 @@
     "guest-aileng-skills.js",
     "guest-characters-skills.js",
     "catherine-skills.js",
-    "hitwell-skills.js"
+    "hitwell-skills.js",
+    "preshi-skills.js"
   ],
   "battle-flow": [
     "battle-counter-triggers.js",

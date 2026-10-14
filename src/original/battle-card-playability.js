@@ -62,6 +62,7 @@ window.BattleCardPlayability = deps => {
 
   function blockedByUsage(actor, card, battle) {
     return card.extract && actor.usedExtract
+      || card.preshiDrain && actor.usedPreshiDrain
       || card.bloodPact && actor.usedBloodPact
       || card.crazyShooting && actor.usedCrazyShooting
       || card.speedAssault && (battle?.phase === 6
@@ -120,6 +121,7 @@ window.BattleCardPlayability = deps => {
     if (card.idolKiss && !livingPartner()) return true;
     if (card.bertisWhip && !livingPartner()) return true;
     if (card.extract && !livingMale()) return true;
+    if (card.preshiDrain && !livingMale()) return true;
     if ((card.speedAssault || card.withererPeek || card.crazySlaughter
       || card.crimsonRampage || card.bestaEndSlash) && !livingEnemy()) return true;
     if (card.arsenal && !sameSideUnits(battle, actor).some(unit => unit.uid !== actor.uid && unit.hp > 0)) return true;

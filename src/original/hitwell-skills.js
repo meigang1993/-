@@ -69,6 +69,10 @@ window.HitwellSkills = (() => {
     if (!hpLoss || hpLoss <= 0) return;
     if (!isHitwell(target) || !alive(target)) return;
     if (!hasSkill(target, "心血之咒")) return;
+    // 只有实体牌或虚拟牌造成的伤害才触发：燃烧/毒/感电/锁魂镰刀/链锯等技能伤害
+    // 传的是 type:"skill" 的伤害载荷，既非实体牌也非虚拟牌，一律不响应。
+    // 判据复用 CardUtils.isEntityOrVirtualCard，与【外神之眼】等机制同口径。
+    if (!window.CardUtils?.isEntityOrVirtualCard?.(card)) return;
     const battle = state?.battle;
     if (!battle || !actor || actor.uid === target.uid || !alive(actor)) return;
     // 与其他受击类技能（狂战、复仇反击）同口径：把索牌/反击挂到本段受击

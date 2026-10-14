@@ -198,7 +198,12 @@ async function runCase(browser, errors, kind, hearts) {
     const multi = r.seg != null ? r.seg >= 2 : r.trig >= 2;
     check(`${title}：多段确实发生`, multi,
       `段数=${r.seg ?? "?"} 触发=${r.trig}`);
-    if (r.seg != null) {
+    if (kind === "dragon") {
+      // 电钻火花的追加段是「攻击力无视护甲」的技能伤害载荷（描述明确"不额外结算该【杀】"），
+      // 心血之咒改为只认实体牌/虚拟牌后，追加段不再触发，仅第一段（实体单体杀）触发。
+      check(`${title}：仅实体杀那段触发（技能追加段不触发）`, r.trig === 1,
+        `触发=${r.trig} 段数=${r.seg} ${mode}=${hearts ? r.gives : r.counters}`);
+    } else if (r.seg != null) {
       check(`${title}：逐段触发（触发次数 = 段数 ${r.seg}）`, r.trig === r.seg,
         `触发=${r.trig} 段数=${r.seg} ${mode}=${hearts ? r.gives : r.counters}`);
     } else {

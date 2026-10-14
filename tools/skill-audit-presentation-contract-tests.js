@@ -10,12 +10,12 @@ module.exports = ({ assert, unit }) => {
   const skills = templates.flatMap(template => template.skills || []);
   const relics = Object.keys({ ...GameDataRelics, ...GameDataFutureRelics });
 
-  assert(GameData.characters.length === 30,
-    "skill audit must cover all 30 playable characters");
+  assert(GameData.characters.length === 31,
+    "skill audit must cover all 31 playable characters");
   assert(enemies.length === 36, "skill audit must cover all 36 enemies");
   // 80 → 78：删除洛基「护母心切」与卡迪西斯「战场指挥官」各 1 项。
-  assert(GameData.characters.flatMap(template => template.skills || []).length === 78,
-    "skill audit must cover all 78 playable-character skills");
+  assert(GameData.characters.flatMap(template => template.skills || []).length === 80,
+    "skill audit must cover all 80 playable-character skills");
   assert(enemies.flatMap(template => template.skills || []).length === 72,
     "skill audit must cover all 72 enemy skills");
   assert(relics.length === 30, "relic audit must cover all 30 formal relics");

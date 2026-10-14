@@ -14,6 +14,7 @@ function completeClosableEventModal() {
     hoshinoFamilyUnlock: window.completeHoshinoFamilyUnlockEvent,
     ruinsSandCityUnlock: window.completeRuinsSandCityUnlockEvent,
     hitwellUnlock: window.completeHitwellUnlockEvent,
+    preshiUnlock: window.completePreshiUnlockEvent,
     newGameIntro: window.completeNewGameIntroEvent,
     firstVictory: window.completeFirstVictoryEvent,
   };

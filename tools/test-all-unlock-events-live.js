@@ -56,6 +56,9 @@ const CASES = [
   // 希特威：此前漏绑完成按钮，玩家点了没反应；本条把它纳入统一框架防止回归
   { modal: "hitwellUnlock", id: "hitwell", expect: { chars: ["hitwell"], flags: ["hitwellUnlockSeen"] },
     setup: `s.defeatedElites.push("pursuer_edis");` },
+  // 普雷希：与希特威同源的新解锁事件，纳入统一框架防止同类漏绑
+  { modal: "preshiUnlock", id: "preshi", expect: { chars: ["preshi"], flags: ["preshiUnlockSeen"] },
+    setup: `s.defeatedElites.push("mech_ai_dragon");` },
   // 两个纯剧情事件：不调 ServerCore.unlockEvent，只置 flag，故不校验 unlockEvents
   { modal: "newGameIntro", id: "new_game_intro", story: true, expect: { flags: ["newGameIntroSeen"] }, setup: `` },
   { modal: "firstVictory", id: "first_victory", story: true, expect: { flags: ["firstVictorySeen"] }, setup: `` },
@@ -116,7 +119,7 @@ const probe = page => page.evaluate(() => {
     "OpheliaUnlockEvent", "BestaNurseryUnlockEvent", "OrcDungeonUnlockEvent",
     "SoniaNurseryUnlockEvent", "ChiyoRecruitUnlockEvent", "GerdaNurseryUnlockEvent",
     "HoshinoFamilyUnlockEvent", "RuinsSandCityUnlockEvent", "HitwellUnlockEvent",
-    "NewGameIntroEvent", "FirstVictoryEvent"];
+    "PreshiUnlockEvent", "NewGameIntroEvent", "FirstVictoryEvent"];
   for (const n of NAMED) {
     const ok = await page.evaluate(k => typeof window["complete" + k] === "function", n);
     T(`window.complete${n} 已定义为函数`, ok, { got: ok ? "function" : typeof 0 });

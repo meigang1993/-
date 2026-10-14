@@ -68,6 +68,24 @@ window.NewCharacterUnlockEvents = (() => {
     return eventView("hitwellUnlock", state, "贝丝妲的玩具", ["besta", "lokar", "hitwell"], lines,
       "事件结束后，希特威加入角色栏。", "带希特威同行", "hitwell-unlock-complete");
   }
+  function preshiUnlock(state) {
+    const lines = [
+      ["罗卡尔", "姨妈？你怎么来了？"],
+      ["普雷希", "根据情报，你被魔后艾恩盯上了，甚至还有凋零者也来了。"],
+      ["罗卡尔", "好像他们认为我是混沌之子转生者什么的。"],
+      ["普雷希", "是吗？那我更想保护你了，要不要成为我的加油机？"],
+      ["罗卡尔", "你这话什么意思？"],
+      ["普雷希", "你和我上床后，你就知道了。"],
+      ["罗卡尔", "上来就说这个，我们才刚认识不久。"],
+      ["普雷希", "你母亲7个孙子，都给我加过油了，就差你了。"],
+      ["罗卡尔", "卧槽，真的？果然姨妈比我还会玩。"],
+      ["普雷希", "怎么样，有空要不要和我？"],
+      ["罗卡尔", "嗯，我去问问妈妈，才行。"],
+      ["普雷希", "你去问吧，我可比你妈更舒服"],
+    ];
+    return eventView("preshiUnlock", state, "魅魔女王的加油机", ["lokar", "preshi"], lines,
+      "事件结束后，普雷希加入角色栏。", "带普雷希同行", "preshi-unlock-complete");
+  }
   function recordDungeonClear(state, run) {
     if (run?.missionId !== "orc_dungeon" || run?.difficultyId !== "adventure" || run?.complete !== true) return false;
     if (state.flags?.hoshinoFamilyUnlockSeen || state.flags?.hoshinoFamilyUnlockPending) return false;
@@ -98,6 +116,12 @@ window.NewCharacterUnlockEvents = (() => {
       state.hallModal = "hitwellUnlock";
       return true;
     }
+    // 首次击败机械AI龙后回到别墅触发；机械AI龙是废墟沙城首领，击败即写入 defeatedElites。
+    const preshi = state.chars.find(character => character.id === "preshi");
+    if (preshi?.locked && defeated(state, "mech_ai_dragon") && !state.flags?.preshiUnlockSeen) {
+      state.hallModal = "preshiUnlock";
+      return true;
+    }
     return false;
   }
   async function complete(id, message, flashId) {
@@ -120,5 +144,6 @@ window.NewCharacterUnlockEvents = (() => {
   window.completeHoshinoFamilyUnlockEvent = () => complete("hoshino_family", "星野依与星野海一加入角色栏。", "hoshino_yi");
   window.completeRuinsSandCityUnlockEvent = () => complete("ruins_sand_city", "废墟沙城已解锁，亚缇娜与玛利亚加入角色栏。", "artina");
   window.completeHitwellUnlockEvent = () => complete("hitwell", "希特威加入角色栏。", "hitwell");
-  return { gerdaUnlock, hoshinoUnlock, ruinsSandCityUnlock, hitwellUnlock, recordDungeonClear, triggerPending };
+  window.completePreshiUnlockEvent = () => complete("preshi", "普雷希加入角色栏。", "preshi");
+  return { gerdaUnlock, hoshinoUnlock, ruinsSandCityUnlock, hitwellUnlock, preshiUnlock, recordDungeonClear, triggerPending };
 })();

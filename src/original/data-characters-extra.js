@@ -126,11 +126,20 @@ window.GameDataCharactersExtra = [
   {
     id: "hitwell", name: "希特威", gender: "male", face: "希", art: "./assets/images/hitwell-portrait.6af64b8e.webp", avatar: "./assets/images/hitwell-portrait.6af64b8e.webp", role: "天使少年·罗卡尔生父", locked: true,
     stats: { attack: 4.8, magic: 5, speed: 6.7, maxHp: 59, bloodlust: 2, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
-    evaluation: "自愈、治疗共享与受伤索牌反制。神心自愈在使用或打出红桃牌时以自身魔力值回血，天使血愈把自身的恢复量同步给其他友方角色，心血之咒在受伤后向伤害来源索取红桃牌，索取失败则以自身攻击力反击。",
+    evaluation: "自愈、治疗共享与受伤索牌反制。神心自愈在使用或打出红桃牌时以自身魔力值回血，天使血愈把自身的恢复量同步给其他友方角色，心血之咒在受到实体牌或虚拟牌伤害后向伤害来源索取红桃牌，索取失败则以自身攻击力反击。",
     skills: [
       { name: "天使血愈", type: "passive", icon: "⭐", text: "锁定技，当你恢复生命值后，其他友方角色也恢复等量生命值。" },
-      { name: "心血之咒", type: "passive", icon: "⭐", text: "锁定技，当你受到伤害后，伤害来源须交给你一张♥红桃牌。若其未交牌，你对其造成等同于你攻击力的伤害。" },
+      { name: "心血之咒", type: "passive", icon: "⭐", text: "锁定技，当你受到实体牌或虚拟牌造成的伤害后，伤害来源须交给你一张♥红桃牌。若其未交牌，你对其造成等同于你攻击力的伤害。" },
       { name: "神心自愈", type: "passive", icon: "⭐", text: "锁定技，当你使用或打出♥红桃牌时，你恢复等同于你魔力值的生命值。" }
+    ]
+  },
+  {
+    id: "preshi", name: "普雷希", gender: "female", face: "普", art: "./assets/images/preshi-portrait.97741e33.webp", avatar: "./assets/images/preshi-portrait.97741e33.webp", role: "魅魔女王", locked: true,
+    stats: { attack: 4.8, magic: 5, speed: 5.5, maxHp: 56, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
+    evaluation: "手牌数量驱动的压制型输出。女王威压在出牌时以手牌数压制敌方响应，并在手牌为全场最多时令自身使用实体牌造成与受到的伤害翻倍；女王榨取以友方男性的手牌换取过牌。",
+    skills: [
+      { name: "女王威压", type: "passive", icon: "⭐", text: "锁定技，当你使用的牌指定敌方角色为目标时，若你的手牌数大于该角色，该角色不可响应你的牌。若你的手牌数为全场最多，你使用实体牌造成或受到的伤害为2倍（技能伤害、技能生成的牌与虚拟牌不触发）。" },
+      { name: "女王榨取", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以指定我方一名男性角色，对其造成等同于你魔力值的伤害，弃置其所有手牌，然后你摸等量的牌。", card: { name: "女王榨取", type: "tactic", preshiDrain: true, allyTarget: true, icon: "⚔️", text: "指定我方一名男性角色，对其造成等同于你魔力值的伤害，弃置其所有手牌，然后你摸等量的牌。" } }
     ]
   }
 ];

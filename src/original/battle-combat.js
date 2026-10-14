@@ -96,7 +96,7 @@ window.BattleCombat = (deps) => {
       && !window.WithererSkills?.canUseTongueActive?.(state, actor, target, useCard)) return false;
     if (card?.armyOrder
       && !window.BakarSkills?.canUseArmyOrder?.(state, actor, card, useCard)) return false;
-    state.battle.testRecovery = false; if (actor.hand.includes(card)) card._playedFromHand = true; window.WithererSkills?.convertBerserkCard?.(state, actor, card); if (!card._skill) { window.AngelicaLukaSkills?.beforeCardPlayed?.(state, actor, card); window.ArtinaMariaSkills?.beforeCardPlayed?.(state, actor, card, deps); } window.CatherineSkills?.beforeCardPlayed?.(state, actor, card); window.RuinsEnemySkills?.beforeCardPlayed?.(state, actor, card);
+    state.battle.testRecovery = false; if (actor.hand.includes(card)) card._playedFromHand = true; window.WithererSkills?.convertBerserkCard?.(state, actor, card); if (!card._skill) { window.AngelicaLukaSkills?.beforeCardPlayed?.(state, actor, card); window.ArtinaMariaSkills?.beforeCardPlayed?.(state, actor, card, deps); } window.CatherineSkills?.beforeCardPlayed?.(state, actor, card); window.RuinsEnemySkills?.beforeCardPlayed?.(state, actor, card); window.PreshiSkills?.beforeCardPlayed?.(state, actor, card, target);
     window.EdisSkills?.rememberPrePlayHand?.(actor, card);
     window.WithererSkills?.prepareSpeedCard?.(state, actor, card);
     if (card.demonPoker) { const done = specials.demonPoker(state, actor, target, card); repeatIfDone(state, actor, target, card, done); return done; }
@@ -106,6 +106,7 @@ window.BattleCombat = (deps) => {
     if (window.NonokaLokiSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, statOf, pushFloat, damage })) { card._countAsPlayed = true; return; }
     if (window.FloraCarlosSkills?.handleSpecialCard?.(state, actor, target, card, deps, { ...specialCtx, damage })) { card._countAsPlayed = true; return; }
     if (window.BertisGerlotSkills?.handleSpecialCard?.(state, actor, target, card, deps, { ...specialCtx, damage })) { card._countAsPlayed = true; return; }
+    if (window.PreshiSkills?.handleSpecialCard?.(state, actor, target, card, deps, { ...specialCtx, damage })) { card._countAsPlayed = true; return; }
     if (window.WendyCadicisSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, pushFloat, selectedHand })) { card._countAsPlayed = true; return; }
     if (window.LokarSkills?.handleSpecialCard?.(state, actor, target, card, deps, specialCtx)) { card._countAsPlayed = true; return; }
     if (window.MillerSkills?.handleSpecialCard?.(state, actor, target, card, deps)) { card._countAsPlayed = true; return; }

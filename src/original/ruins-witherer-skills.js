@@ -19,9 +19,8 @@ window.RuinsWithererSkills = (() => {
   // 不能靠删掉 _skill 来实现：_skill 同时被伤害加成计算（battle-combat-attack-values.js）
   // 等多个位置依赖，删除会改变伤害值。
   // 已标注：魅魔钢叉、鬼王扑克、刺客胶衣（三件 convertAs 饰品口径统一）。
-  const isEntityCard = card => !!card && card?.type !== "skill"
-    && !card.generatedBySkill && !card.virtual
-    && (!card._skill || !!card._entityConversion);
+  // 实体牌判定统一走 CardUtils.isEntityCard（单一来源），此处不再各写一份。
+  const isEntityCard = card => !!window.CardUtils?.isEntityCard?.(card);
 
   // 魅魔吸精术的「对无性别角色造成的伤害为2倍」：判断的是被打者的性别，
   // 不能放进 modifyDamage（那里 target 恒为凋零者本人，且她自己是女性，条件永不成立），

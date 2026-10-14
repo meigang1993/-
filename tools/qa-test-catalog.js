@@ -112,6 +112,7 @@ const groups = Object.freeze({
     "test-multihit-vs-counter-live.js",
     "test-heartblood-curse-multihit-live.js",
     "test-heartblood-curse-timing-live.js",
+    "test-heartblood-curse-source-live.js",
     "test-supply-drop-team-draw-live.js",
     "test-supply-drop-4p-live.js",
     "test-draw-discard-group-pack-live.js",
@@ -235,6 +236,10 @@ const groups = Object.freeze({
   ],
   characters: [
     "test-hitwell-skills-strict-live.js",
+    "test-preshi-skills-live.js",
+    "test-preshi-fullchain-live.js",
+    "test-preshi-skills-strict-effects-live.js",
+    "test-preshi-drain-click-live.js",
     "test-card-transfer-anim-live.js",
     "test-trail-exit-once-live.js",
     "test-nanali-skills.js",

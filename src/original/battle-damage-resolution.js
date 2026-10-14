@@ -56,6 +56,9 @@ window.BattleDamageResolution = ({
     // 故与 BakarSkills / BondiSkills 同走 outgoing 链。
     amount = window.RuinsWithererSkills?.modifyOutgoingDamage?.(
       state, actor, target, amount, effectiveCard) ?? amount;
+    // 女王威压：手牌为全场最多时，普雷希造成的伤害翻倍。
+    amount = window.PreshiSkills?.modifyOutgoingDamage?.(
+      state, effectiveActor, amount, effectiveCard) ?? amount;
     if (!effectiveCard?.skipDamageModify) {
       amount = window.EnemySkills?.modifyDamage(
         state, target, amount, effectiveCard) ?? amount;
@@ -63,6 +66,9 @@ window.BattleDamageResolution = ({
     amount = window.BondiSkills?.modifyIncomingDamage?.(
       state, target, amount, effectiveCard) ?? amount;
     amount = window.BakarSkills?.modifyIncomingDamage?.(
+      state, target, amount, effectiveCard) ?? amount;
+    // 女王威压：手牌为全场最多时，普雷希受到的伤害同样翻倍。
+    amount = window.PreshiSkills?.modifyIncomingDamage?.(
       state, target, amount, effectiveCard) ?? amount;
     source = window.NonokaLokiSkills?.sourceLabel?.(
       state.battle, actor, source) || source;

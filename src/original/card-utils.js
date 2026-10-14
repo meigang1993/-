@@ -58,6 +58,24 @@ window.CardUtils = (() => {
     && !actor?.extractMagicAttack;
   const isEntityKillCard = card => isKillCard(card) && !card.virtual;
   const isEntitySingleKill = card => isEntityKillCard(card) && isSingleTargetCard(card);
+  // 实体牌：非技能伤害、非技能生成、非虚拟牌。
+  // 判定集中在此，供所有「只有实体牌才触发」的机制复用（凋零者【外神之眼】/
+  // 【魅魔吸精术】、普雷希【女王威压】伤害翻倍），此前凋零者侧各写一份，容易漂移。
+  // 只要带 virtual 就不是实体牌：CardUtils.fromEntity 生成的虚拟牌即便额外挂了
+  // _entitySourceCard（如芙萝娅【神速之袭】的虚拟【刺杀】），也仍是虚拟牌。
+  // 转换杀走 convertAs：带 convertedFrom、不带 virtual，天然算实体牌。
+  // 燃烧/毒/感电/勒脖/锁魂镰刀/机尾机枪等技能伤害传的是 type:"skill" 的伤害载荷，
+  // 既不带 _skill 也不带 virtual，必须按 type 排除，否则会被误判成实体牌。
+  // "skill" 不在卡牌类型（slash/response/tactic/consume/obstacle）之内，可安全排除。
+  // 饰品主动技把「实体手牌」转换而成的牌额外标了 _entityConversion，此处视为实体牌。
+  const isEntityCard = card => !!card && card?.type !== "skill"
+    && !card.generatedBySkill && !card.virtual
+    && (!card._skill || !!card._entityConversion);
+  // 实体牌或虚拟牌：受击类技能只认这两类伤害来源（希特威【心血之咒】）。
+  // 燃烧/毒/感电/勒脖/锁魂镰刀等技能伤害传的是 type:"skill" 的伤害载荷，
+  // 既不是实体牌也不是虚拟牌，一律不触发。判定集中在此，避免各处各写一份漂移。
+  const isEntityOrVirtualCard = card =>
+    !!card && (!!card.virtual || isEntityCard(card));
   const isSingleKillCard = card => isSingleKill(card) && !card._pendingDraw;
   const isCounterableTactic = card => !!(card?.type === "tactic" && !card.ignoreResponse && (!card._skill || card.virtual || card.convertedFrom));
   // 出牌文案口径：只有技能才是「发动」，战术牌与实体牌一律「使用」。
@@ -112,7 +130,7 @@ window.CardUtils = (() => {
   return {
     cardTypes, cloneEntity, fromEntity, convertAs, copyPlayable, clean, revertConverted,
     revertConvertedCopy,
-    isKillCard, isEntityKillCard, isGroupTargetCard, isSingleTargetCard,
+    isKillCard, isEntityKillCard, isEntityCard, isEntityOrVirtualCard, isGroupTargetCard, isSingleTargetCard,
     targetScope, isGroupKillCard, isSingleKill, isPhysicalSingleKill,
     isEntitySingleKill,
     isSingleKillCard, isCounterableTactic, canRespondTo, generatedSource,

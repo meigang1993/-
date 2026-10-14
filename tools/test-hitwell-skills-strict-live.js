@@ -303,7 +303,7 @@ const selfDamageTpl = `(() => {
       === "锁定技，当你恢复生命值后，其他友方角色也恢复等量生命值。", def);
   T("心血之咒描述为设定原文",
     def && def.texts["心血之咒"]
-      === "锁定技，当你受到伤害后，伤害来源须交给你一张♥红桃牌。若其未交牌，你对其造成等同于你攻击力的伤害。", def);
+      === "锁定技，当你受到实体牌或虚拟牌造成的伤害后，伤害来源须交给你一张♥红桃牌。若其未交牌，你对其造成等同于你攻击力的伤害。", def);
   T("神心自愈描述为设定原文",
     def && def.texts["神心自愈"]
       === "锁定技，当你使用或打出♥红桃牌时，你恢复等同于你魔力值的生命值。", def);
@@ -382,7 +382,7 @@ const selfDamageTpl = `(() => {
   T("② 羁绊任务池：未解锁时不出现希特威", sync.bondBeforeHasHitwell === false, sync);
   T("② 羁绊任务池：解锁后纳入希特威", sync.bondAfterHasHitwell === true, sync);
   T("③ 管家手册魅魔目标含希特威", sync.heroHasHitwell, sync);
-  T("③ 魅魔目标总数为 30（分母恒定）", sync.heroCount === 30, sync);
+  T("③ 魅魔目标总数为 31（分母恒定）", sync.heroCount === 31, sync);
 
   // 界面实际渲染：另开一页走真实点击路径（战斗页没有大厅入口）
   const page2 = await browser.newPage({ viewport: { width: 1280, height: 720 } });
@@ -411,10 +411,10 @@ const selfDamageTpl = `(() => {
     done: m ? +m[1] : null, all: m ? +m[2] : null,
     hasName: gridText.includes("希特威"),
   };
-  T("③ 魅魔目标页渲染 30 个条目", ui.cells === 30, ui);
+  T("③ 魅魔目标页渲染 31 个条目", ui.cells === 31, ui);
   T("③ 魅魔目标页列出希特威", ui.hasName, ui);
-  T("③ 希特威满级后计入已完成（已满级 1 / 30）",
-    ui.done === 1 && ui.all === 30, ui);
+  T("③ 希特威满级后计入已完成（已满级 1 / 31）",
+    ui.done === 1 && ui.all === 31, ui);
   T("③ 未解锁角色以占位显示（头像数 < 条目数）", ui.imgs < ui.cells, ui);
   const bad2 = relevantErrors(errors2);
   T("手册页面无 JS 错误", bad2.length === 0, bad2.slice(0, 3));

@@ -97,7 +97,7 @@ window.ButlerManualProgress = (() => {
     })).filter(g => g.list.length);
   }
   // 以角色模板为基准列出全部可培养魅魔：未解锁的也要占位（灰剪影），
-  // 保证「已满级 X / 总数」的分母恒为 30，而不是随解锁进度增长。
+  // 保证「已满级 X / 总数」的分母恒为 31，而不是随解锁进度增长。
   function heroList(state) {
     const chars = Array.isArray(state?.chars) ? state.chars : [];
     const byId = new Map(chars.filter(c => c && c.id).map(c => [c.id, c]));
