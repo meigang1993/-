@@ -116,17 +116,25 @@ function check(name, cond, extra = "") {
   // 1) 连击确实逐段结算
   check("连击 3 段真实血量逐段下降到 3", res.hpAfterCombo === 3, `hp=${res.hpAfterCombo}`);
 
-  // 2) 核心：每段 visualHp 必须是"本段受伤前"的血量，不能停滞在最初值
-  check("第1段 visualHp 取本段受伤前血量", res.segs[0].visualHp === 18,
+  // 2) 核心：visualHp 是**整条动画链的起点**，链一旦开始就不可再被逐段重写。
+  //
+  //    曾把这里改成"每段都刷新为本段受伤前血量"（18/13/8），同步阶段看着更准，
+  //    但播放时第一段的 float 落点 13 会被写回，而同步阶段结束时残留的是第三
+  //    段起点 8 —— 血量数字 8 → 13 凭空回升 5 点，且没有恢复飘字。玩家反馈的
+  //    "低血量受连击时血莫名增加"即由此而来。
+  //    正确语义：起点固定为 18，由各段 float 落点单调推进 13 → 8 → 3。
+  //    播放期间不回升由 test-multihit-hp-no-rebound-live.js 专门覆盖。
+  check("第1段 visualHp 取链起点（受伤前血量）", res.segs[0].visualHp === 18,
     `visualHp=${res.segs[0].visualHp} 期望18`);
-  check("第2段 visualHp 刷新为本段受伤前血量", res.segs[1].visualHp === 13,
-    `visualHp=${res.segs[1].visualHp} 期望13（若=18则停滞）`);
-  check("第3段 visualHp 刷新为本段受伤前血量", res.segs[2].visualHp === 8,
-    `visualHp=${res.segs[2].visualHp} 期望8（若=18则停滞）`);
+  check("第2段 visualHp 保持链起点、不被重写", res.segs[1].visualHp === 18,
+    `visualHp=${res.segs[1].visualHp} 期望18（若=13则播放时回跳）`);
+  check("第3段 visualHp 保持链起点、不被重写", res.segs[2].visualHp === 18,
+    `visualHp=${res.segs[2].visualHp} 期望18（若=8则播放时回跳）`);
 
-  // 3) 核心收益：显示偏差不得随段数累积
+  // 3) 同步结算阶段动画尚未播放，偏差 = 链起点 − 真实血量，属正常；
+  //    硬约束是"不超过连击起始血量"，播完必须收敛（见第 5 条）。
   const gap = res.visualAfterCombo - res.hpAfterCombo;
-  check("连击后显示偏差不累积（≤ 单段伤害量）", gap <= 5,
+  check("同步阶段 visualHp 不超过连击起始血量", res.visualAfterCombo <= 18,
     `visualHp=${res.visualAfterCombo} 实际hp=${res.hpAfterCombo} 偏差=${gap}`);
 
   // 4) 连击期间确实有待播放浮字（确认测试构造的是"连击"而非"逐段播完"）

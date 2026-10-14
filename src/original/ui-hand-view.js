@@ -131,8 +131,15 @@ window.GameUIHandView = (() => {
         && window.BattleStatusCards?.keyOf?.(card) === "landmine";
       // 麻痹/眩晕/混乱（skipPlayPhase）：面板显示「本回合跳过出牌阶段」，
       // 但此前 disabled 判定不含此项，导致出牌阶段牌未置灰且可点选出牌。
-      // 只作用于出牌阶段 —— 弃牌阶段的弃牌是被动操作，不该被状态牌挡住。
-      const skipLocked = !!modes.playable && !!actor.skipPlayPhase;
+      // 只作用于「自己的出牌阶段」——
+      //   1) 弃牌阶段的弃牌是被动操作，不该被状态牌挡住；
+      //   2) 借刀杀人/次元转移/半魅魔血/指挥官责任等模式下，底部手牌区展示的
+      //      是「另一名角色」的手牌（handReveal.targetUid 等）。此时若那名角色
+      //      被控住，本判定会把他的全部手牌置灰，而这类弹窗是强制选择
+      //      （resolveHandReveal 对 mandatory 模式不允许直接关闭），
+      //      结果就是无牌可点、弹窗永远关不掉 → 战斗卡死。
+      const skipLocked = !!modes.playable && !!actor.skipPlayPhase
+        && !modes.transferLocked && !modes.millerShare && !modes.share;
       const normalLocked = !rpsClickable
         && !modes.dimensionTransfer && !modes.share && !modes.kaiichiShare
         && !modes.cadicisShare && !modes.borrowChoice && !modes.discard

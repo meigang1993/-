@@ -1,5 +1,8 @@
 window.LokarSkills = (() => {
-  const isKill = c => c?.type === "slash" || /杀(?:（[^）]*）)?$/.test(c?.name || "");
+  // 狂风绝息斩只使用「单体【杀】」：群体杀（机枪扫杀/流星杀…）走全体结算，
+  // 与「随机循环指定存活敌方角色为目标」的单体语义矛盾，此前用名称正则会一并卷入。
+  const isKill = c => window.CardUtils?.isSingleKill?.(c)
+    ?? (c?.type === "slash" && !c?.sweep && !c?.targetless && !c?.allTargets);
   const visibleKills = u => (u?.hand || []).filter(c => !c._pendingDraw && isKill(c));
   const aliveEnemies = (state, actor) => ((actor?.side === "enemy" ? state?.battle?.allies : state?.battle?.enemies) || []).filter(u => u.hp > 0);
   function handleSpecialCard(state, actor, target, card, deps, ctx) {
@@ -16,7 +19,7 @@ window.LokarSkills = (() => {
     window.BattleLines?.skill(state, actor, "狂风绝息斩");
     const slashes = visibleKills(actor).slice();
     window.CharacterSkinFX?.windSlashStart?.(state, actor, slashes.length);
-    window.BattleLog.add(state, `${actor.name} 发动狂风绝息斩，连续使用${slashes.length}张杀牌。`);
+    window.BattleLog.add(state, `${actor.name} 发动狂风绝息斩，连续使用${slashes.length}张单体杀牌。`);
     let cycle = [], defeatedAny = false, used = 0;
     for (const slash of slashes) {
       if (!state.battle || state.battle.locked || !actor.hand.includes(slash)) break;

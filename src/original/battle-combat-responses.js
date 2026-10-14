@@ -4,7 +4,13 @@ window.BattleCombatResponses = (api) => {
     const b = state.battle, p = b?.handReveal;
     if (!p) return false;
     const mandatory = ["magicBulletReveal", "borrowSlashChoice", "borrowGainChoice", "catherineSteal"];
-    if (mandatory.includes(p.mode) && index == null) return true;
+    if (mandatory.includes(p.mode) && index == null) {
+      // 强制选择模式下无牌可选时（例如队友手牌全是不可获得的状态牌），
+      // 此前会永远返回 true 而不关闭弹窗，battle.locked 保持为真 → 战斗卡死。
+      // 兜底：没有任何合法选项时允许关闭，避免永久锁死。
+      if (!(p.validIndexes || []).length) { b.handReveal = null; b.locked = false; return true; }
+      return true;
+    }
     const units = b ? allUnits(b) : [], actor = units.find(u => u.uid === p.actorUid), target = units.find(u => u.uid === p.targetUid), source = p.mode === "magicBullet" ? actor : target, cards = p.mode === "magicBulletReveal" ? window.CardUtils.magicBulletCards(source) : (source?.hand || []).filter(c => !c._pendingDraw), shown = index == null ? null : cards[index];
     if (index != null && p.validIndexes && !p.validIndexes.includes(index)) {
       window.BattleLog.add(state, p.mode === "borrowSlashChoice"

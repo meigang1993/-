@@ -1,21 +1,32 @@
 window.BattleCombatVisuals = (deps, allUnits) => {
+  // 该单位是否还有**未播放**的血量浮字。
+  //
+  // 注意判据必须看队列，不能看"动画是否正在播放"：连击中一旦发生 render，
+  // 播放就会启动，后者会把后续各段也判成"正在播放"而误伤。
+  function pendingHpFloat(u) {
+    const q = window.state?.battle?.animQueue;
+    if (!u || !q?.length) return false;
+    return q.some(e => e?.type === "float" && e.uid === u.uid
+      && ["damage", "hp-loss", "heal"].includes(e.kind));
+  }
   function holdVisual(u) {
     if (!u) return;
-    // visualHp 是动画的过渡起点，语义上必须等于"本次受伤前的真实血量"。
+    // visualHp 是**整条动画链的起点**，语义上等于"第一段受伤前的真实血量"。
+    // 链一旦开始，visualHp 必须交由各段 float 的落点（applyVisual 写回）单调
+    // 推进，此处不可再覆盖。
     //
-    // 旧实现只在 `== null` 时赋值，于是残留值（上一段的起点）会被一路沿用：
-    // 连击 / 多段攻击在同步结算阶段连续调用本函数，visualHp 会停滞在第一段
-    // 受伤前的旧值，单位卡显示的血量比真实血量高出"已结算的全部伤害"——实测
-    // 3 段连击后显示 18 而实际只有 3。低血量时基数小，这个偏差最刺眼，正是
-    // 玩家反馈的"血数字会变多"。
+    // 曾改成"每段无条件覆盖 = 当前真实血量"，结果 3 段连击在同步结算结束时
+    // visualHp 停在 8（第三段的起点），而播放首帧又把第一段落点 13 写回，
+    // 血量数字 8 → 13 凭空回升 5 点，且没有任何恢复飘字——玩家反馈的"低血量
+    // 受连击时血莫名增加"就是这么来的（实测序列 8,13,8,3）。
     //
-    // 这里不能改用"动画是否正在播放"作判据：连击过程中一旦发生 render（真实
-    // 对局里很常见），动画就会开播，后续各段又会被判为"正在播放"而不再刷新，
-    // 偏差照旧累积。故直接取当前真实血量——每段播放后的落点由 float 事件自带
-    // 的 visualHp 决定，不受此处覆盖影响。
+    // 反过来说，若链上已无待播放浮字而 visualHp 仍有残留（动画被打断时
+    // clearVisuals 不会执行），就必须用真实血量覆盖，否则数字会偏高。
+    // 故判据是"是否有待播放浮字"，而非"是否为 null"。
     //
     // 死亡延迟视觉（deferredDeathVisual）期间不可覆盖，否则会打断判定动画。
     if (u.deferredDeathVisual) return;
+    if (pendingHpFloat(u)) return;
     u.visualHp = u.hp;
     u.visualBlock = u.block || 0;
     u.visualDefense = u.defenseSystem || 0;

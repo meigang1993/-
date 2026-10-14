@@ -321,7 +321,8 @@ async function runEyeFeed(browser, errors, cardJson) {
       `发动=${r1.drill} 段数=${r1.seg}(骰子=${r1.roll})`);
     // 【复仇反击】只响应「有目标线的牌」（hasTargetLine），电钻火花的追加段是
     // type:"skill" 且无目标线，故只有第一段（实体杀）触发——与外神之眼的实体牌
-    // 限定同口径；不限定牌类型的受击类（曼妮 / 心血之咒 / 半魅魔血 / 狂战）才是逐段。
+    // 限定同口径；注：心血之咒现已同样限定"实体牌或虚拟牌"（见场景2），不再属于
+    // 逐段类，仍按段放大的受击类是曼妮 / 半魅魔血 / 狂战。
     check("1.1 杰洛特【复仇反击】只响应有目标线的牌（追加段为技能伤害）",
       r1.opens === r1.drill,
       `入队=${r1.opens} 攻击次数=${r1.drill} 段数=${r1.seg}`);
@@ -334,8 +335,12 @@ async function runEyeFeed(browser, errors, cardJson) {
     check("2.1 心血之咒链路确实可用（非构造失效）", r2.hits + r2.extra > 0,
       `反击分支=${r2.hits} 交牌分支=${r2.extra}`);
     const r2Total = r2.drill * (r2.seg || 0);
-    check("2.2 希特威【心血之咒】反击分支逐段结算", r2.hits === r2Total,
-      `反击分支=${r2.hits} 总段数=${r2Total}(发动${r2.drill}×每次${r2.seg})`);
+    // 心血之咒已改为「受到实体牌或虚拟牌伤害才触发」（与【外神之眼】同口径）。
+    // 电钻火花只有首段是实体杀，追加段是 type:"skill" 的技能伤害，不触发。
+    // 故命中次数应等于发动次数，且明显小于总段数——这正是"追加段被拦截"的证据。
+    check("2.2 希特威【心血之咒】只响应实体/虚拟牌段（追加技能段不触发）",
+      r2.hits === r2.drill && r2.hits < r2Total,
+      `反击分支=${r2.hits} 发动=${r2.drill} 总段数=${r2Total}(发动${r2.drill}×每次${r2.seg})`);
 
     // ---------- 场景3：曼妮【刺刀AK47】反击 ----------
     const r3 = await runDragonCase(browser, errors, "manny", "刺刀AK47");

@@ -6,7 +6,7 @@ window.GameDataCharactersCore = [
     skills: [
       { name: "战斗之勇", type: "passive", text: "锁定技，当你使用一张实体【杀】或【与我一战】时，你从摸牌堆摸1张牌。若摸到【杀】或【与我一战】，你恢复1点杀意。" },
       { name: "热血契约", type: "active", text: "出牌阶段限一次，你可以将1张手牌置入消耗牌堆，然后摸3张牌，并于本回合获得X点攻击力（X为你消耗牌堆中的牌数）。", card: { name: "热血契约", type: "tactic", bloodPact: true, targetless: true, icon: "⚔️", text: "将1张手牌置入消耗牌堆，摸3张牌，并于本回合获得等同于消耗牌堆牌数的攻击力。" } },
-      { name: "狂风绝息斩", type: "active", icon: "🔺", text: "限定技，出牌阶段，你依次使用手牌中的所有【杀】，并随机循环指定存活的敌方角色为目标；这些【杀】不消耗杀意。", card: { name: "狂风绝息斩", type: "tactic", lokarWindSlash: true, targetless: true, icon: "🔺", text: "依次使用手牌中的所有【杀】，随机循环指定敌方目标，且不消耗杀意。" } }
+      { name: "狂风绝息斩", type: "active", icon: "🔺", text: "限定技，出牌阶段，你依次使用手牌中的所有单体【杀】，并随机循环指定存活的敌方角色为目标；这些【杀】不消耗杀意（群体【杀】不参与）。", card: { name: "狂风绝息斩", type: "tactic", lokarWindSlash: true, targetless: true, icon: "🔺", text: "依次使用手牌中的所有单体【杀】，随机循环指定敌方目标，且不消耗杀意。" } }
     ]
   },
   {
@@ -92,7 +92,7 @@ window.GameDataCharactersCore = [
     stats: { attack: 4.8, magic: 2.5, speed: 6.7, maxHp: 55, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 4 },
     evaluation: "红牌转化与单体追加伤害输出。疯狂射击把红色手牌转为群体杀牌且不消耗杀意，疯狂刺刀根据命中后仍持有的【杀】数量追加多段无视护甲伤害。",
     skills: [
-      { name: "疯狂射击", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以将1张红色手牌当【机枪扫杀】使用；由此转化出的【机枪扫杀】不消耗杀意。", card: { name: "疯狂射击", type: "tactic", crazyShooting: true, targetless: true, icon: "⚔️", text: "将1张红色手牌当【机枪扫杀】使用；转化出的【机枪扫杀】不消耗杀意。" } },
+      { name: "疯狂射击", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以将1张红色手牌当【机枪扫杀】使用；【机枪扫杀】为全体【杀】，不消耗杀意。", card: { name: "疯狂射击", type: "tactic", crazyShooting: true, targetless: true, icon: "⚔️", text: "将1张红色手牌当【机枪扫杀】使用；【机枪扫杀】为全体【杀】，不消耗杀意。" } },
       { name: "疯狂刺刀", type: "passive", icon: "⭐", text: "锁定技，当你使用的单体【杀】未被【闪】抵消并造成伤害后（造成护甲值伤害也算），你对目标追加X次等同于你攻击力的无视护甲伤害（X为你当前手牌中的【杀】数）。" }
     ]
   }
