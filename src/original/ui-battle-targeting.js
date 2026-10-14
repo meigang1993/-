@@ -63,6 +63,10 @@ window.GameUIBattleTargeting = (() => {
       && !window.BattleStatusCards?.has?.(unitData, card.statusKey);
     else if (card?.magicBullet) allowed = unitData.side === "enemy"
       && hasMagicBulletCard(unitData);
+    // 狙击目标要「展示其一张手牌」，无牌目标点了只能静默失败（此前可点但无反应），
+    // 故在选目标阶段就排除空手牌的敌方角色，与窃取(stealCard)同一口径。
+    else if (card?.artinaSniper || card?.ruinsSnipe) allowed = unitData.side === "enemy"
+      && unitData.hp > 0 && hasVisibleHand(unitData);
     else allowed = comboPartnerReady && unitData.side === "enemy";
     // 隐身中的希尔德不可被单体【杀】指定：与逻辑层 chooseTarget 同一判定源，
     // 否则会出现「点得到但点了没反应」。

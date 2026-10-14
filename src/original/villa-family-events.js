@@ -17,7 +17,7 @@ window.VillaFamilyEvents = (() => {
     ];
     /* 普雷希与魅魔女大臣都不在角色栏里，按名字与专用立绘直接挂上，
        否则这两人说话时立绘区无人高亮（此前普雷希一直错用贝丝妲的立绘）。 */
-    const preshi = { name: "普雷希", art: "./assets/images/preshi-portrait.fd6b898e.webp" };
+    const preshi = { name: "普雷希", art: "./assets/images/preshi-portrait.97741e33.webp" };
     const minister = { name: "魅魔女大臣", art: "./assets/images/succubus-minister-portrait.5f2ba968.webp" };
     return renderer.render({
       key: "gerlotUnlock", title: "贝尔蒂丝苏醒后的归还",

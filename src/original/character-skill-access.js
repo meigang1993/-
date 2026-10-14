@@ -20,7 +20,7 @@ window.CharacterSkillAccess = (() => {
     { flags: ["withererPeek"], name: "杀欲窥视", target: "enemy" },
     { flags: ["withererShift"], name: "暴走与极速", target: "self" },
     { flags: ["kaiichiMilk"], name: "半魅魔精华", target: "friendlyFemale" },
-    { flags: ["artinaSniper"], name: "狙击目标", target: "enemy" },
+    { flags: ["artinaSniper"], name: "狙击目标", target: "enemy", require: "hand" },
     { flags: ["mariaHonorBlessing"], name: "荣誉祝福", target: "self", cost: "cards" },
     { flags: ["mannyBarrett"], name: "巴特雷", target: "self" },
     { flags: ["bertisTakeFood"], name: "取粮", target: "self" },
@@ -57,8 +57,12 @@ window.CharacterSkillAccess = (() => {
     return battle?.[def.prepare] === actor.uid
       && (phase === 1 || def.flags.includes("speedAssault") && phase === 6);
   }
-  function targetAllowed(battle, actor, target, mode) {
+  function targetAllowed(battle, actor, target, mode, def) {
     if (!livingMember(battle, target)) return false;
+    // 需要「展示/取走目标手牌」的技能：空手牌目标直接判为非法，
+    // 否则界面可点但执行时静默失败（点了没反应）。
+    if (def?.require === "hand"
+      && !(target.hand || []).some(card => !card._pendingDraw)) return false;
     if (mode === "self") return target === actor;
     if (mode === "other") return target !== actor;
     if (mode === "enemy") return target.side !== actor.side;
@@ -97,7 +101,7 @@ window.CharacterSkillAccess = (() => {
     return canActor(battle, actor, card)
       && battle?.activeUid === actor.uid
       && phaseAllowed(battle, actor, def)
-      && targetAllowed(battle, actor, target, def.target)
+      && targetAllowed(battle, actor, target, def.target, def)
       && costAllowed(battle, actor, card, def.cost)
       && (!canPlay || canPlay(actor, card, battle));
   }

@@ -73,6 +73,25 @@ contract("格林机枪", () => {
   assert.strictEqual(target.maxHp - target.hp, 2);
   assert.strictEqual(actor.intent, 1);
   assert.strictEqual(actor.usedGreenGatling, true);
+
+  // 追加队列只允许实体单体【杀】：群体【杀】入队会打到目标以外的人，
+  // 与「集中攻击同一目标」矛盾；同时不再展示手牌。
+  const single = card("杀（普攻）");
+  const sweep = card("机枪扫杀", { type: "slash", sweep: true, targetless: true });
+  const extra = card("杀（普攻）");
+  const mixed = scenario([single, sweep, extra], []);
+  const mixedActor = mixed.actor;
+  equip(mixedActor, "格林机枪");
+  mixedActor.stats.attack = 1;
+  window.state = mixed.state;
+  assert.strictEqual(combat.playActiveCard(mixed.state, 0, mixed.target.uid), true);
+  assert.strictEqual(mixed.target.maxHp - mixed.target.hp, 2,
+    "格林机枪只追加实体单体【杀】，群体【杀】不计入队列");
+  assert.ok(mixedActor.hand.includes(sweep),
+    "群体【杀】应留在手中，不被格林机枪追加使用");
+  assert.strictEqual((mixed.state.battle.animQueue || [])
+    .filter(entry => entry.type === "revealCards" && entry.title === "格林机枪").length, 0,
+    "格林机枪不再展示手牌");
 });
 
 contract("霹雳之锤", () => {

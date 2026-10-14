@@ -103,7 +103,10 @@ window.BattleCardSpecials = (deps, ctx) => {
       }
     }
   }
-  function prepareGreenGatling(state, actor, target, card) { if (!target || !card._playedFromHand || !window.CardUtils?.isEntitySingleKill?.(card) || actor.usedGreenGatling || !window.RelicSystem?.hasEquipped?.(state, actor, "格林机枪")) return; const queue = visible(actor).filter(c => deps.isKillCard(c)); if (!queue.length) return; actor.usedGreenGatling = true; card.greenGatlingQueue = queue; window.BattleLines?.skill(state, actor, "格林机枪", target); reveal(state, "格林机枪", queue); log(state, `${actor.name} 的格林机枪触发，展示手牌中的杀，后续追加杀不消耗杀意并集中攻击${target.name}。`); }
+  /* 追加的杀只允许实体单体【杀】：群体杀（机枪扫杀/流星杀…）走群体结算，
+     会打到目标以外的人，与「集中攻击同一目标」矛盾；此前用 isKillCard 会被一并入队。
+     同时不再展示手牌（取消 revealCards 动画）。 */
+  function prepareGreenGatling(state, actor, target, card) { if (!target || !card._playedFromHand || !window.CardUtils?.isEntitySingleKill?.(card) || actor.usedGreenGatling || !window.RelicSystem?.hasEquipped?.(state, actor, "格林机枪")) return; const queue = visible(actor).filter(c => window.CardUtils?.isEntitySingleKill?.(c)); if (!queue.length) return; actor.usedGreenGatling = true; card.greenGatlingQueue = queue; window.BattleLines?.skill(state, actor, "格林机枪", target); log(state, `${actor.name} 的格林机枪触发，手牌中的单体【杀】依次追加使用，不消耗杀意并集中攻击${target.name}。`); }
   function runGreenGatling(state, actor, target, card, queue) { card.greenGatlingQueue = null; for (let i = 0; i < queue.length; i++) { const slash = queue[i]; if (!state.battle || actor.hp <= 0 || target.hp <= 0) break; if (!actor.hand.includes(slash)) continue; slash.noIntentCost = true; ctx.useCard(state, actor, target, slash); if (state.battle?.locked) { card.greenGatlingQueue = queue.slice(i + 1); state.battle.greenGatlingResume = { actorUid: actor.uid, targetUid: target.uid, card }; break; } } }
   function resolveGreenGatling(state, actor, target, card) { if (!card.greenGatlingQueue?.length || state.battle?.locked) return; runGreenGatling(state, actor, target, card, card.greenGatlingQueue.slice()); }
   function resumeGreenGatling(state, actor, target, card) { const queue = card?.greenGatlingQueue; if (!queue?.length || state.battle?.locked) return; runGreenGatling(state, actor, target, card, queue.slice()); }

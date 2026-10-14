@@ -15,7 +15,7 @@ window.OrcUnlockEvents = (() => {
     ];
     const besta = state.chars.find(c => c.id === "besta") || { name: "贝丝妲", art: "./assets/generated/besta-villa-new.3cf7a4f0.webp" };
     /* 普雷希是剧情人物、不在角色栏，用专用立绘；原先复用贝丝妲的图会让贝丝妲的脸出现在普雷希身上。 */
-    const preshi = { name: "普雷希", art: "./assets/images/preshi-portrait.fd6b898e.webp" };
+    const preshi = { name: "普雷希", art: "./assets/images/preshi-portrait.97741e33.webp" };
     return window.AdvDialogue.render({
       key: "orcDungeonUnlock",
       title: "兽人地下城求援",

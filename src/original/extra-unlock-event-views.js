@@ -3,7 +3,7 @@ window.ExtraUnlockEventViews = (() => {
   const bestaOf = state => char(state, "besta")
     || { name: "贝丝妲", art: "./assets/generated/besta-villa-new.3cf7a4f0.webp" };
   /* 普雷希不在角色栏（剧情人物），专用立绘；原先复用贝丝妲的图会让贝丝妲的脸出现在普雷希身上。 */
-  const preshi = { name: "普雷希", art: "./assets/images/preshi-portrait.fd6b898e.webp" };
+  const preshi = { name: "普雷希", art: "./assets/images/preshi-portrait.97741e33.webp" };
   /* 魅魔女大臣只在杰洛特归还事件里出现两句台词，没有角色栏条目，单独给一张立绘。 */
   const minister = { name: "魅魔女大臣", art: "./assets/images/succubus-minister-portrait.5f2ba968.webp" };
   const view = (key, state, title, cast, lines, note, buttonText, action) =>

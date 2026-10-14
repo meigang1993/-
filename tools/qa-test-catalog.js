@@ -104,9 +104,11 @@ const groups = Object.freeze({
   battle: [
     "test-visual-hp-residue-live.js",
     "test-lowhp-multihit-visual-live.js",
+    "test-ai-handinteraction-muramasa-live.js",
     "test-hp-display-clamp-live.js",
     "test-raff-control-eye-cost-live.js",
     "test-raff-control-eye-live.js",
+    "test-sniper-target-needs-hand-live.js",
     "test-multihit-vs-counter-live.js",
     "test-heartblood-curse-multihit-live.js",
     "test-heartblood-curse-timing-live.js",

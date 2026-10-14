@@ -37,14 +37,24 @@ window.BattleCardHandInteractions = (ctx, helpers) => {
     return true;
   }
 
+  // 只有对「同阵营」角色才优先清理状态牌。对敌对目标优先移除状态牌
+  // （如【粘液】）等于替对手卸掉负面负担，属于反向帮忙。
+  function pickIndex(hand, preferStatus) {
+    const usable = hand.map((candidate, index) => ({ candidate, index }))
+      .filter(entry => !entry.candidate._pendingDraw);
+    if (!usable.length) return -1;
+    const status = window.BattleStatusCards?.isStatus;
+    const wanted = preferStatus
+      ? usable.find(entry => status?.(entry.candidate))
+      : usable.find(entry => !status?.(entry.candidate));
+    return (wanted || usable[0]).index;
+  }
+
   function discardTarget(state, actor, target, card) {
     if (actor.side === "ally" && card.discardTarget && !card.assassinate) {
       return !!openHandReveal(state, actor, target, card, "discard");
     }
-    const statusIndex = target.hand.findIndex(candidate =>
-      !candidate._pendingDraw && window.BattleStatusCards?.isStatus?.(candidate));
-    const index = statusIndex >= 0 ? statusIndex
-      : target.hand.findIndex(candidate => !candidate._pendingDraw);
+    const index = pickIndex(target.hand, actor.side === target.side);
     if (index < 0) {
       log(state, `${actor.name} 使用${card.name}，但${target.name}没有可弃置手牌。`);
       return false;
@@ -61,10 +71,7 @@ window.BattleCardHandInteractions = (ctx, helpers) => {
     if (actor.side === "ally") {
       return !!openHandReveal(state, actor, target, card, "steal");
     }
-    const statusIndex = target.hand.findIndex(candidate =>
-      !candidate._pendingDraw && window.BattleStatusCards?.isStatus?.(candidate));
-    const index = statusIndex >= 0 ? statusIndex
-      : target.hand.findIndex(candidate => !candidate._pendingDraw);
+    const index = pickIndex(target.hand, actor.side === target.side);
     if (index < 0) {
       log(state, `${actor.name} 使用${card.name}，但${target.name}没有可偷取手牌。`);
       return false;
