@@ -33,6 +33,10 @@ window.BattleCardPlayability = deps => {
   }
   const hasNoIntentCost = (actor, card) => !!(card?.noIntentCost
     || card?.rageKill && actor?.hp < actor?.maxHp
+    // 全体【杀】（机枪扫杀/流星杀…）不消耗杀意：它们一次打全体，
+    // 与单体杀同样扣1点明显不合理；兽人「火力压制」把单体杀转成机枪扫杀后
+    // 也随之免费（已同步该技能文本）。
+    || window.CardUtils?.isGroupKillCard?.(card)
     || window.OrcDungeonSkills?.noIntentCost?.(actor, card)
     || window.WithererSkills?.noIntentCost?.(actor, card));
   const canComboAttack = (battle, actor, card) => !card?.comboAttack || !!(battle
