@@ -56,7 +56,7 @@ window.BattleCombatVisuals = (deps, allUnits) => {
     b.floatSeq = (b.floatSeq || 0) + 1;
     const f = { id: `f${deps.nextAnim()}`, uid, kind, value, critical, seq: b.floatSeq, delay, hitFxId: b.hitFxId, ...(finalVisual || {}), label, ...(meta || {}) };
     b.floats.push(f);
-    b.animQueue?.push({ type: "float", id: f.id, uid, kind, delay, hitFxId: f.hitFxId, visualHp: f.visualHp, visualBlock: f.visualBlock, visualDefense: f.visualDefense, label: f.label, critical: f.critical, effectCritical: f.effectCritical, damageTypes: f.damageTypes, attackType: f.attackType, magicDamage: f.magicDamage, hybridAttack: f.hybridAttack, commit: f.commit });
+    b.animQueue?.push({ type: "float", id: f.id, uid, kind, delay, hitFxId: f.hitFxId, visualHp: f.visualHp, visualBlock: f.visualBlock, visualDefense: f.visualDefense, label: f.label, critical: f.critical, effectCritical: f.effectCritical, damageTypes: f.damageTypes, attackType: f.attackType, magicDamage: f.magicDamage, hybridAttack: f.hybridAttack, groupHit: !!f.groupHit, commit: f.commit });
   }
   function queueSlashText(state, actor, target = null, card = null) {
     if (!state.battle?.animQueue || !actor) return;

@@ -30,7 +30,21 @@ window.bindBattleActionButtons = function bindBattleActionButtons() {
     wrap.querySelector(".left")?.toggleAttribute("disabled", hand.scrollLeft <= 2);
     wrap.querySelector(".right")?.toggleAttribute("disabled", hand.scrollLeft >= max - 2);
   };
-  document.querySelectorAll(".hand-scroll-wrap .hand").forEach(hand => { updateHandScroll(hand); hand.onscroll = () => updateHandScroll(hand); });
+  // 读取 scrollWidth/clientWidth 会强制同步布局。setHTML 刚整块替换完 DOM 时调用，
+  // 等于每次 bindBattleActionButtons 都补一次完整重排 —— 实测占 render 自身耗时约 66%，
+  // 是战斗偶发掉帧（长帧 30~63ms）的主要来源。
+  // 滚动事件一帧内可触发多次，同样会重复触发重排。
+  // 故：初始化延到下一帧（布局已由浏览器自然算出，此时读取几乎免费），
+  // 滚动用 rAF 合并到每帧一次。
+  const handScrollFrames = new WeakMap();
+  const scheduleHandScroll = hand => {
+    if (handScrollFrames.has(hand)) return;
+    handScrollFrames.set(hand, requestAnimationFrame(() => {
+      handScrollFrames.delete(hand);
+      updateHandScroll(hand);
+    }));
+  };
+  document.querySelectorAll(".hand-scroll-wrap .hand").forEach(hand => { scheduleHandScroll(hand); hand.onscroll = () => scheduleHandScroll(hand); });
   document.querySelectorAll("[data-hand-scroll]").forEach(b => b.onpointerdown = e => { e.preventDefault(); e.stopPropagation(); const hand = b.closest(".hand-scroll-wrap")?.querySelector(".hand"); if (hand) { hand.scrollBy({ left: Number(b.dataset.handScroll) * Math.max(140, hand.clientWidth * .8), behavior: "smooth" }); requestAnimationFrame(() => updateHandScroll(hand)); } });
   document.querySelector("[data-cancel-hammer]")?.addEventListener("click", e => BattleActionGuard.run("取消雷神之锤失败", async ({ state: actionState, isCurrent }) => { await BattleSystem.cancelThunderHammer(actionState, render); if (!isCurrent()) return false; render(); persist({ battleOperation: true }); }, { control: e.currentTarget }));
   document.querySelectorAll("[data-manual-dodge-pick]").forEach(b => b.onclick = e => { e.stopPropagation(); if (state.battle?.manualDodge) state.battle.manualDodge.selectedIndex = Number(b.dataset.manualDodgePick); render(); });

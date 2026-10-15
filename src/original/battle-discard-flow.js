@@ -2,6 +2,12 @@ window.BattleDiscardFlow = (deps) => {
   const { active, visibleHand, handLimit, canDiscardCard, canDiscardAny, discardNeed, discardOverflow, enterEndPhase, draw, combat, record, advanceToInput, manualFlow } = deps;
   function enterDiscardOrEnd(state, unit) {
     const b = state.battle; b.discardPick = null;
+    // 阵亡单位没有弃牌阶段：它的手牌由「被击倒，弃置所有手牌」统一处理。
+    // 若在此处按手牌超限要求一个死人弃牌，而清手牌的 discardDeadHands 又因
+    // 该单位的死亡浮字尚未播完（pendingFatalAnim → checkDefeat 提前返回）
+    // 还没执行，回合就会永久停在弃牌阶段等一个无法操作的目标——
+    // 表现即「被反制装置反死后卡在弃牌阶段」。
+    if (unit.hp <= 0 && !window.SakuraRisaSkills?.pendingRevival?.(unit)) return enterEndPhase(state, unit);
     if (!unit.playedSlashThisTurn && window.RelicSystem?.hasEquipped?.(state, unit, "母亲怀表")) { record(state, `${unit.name} 的母亲怀表触发，跳过弃牌阶段。`); return enterEndPhase(state, unit); }
     const need = discardNeed(unit);
     if (unit.side === "ally" && need > 0) { record(state, `${unit.name} 手牌超过上限，需要弃置${need}张。`); return false; }
@@ -30,6 +36,8 @@ window.BattleDiscardFlow = (deps) => {
   function completeDiscardPhase(state, unit) {
     const b = state.battle;
     b.discardPick = null;
+    // 同上：阵亡单位不应再被要求弃牌，否则回合卡在弃牌阶段无法推进。
+    if (unit.hp <= 0 && !window.SakuraRisaSkills?.pendingRevival?.(unit)) return enterEndPhase(state, unit);
     const need = discardNeed(unit);
     if (unit.side === "ally" && need > 0) { record(state, `还需处理${need}张超出手牌。`); return false; }
     discardOverflow(state, unit); return enterEndPhase(state, unit);

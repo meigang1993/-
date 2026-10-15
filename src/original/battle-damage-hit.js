@@ -40,12 +40,18 @@ window.BattleDamageHit = ({
     const attackType =
       window.BattleDamageAttributes?.attackType?.(card, source, actor)
       || "physical";
+    // groupHit：本次伤害属于群体结算（机枪扫杀/流星杀/魔王军入侵…）中的一段。
+    // 群体结算逐个目标推进，若中途打死人就整段停 760ms 播死亡动画，扫射会被
+    // 硬生生切成 N 截（实测每个死亡目标多耗约 700ms）。死亡表现本身是 CSS
+    // 动画（.unit.dead.death-anim / deathFade 720ms），由渲染独立驱动，不依赖
+    // 队列停顿，故中段死亡不再阻塞；仅最后一段仍保留停顿，保证收尾能看到阵亡。
     const effectMeta = {
       damageTypes,
       effectCritical: critical,
       attackType,
       magicDamage: attackType === "magic",
       hybridAttack: !!card.hybridAttack,
+      groupHit: !!(card?.sweep || card?.allTargets || card?.aoeLineShown),
     };
     state.battle.lastHitUid = target.uid;
     state.battle.hitFxId += 1;

@@ -58,7 +58,12 @@ window.BattleEffectEventRunner = handlers => {
       try { event.onSettled(); } catch (err) { console.error(err); }
       renderStep();
     }
-    await wait(fatal ? handlers.DEATH_ANIM_MS : FLOAT_SETTLE_MS);
+    // 群体结算（AOE）打死人时不再整段停 760ms：死亡表现是 CSS 动画，
+    // 由渲染独立驱动，与队列无关，停在这里只会把扫射切成 N 截。
+    // 实测：只要致命一击属于群体结算就跳过停顿，否则「打光全部目标」
+    // 时最后一个死亡事件（队列已空）仍会多耗约 700ms，玩家会看到明显卡顿。
+    // 单体击杀不带 groupHit，死亡停顿照旧保留。
+    await wait(fatal && !event.groupHit ? handlers.DEATH_ANIM_MS : FLOAT_SETTLE_MS);
   }
 
   async function initialDrawGroup(event, renderStep, active) {
