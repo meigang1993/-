@@ -58,6 +58,10 @@ window.CardUtils = (() => {
     && !actor?.extractMagicAttack;
   const isEntityKillCard = card => isKillCard(card) && !card.virtual;
   const isEntitySingleKill = card => isEntityKillCard(card) && isSingleTargetCard(card);
+  // 基础杀：仅【杀（普攻）】本身，不含火杀/雷杀/魔杀/毒杀等衍生单体杀。
+  // 供「只有【杀（普攻）】才触发」的机制复用（兽人【火力压制】）。
+  const isPlainSlash = card => !!card && card?.name === "杀（普攻）"
+    && !card?.virtual && !card?._pendingDraw;
   // 实体牌：非技能伤害、非技能生成、非虚拟牌。
   // 判定集中在此，供所有「只有实体牌才触发」的机制复用（凋零者【外神之眼】/
   // 【魅魔吸精术】、普雷希【女王威压】伤害翻倍），此前凋零者侧各写一份，容易漂移。
@@ -132,7 +136,7 @@ window.CardUtils = (() => {
     revertConvertedCopy,
     isKillCard, isEntityKillCard, isEntityCard, isEntityOrVirtualCard, isGroupTargetCard, isSingleTargetCard,
     targetScope, isGroupKillCard, isSingleKill, isPhysicalSingleKill,
-    isEntitySingleKill,
+    isEntitySingleKill, isPlainSlash,
     isSingleKillCard, isCounterableTactic, canRespondTo, generatedSource,
     isSkillPlay, playVerb,
     canMagicBulletDisplay, magicBulletCards, battleView, damageStatKey,

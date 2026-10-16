@@ -6,8 +6,12 @@
 //   撤掉任何真实实现它都是绿的 —— 属于恒绿用例。本文件走真实 AI 分支。
 //
 // 设定依据（data-future-orc-enemies.js）：
-//   火力压制：锁定技，你使用的单体【杀】牌视为【机枪扫杀】；
+//   火力压制：锁定技，你使用的【杀（普攻）】视为【机枪扫杀】；
 //   转化为全体【杀】后不消耗杀意。
+//
+// 收窄背景：此处原用「任意单体杀」判定，会把火杀/雷杀/魔杀/毒杀/刺杀等一并
+//   转为全体杀并免杀意，导致杀意为 0 时该单位仍能连续出杀，与「低杀意群体杀牌
+//   单位」（杀意上限 1）的定位相悖。现只认【杀（普攻）】。
 //
 // 关键时序：攻击流程先 spendIntent 再走 prepareSlash，转化发生在扣杀意之后，
 // 因此牌上打标来不及，改由 suppressionFreeIntent 预判。本文件即锁死这条时序。
@@ -95,6 +99,42 @@ const check = (name, ok, detail = "") => {
   await reset();
   const r4 = await run("demon_beast_unit", "杀（普攻）");
   check("重复验证：火力压制口径稳定", r4.intent === 3 && r4.freeLog, `杀意=${r4.intent}`);
+
+  // 可打出性：杀意耗尽后，除【杀（普攻）】（文本承诺转化后免杀意）外一律不可再出。
+  const playable = (intent, entityName) => page.evaluate(([intent, entityName]) => {
+    const st = window.state, b = st.battle, a = b.allies[0];
+    b.locked = false; b.animQueue = []; b.handReveal = null;
+    b.enemies.forEach(u => { u.hand = []; u.noResponse = true; u.hp = 60; });
+    b.allies.forEach(u => { u.hand = []; u.statuses = []; });
+    a.ai = "demon_beast_unit"; a.intent = intent;
+    b.activeUid = a.uid; b.phase = 4;
+    const card = window.CardUtils.fromEntity(entityName);
+    delete card.virtual;
+    a.hand = [card];
+    const ok = window.BattleSystem.canPlay(a, card);
+    a.hand = []; a.ai = null;
+    return ok;
+  }, [intent, entityName]);
+
+  console.log("\n【三】收窄：只有【杀（普攻）】被压制转化，其余单体杀维持单体");
+  for (const other of ["火杀", "魔杀", "毒杀", "刺杀"]) {
+    await reset();
+    const ro = await run("demon_beast_unit", other);
+    check(`${other} 不触发火力压制（仍单体）`,
+      !ro.suppression && ro.hpAfter.filter((hp, i) => hp < ro.hpBefore[i]).length === 1,
+      `suppression=${ro.suppression} hpBefore=${ro.hpBefore} hpAfter=${ro.hpAfter}`);
+  }
+
+  console.log("\n【四】杀意耗尽后不再连续出杀（杀意上限 1 的定位）");
+  await reset();
+  check("杀意=0：【杀（普攻）】可出（文本承诺转化后免杀意）",
+    await playable(0, "杀（普攻）") === true);
+  for (const other of ["火杀", "魔杀", "毒杀", "刺杀"]) {
+    check(`杀意=0：${other} 不可出（未被压制转化，需消耗杀意）`,
+      await playable(0, other) === false);
+  }
+  check("杀意=1：各类单体杀均可出",
+    await playable(1, "火杀") === true && await playable(1, "魔杀") === true);
 
   console.log(`\n合计 ${pass} 通过 / ${fail} 失败   页面错误 ${errors.length}`);
   if (errors.length) console.log("页面错误:", errors.slice(0, 3));

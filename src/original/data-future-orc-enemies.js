@@ -27,7 +27,7 @@ window.GameDataFutureOrcEnemies = [
     name: "魔王军猛兽部队",
     type: "normal",
     role: "低杀意群体火力兵",
-    evaluation: "低杀意群体杀牌单位。所有单体【杀】均视为【机枪扫杀】，以群体覆盖弥补单发威力不足。",
+    evaluation: "低杀意群体杀牌单位。【杀（普攻）】视为【机枪扫杀】，以群体覆盖弥补单发威力不足；其余单体【杀】仍按牌面消耗杀意。",
     gender: "male",
     face: "兽",
     art: "./assets/new-portraits/demon-beast-unit.dbf46b9c.webp",
@@ -41,7 +41,7 @@ window.GameDataFutureOrcEnemies = [
     drawPerTurn: 1,
     initialDraw: 2,
     skills: [
-      { name: "火力压制", type: "passive", icon: "⭐", text: "锁定技，你使用的单体【杀】牌视为【机枪扫杀】；转化为全体【杀】后不消耗杀意。" }
+      { name: "火力压制", type: "passive", icon: "⭐", text: "锁定技，你使用的【杀（普攻）】视为【机枪扫杀】；转化为全体【杀】后不消耗杀意。" }
     ],
     ai: "demon_beast_unit"
   },

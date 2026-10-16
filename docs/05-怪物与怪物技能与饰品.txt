@@ -311,7 +311,7 @@ BGM：./assets/new-bgm/orc-dungeon-battle.ogg
 BGM：./assets/new-bgm/orc-dungeon-battle.ogg
 
 技能：
-- 火力压制（被动）：锁定技，你使用的单体【杀】牌视为【机枪扫杀】。
+- 火力压制（被动）：锁定技，你使用的【杀（普攻）】视为【机枪扫杀】；转化为全体【杀】后不消耗杀意。
 
 --- 20. demon_witch - 魔王军魔女 ---
 类型：normal | 定位：输出 | AI：demon_witch

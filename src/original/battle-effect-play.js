@@ -10,7 +10,7 @@ window.BattleEffectPlay = (() => {
       return !!cost && !cost._pendingDraw && ["♥", "♦"].includes(cost.suit);
     }
     if (actor?.ref === "manny" && actor.mannyWeapon === "flamer") return isSingleSlash(card) && hasDamage(card);
-    return actor?.ai === "demon_beast_unit" && isSingleSlash(source || card);
+    return !!window.OrcDungeonSkills?.beastSuppressionConverts?.(actor, source || card);
   }
   function groupTargetUids(actor, card, source, battle, foes) {
     const living = (foes || []).filter(unit => unit.hp > 0);
