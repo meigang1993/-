@@ -47,12 +47,16 @@ module.exports = async function runSlotTests(state) {
   cloudWritable = false;
   localWritable = true;
   const failedSave = await captureReject(window.GameStore.saveSlot(1, state), "saveSlot should fail when direct cloud KV fails");
-  assert(failedSave.code === "SAVE_FAILED", "slot cloud failure should not report local durability");
-  assert(!failedSave.results.slot.local.attempted,
-    "cloud-backed slot saves must not replace local recovery before cloud success");
+  // 云端写入失败但本地已落盘时判为 SAVE_PARTIAL（可恢复），不再判成 SAVE_FAILED：
+  // 本地副本其实已经写好，判成不可恢复会回滚存档位元数据，玩家会看到「保存失败」
+  // 但数据其实已经存好了。云端未同步由 requiredCopies 单独提示为待重试。
+  assert(failedSave.code === "SAVE_PARTIAL", "cloud-only write failure with a durable local copy must stay retryable, not unrecoverable");
+  assert(failedSave.recoverable, "partial slot saves must remain recoverable");
+  assert(failedSave.results.slot.local.attempted && failedSave.results.slot.local.ok,
+    "the local slot copy should still be written when only the cloud write fails");
   assert(!failedSave.results.slot.cloud.ok, "failed slot save should record the cloud failure");
-  assert(!failedSave.results.main, "main save must not advance when the slot write fails");
-  assert(state.currentSaveSlot !== 1, "failed slot save should restore slot metadata");
+  assert(failedSave.results.main?.local?.ok, "the local main copy should advance once the local slot copy is durable");
+  assert(state.currentSaveSlot === 1, "slot metadata should survive a partial save that already wrote a local copy");
   assert(window.GameStore.status().slotPending.pending,
     "failed direct-KV slot transaction should remain visible as pending");
   cloudWritable = true;
@@ -86,7 +90,7 @@ module.exports = async function runSlotTests(state) {
   cloudWritable = false;
   const oldTransaction = await captureReject(window.GameStore.saveSlot(2, state),
     "second slot save should remain retryable");
-  assert(oldTransaction.code === "SAVE_FAILED",
+  assert(oldTransaction.code === "SAVE_PARTIAL" && oldTransaction.recoverable,
     "a failed direct KV slot write should preserve a retryable transaction");
   cloudWritable = true;
   state.resources.gold = 88;

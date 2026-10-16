@@ -86,13 +86,19 @@ window.BattleDamageResolution = ({
     window.RuinsCardSkills?.beforeResponseCheck?.(state, actor, target, effectiveCard);
     // 粉色魅魔装（被动）：佩戴者使用的红色牌不可被响应。
     window.RuinsRelicEffects?.beforeResponseCheck?.(state, actor, target, effectiveCard);
+    // 女王威压：逐目标判定该角色是否不可响应。
+    // 不写成牌上的 ignoreResponse —— 群体牌共用同一牌对象会误压手牌更多的目标，
+    // 且残留标记会在弃牌堆重洗复用后永久生效。
+    const preshiNoResponse = window.PreshiSkills?.suppressesResponse?.(
+      state, effectiveActor, target, effectiveCard);
     queueAttackAnim(state, actor, target, effectiveCard);
-    if (deps.isKillCard(effectiveCard) && effectiveCard?.ignoreResponse) {
+    if (deps.isKillCard(effectiveCard)
+      && (effectiveCard?.ignoreResponse || preshiNoResponse)) {
       window.BattleLog.add(state,
         `${target.name} 无法使用响应牌响应本次杀。`);
     }
     window.WithererSkills?.refreshShiftState?.(target);
-    const responseCards = !effectiveCard?.ignoreResponse
+    const responseCards = !(effectiveCard?.ignoreResponse || preshiNoResponse)
       && needsResponse(effectiveCard)
       ? (target.noResponse ? [] : target.hand.filter(candidate => canDodge(effectiveCard, candidate)))
       : [];
@@ -118,7 +124,7 @@ window.BattleDamageResolution = ({
     }
     // 神速之翼：对所有"需用【闪】抵消"的牌生效（含【杀】、机枪扫杀、
     // 坦克炮弹等带 responseKind 的牌），与技能描述一致
-    if (!response && !effectiveCard?.ignoreResponse
+    if (!response && !(effectiveCard?.ignoreResponse || preshiNoResponse)
       && needsResponse(effectiveCard)) {
       response = window.FloraCarlosSkills?.dodgeAsFlash?.(
         state, target, actor, effectiveCard,

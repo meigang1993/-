@@ -43,7 +43,8 @@ const fireTpl = `(() => {
   const card = { name: "杀（普攻）", type: "slash", suit: "♠", uid: "atk1" };
   window.PreshiSkills.beforeCardPlayed(st, p, card, foe);
   window.render();
-  return { ignoreResponse: !!card.ignoreResponse };
+  // 压制不再写成牌上的 ignoreResponse，改为逐目标实时判定，此处断言判据。
+  return { ignoreResponse: window.PreshiSkills.suppressesResponse(st, p, foe, card) };
 })()`;
 
 const readTpl = `(() => {

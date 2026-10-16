@@ -14,17 +14,33 @@ window.PreshiSkills = (() => {
     visible(unit).filter(card => card !== exclude).length;
 
   // 女王威压·手牌压制：使用的牌指定敌方角色为目标时，若手牌数多于该角色，
-  // 该角色不可响应。此处只置 ignoreResponse，由统一响应判定消费该标记。
+  // 该角色不可响应。
+  //
+  // 这里刻意不把结果写成 card.ignoreResponse：
+  //   1）牌上的标记是「整张牌」级别的，群体牌（机枪扫杀等）结算给每个目标时
+  //      共用同一个牌对象，一旦打标记就会把手牌更多的目标也一并压制，
+  //      与「若你的手牌数大于该角色」的逐角色口径不符；
+  //   2）弃牌堆会被重洗回摸牌堆并复用同一批牌对象（BattlePileStats.reshuffle
+  //      直接 splice），而 clearPlayFlags 只在置了 _tempIgnoreResponse 时才清
+  //      ignoreResponse，残留的标记会让这张牌此后永久不可被响应。
+  // 故改为在响应判定前按「当前目标」实时计算，见 suppressesResponse。
   function beforeCardPlayed(state, actor, card, target) {
     if (!isPreshi(actor) || !alive(actor)) return;
     if (!hasSkill(actor, "女王威压")) return;
     if (!target || target.side === actor.side || !alive(target)) return;
     const mine = handSize(actor, card), theirs = handSize(target, null);
     if (mine <= theirs) return;
-    card.ignoreResponse = true;
     line(state, actor, "女王威压");
     window.BattleLog.add(state,
       `${actor.name} 触发女王威压，${target.name}手牌更少，不可响应此牌。`);
+  }
+
+  // 响应判定的唯一判据：逐目标计算，与 beforeCardPlayed 同一口径（手牌按打出后计）。
+  function suppressesResponse(state, actor, target, card) {
+    if (!isPreshi(actor) || !alive(actor)) return false;
+    if (!hasSkill(actor, "女王威压")) return false;
+    if (!target || target.side === actor.side || !alive(target)) return false;
+    return handSize(actor, card) > handSize(target, null);
   }
 
   // 女王威压·全场最多手牌：并列最多同样计入（与凯瑟琳【魔力增幅】同口径）。
@@ -88,7 +104,7 @@ window.PreshiSkills = (() => {
   }
 
   return {
-    beforeCardPlayed, modifyOutgoingDamage, modifyIncomingDamage,
+    beforeCardPlayed, suppressesResponse, modifyOutgoingDamage, modifyIncomingDamage,
     handleSpecialCard, topHand,
   };
 })();

@@ -5,11 +5,16 @@ const path = require("path");
 const fs = require("fs");
 // 沙箱重建会清空系统 /tmp，后台任务的临时目录与派生文件会丢失。
 // 统一指向仓库外的永久目录，os.tmpdir() 会自动跟随 TMPDIR。
-const qaTmp = path.resolve(__dirname, "..", "..", ".qatmp");
-fs.mkdirSync(qaTmp, { recursive: true });
-process.env.TMPDIR = qaTmp;
-process.env.TMP = qaTmp;
-process.env.TEMP = qaTmp;
+// Chromium 在部分挂载点上启动即崩溃（SIGTRAP），可用 QA_KEEP_TMPDIR=1
+// 保持系统默认临时目录，用于排查浏览器类用例的环境性失败。
+const keepSystemTmp = /^(1|true|yes)$/i.test(String(process.env.QA_KEEP_TMPDIR || "").trim());
+if (!keepSystemTmp) {
+  const qaTmp = path.resolve(__dirname, "..", "..", ".qatmp");
+  fs.mkdirSync(qaTmp, { recursive: true });
+  process.env.TMPDIR = qaTmp;
+  process.env.TMP = qaTmp;
+  process.env.TEMP = qaTmp;
+}
 
 require("./repository-toolchain");
 require("./ensure-qa-bins").ensure();

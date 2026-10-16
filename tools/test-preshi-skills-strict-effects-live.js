@@ -44,6 +44,8 @@ const dataTpl = `(() => {
 // foeHands：敌方手牌数（含一张♥闪）；preshiHands 为普雷希手牌数
 const suppressRealTpl = (preshiHands, foeHands) => `(() => {
   const st = window.state, b = st.battle;
+  st.settings = st.settings || {};
+  st.settings.manualResponse = false;
   b.animQueue = []; b.locked = false;
   if (b.reactionQueue) b.reactionQueue = [];
   const p = b.allies[0], foe = b.enemies[0];
@@ -55,15 +57,19 @@ const suppressRealTpl = (preshiHands, foeHands) => `(() => {
   for (let i = 0; i < ${preshiHands}; i++)
     p.hand.push({ name: "闪", type: "basic", suit: "♠", uid: "ph" + i });
   foe.hp = foe.maxHp = 60; foe.block = 0; foe.skills = []; foe.ai = null;
-  foe.hand = [{ name: "闪", type: "basic", suit: "♥", uid: "foe-dodge" }];
+  // 【闪】必须是 response 类型：canRespondTo 只认 type === "response"，
+  // 用 basic 的话对照组里敌方压根无法响应，实验组两条断言就成了恒绿。
+  foe.hand = [{ name: "闪", type: "response", suit: "♥", uid: "foe-dodge" }];
   for (let i = 1; i < ${foeHands}; i++)
-    foe.hand.push({ name: "闪", type: "basic", suit: "♣", uid: "fh" + i });
+    foe.hand.push({ name: "闪", type: "response", suit: "♣", uid: "fh" + i });
   st.log = [];
   const card = window.CardUtils.cloneEntity("杀");
   p.hand.push(card);
   window.BattleSystem.useCard(st, p, foe, card);
   return {
-    ignore: !!card.ignoreResponse,
+    // 女王威压的压制改为响应判定时逐目标实时计算，不再写成牌上的 ignoreResponse，
+    // 故此处断言判据返回值，实际效果由上面两条（掉血、闪未被消耗）证验。
+    suppressed: window.PreshiSkills.suppressesResponse(st, p, foe, card),
     foeHpLoss: 60 - foe.hp,
     dodgeLeft: foe.hand.filter(c => c.uid === "foe-dodge").length,
   };
@@ -222,11 +228,15 @@ const lineHookTpl = `(() => {
   const sup = await page.evaluate(suppressRealTpl(5, 1));
   T("② 手牌多于目标：敌方持【闪】仍照常掉血", sup.foeHpLoss > 0, sup);
   T("② 手牌多于目标：敌方的【闪】未被消耗", sup.dodgeLeft === 1, sup);
-  T("② 手牌多于目标：卡牌标记不可响应", sup.ignore === true, sup);
+  T("② 手牌多于目标：判据返回不可响应", sup.suppressed === true, sup);
 
   // 对照组：普雷希 1 张 ≤ 敌方 3 张
   const sup2 = await page.evaluate(suppressRealTpl(1, 3));
-  T("② 对照组：手牌不多于目标时不置不可响应", sup2.ignore === false, sup2);
+  T("② 对照组：手牌不多于目标时不置不可响应", sup2.suppressed === false, sup2);
+  // 对照组必须真的响应掉——否则上面「掉血 / 闪未被消耗」两条就是恒绿，
+  // 只能证明敌方没响应，证明不了压制生效。
+  T("② 对照组：敌方确实用【闪】响应了（闪被消耗、未掉血）",
+    sup2.dodgeLeft === 0 && sup2.foeHpLoss === 0, sup2);
 
   // ③ 并列最多也算全场最多
   const tie = await page.evaluate(tieTpl);

@@ -86,11 +86,13 @@ const suppressTpl = `(() => {
   foe.hand = [];
   const card = { name: "杀（普攻）", type: "slash", suit: "♠" };
   window.PreshiSkills.beforeCardPlayed(st, p, card, foe);
-  const more = !!card.ignoreResponse;
+  // 压制不再写成牌上的 ignoreResponse（会残留到弃牌堆、且群体牌会误压手牌更多的目标），
+  // 改为响应判定时逐目标实时计算，故此处断言判据返回值。
+  const more = window.PreshiSkills.suppressesResponse(st, p, foe, card);
   const card2 = { name: "杀（普攻）", type: "slash", suit: "♠" };
   for (let i = 0; i < 9; i++) foe.hand.push({ name: "闪", type: "basic", suit: "♥" });
   window.PreshiSkills.beforeCardPlayed(st, p, card2, foe);
-  const fewer = !!card2.ignoreResponse;
+  const fewer = window.PreshiSkills.suppressesResponse(st, p, foe, card2);
   foe.hand = [];
   return { more, fewer };
 })()`;
@@ -247,6 +249,9 @@ const entityOnlyTpl = `(() => {
 
   await page.evaluate(setupTpl(5, 3));
   const sup = await page.evaluate(suppressTpl);
+  // 规则层：直接问判据函数（产品代码）要结论，不查牌上的残留标记。
+  // 「目标真的没法响应」的实际效果（掉血、响应牌未被消耗、群体牌逐目标分别判定）
+  // 由 tools/test-preshi-pressure-full-live.js 走真实出牌链路验证。
   T("③ 女王威压：手牌多于目标 → 不可响应", sup.more === true, sup);
   T("③ 女王威压：手牌不多于目标 → 可响应", sup.fewer === false, sup);
 

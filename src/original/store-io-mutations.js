@@ -20,13 +20,18 @@ window.GameStoreIOMutations = deps => {
 
   async function putRawDetailed(key, value, opts = {}) {
     const cloudAvailable = !!window.dzmm?.kv?.put;
-    const savedCloud = cloudAvailable ? await putCloudRaw(key, value, opts) : null;
     // 本地必须总是尝试写入：原先只在云端成功时才写本地，一旦云端故障
     // （无网络 / kv 报错），本地副本就完全没有落盘，玩家进度直接丢失。
     // 两边都写后再由读取侧按 _saveVersion / updatedAt 选取较新的一份，
     // 因此本地写入不会覆盖掉云端的更新进度。
+    //
+    // 本地必须先于云端写入：云端 put 在网络异常时最多挂起若干秒才超时，
+    // 若先 await 云端，本地副本要等云端结束才落盘，这段时间内玩家关掉
+    // 游戏或进程崩溃，就会出现"云端没成功、本地也没写"的丢档窗口。
+    // putLocalRaw 是同步写入，先写本地不增加任何等待。
     const localAttempted = true;
     const savedLocal = localAttempted ? putLocalRaw(key, value) : false;
+    const savedCloud = cloudAvailable ? await putCloudRaw(key, value, opts) : null;
     return {
       key,
       local: { attempted: localAttempted, ok: savedLocal },

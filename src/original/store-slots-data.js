@@ -24,12 +24,17 @@ window.GameStoreSlotsData = ({ main }) => {
     // 玩家看到「保存失败」但数据其实已经写好了。
     // 云端未同步由 requiredCopies 判为 SAVE_PARTIAL（可恢复）单独提示。
     return [group.local, group.cloud].some(copy => !!copy?.attempted && copy.ok); }
+  // 重试时要重新写入上一轮失败的副本：整组复用会让云端失败的存档位永远停留在
+  // SAVE_PARTIAL，retrySlotSave 反复调用也清不掉 pending。
+  function groupSettled(group) { if (!group || group.stale) return !!group?.stale;
+    const attempted = [group.local, group.cloud].filter(copy => !!copy?.attempted);
+    return attempted.length > 0 && attempted.every(copy => copy.ok); }
   function compareMeta(left, right) {
     const version = Number(left?._saveVersion || 0) - Number(right?._saveVersion || 0);
     return version || Number(left?.updatedAt || 0) - Number(right?.updatedAt || 0);
   }
   async function writeSaveTransaction(id, data, previous = null) {
-    let slot = groupSaved(previous?.slot) ? previous.slot : null;
+    let slot = groupSettled(previous?.slot) ? previous.slot : null;
     if (!slot) {
       slot = await putRawDetailed(slotKey(id), data, { flush: true });
       if (!groupSaved(slot)) {
@@ -40,7 +45,7 @@ window.GameStoreSlotsData = ({ main }) => {
         throw error;
       }
     }
-    let mainResults = groupSaved(previous?.main) ? previous.main : null;
+    let mainResults = groupSettled(previous?.main) ? previous.main : null;
     if (!mainResults) {
       try {
         mainResults = await queueMainSave(data, { flush: true });

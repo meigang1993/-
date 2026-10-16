@@ -4,7 +4,8 @@ const crypto = require("crypto");
 const { loadDependency } = require("./repository-toolchain");
 const terser = loadDependency("terser");
 const manifest = require("./publish-bundles.json");
-const { assertRepositoryPublishVersion } = require("./publish-build-version");
+const { assertRepositoryPublishVersion, buildVersion } = require("./publish-build-version");
+const { bumpRepositoryVersion } = require("./publish-version-bump");
 
 // --check 无需重新压缩：源输入不变且磁盘产物哈希与上次一致即可判定 current。
 // 缓存放在仓库之外，避免污染工作区与推送差异。
@@ -15,6 +16,13 @@ const sourceDir = path.join(root, "src", "original");
 const publish = path.join(root, "publish");
 const outputDir = path.join(publish, "bundles");
 const checkOnly = process.argv.includes("--check");
+// 版本校验原本在「产物变了但 meta 没升」时直接抛错退出，构建静默不产出。
+// 这曾让反向验证跑在旧产物上、得出假结论。默认改为自动升版后继续构建；
+// 需要严格模式（例如 CI 里禁止自动改版本号）时用 --no-bump 或 PUBLISH_AUTO_BUMP=0。
+const autoBump =
+  !checkOnly &&
+  !process.argv.includes("--no-bump") &&
+  process.env.PUBLISH_AUTO_BUMP !== "0";
 // 默认内嵌可读源码到 .map（sourcesContent），使 publish 独立部署或仅下载发布包时，
 // DevTools 仍能还原源文件与行号，而不是只能看到单个巨型压缩包的第 2 行。
 // .map 仅在打开 DevTools 时才会被请求，正常玩家不会下载，因此不增加运行时流量。
@@ -162,6 +170,28 @@ function writeAtomic(target, content) {
   fs.renameSync(temporary, target);
 }
 
+// 产物内容与 HEAD 不同但版本号未推进时：自动升版（默认）或照旧抛错。
+// 返回刷新后的 index.html，供后续校验使用。
+function enforceVersionAdvanced(root, outputs, index, checkOnly) {
+  try {
+    assertRepositoryPublishVersion(root, outputs, index);
+  } catch (error) {
+    if (checkOnly || !autoBump || !/bump meta\[name=game-build\]/.test(error.message)) {
+      throw error;
+    }
+    const result = bumpRepositoryVersion(root, buildVersion(index));
+    if (!result.changed) throw error;
+    console.log(
+      `Auto-bumped game-build ${result.previous} -> ${result.next} (${result.summary})`
+    );
+    assertRepositoryPublishVersion(
+      root,
+      outputs,
+      fs.readFileSync(path.join(publish, "index.html"), "utf8")
+    );
+  }
+}
+
 async function main() {
   validateManifest();
   validatePublishBoundary();
@@ -179,7 +209,7 @@ async function main() {
     }
   }
   const index = fs.readFileSync(path.join(publish, "index.html"), "utf8");
-  assertRepositoryPublishVersion(root, outputs, index);
+  enforceVersionAdvanced(root, outputs, index, checkOnly);
   if (checkOnly) {
     if (!cached) {
       const stale = Object.entries(outputs).filter(([name, code]) => {
