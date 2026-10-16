@@ -53,7 +53,6 @@ window.BattleCombatAttackFlow = (api, values) => {
   }
 
   function spendIntent(state, actor, card) {
-    window.OrcDungeonSkills?.beforeIntentCost?.(state, actor, card);
     const noIntent = hasNoIntentCost(actor, card);
     // 本就不消耗杀意的杀牌不应白白吃掉狂战标记：先判定免费，再尝试抵扣。
     const ragePaid = noIntent ? false

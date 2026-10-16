@@ -54,6 +54,9 @@ const expectedCharacters = {
   maria: { attack: 4.8, magic: 5, speed: 6.7, maxHp: 65, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
   sonia: { attack: 4.8, magic: 5, speed: 6.7, maxHp: 62, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
   chiyo: { attack: 3.6, magic: 2.5, speed: 7.8, maxHp: 52, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 1 },
+  // 普雷希（第 31 名）：0 级生命 56、杀意 1、手牌上限 4；摸牌为「基础 2+1」「初始 4+1」，
+  // 与其余角色同口径，基础表内仍记 drawPerTurn 1 / initialDraw 1。
+  preshi: { attack: 4.8, magic: 5, speed: 5.5, maxHp: 56, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
 };
 assert.strictEqual(Object.keys(expectedCharacters).length, GameDataCharacters.length,
   "every character needs a complete initial-stat baseline");
@@ -62,8 +65,11 @@ Object.entries(expectedCharacters).forEach(([id, expected]) => {
 });
 const expectedGrowth = {
   lokar: [140.21, 33.71, 12.25, 14.59], besta_doll: [105.16, 18.73, 32.66, 10.95], manny: [140.21, 29.97, 20.41, 18.24],
-  miller: [186.95, 18.73, 20.41, 14.59], nonoka: [151.90, 11.24, 36.73, 14.59], loki: [210.32, 29.97, 8.16, 10.95],
-  flora: [105.16, 33.71, 12.25, 27.36], wendy: [140.21, 7.49, 32.66, 18.24], cadicis: [163.58, 29.97, 16.32, 14.59],
+  // 洛基与卡迪西斯在 10-10 版随【护母心切】【战场指挥官】一并删除而重分配满级成长
+  // （两人定位统一改为输出：攻击均提升，卡迪西斯魔力下调，洛基体力下调、速度提升），
+  // 详见 update-notice-recent.js 10月10日公告。此表须与该公告口径保持一致。
+  miller: [186.95, 18.73, 20.41, 14.59], nonoka: [151.90, 11.24, 36.73, 14.59], loki: [198.63, 37.45, 8.16, 16.41],
+  flora: [105.16, 33.71, 12.25, 27.36], wendy: [140.21, 7.49, 32.66, 18.24], cadicis: [163.58, 37.45, 8.16, 16.41],
   carlos: [128.53, 26.22, 8.16, 23.71], bertis: [186.95, 26.22, 28.57, 10.95], gerlot: [151.90, 29.97, 8.16, 20.06],
   angelica: [204.48, 37.45, 8.16, 10.95], luka: [198.63, 33.71, 8.16, 18.24], elrana: [186.95, 11.24, 40.82, 16.41],
   little_elrana: [151.90, 18.73, 32.66, 14.59], ace: [163.58, 18.73, 12.25, 20.06], nanali: [128.53, 33.71, 12.25, 16.41],
@@ -71,6 +77,7 @@ const expectedGrowth = {
   catherine: [116.84, 7.49, 32.66, 7.3], hitwell: [140.21, 18.73, 32.66, 18.24], gerda: [222.00, 14.98, 28.57, 18.24],
   hoshino_yi: [151.90, 26.22, 28.57, 16.41], hoshino_kaiichi: [257.06, 11.24, 28.57, 10.95], artina: [116.84, 33.71, 12.25, 21.89],
   maria: [163.58, 22.48, 24.5, 18.24], sonia: [175.27, 26.22, 16.32, 20.06], chiyo: [128.53, 26.22, 8.16, 25.54],
+  preshi: [128.53, 18.73, 32.66, 14.59],
 };
 assert.strictEqual(Object.keys(expectedGrowth).length, GameDataCharacters.length,
   "every character needs a complete growth baseline");
@@ -80,6 +87,18 @@ Object.entries(expectedGrowth).forEach(([id, expected]) => {
     [growth.maxHp, growth.attack, growth.magic, growth.speed],
     expected, `${id} growth balance changed`,
   );
+});
+// 结构性护栏：成长表由统一档位生成，每个值都必须是档位单位的整数倍。
+// 这条不锁定具体数值，因此不会随平衡调整而腐坏；但能捕获手改、复制粘贴或串行写入导致的错值。
+const growthGrid = { maxHp: 5.842, attack: 3.7455, magic: 4.0815, speed: 1.824 };
+Object.entries(CharacterProgression.growth).forEach(([id, growth]) => {
+  Object.entries(growthGrid).forEach(([key, unit]) => {
+    const tier = growth[key] / unit;
+    assert.ok(
+      Math.abs(tier - Math.round(tier)) < 0.02,
+      `${id} 的 ${key} 成长 ${growth[key]} 不在档位网格上（档位 ${tier.toFixed(3)} 非整数）`,
+    );
+  });
 });
 
 const allEnemies = [
@@ -148,18 +167,20 @@ Object.entries(expectedEnemies).forEach(([id, expected]) => {
 (() => {
   const average = (list, key) => list.reduce((sum, item) => sum + item[key], 0) / list.length;
   const difficulties = Object.values(GameDataWorld.difficulties);
+  // 基线重定（2026-10-13「冒险级及以上属性 +20%」后）：冒险级及以上四档随之提高。
+  // 各副本普通级均值未受该调整影响，与旧基线一致，可据此确认敌人基础数值未被改坏。
   const targets = {
     魔国机械工厂: [GameDataMachineFactoryEnemies, [
-      [80, 6, 5, 8], [101, 7, 7, 9], [125, 8, 7, 10], [157, 10, 9, 11], [198, 11, 11, 12],
+      [80, 6, 5, 8], [121, 8, 8, 11], [150, 10, 9, 12], [189, 11, 11, 13], [237, 14, 13, 15],
     ]],
     水下列车: [GameDataUnderwaterTrainEnemies, [
-      [148, 8, 7, 13], [186, 10, 8, 15], [231, 11, 9, 16], [290, 13, 11, 18], [364, 16, 13, 20],
+      [148, 8, 7, 13], [223, 12, 10, 17], [276, 14, 11, 20], [348, 16, 13, 22], [437, 19, 16, 25],
     ]],
     兽人地下城: [GameDataFutureEnemies.orc_dungeon, [
-      [184, 10, 9, 15], [230, 12, 11, 17], [285, 14, 13, 19], [359, 17, 15, 21], [451, 20, 18, 24],
+      [184, 10, 9, 15], [276, 14, 13, 20], [342, 17, 16, 23], [430, 20, 18, 26], [540, 24, 22, 29],
     ]],
     废墟沙城: [GameDataRuinsSandCityEnemies, [
-      [211, 12, 10, 16], [264, 14, 12, 18], [328, 17, 14, 21], [412, 20, 17, 23], [518, 24, 20, 26],
+      [211, 12, 10, 16], [317, 17, 15, 22], [393, 20, 17, 25], [495, 24, 20, 28], [622, 29, 24, 31],
     ]],
   };
   const keys = ["hp", "attack", "magic", "speed"];
@@ -174,6 +195,20 @@ Object.entries(expectedEnemies).forEach(([id, expected]) => {
         assert.ok(Math.abs(actual - expected) <= 1,
           `${dungeon} ${difficulty.name} 平均${keys[k]} 应为 ${expected}±1，实际 ${actual.toFixed(1)}`);
       });
+    });
+  });
+  // 结构性护栏：用倍率比值锁定「冒险级及以上属性 +20%」这一设计意图。
+  // 以相对比值表达，敌人个体数值调整时不会腐坏，只在难度倍率被改动时才报错。
+  const hpRatios = [1.5, 1.86, 2.34, 2.94];
+  Object.entries(targets).forEach(([dungeon, [list]]) => {
+    const scaledHp = index => average(
+      list.map(enemy => GameDataWorld.scaleEnemyStats(enemy, difficulties[index], enemy.type)), "hp",
+    );
+    const base = scaledHp(0);
+    hpRatios.forEach((expected, i) => {
+      const ratio = scaledHp(i + 1) / base;
+      assert.ok(Math.abs(ratio - expected) <= 0.03,
+        `${dungeon} ${difficulties[i + 1].name} 生命倍率 ${ratio.toFixed(3)} 与预期 ${expected} 不符`);
     });
   });
   // 副本间强度递进：平均 HP 逐副本递增
@@ -222,11 +257,13 @@ assert.strictEqual(GameEconomy.relic.smeltGold, 180);
 const difficulties = Object.values(GameDataWorld.difficulties);
 assert.deepStrictEqual(difficulties.map(item => item.reward), [1, 1.35, 1.75, 2.2, 2.75]);
 assert.deepStrictEqual(difficulties.map(item => item.xp), [1, 1.15, 1.35, 1.6, 1.9]);
-assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.hp), [1, 1.25, 1.55, 1.95, 2.45]);
-assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.power), [1, 1.20, 1.42, 1.68, 1.98]);
-assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.12, 1.26, 1.42, 1.58]);
+// 冒险级及以上倍率已于 2026-10-13 起统一 +20%（生命/输出/速度三项同时提高），
+// 见 update-notice-recent.js 10月13日公告。
+assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.hp), [1, 1.5, 1.86, 2.34, 2.94]);
+assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.power), [1, 1.44, 1.7, 2.02, 2.38]);
+assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.34, 1.51, 1.7, 1.9]);
 
-// 难度倍率严格递增（生命 / 输出），速度维持原表，XP 维持原表
+// 难度倍率严格递增（生命 / 输出 / 速度），XP 维持原表
 (() => {
   const hp = difficulties.map(item => item.enemy.normal.hp);
   const power = difficulties.map(item => item.enemy.normal.power);
@@ -235,8 +272,8 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.
   assert.ok(strictlyUp(hp), `难度生命倍率未严格递增: ${hp.join("→")}`);
   assert.ok(strictlyUp(power), `难度输出倍率未严格递增: ${power.join("→")}`);
   assert.ok(strictlyUp(speed), `难度速度倍率未严格递增: ${speed.join("→")}`);
-  assert.strictEqual(difficulties[4].enemy.normal.speed, 1.58,
-    `英雄级速度倍率应为 1.58，实际 ${difficulties[4].enemy.normal.speed}`);
+  assert.strictEqual(difficulties[4].enemy.normal.speed, 1.9,
+    `英雄级速度倍率应为 1.9，实际 ${difficulties[4].enemy.normal.speed}`);
   assert.deepStrictEqual(difficulties.map(item => item.xp), [1, 1.15, 1.35, 1.6, 1.9]);
   // elite / boss 与 normal 同倍率，避免只改了普通档导致精英不跟随
   ["elite", "boss"].forEach(kind => {
@@ -250,10 +287,10 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.
 // attrText 与倍率一致（界面展示不得停留在旧倍率）
 (() => {
   const expected = [
-    ["冒险级", "生命125%/输出120%/速度112%"],
-    ["勇士级", "生命155%/输出142%/速度126%"],
-    ["王者级", "生命195%/输出168%/速度142%"],
-    ["英雄级", "生命245%/输出198%/速度158%/精英与BOSS携带掉落饰品技能"],
+    ["冒险级", "生命150%/输出144%/速度134%"],
+    ["勇士级", "生命186%/输出170%/速度151%"],
+    ["王者级", "生命234%/输出202%/速度170%"],
+    ["英雄级", "生命294%/输出238%/速度190%/精英与BOSS携带掉落饰品技能"],
   ];
   expected.forEach(([name, text]) => {
     const d = difficulties.find(item => item.name === name);
@@ -279,8 +316,9 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.
     return `${character.id}|${levels.join(",")}`;
   }).sort();
   const digest = crypto.createHash("sha256").update(rows.join("\n")).digest("hex");
+  // 摘要变更记录：10-10 洛基/卡迪西斯满级成长重分配、10-14 新增第 31 名角色普雷希。
   assert.strictEqual(digest,
-    "402cdbcf4840d5a237c64afc4f98598f7feeaab6ff4ea8e76da8319cc736fd77",
+    "ad093f2300ebecad6b8d9a917ca32f2c3257ffa9c31c2fc52f12ad20cc02ca78",
     "0～20 级角色成长数据被改动（快照不匹配，若有意调整请更新摘要）");
   const lokar = GameDataCharacters.find(character => character.id === "lokar");
   assert.deepStrictEqual(

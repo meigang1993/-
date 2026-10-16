@@ -112,6 +112,8 @@ const groups = Object.freeze({
     "test-borrow-slash-controlled-partner-live.js",
     "test-lokar-ultimate-and-aoe-intent-live.js",
     "test-aoe-intent-and-borrow-status-live.js",
+    "test-beast-suppression-intent-live.js",
+    "test-notice-1016-and-skill-art-live.js",
     "test-borrow-slash-status-cards-live.js",
     "test-hp-display-clamp-live.js",
     "test-raff-control-eye-cost-live.js",

@@ -78,7 +78,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   check("大招不消耗杀意", r1.intent === 3, `杀意=${r1.intent}`);
   check("战报文案同步为「单体杀牌」", /单体杀牌/.test(r1.log || ""), r1.log || "");
 
-  console.log("\n【二】全体【杀】不消耗杀意");
+  console.log("\n【二】普通实体全体【杀】消耗杀意，转化产物不消耗");
   const r2 = await page.evaluate(() => {
     const st = window.state, b = st.battle;
     const a = b.allies[0];
@@ -106,8 +106,10 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
         { sweep: true, targetless: true, noIntentCost: true, convertedFrom: "闪" }), 2),
     };
   });
-  check("机枪扫杀不消耗杀意", r2.gatling.after === 2, JSON.stringify(r2.gatling));
-  check("流星杀不消耗杀意", r2.meteor.after === 2, JSON.stringify(r2.meteor));
+  // 设定：手牌打出的实体全体【杀】与单体杀一样消耗1点杀意；
+  // 只有转化/技能产物带 noIntentCost 才免费。
+  check("普通实体【机枪扫杀】消耗1点杀意", r2.gatling.after === 1, JSON.stringify(r2.gatling));
+  check("普通实体【流星杀】消耗1点杀意", r2.meteor.after === 1, JSON.stringify(r2.meteor));
   check("对照组：单体【杀（普攻）】仍消耗1点",
     r2.single.after === 1, JSON.stringify(r2.single));
   check("对照组：单体属性杀【火杀】仍消耗1点",

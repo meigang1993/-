@@ -16,8 +16,9 @@ module.exports = ({ assert, unit }) => {
   // 80 → 78：删除洛基「护母心切」与卡迪西斯「战场指挥官」各 1 项。
   assert(GameData.characters.flatMap(template => template.skills || []).length === 80,
     "skill audit must cover all 80 playable-character skills");
-  assert(enemies.flatMap(template => template.skills || []).length === 72,
-    "skill audit must cover all 72 enemy skills");
+  // 72 → 71：删除魔王军猛兽部队「快速装弹」。
+  assert(enemies.flatMap(template => template.skills || []).length === 71,
+    "skill audit must cover all 71 enemy skills");
   assert(relics.length === 30, "relic audit must cover all 30 formal relics");
   const combatRoleNames = new Set([
     "输出", "控制", "辅助/续航", "防御/嘲讽", "成长/资源",
@@ -76,8 +77,9 @@ module.exports = ({ assert, unit }) => {
   const namedActiveSkills = new Map();
   activeSkills.forEach(skill => namedActiveSkills.set(skill.name, skill));
   // 47 → 46：删除卡迪西斯主动技「战场指挥官」（带技能立绘）。
-  assert(namedActiveSkills.size === 46,
-    "skill artwork audit must cover all 46 named active skills");
+  // 46 → 47：新增普雷希主动技「女王榨取」（带技能立绘）。
+  assert(namedActiveSkills.size === 47,
+    `skill artwork audit must cover all 47 named active skills (实际 ${namedActiveSkills.size})`);
   const artOwners = new Map();
   const hashOwners = new Map();
   namedActiveSkills.forEach((skill, name) => {

@@ -1,5 +1,5 @@
 window.OrcCombatSkills = deps => {
-  const { alive, visible, isSlash, singleSlash, entitySingleSlash, fullSlash } = deps;
+  const { alive, visible, singleSlash, entitySingleSlash } = deps;
 
   function witchMove(state, actor) {
     if (actor.ai !== "demon_witch" || actor.usedMagicMissile || actor.magicMissileStopped) return null;
@@ -26,21 +26,12 @@ window.OrcCombatSkills = deps => {
     window.BattleLog.add(state, `${actor.name} 的魔法巡飞弹未造成伤害，本阶段停止继续发动。`);
   }
 
-  function beforeIntentCost(state, actor, card) {
-    if (actor.ai !== "demon_beast_unit" || !isSlash(card)) return;
-    if (actor.beastReloadSuit && actor.beastReloadSuit === card.suit) card.noIntentCost = true;
-    if (!actor.beastReloadUsed && fullSlash(card) && card.suit) {
-      actor.beastReloadUsed = true;
-      actor.beastReloadSuit = card.suit;
-      card.beastReloadTrigger = true;
-      window.BattleLines?.skill(state, actor, "快速装弹");
-      window.BattleLog.add(state, `${actor.name} 触发快速装弹，本回合${card.suit}杀牌不消耗杀意。`);
-    }
-  }
-
-  function noIntentCost(actor, card) {
-    return actor?.ai === "demon_beast_unit" && !card?.beastReloadTrigger
-      && actor.beastReloadSuit && actor.beastReloadSuit === card?.suit && isSlash(card);
+  // 火力压制把单体【杀】转为全体【杀】，技能文本承诺「转化为全体【杀】后不消耗杀意」。
+  // 转化发生在扣杀意之后（攻击流程先 spendIntent 再走 prepareSlash），牌上打标已来不及，
+  // 故提供预判：结算前即可确定这张牌会被压制转化。
+  function suppressionFreeIntent(actor, card) {
+    return actor?.ai === "demon_beast_unit" && singleSlash(card)
+      && !card?._beastSuppressionApplied;
   }
 
   function prepareSlash(state, actor, target, card) {
@@ -64,7 +55,7 @@ window.OrcCombatSkills = deps => {
 
   return {
     witchMove, useMagicMissile, afterMagicMissile,
-    beforeIntentCost, noIntentCost, prepareSlash,
+    suppressionFreeIntent, prepareSlash,
     beforeKillTargeted: prepareSlash,
   };
 };

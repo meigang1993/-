@@ -150,14 +150,6 @@ ElranaAceNanaliSkills.beforeKillTargeted(state, attacker, ace, incoming, { draw:
 assert(draws === 2, "Urgent Escape must trigger once per global turn and work again next turn");
 
 const beast = unit("beast", "enemy", { ai: "demon_beast_unit" });
-const triggerSlash = card("Full Slash", "slash", { suit: "♠", sweep: true });
-OrcDungeonSkills.beforeIntentCost({ battle: {} }, beast, triggerSlash);
-assert(!OrcDungeonSkills.noIntentCost(beast, triggerSlash), "The slash that triggers Quick Reload must still cost intent");
-const laterSlash = card("Later Slash", "slash", { suit: "♠" });
-OrcDungeonSkills.beforeIntentCost({ battle: {} }, beast, laterSlash);
-assert(OrcDungeonSkills.noIntentCost(beast, laterSlash), "Later same-suit slashes must be free after Quick Reload");
-BattleCardCleanup.clearPlayFlags(triggerSlash);
-assert(!triggerSlash.beastReloadTrigger && !CardUtils.copyPlayable({ ...triggerSlash, beastReloadTrigger: true }).beastReloadTrigger, "Quick Reload runtime flags must not leak into reusable cards");
 const suppressionTarget = unit("suppression-target", "ally");
 const virtualSuppression = card("Virtual Suppression", "slash", { virtual: true });
 OrcDungeonSkills.prepareSlash({ battle: {} }, beast, suppressionTarget, virtualSuppression);

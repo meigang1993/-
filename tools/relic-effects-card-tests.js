@@ -59,7 +59,7 @@ function testInvalidatedSlashTracking() {
   const originalUnderwater = window.UnderwaterTrainSkills;
   const originalBondi = window.BondiSkills;
   const originalOrc = window.OrcDungeonSkills;
-  window.OrcDungeonSkills = { beforeIntentCost() {} };
+  window.OrcDungeonSkills = {};
   window.BondiSkills = { cancelKillCard: () => true };
   window.UnderwaterTrainSkills = { prepareKill() { preKillTriggers += 1; } };
   const resolver = BattleCombatResolver({

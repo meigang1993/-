@@ -16,7 +16,7 @@ const eliteCardDefs = [
   { name: "束缚陷阱", price: 1500, type: "obstacle", statusKey: "stun", suits: { "♥": 1, "♦": 1 }, text: "指定1名敌方角色为目标，令其生成1张【眩晕】状态牌。同一角色不能持有多张【眩晕】。【眩晕】带有虚无属性；持有者在判定阶段进行判定，若结果为黑色，跳过本回合出牌阶段；持有者回合结束后消耗该状态牌。" },
   { name: "封印术", price: 1500, type: "obstacle", statusKey: "seal", suits: { "♣": 1, "♠": 1 }, text: "指定1名敌方角色为目标，令其生成1张【封魔】状态牌。同一角色不能持有多张【封魔】。【封魔】带有虚无属性；持有者在判定阶段进行判定，若结果为红色，跳过摸牌阶段，且本回合无法摸牌；持有者回合结束后消耗该状态牌。" },
   { name: "雷杀", price: 900, type: "slash", scale: "attack", shock: true, suits: { "♠": 1, "♦": 1 }, text: "指定一名敌方角色为目标，对其造成等同于你的攻击力的雷属性伤害。若此牌造成生命值伤害，目标获得1层“感电”。" },
-  { name: "机枪扫杀", price: 1000, type: "slash", scale: "attack", sweep: true, targetless: true, responseKind: "dodge", suits: starterSuits, text: "指定所有敌方角色为目标，对其各造成等同于你的攻击力的物理伤害。全体【杀】不消耗杀意。" },
+  { name: "机枪扫杀", price: 1000, type: "slash", scale: "attack", sweep: true, targetless: true, responseKind: "dodge", suits: starterSuits, text: "指定所有敌方角色为目标，对其各造成等同于你的攻击力的物理伤害。使用此牌需消耗1点杀意。" },
   { name: "无谋冲拳", price: 300, type: "response", reckless: true, suits: { "♠": 1, "♥": 1 }, text: "准备阶段，你可以打出此牌，随机指定一名敌方角色为目标，对其造成等同于你的攻击力的物理伤害。此牌视为响应牌，不触发“使用牌”类技能。" },
   { name: "物资补给", price: 400, type: "consume", drawTeam: 2, targetless: true, suits: starterSuits, text: "所有友方角色各摸2张牌。" },
   { name: "刺杀", price: 500, type: "slash", scale: "attack", assassinate: true, suits: { "♠": 1, "♣": 1 }, text: "指定一名敌方角色为目标，弃置其1张手牌，然后对其造成等同于你的攻击力的物理伤害。" },

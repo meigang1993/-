@@ -178,13 +178,15 @@ const missileTpl = (targetHand) => `(() => {
     `速度=${s.speed} 手牌上限=${s.handLimit} 杀意=${s.bloodlust} ` +
     `每回合摸牌=${s.drawPerTurn} 初始摸牌=${s.initialDraw}`);
   console.log(`[英雄级饰品] ${JSON.stringify(s.relics)}`);
-  T("英雄级：生命值 = ceil(240 × 2.45) = 588", s.hp === 588, s);
-  T("英雄级：攻击力 = round(11 × 1.98) = 22", s.attack === 22, s);
-  T("英雄级：魔力 = round(10 × 1.98) = 20", s.magic === 20, s);
-  T("英雄级：速度 = round(14 × 1.58) = 22", s.speed === 22, s);
+  // 期望值随「冒险级及以上难度属性 +20%」更新：英雄级倍率由
+  // hp 2.45 / power 1.98 / speed 1.58 提升为 2.94 / 2.38 / 1.90。
+  T("英雄级：生命值 = ceil(240 × 2.94) = 706", s.hp === 706, s);
+  T("英雄级：攻击力 = round(11 × 2.38) = 26", s.attack === 26, s);
+  T("英雄级：魔力 = round(10 × 2.38) = 24", s.magic === 24, s);
+  T("英雄级：速度 = round(14 × 1.90) = 27", s.speed === 27, s);
   T("英雄级：手牌上限不参与缩放，仍为 5", s.handLimit === 5, s);
   T("英雄级：杀意上限不参与缩放，仍为 1", s.bloodlust === 1, s);
-  T("英雄级：stats.attack 已同步为 22（伤害实际读取的字段）", s.statsAttack === 22, s);
+  T("英雄级：stats.attack 已同步为 26（伤害实际读取的字段）", s.statsAttack === 26, s);
   T("英雄级：每回合摸牌加值不参与缩放，仍为 3", s.drawPerTurn === 3, s);
   T("英雄级：初始摸牌加值不参与缩放，仍为 2", s.initialDraw === 2, s);
   T("英雄级：实际每回合摸牌 = 2 + 3 = 5", s.realTurnDraw === 5, s);
@@ -218,7 +220,7 @@ const missileTpl = (targetHand) => `(() => {
   T("战场扫射（英雄级）：伤害量等于该难度下的攻击力（随缩放变化）",
     dealtNonZero.length === (play.dealt || []).length
     && dealtNonZero.every(d => d === play.attack), play);
-  T("战场扫射（英雄级）：英雄级攻击力为 22（非普通级 11）", play.attack === 22, play);
+  T("战场扫射（英雄级）：英雄级攻击力为 26（非普通级 11）", play.attack === 26, play);
 
   // ===== 战场扫射：英雄级也不受限次 =====
   await page.evaluate(setupTpl({}));
@@ -248,7 +250,7 @@ const missileTpl = (targetHand) => `(() => {
   const propNonZero = (propE.dealt || []).filter(d => d > 0);
   T("螺旋桨（英雄级敌方）：伤害等于该难度下的攻击力（随缩放变化）",
     propNonZero.length === 1 && propNonZero.every(d => d === propE.attack), propE);
-  T("螺旋桨（英雄级敌方）：英雄级攻击力为 22（非普通级 11）", propE.attack === 22, propE);
+  T("螺旋桨（英雄级敌方）：英雄级攻击力为 26（非普通级 11）", propE.attack === 26, propE);
 
   // ===== 导弹发射器：英雄级敌人携带 =====
   await page.evaluate(setupTpl({}));

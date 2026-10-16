@@ -63,12 +63,14 @@ const goldTpl = (missionId, difficultyId, type, n) => `(() => {
     console.log(`  机械AI龙 普通 hp=${dragonStats.normal.hp} atk=${dragonStats.normal.attack}`);
     console.log(`  机械AI龙 勇士 hp=${dragonStats.warrior.hp} atk=${dragonStats.warrior.attack}`);
     console.log(`  机械AI龙 英雄 hp=${dragonStats.hell.hp} atk=${dragonStats.hell.attack}`);
-    T("难度倍率生效：勇士级 HP = ceil(430×1.55) = 667",
-      dragonStats.warrior.hp === 667, { hp: dragonStats.warrior.hp });
-    T("难度倍率生效：英雄级 HP = ceil(430×2.45) = 1054",
-      dragonStats.hell.hp === 1054, { hp: dragonStats.hell.hp });
-    T("难度倍率生效：英雄级 攻击 = round(16×1.98) = 32",
-      dragonStats.hell.attack === 32, { atk: dragonStats.hell.attack });
+    // 期望随「冒险级及以上难度属性 +20%」更新：勇士级 hp 1.55→1.86、
+    // 英雄级 hp 2.45→2.94、power 1.98→2.38。
+    T("难度倍率生效：勇士级 HP = ceil(430×1.86) = 800",
+      dragonStats.warrior.hp === 800, { hp: dragonStats.warrior.hp });
+    T("难度倍率生效：英雄级 HP = ceil(430×2.94) = 1265",
+      dragonStats.hell.hp === 1265, { hp: dragonStats.hell.hp });
+    T("难度倍率生效：英雄级 攻击 = round(16×2.38) = 38",
+      dragonStats.hell.attack === 38, { atk: dragonStats.hell.attack });
     T("普通级为基值 430", dragonStats.normal.hp === 430, { hp: dragonStats.normal.hp });
   } else {
     T("抽到机械AI龙用于难度对比", false, { got: Object.keys(dragonStats) });

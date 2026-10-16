@@ -7,7 +7,11 @@ module.exports = ({
     const allyFemale = unit(`female-${def.flags[0]}`, "ally", {
       gender: "female",
     });
-    const enemy = unit(`enemy-${def.flags[0]}`, "enemy");
+    // require:"hand" 的技能（狙击目标）要求目标持有可见手牌，默认空手会被判为不可指定。
+    const enemy = unit(`enemy-${def.flags[0]}`, "enemy",
+      def.require === "hand"
+        ? { hand: [{ name: "杀（普攻）", type: "slash", suit: "♠" }] }
+        : {});
     const battle = {
       phase: def.prepare ? 1 : 4,
       activeUid: actor.uid,

@@ -656,7 +656,6 @@ gameplay values and behavior remain here rather than being duplicated in
 - 诺诺卡的每回合摸牌数固定为基础`2`加角色加成`2`，初始摸牌数固定为基础`4`加角色加成`1`。
 - 艾伦格的`计算下注` resets intent to the current intent maximum, including temporary maximum bonuses. `战斗演练` moves the resolved original card if another effect returned it to hand before the transfer choice; it must never duplicate that card.
 - 艾斯的`急逃` is limited once per global character turn, not once per 艾斯 turn. It may trigger again when the next unit's turn begins.
-- 魔王军魔兽部队的`快速装弹` does not make the full-target Slash that first triggers it free. Only later same-suit Slashes during that turn consume no intent.
 - `索敌雷达` doubles every damage instance of a matching-suit multi-hit Slash while logging the lock trigger once for that card.
 - 机甲牛头怪攻击力固定为4；`铁甲红怒`的防守判定为黑色时不再获得护甲，而是防止该【杀】对机甲牛头怪造成的全部伤害，且机甲牛头怪无需为这次已被防止的伤害使用【闪】；其进攻判定仍以红色为成功，成功时目标不能打出【闪】抵消该【杀】。
 - 机械哥布林与骷髅巡逻机攻击力固定为3；机器魅魔攻击力固定为3、魔力固定为4；机甲牛头怪攻击力固定为4。机械工厂保持新手副本的低速度和低输出定位，但恢复技能感知耐久并随更高角色速度成长上调先手值；再生、伤害翻倍、连斩、防御系统等技能按实际效果分配个体面板，不设置多段、连锁、群攻或高难首回合爆发上限。

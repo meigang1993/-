@@ -7,10 +7,6 @@ window.BattleAISlashPlanner = (() => {
   function bestSlash(actor, hand, target) {
     const slashes = hand.filter(isKill);
     const score = card => slashScore(actor, card, target);
-    if (actor.ai === "demon_beast_unit" && actor.beastReloadSuit) {
-      return topBy(slashes.filter(card => card.suit === actor.beastReloadSuit), score)
-        || topBy(slashes, score);
-    }
     if (actor.ai === "shark_pirate_submarine") {
       return topBy(slashes.filter(card => card.suit === "♠" || card.suit === "♣"), score)
         || topBy(slashes, score);
