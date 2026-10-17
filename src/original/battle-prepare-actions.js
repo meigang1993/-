@@ -55,11 +55,6 @@ function chooseWendyTutorCard(name) {
   if (!state.battle?.wendyTutorPicker || state.battle.wendyTutorPicker.cardName) return;
   if (WendyCadicisSkills.chooseTutorCard(state, name)) render();
 }
-function chooseWendyTutorTarget(uid) {
-  if (!state.battle?.wendyTutorPicker?.cardName) return;
-  if (!WendyCadicisSkills.chooseTutorCard(state, null, uid)) return;
-  BattleSystem.checkEnd(state); render(); setTimeout(() => persist({ battleOperation: true }), 0);
-}
 function chooseAilengDrillTarget(uid) {
   if (!state.battle?.ailengDrillPicker) return;
   if (!GuestCharacterSkills.resolveBattleDrill(state, uid)) return;

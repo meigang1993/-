@@ -4,9 +4,16 @@ window.BattleActionTargetBindings = (() => {
       && (window.MannySkills?.dimensionTransferVisible?.(battle) ?? true)) {
       return ["dimensionTransfer", battle.dimensionTransfer];
     }
-    const key = ["millerShare", "newMoonShare", "kaiichiShare", "gerdaComfort"]
+    const key = ["millerShare", "newMoonShare", "kaiichiShare", "gerdaComfort",
+      "ailengDrillPicker", "catherineStealPicker"]
       .find(name => battle?.[name]);
-    return key ? [key, battle[key]] : null;
+    if (key) return [key, battle[key]];
+    // 解答迷惑：选牌名阶段仍需要弹窗（从牌库选，不在手牌区），
+    // 选定后进入交牌环节，改为点击角色交出。
+    if (battle?.wendyTutorPicker?.cardName) {
+      return ["wendyTutorPicker", battle.wendyTutorPicker];
+    }
+    return null;
   }
 
   function bindTargetActions() {

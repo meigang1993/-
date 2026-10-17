@@ -60,7 +60,8 @@ const setupTpl = `(() => {
   return { ok: true, allies: b.allies.length, foes: b.enemies.length };
 })()`;
 
-// 窃取：打出后应弹出「选择接收队友」面板（含放弃按钮），且敌方手牌尚未变动
+// 窃取：打出后应进入「已指定敌方角色、等待点击我方角色」阶段（提示条 + 放弃按钮），
+// 居中选人弹窗已删除，且敌方手牌尚未变动
 const stealOpenTpl = `(() => {
   const st = window.state, b = st.battle;
   const c = b.allies[0], foe = b.enemies[0];
@@ -73,8 +74,11 @@ const stealOpenTpl = `(() => {
   return { handled, foeBefore, foeAfter: foe.hand.length,
     picker: !!b.catherineStealPicker, locked: !!b.locked,
     hasPopup: !!el, text: el?.innerText || "",
+    promptText: document.querySelector(".dimension-prompt")?.textContent || "",
     hasReceiver: !!document.querySelector("[data-catherine-receiver]"),
     hasSkip: !!document.querySelector("[data-catherine-receiver-skip]"),
+    selectable: [...document.querySelectorAll("[data-target].selectable-target")]
+      .map(n => n.dataset.target),
     logs: (st.log || []).slice(0, 3).map(String) };
 })()`;
 
@@ -440,9 +444,10 @@ const speechReadTpl = `(() => {
   // ── 窃取 ──
   const open = await page.evaluate(stealOpenTpl);
   T("窃取：打出后进入选择流程", open.handled === true, open);
-  T("窃取：弹出选择接收队友面板", open.hasPopup === true, open);
-  T("窃取：面板含接收队友按钮", open.hasReceiver === true, open);
-  T("窃取：面板含放弃发动按钮", open.hasSkip === true, open);
+  T("窃取：不再弹出居中选人窗口", open.hasPopup === false, open);
+  T("窃取：改用提示条引导点击我方角色",
+    /点击一名我方角色/.test(open.promptText), open);
+  T("窃取：提示条含放弃发动按钮", open.hasSkip === true, open);
   T("窃取：未选择前敌方手牌未变动", open.foeBefore === open.foeAfter, open);
 
   const chosen = await page.evaluate(chooseReceiverTpl);

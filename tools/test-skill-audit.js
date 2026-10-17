@@ -151,12 +151,18 @@ assert(draws === 2, "Urgent Escape must trigger once per global turn and work ag
 
 const beast = unit("beast", "enemy", { ai: "demon_beast_unit" });
 const suppressionTarget = unit("suppression-target", "ally");
+// 火力压制已收窄为只认【杀（普攻）】：虚拟杀与转化来的单体杀不再被转换。
+// （旧断言要求二者都被转换，与新口径冲突，属过期断言。）
 const virtualSuppression = card("Virtual Suppression", "slash", { virtual: true });
 OrcDungeonSkills.prepareSlash({ battle: {} }, beast, suppressionTarget, virtualSuppression);
-assert(virtualSuppression.sweep && virtualSuppression.name === "机枪扫杀", "Fire Suppression must convert virtual single Slashes");
+assert(!virtualSuppression.sweep, "Fire Suppression must reject virtual Slashes");
 const convertedSuppression = card("Converted Suppression", "slash", { convertedFrom: "闪" });
 OrcDungeonSkills.prepareSlash({ battle: {} }, beast, suppressionTarget, convertedSuppression);
-assert(convertedSuppression.sweep && convertedSuppression.name === "机枪扫杀", "Fire Suppression must convert converted single Slashes");
+assert(!convertedSuppression.sweep, "Fire Suppression must reject converted Slashes");
+const plainSuppression = card("杀（普攻）", "slash");
+OrcDungeonSkills.prepareSlash({ battle: {} }, beast, suppressionTarget, plainSuppression);
+assert(plainSuppression.sweep && plainSuppression.name === "机枪扫杀",
+  "Fire Suppression must convert 杀（普攻）");
 const cerberus = unit("cerberus", "enemy", { ai: "demon_mecha_cerberus" });
 const virtualTriple = card("Virtual Triple", "slash", { virtual: true });
 OrcDungeonSkills.prepareSlash({ battle: {} }, cerberus, suppressionTarget, virtualTriple);

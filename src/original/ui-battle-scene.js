@@ -69,9 +69,14 @@ window.GameUIBattleScene = (U, I) => {
       .includes(battle.handReveal?.mode);
     const handSharing = visible.kaiichiVisible || visible.responsibilityVisible
       || visible.dimensionVisible || borrowChoice;
+    // 交牌类（艾伦格战斗演练、温蒂解答迷惑选定牌名后、凯瑟琳窃取指定敌方后）
+    // 改为点击队友/我方角色交出，需要放开我方单位行的点击，
+    // 否则 .battle-locked 会让整行 pointer-events:none，点了完全没反应。
+    const allyPicking = !!battle.ailengDrillPicker || !!battle.wendyTutorPicker?.cardName
+      || !!battle.catherineStealPicker;
     const headshotPending = battle.judgement?.skill === "爆头一击"
       || battle.animQueue?.some(event => event.type === "judgement" && event.skill === "爆头一击");
-    return `${battle.locked ? "battle-locked" : ""} ${headshotPending ? "headshot-pending" : ""} ${visible.dimensionVisible ? "dimension-transfering" : ""} ${visible.guardVisible ? "ophelia-guarding" : ""} ${battle.gerdaComfort ? "gerda-comforting" : ""} ${visible.kaiichiVisible ? "kaiichi-sharing" : ""} ${visible.reactionPending ? "reaction-prompt-pending" : ""} ${handSharing ? "hand-sharing" : ""} ${battle.manualDodge || battle.manualCounter || battle.counterTrigger || battle.recklessPrompt || battle.risaEyePrompt || battle.landmineRpsPrompt || ["magicBullet", "magicBulletReveal"].includes(battle.handReveal?.mode) ? "manual-dodge-active" : ""}`;
+    return `${battle.locked ? "battle-locked" : ""} ${headshotPending ? "headshot-pending" : ""} ${visible.dimensionVisible ? "dimension-transfering" : ""} ${visible.guardVisible ? "ophelia-guarding" : ""} ${battle.gerdaComfort ? "gerda-comforting" : ""} ${visible.kaiichiVisible ? "kaiichi-sharing" : ""} ${visible.reactionPending ? "reaction-prompt-pending" : ""} ${handSharing ? "hand-sharing" : ""} ${allyPicking ? "ally-picking" : ""} ${battle.manualDodge || battle.manualCounter || battle.counterTrigger || battle.recklessPrompt || battle.risaEyePrompt || battle.landmineRpsPrompt || ["magicBullet", "magicBulletReveal"].includes(battle.handReveal?.mode) ? "manual-dodge-active" : ""}`;
   }
   function skillCaption(battle) {
     const captions = battle.skillCaptions || (battle.skillCaption ? [battle.skillCaption] : []);

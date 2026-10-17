@@ -14,27 +14,15 @@ window.BattleActionSpecialBindings = (() => {
         chooseWendyTutorCard(button.dataset.wendyTutorCard);
       };
     });
-    document.querySelectorAll("[data-wendy-tutor-target]").forEach(button => {
-      button.onpointerdown = event => {
-        event.preventDefault();
-        event.stopPropagation();
-        chooseWendyTutorTarget(button.dataset.wendyTutorTarget);
-      };
-    });
-    document.querySelectorAll("[data-aileng-drill-target]").forEach(button => {
-      button.onpointerdown = event => {
-        event.preventDefault();
-        event.stopPropagation();
-        chooseAilengDrillTarget(button.dataset.ailengDrillTarget);
-      };
-    });
-    document.querySelectorAll("[data-catherine-receiver]").forEach(button => {
-      button.onpointerdown = event => {
-        event.preventDefault();
-        event.stopPropagation();
-        chooseCatherineReceiver(button.dataset.catherineReceiver);
-      };
-    });
+    // 解答迷惑选定牌名后的交人弹窗已删除：改为点击角色交出（见
+    // battle-action-share-selection.js 的 resolveWendyTutor），
+    // 故不再绑定 [data-wendy-tutor-target] 按钮。
+    // 战斗演练的居中选人弹窗已删除：交牌改为提示条 + 点击队友（见
+    // battle-action-share-selection.js 的 resolveAilengDrill），
+    // 故不再绑定 [data-aileng-drill-target] 按钮。
+    // 窃取的接收队友弹窗已删除：改为点击我方角色（见
+    // battle-action-share-selection.js 的 resolveCatherineSteal），
+    // 故不再绑定 [data-catherine-receiver] 按钮，仅保留「放弃」。
     document.querySelector("[data-catherine-receiver-skip]")?.addEventListener(
       "pointerdown",
       event => {

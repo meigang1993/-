@@ -49,15 +49,17 @@ const setupTpl = `(() => {
   });
   b.enemies.forEach((u, i) => {
     u.hp = i === 0 ? 100 : 90; u.maxHp = 100; u.block = 0;
-    u.hand = [
+    // 1 号敌人刻意空手：验证选目标阶段就被排除，点了不会静默失败
+    u.hand = i === 0 ? [
       { name: "杀", type: "slash", suit: "♥", scale: "attack" },
       { name: "闪", type: "response", suit: "♠" },
-    ];
+    ] : [];
     u.hand.forEach(x => { delete x._pendingDraw; });
   });
   st.log = [];
   window.render();
-  return { ok: true, foeUid: b.enemies[0].uid, allies: b.allies.length };
+  return { ok: true, foeUid: b.enemies[0].uid, emptyFoeUid: b.enemies[1]?.uid || null, selfUid: b.allies[0].uid,
+    allies: b.allies.length };
 })()`;
 
 const dumpTpl = `(() => {
@@ -66,7 +68,10 @@ const dumpTpl = `(() => {
     selectedIndex: b.selectedCardIndex, pendingTargetUid: b.pendingTargetUid || null,
     picker: !!b.catherineStealPicker, locked: !!b.locked,
     used: !!b.allies[0].usedCatherineSteal,
-    hasReceiver: !!document.querySelector("[data-catherine-receiver]") };
+    hasReceiver: !!document.querySelector("[data-catherine-receiver]"),
+    promptText: document.querySelector(".dimension-prompt")?.textContent || "",
+    selectable: [...document.querySelectorAll("[data-target].selectable-target")]
+      .map(node => node.dataset.target) };
 })()`;
 
 (async () => {
@@ -92,35 +97,45 @@ const dumpTpl = `(() => {
   T("点击技能后进入待选目标状态（尚未弹出接收队友面板）",
     afterSkill.picker === false, afterSkill);
   T("待选目标时尚未确定敌方目标", afterSkill.pendingTargetUid === null, afterSkill);
+  // 窃取要「拿敌方一张手牌」，无牌敌人点了只能静默失败（与狙击目标同一口径），
+  // 故在选目标阶段就该排除，而不是等点了再无反应。
+  T("持牌敌方角色可选", (afterSkill.selectable || []).includes(setup.foeUid),
+    afterSkill);
+  T("空手牌敌方角色不可选",
+    !(afterSkill.selectable || []).includes(setup.emptyFoeUid), afterSkill);
 
-  // 2) 点击敌方单位 → 应弹出「选择接收队友」面板（说明真的走了选敌方角色流程）
+  // 2) 点击敌方单位 → 进入接收者选择阶段（不再弹居中窗口，改为提示条）
   await page.locator(`[data-target="${setup.foeUid}"]`).first().click();
   // BattleEffects.choose 带动画并异步确认出牌，固定 sleep 会采到中间态
-  // （pendingTargetUid 已设定、面板尚未渲染）。改为等面板真正出现。
+  // （pendingTargetUid 已设定、picker 尚未置位）。改为等阶段真正切换。
   await page.waitForFunction(
     () => !!window.state.battle?.catherineStealPicker, null, { timeout: 8000 })
     .catch(() => {});
-  // 面板状态与 DOM 渲染之间还差一次 render，直接 evaluate 会采到空 DOM。
-  await page.waitForSelector("[data-catherine-receiver]", { timeout: 8000 })
+  // 提示条与可选高亮都在 render 之后才落到 DOM，固定 sleep 会采到出牌前的旧界面
+  // （表现为敌人仍被标成可选、提示条为空）。改为等提示条真正出现。
+  await page.waitForFunction(
+    () => !!document.querySelector(".dimension-prompt"), null, { timeout: 8000 })
     .catch(() => {});
   const afterFoe = await page.evaluate(dumpTpl);
-  T("点击敌方角色后弹出接收队友选择面板",
+  T("点击敌方角色后进入接收者选择阶段",
     afterFoe.picker === true, afterFoe);
-  T("面板渲染出队友选项",
-    afterFoe.hasReceiver === true, afterFoe);
+  T("不再弹出居中选人窗口", afterFoe.hasReceiver === false, afterFoe);
+  T("改用提示条引导点击我方角色",
+    /点击一名我方角色/.test(afterFoe.promptText), afterFoe);
 
-  // 3) 选择接收队友 → 打开敌方手牌供挑一张
+  // 3) 改为直接点击我方角色 → 打开敌方手牌供挑一张
   const mateUid = await page.evaluate(`(() => {
     const b = window.state.battle;
     const mate = b.allies.find((u, i) => i > 0 && u.hp > 0);
     return mate?.uid || null;
   })()`);
-  // 面板缺失时直接 click 会等 30s 超时并抛错，掩盖真实失败原因；先等再点。
-  await page.waitForSelector(`[data-catherine-receiver="${mateUid}"]`, { timeout: 5000 })
-    .catch(() => {});
-  await page.locator(`[data-catherine-receiver="${mateUid}"]`).first()
+  T("我方其他角色被标为可选", (afterFoe.selectable || []).includes(mateUid), afterFoe);
+  T("凯瑟琳自己不可作为接收者",
+    !(afterFoe.selectable || []).includes(setup.selfUid), afterFoe);
+  await page.locator(`[data-target="${mateUid}"]`).first()
     .click({ timeout: 5000 }).catch(() => {});
-  await page.waitForTimeout(150);
+  await page.waitForFunction(() => !!window.state.battle?.handReveal, null,
+    { timeout: 8000 }).catch(() => {});
   const afterMate = await page.evaluate(`(() => {
     const b = window.state.battle;
     return { reveal: !!b.handReveal, mode: b.handReveal?.mode || null,
@@ -148,6 +163,26 @@ const dumpTpl = `(() => {
   T("转移成功", moved.ok === true, moved);
   T("敌方手牌减少 1 张", moved.foeAfter === moved.before.foe - 1, moved);
   T("队友手牌增加 1 张", moved.mateAfter === moved.before.mate + 1, moved);
+
+  // 5) 回合流转必须清空接收者 picker：否则残留的 picker 会在下一回合劫持玩家
+  //    对我方角色的点击（误触发转移），且 battle.locked 残留会让界面变灰。
+  const stale = await page.evaluate(`(() => {
+    const st = window.state, b = st.battle;
+    b.animQueue = [];
+    b.catherineStealPicker = { actorUid: b.allies[0].uid, targetUid: b.enemies[0].uid };
+    b.locked = true;
+    window.render();
+    const before = { picker: !!b.catherineStealPicker, locked: !!b.locked };
+    window.BattleTurnState.cleanupPrompts(b);
+    window.render();
+    return { before, picker: !!b.catherineStealPicker, locked: !!b.locked,
+      prompt: !!document.querySelector(".dimension-prompt") };
+  })()`);
+  T("回合流转前 picker 与锁定确实存在（前提）",
+    stale.before.picker === true && stale.before.locked === true, stale);
+  T("回合流转清空窃取接收者 picker", stale.picker === false, stale);
+  T("回合流转解除因 picker 残留的界面锁定", stale.locked === false, stale);
+  T("回合流转后不再显示交牌提示条", stale.prompt === false, stale);
 
   T("页面无 JS 错误", errors.filter(t => !/favicon|ResizeObserver/.test(t)).length === 0,
     errors.slice(0, 3));

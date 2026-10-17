@@ -6,15 +6,32 @@ window.WendySkills = (() => {
   const line = (state, unit, name, target) =>
     window.BattleLines?.skill(state, unit, name, target);
 
+  const sameSideUnits = (battle, actor) => battle?.allies.concat(battle.enemies || [])
+    .filter(unit => unit.side === actor.side) || [];
+
   function tutor(state, actor) {
     if (actor.usedWendyTutor) return true;
     actor.usedWendyTutor = true;
-    state.battle.wendyTutorPicker = { uid: actor.uid };
-    state.battle.locked = true;
-    line(state, actor, "解答迷惑");
-    window.BattleLog.add(state,
-      `${actor.name} 打开战术牌图鉴，等待选择临时战术牌。`);
-    return true;
+    // 阵营保护：只有我方（玩家侧）才开选牌弹窗，敌方拿到该技能时自动完成，
+    // 否则界面会锁定并等待玩家替敌人选牌（与战斗演练、窃取同一口径）。
+    if (actor.side === "ally") {
+      state.battle.wendyTutorPicker = { uid: actor.uid };
+      state.battle.locked = true;
+      line(state, actor, "解答迷惑");
+      window.BattleLog.add(state,
+        `${actor.name} 打开战术牌图鉴，等待选择临时战术牌。`);
+      return true;
+    }
+    return autoTutor(state, actor);
+  }
+
+  function autoTutor(state, actor) {
+    const picked = tutorPool(state)[0];
+    if (!picked) {
+      actor.usedWendyTutor = false;   // 无可用的战术牌时退回，不浪费本回合次数
+      return false;
+    }
+    return grantTutorCard(state, actor, picked, actor);   // 台词由 grantTutorCard 统一播
   }
 
   function tutorPool(state) {
@@ -54,8 +71,14 @@ window.WendySkills = (() => {
     }
     const picked = tutorPool(state).find(card => card.name === picker.cardName);
     const target = targetUid
-      ? battle.allies.find(unit => unit.uid === targetUid && alive(unit)) : actor;
+      ? sameSideUnits(battle, actor)
+        .find(unit => unit.uid === targetUid && alive(unit)) : actor;
     if (!picked || !target || target.side !== actor.side) return false;
+    return grantTutorCard(state, actor, picked, target);
+  }
+
+  function grantTutorCard(state, actor, picked, target) {
+    const battle = state.battle;
     const card = tempCard(picked);
     const self = target.uid === actor.uid;
     battle.wendyTutorPicker = null;

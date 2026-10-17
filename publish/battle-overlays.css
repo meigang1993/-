@@ -66,7 +66,7 @@
 }
 
 .battle-locked:not(.manual-dodge-active):not(.headshot-pending):not(.hand-sharing):not(.reaction-prompt-pending) > :not(.battle-retreat):not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel):not(.defeat-popup):not(.reward-popup):not(.dimension-prompt):not(.manual-dodge-overlay):not(.armory-popup):not(.hand-reveal-overlay):not(.reveal-popup):not(.clash-popup):not(.judgement-popup):not(.unit-row) { filter: grayscale(.85) brightness(.55); pointer-events: none; }
-.battle-locked:not(.dimension-transfering):not(.ophelia-guarding):not(.manual-dodge-active):not(.headshot-pending):not(.kaiichi-sharing):not(.reaction-prompt-pending) .unit-row { filter: grayscale(.85) brightness(.55); pointer-events: none; }
+.battle-locked:not(.dimension-transfering):not(.ophelia-guarding):not(.manual-dodge-active):not(.headshot-pending):not(.kaiichi-sharing):not(.ally-picking):not(.reaction-prompt-pending) .unit-row { filter: grayscale(.85) brightness(.55); pointer-events: none; }
 .battle-locked:not(.manual-dodge-active):not(.hand-sharing):not(.reaction-prompt-pending) > :not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel):not(.defeat-popup):not(.reward-popup):not(.dimension-prompt):not(.manual-dodge-overlay):not(.armory-popup):not(.hand-reveal-overlay):not(.reveal-popup) button:not([data-retreat]):not([data-return-hall]):not([data-reward-confirm]) { opacity: .35; }
 .battle-locked.reaction-prompt-pending > :not(.battle-retreat):not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel) { pointer-events: none; }
 .battle-locked.reaction-prompt-pending .hand-panel.locked { opacity: 1; }
@@ -81,6 +81,10 @@
 .battle-locked.kaiichi-sharing > .dimension-prompt { filter: none; opacity: 1; pointer-events: auto; }
 .battle-locked.kaiichi-sharing > .hand-panel button,
 .battle-locked.kaiichi-sharing > .dimension-prompt button { opacity: 1; }
+/* 交牌类（战斗演练 / 解答迷惑）改为提示条 + 点击队友：解锁我方单位行的点击 */
+.battle-locked.ally-picking > .ally-row,
+.battle-locked.ally-picking > .dimension-prompt { filter: none; opacity: 1; pointer-events: auto; }
+.battle-locked.ally-picking > .dimension-prompt button { opacity: 1; }
 .battle-screen.battle-locked.gerda-comforting:not(.dimension-transfering):not(.ophelia-guarding):not(.manual-dodge-active):not(.kaiichi-sharing) > .ally-row,
 .battle-locked.gerda-comforting > .dimension-prompt { filter: none; opacity: 1; pointer-events: auto; }
 .defeat-popup { position: absolute; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(5,0,10,.72); backdrop-filter: blur(4px); pointer-events: auto; }

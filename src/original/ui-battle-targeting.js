@@ -40,6 +40,9 @@ window.GameUIBattleTargeting = (() => {
     const gerdaComfort = battle.gerdaComfort;
     const kaiichiShare = battle.kaiichiShare;
     const millerShare = battle.millerShare;
+    const ailengDrill = battle.ailengDrillPicker;
+    const catherineSteal = battle.catherineStealPicker;
+    const tutorReady = !!battle.wendyTutorPicker?.cardName;
     const millerOwner = millerShare
       && battle.allies.find(unit => unit.uid === millerShare.unitUid);
     const millerReady = !!millerShare?.cards?.length
@@ -51,6 +54,14 @@ window.GameUIBattleTargeting = (() => {
       && unitData.uid !== gerdaComfort.unitUid;
     else if (millerShare) allowed = millerReady
       && unitData.side === "ally" && unitData.uid !== millerShare.unitUid;
+    // 战斗演练：交牌类不再弹窗，改为直接点击队友交出，故队友须标成可选。
+    else if (ailengDrill) allowed = unitData.side === "ally" && unitData.hp > 0
+      && unitData.uid !== ailengDrill.actorUid;
+    // 解答迷惑选定牌名后同样改为点击角色交出（点自己＝加入自己手牌）。
+    else if (tutorReady) allowed = unitData.side === "ally" && unitData.hp > 0;
+    // 窃取：已点过敌方角色后，接收者改为直接点击我方其他角色（弹窗已删除）。
+    else if (catherineSteal) allowed = unitData.side === "ally" && unitData.hp > 0
+      && unitData.uid !== catherineSteal.actorUid;
     else if (share) allowed = (share.indexes || []).length === share.count
       && unitData.side === "ally" && unitData.uid !== share.unitUid;
     else if (card?.mimicVoice) allowed = unitData.uid !== battle.activeUid;
@@ -75,6 +86,11 @@ window.GameUIBattleTargeting = (() => {
     // 故在选目标阶段就排除空手牌的敌方角色，与窃取(stealCard)同一口径。
     else if (card?.artinaSniper || card?.ruinsSnipe) allowed = unitData.side === "enemy"
       && unitData.hp > 0 && hasVisibleHand(unitData);
+    // 【窃取】指定敌方角色时同样要求其持有手牌：无牌目标点了会静默失败
+    // （handleSpecialCard 在 visible(victim).length 为 0 时直接 return false），
+    // 与狙击目标、窃取(stealCard)同一口径。
+    else if (card?.catherineSteal) allowed = unitData.side === "enemy"
+      && unitData.hp > 0 && hasVisibleHand(unitData);
     else allowed = comboPartnerReady && unitData.side === "enemy";
     // 女王榨取收口：allyTarget 分支只覆盖同阵营，敌方单位会落到末尾兜底
     // （side === "enemy"）而仍被标成可选，故在此统一按「我方男性且非自己」收口。
@@ -85,7 +101,8 @@ window.GameUIBattleTargeting = (() => {
     // 隐身中的希尔德不可被单体【杀】指定：与逻辑层 chooseTarget 同一判定源，
     // 否则会出现「点得到但点了没反应」。
     if (allowed && window.RuinsEnemySkills?.blocksKillTarget?.(unitData, card)) allowed = false;
-    return (kaiichiShare || gerdaComfort || millerShare || share
+    return (kaiichiShare || gerdaComfort || millerShare || share || ailengDrill
+      || tutorReady || catherineSteal
       || battle.selectedCardIndex != null || battle.selectedSkillCard) && allowed;
   }
 

@@ -10,9 +10,10 @@ window.GameUIBattlePickers = U => {
     const picker = battle.wendyTutorPicker;
     if (!picker) return "";
     if (picker.cardName) {
+      // 交牌环节统一口径：不再弹居中窗口，改为提示条 + 直接点击角色
+      // （点温蒂自己＝加入自己手牌，点队友＝交给该队友）。
       const actor = battle.allies.concat(battle.enemies).find(unit => unit.uid === picker.uid);
-      const targets = [actor, ...battle.allies.filter(unit => unit.uid !== actor?.uid && unit.hp > 0)].filter(Boolean);
-      return `<div class="armory-popup"><div class="armory-card"><h2>解答迷惑</h2><p class="muted">已选择${U.esc(picker.cardName)}，请选择加入自己手牌或交给一名队友。</p><div class="armory-options" ${scrollKey(`wendy:${picker.uid}:targets`)}>${targets.map(unit => `<button class="armory-option" data-wendy-tutor-target="${U.esc(unit.uid)}"><b>${U.esc(unit.name)}</b><span>${unit.uid === actor?.uid ? "加入自己手牌" : "交给该队友"}</span></button>`).join("")}</div></div></div>`;
+      return `<div class="dimension-prompt"><b>解答迷惑</b><span>已选择${U.esc(picker.cardName)}，点击一名队友交给TA，或点击${U.esc(actor?.name || "温蒂")}自己加入其手牌。</span></div>`;
     }
     const cards = window.WendyCadicisSkills?.tutorPool?.(window.state) || (GameData.cardCodex || []).filter(card => card.type === "tactic");
     return `<div class="armory-popup"><div class="armory-card"><h2>解答迷惑</h2><p class="muted">从全部${cards.length}张正式战术牌中选择1张，再选择加入自己手牌或交给队友。</p><div class="armory-options" ${scrollKey(`wendy:${picker.uid}:cards`)}>${cards.map(card => `<button class="armory-option" data-wendy-tutor-card="${U.esc(card.name)}"><b>${U.esc(card.name)}</b><span>${U.esc(card.text)}</span></button>`).join("")}</div></div></div>`;
@@ -20,19 +21,21 @@ window.GameUIBattlePickers = U => {
   function ailengDrillPicker(battle) {
     const picker = battle.ailengDrillPicker;
     if (!picker) return "";
-    const actor = battle.allies.find(unit => unit.uid === picker.actorUid);
-    const targets = battle.allies.filter(unit => unit.uid !== picker.actorUid && unit.hp > 0);
-    return `<div class="armory-popup"><div class="armory-card"><h2>战斗演练</h2><p class="muted">${U.esc(actor?.name || "艾伦格")}使用了${U.esc(picker.card?.name || "卡牌")}，请选择交给哪名队友，也可以不交。</p><div class="armory-options" ${scrollKey(`aileng:${picker.actorUid}`)}>${targets.map(unit => `<button class="armory-option" data-aileng-drill-target="${U.esc(unit.uid)}"><b>${U.esc(unit.name)}</b><span>获得这张牌</span></button>`).join("")}<button class="armory-option ghost" data-aileng-drill-skip="1"><b>不交出</b><span>保留结算结果</span></button></div></div></div>`;
+    const actor = battle.allies.concat(battle.enemies)
+      .find(unit => unit.uid === picker.actorUid);
+    // 交牌类统一口径：不再弹居中窗口，改为提示条 + 直接点击队友交出，
+    // 与【半魅魔血】【新月之歌】【收获分享】【指挥官责任】保持一致。
+    return `<div class="dimension-prompt"><b>战斗演练</b><span>${U.esc(actor?.name || "艾伦格")}使用了${U.esc(picker.card?.name || "卡牌")}，请点击一名队友将这张牌交给TA。</span><button data-aileng-drill-skip="1">不交</button></div>`;
   }
   function catherineStealPicker(battle) {
     const picker = battle.catherineStealPicker;
     if (!picker) return "";
     const units = battle.allies.concat(battle.enemies);
-    const actor = units.find(unit => unit.uid === picker.actorUid);
     const victim = units.find(unit => unit.uid === picker.targetUid);
-    const targets = battle.allies.filter(unit =>
-      unit.uid !== picker.actorUid && unit.hp > 0);
-    return `<div class="armory-popup"><div class="armory-card"><h2>窃取</h2><p class="muted">请选择接收${U.esc(victim?.name || "敌方角色")}手牌的队友，也可以放弃。</p><div class="armory-options" ${scrollKey(`catherine:${picker.actorUid}`)}>${targets.map(unit => `<button class="armory-option" data-catherine-receiver="${U.esc(unit.uid)}"><b>${U.esc(unit.name)}</b><span>获得转移的牌</span></button>`).join("")}<button class="armory-option ghost" data-catherine-receiver-skip="1"><b>放弃发动</b><span>不转移任何牌</span></button></div></div></div>`;
+    // 窃取统一为「先点敌方角色、再点我方角色」：接收队友的居中弹窗已删除，
+    // 改为提示条 + 直接点击我方角色（与战斗演练、解答迷惑交牌同一口径），
+    // 点「放弃」按钮则不转移任何牌。
+    return `<div class="dimension-prompt"><b>窃取</b><span>已指定${U.esc(victim?.name || "敌方角色")}，请点击一名我方角色接收其手牌。</span><button data-catherine-receiver-skip="1">放弃</button></div>`;
   }
   function cadicisResponsibilityPicker(battle) {
     const picker = battle.cadicisResponsibility;

@@ -99,8 +99,13 @@ assert(!tutorHtml.includes("data-wendy-tutor-card=\"看破\""), "Wendy picker sh
 assert(!tutorHtml.includes("data-wendy-tutor-card=\"技能战术\""), "Wendy picker should exclude skill cards");
 assert(!tutorHtml.includes("data-wendy-tutor-card=\"虚拟战术\""), "Wendy picker should exclude virtual cards");
 assert(!tutorHtml.includes("data-wendy-tutor-card=\"临时战术\""), "Wendy picker should exclude temporary cards");
+// 交牌环节改口径：选定牌名后不再弹居中窗口，改为提示条 + 点击角色交出。
 battle.wendyTutorPicker.cardName = tacticNames[0];
-assert(pickers.wendyTutorPicker(battle).includes(`data-wendy-tutor-target="${teammate.uid}"`), "Wendy picker should render recipients");
+const tutorTargetHtml = pickers.wendyTutorPicker(battle);
+assert(!tutorTargetHtml.includes("armory-popup"), "Wendy tutor hand-off must not use the centered popup");
+assert(!tutorTargetHtml.includes("data-wendy-tutor-target"), "Wendy tutor hand-off buttons must be gone");
+assert(tutorTargetHtml.includes("dimension-prompt") && tutorTargetHtml.includes(tacticNames[0]),
+  "Wendy tutor hand-off should be a prompt banner naming the picked card");
 delete battle.wendyTutorPicker;
 
 const overlayCss = fs.readFileSync("publish/battle-overlays.css", "utf8");
@@ -211,8 +216,14 @@ assert(enabledCost(costHtml, 0) && enabledCost(costHtml, 5)
   && disabledCost(costHtml, 1) && disabledCost(costHtml, 4),
 "Army Order must keep the picked card enabled and allow only the same standard suit");
 
+// 战斗演练交牌同口径：不再弹居中窗口，改为提示条 + 点击队友，保留「不交」。
 battle.ailengDrillPicker = { actorUid: ally.uid, card: { name: "演练牌" } };
-assert(pickers.ailengDrillPicker(battle).includes(`data-aileng-drill-target="${teammate.uid}"`), "Aileng picker should render teammates");
+const drillHtml = pickers.ailengDrillPicker(battle);
+assert(!drillHtml.includes("armory-popup"), "Aileng drill must not use the centered popup");
+assert(!drillHtml.includes("data-aileng-drill-target"), "Aileng drill hand-off buttons must be gone");
+assert(drillHtml.includes("dimension-prompt") && drillHtml.includes("演练牌"),
+  "Aileng drill should be a prompt banner naming the drilled card");
+assert(drillHtml.includes("data-aileng-drill-skip"), "Aileng drill must keep its skip button");
 delete battle.ailengDrillPicker;
 
 battle.animQueue = [{ type: "pending-animation" }];
