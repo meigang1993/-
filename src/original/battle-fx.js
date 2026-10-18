@@ -31,6 +31,7 @@ window.BattleFX = (() => {
     window.WendyTeacherSkinFX?.cancel?.();
     window.ElranaFallenPhysicianSkinFX?.cancel?.();
     window.AngelicaBerserkerSkinFX?.cancel?.();
+    window.NanaliSlaughterWitchSkinFX?.cancel?.();
     window.CharacterSkinFX?.cancel?.();
   }
   function leave(state) {

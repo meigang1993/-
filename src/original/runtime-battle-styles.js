@@ -19,6 +19,7 @@ window.GameBattleStyles = (() => {
     "angelica-berserker": "./angelica-berserker-skin.css",
     "lokar-motherbound": "./character-skin-fx.css",
     "besta-mecha": "./character-skin-fx.css",
+    "nanali-slaughter-witch": "./nanali-slaughter-witch-skin.css",
   };
 
   function skinEffect(state, charId, test) {

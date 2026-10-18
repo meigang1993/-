@@ -33,6 +33,7 @@ window.NanaliSkills = deps => {
         visualHandCount: visible(target).length,
       });
     }
+    window.NanaliSlaughterWitchSkinFX?.apolloSeal?.(state, actor, target, cards);
     const tactics = cards.filter(item => item.type === "tactic").length;
     const drawn = tactics ? api.draw?.(actor, tactics, state.battle) : [];
     line(state, actor, "魔刀阿波罗", target);
@@ -43,6 +44,7 @@ window.NanaliSkills = deps => {
   function modifySlashDamage(state, actor, target, amount, card) {
     if (actor?.ref !== "nanali" || !entitySingleKill(card)
       || visible(target).length) return amount;
+    window.NanaliSlaughterWitchSkinFX?.weaknessExecute?.(state, actor, target);
     line(state, actor, "虚弱斩杀", target);
     window.BattleLog.add(state,
       `${actor.name} 对无手牌目标触发虚弱斩杀，本次杀伤害翻倍。`);

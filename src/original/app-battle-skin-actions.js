@@ -72,7 +72,7 @@ async function equipBattleSkin(button) {
     [window.NonokaIdolSkinFX, window.MannyGunSkinFX, window.BertisQueenSkinFX,
       window.FloraSonicSkinFX, window.WendyTeacherSkinFX,
       window.ElranaFallenPhysicianSkinFX, window.AngelicaBerserkerSkinFX,
-      window.CharacterSkinFX].forEach(fx => fx?.cancel?.());
+      window.NanaliSlaughterWitchSkinFX, window.CharacterSkinFX].forEach(fx => fx?.cancel?.());
     actionUnit.art = skin.art; actionUnit.avatar = skin.art; actionUnit.skinName = skin.name;
     actionUnit.skinDynamicEffect = skin.dynamicEffect || null;
     actionUnit.skinDamagedArt = skin.damagedArt || null;
@@ -84,6 +84,9 @@ async function equipBattleSkin(button) {
     await revealBattleSkinArt(actionUnit, previousArt, isCurrent);
     if (isCurrent() && skin.dynamicEffect === "angelica-berserker") {
       window.AngelicaBerserkerSkinFX?.queueEntry?.(actionState, actionUnit);
+    }
+    if (isCurrent() && skin.dynamicEffect === "nanali-slaughter-witch") {
+      window.NanaliSlaughterWitchSkinFX?.queueEntry?.(actionState, actionUnit);
     }
     if (appearanceSave) await appearanceSave;
   } catch (err) {

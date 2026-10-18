@@ -1,0 +1,113 @@
+/* Slaughter Witch (Nanali): cavern of corpses, blood moon crescent, sealing chains. */
+.skin-effect-nanali-slaughter-witch { position: relative; }
+.skin-effect-nanali-slaughter-witch::before { content: ""; position: absolute; inset: 4%; z-index: 2; border: 1px solid rgba(196,26,52,.5); border-radius: 50%; box-shadow: 0 0 18px rgba(196,26,52,.36), inset 0 0 16px rgba(70,6,14,.55); pointer-events: none; }
+.skin-effect-nanali-slaughter-witch::after { content: ""; position: absolute; left: 10%; right: 10%; bottom: 2%; z-index: 2; height: 16%; background: radial-gradient(ellipse, rgba(196,26,52,.42), transparent 70%); opacity: .62; pointer-events: none; }
+.nanali-witch-fx { position: fixed; z-index: 48; pointer-events: none; overflow: visible; transform: translateZ(0); }
+.nanali-witch-line { position: fixed; z-index: 49; height: 5px; transform-origin: 0 50%; transform: rotate(var(--line-angle)); pointer-events: none; }
+/* 待机：双翼轻扇 + 巨刀独眼转动 */
+.unit:not(.dead) .unit-art.nanali-witch-idle > img { transform-origin: 50% 72%; animation: nanaliWitchIdleWings 4.6s ease-in-out infinite; }
+.nanali-witch-idle::before { content: ""; position: absolute; left: 62%; top: 26%; z-index: 3; width: 10%; height: 10%; border-radius: 50%; background: radial-gradient(circle at 42% 42%, #ff8a94, #c41a34 46%, #5c0a16 78%); box-shadow: 0 0 10px rgba(255,60,80,.75); animation: nanaliWitchEyeScan 5.2s ease-in-out infinite; pointer-events: none; }
+/* 出场：巨刀砸地 → 独眼血光 → 高空坠落展翼 */
+.nanali-witch-entering { animation: nanaliWitchEntryDrop 1.3s cubic-bezier(.3,.9,.2,1) both; }
+.nanali-witch-entry b { position: absolute; left: 46%; top: 8%; width: 22px; height: 62%; background: linear-gradient(180deg,#e9dcc6,#c41a34 30%,#4d0d18); box-shadow: 0 0 16px rgba(196,26,52,.8); clip-path: polygon(0% 0%, 58% 0%, 58% 12%, 100% 18%, 58% 24%, 58% 36%, 100% 42%, 58% 48%, 58% 60%, 100% 66%, 58% 72%, 58% 84%, 100% 90%, 58% 100%, 0% 100%); transform-origin: 50% 100%; animation: nanaliWitchBladeSlam 1.5s ease-out both; }
+.nanali-witch-entry i { position: absolute; left: 30%; top: 34%; width: 10px; height: 10px; border-radius: 50%; background: #ff5c6e; box-shadow: 0 0 10px #ff2e46; animation: nanaliWitchEmberBurst 1.1s ease-out both; }
+.nanali-witch-entry i:nth-of-type(2) { left: 58%; animation-delay: .12s; }
+.nanali-witch-entry i:nth-of-type(3) { left: 44%; animation-delay: .24s; }
+.nanali-witch-entry span { position: absolute; bottom: 6%; width: 22%; height: 8%; border-radius: 50%; background: radial-gradient(ellipse, rgba(196,26,52,.6), transparent 72%); animation: nanaliWitchCorpseBlast 1.2s ease-out both; }
+.nanali-witch-entry span:nth-of-type(1) { left: 8%; }
+.nanali-witch-entry span:nth-of-type(2) { right: 8%; animation-delay: .1s; }
+.nanali-witch-entry em { position: absolute; inset: 0; background: radial-gradient(circle at 50% 40%, rgba(255,46,70,.5), transparent 58%); animation: nanaliWitchBloodFlash .9s ease-out both; }
+/* 魔刀阿波罗：独眼锁定 */
+.nanali-witch-eye b { position: absolute; right: 8%; top: 36%; width: 12%; height: 12%; border-radius: 50%; background: radial-gradient(circle at 40% 40%, #ff8a94, #c41a34 44%, #4d0d18); box-shadow: 0 0 12px rgba(255,46,70,.85); animation: nanaliWitchEyeLock .9s ease-out both; }
+.nanali-witch-eye i { position: absolute; right: 10%; top: 38%; width: 8%; height: 8%; border-radius: 50%; border: 2px solid rgba(255,92,110,.9); animation: nanaliWitchPupilShrink .8s ease-out both; }
+.nanali-witch-eye em { position: absolute; right: 2%; top: 30%; width: 24%; height: 24%; border-radius: 50%; border: 1px solid rgba(196,26,52,.6); animation: nanaliWitchEyeRing .9s ease-out both; }
+/* 血色残月刀气 */
+.nanali-witch-crescent b { position: absolute; left: 10%; top: 22%; width: 80%; height: 46%; border: 5px solid rgba(255,60,80,.85); border-radius: 0 100% 0 100%; border-top-color: transparent; border-right-color: transparent; filter: drop-shadow(0 0 10px #c41a34); animation: nanaliWitchCrescentSweep .74s ease-out both; }
+.nanali-witch-crescent i { position: absolute; top: 34%; width: 7px; height: 7px; border-radius: 50%; background: #ff5c6e; box-shadow: 0 0 8px #ff2e46; animation: nanaliWitchEmberBurst .7s ease-out both; }
+.nanali-witch-crescent i:nth-of-type(2) { left: 62%; animation-delay: .08s; }
+.nanali-witch-crescent-line { background: linear-gradient(90deg, transparent, #c41a34 40%, #ff5c6e); box-shadow: 0 0 10px #c41a34; animation: nanaliWitchLineSweep .6s ease-out both; }
+/* 血链锁住扣置的牌 */
+.nanali-witch-chains i { position: absolute; left: 50%; top: 46%; width: 3px; height: 26%; background: linear-gradient(180deg, #ff5c6e, #7c0f1e); box-shadow: 0 0 7px rgba(196,26,52,.85); transform-origin: 50% 0; transform: rotate(calc((var(--i) - (var(--n) - 1) / 2) * 26deg)); animation: nanaliWitchChainBind 1.05s ease-out both; animation-delay: calc(var(--i) * 60ms); }
+.nanali-witch-chains span { position: absolute; top: 62%; width: 11px; height: 16px; border: 1px solid #ff8a94; border-radius: 2px; background: linear-gradient(145deg, #2a060c, #a81430); box-shadow: 0 0 8px rgba(196,26,52,.8); animation: nanaliWitchSealCard .95s ease-out both; }
+.nanali-witch-chains span:nth-of-type(1) { left: 22%; }
+.nanali-witch-chains span:nth-of-type(2) { left: 66%; animation-delay: .12s; }
+/* 战术牌锁链崩断，血色能量飞回体内 */
+.nanali-witch-chain-break i { position: absolute; left: 44%; top: 40%; width: 4px; height: 20%; background: linear-gradient(180deg, #ff8a94, transparent); animation: nanaliWitchChainSnap .9s ease-out both; }
+.nanali-witch-chain-break i:nth-of-type(2) { left: 58%; animation-delay: .1s; }
+.nanali-witch-chain-break span { position: absolute; top: 42%; width: 8px; height: 8px; border-radius: 50%; background: #ff5c6e; box-shadow: 0 0 9px #ff2e46; animation: nanaliWitchEssenceReturn .92s ease-in both; }
+.nanali-witch-chain-break span:nth-of-type(2) { left: 60%; animation-delay: .14s; }
+.nanali-witch-essence-line { background: linear-gradient(90deg, #ff5c6e, #c41a34 60%, transparent); box-shadow: 0 0 10px #c41a34; animation: nanaliWitchLineSweep .88s ease-out both; }
+/* 虚弱斩杀：血色恶魔阵 */
+.nanali-witch-circle b { position: absolute; left: 50%; top: 62%; width: 46%; aspect-ratio: 1; margin-left: -23%; border: 2px solid rgba(255,46,70,.8); border-radius: 50%; box-shadow: 0 0 18px rgba(196,26,52,.7), inset 0 0 20px rgba(196,26,52,.45); animation: nanaliWitchCircleRise 1.15s ease-out both; }
+.nanali-witch-circle b:nth-of-type(2) { width: 30%; margin-left: -15%; border-color: rgba(255,92,110,.75); animation-delay: .12s; transform: rotate(45deg); }
+.nanali-witch-circle i { position: absolute; left: 50%; top: 62%; width: 4px; height: 22%; margin-left: -2px; background: linear-gradient(180deg, #ff5c6e, transparent); animation: nanaliWitchCircleSpoke 1s ease-out both; }
+.nanali-witch-circle i:nth-of-type(2) { rotate: 90deg; animation-delay: .08s; }
+.nanali-witch-circle em { position: absolute; left: 50%; top: 62%; width: 40%; aspect-ratio: 1; margin-left: -20%; background: radial-gradient(circle, rgba(196,26,52,.42), transparent 66%); animation: nanaliWitchCirclePulse 1.2s ease-out both; }
+/* 收翼突刺 + 十字血色斩击 */
+/* 虚弱斩杀：收翼化作红黑闪电跃至半空 → 魔刀以开山之势重重劈下（刀背倒刺） */
+.nanali-witch-leap b { position: absolute; left: 50%; top: 38%; width: 14%; height: 46%; margin-left: -7%; background: linear-gradient(180deg, transparent, #ff2e46 58%, #fff0f2); box-shadow: 0 0 14px rgba(196,26,52,.8); transform-origin: 50% 100%; animation: nanaliWitchLeapRise .54s ease-out both; }
+.nanali-witch-leap i { position: absolute; left: 34%; top: 64%; width: 8px; height: 8px; border-radius: 50%; background: #ff5c6e; box-shadow: 0 0 10px #ff2e46; animation: nanaliWitchEmberBurst .6s ease-out both; }
+.nanali-witch-leap i:nth-of-type(2) { left: 62%; animation-delay: .1s; }
+.nanali-witch-cleave b { position: absolute; left: 50%; top: -34%; width: 24px; height: 134%; margin-left: -12px; background: linear-gradient(180deg, #fff0f2, #ff2e46 26%, #4d0d18); box-shadow: 0 0 20px rgba(196,26,52,.9); clip-path: polygon(0% 0%, 60% 0%, 60% 12%, 100% 18%, 60% 24%, 60% 36%, 100% 42%, 60% 48%, 60% 60%, 100% 66%, 60% 72%, 60% 84%, 100% 90%, 60% 100%, 0% 100%); transform-origin: 50% 0%; animation: nanaliWitchCleaveDown .62s cubic-bezier(.3,.8,.4,1) both; }
+.nanali-witch-cleave i { position: absolute; left: 50%; top: 26%; width: 11px; height: 11px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, #ff8a94, #c41a34 46%, #5c0a16); box-shadow: 0 0 12px rgba(255,46,70,.85); animation: nanaliWitchPupilShrink .6s ease-out both; }
+.nanali-witch-cleave span { position: absolute; left: 24%; top: 48%; width: 8px; height: 12px; border: 1px solid rgba(255,138,148,.85); border-radius: 2px; background: linear-gradient(145deg, #2a060c, #c41a34); animation: nanaliWitchBleedShard .62s ease-out both; }
+.nanali-witch-cleave span:nth-of-type(2) { left: 72%; animation-delay: .12s; }
+.nanali-witch-dash { height: 8px; background: linear-gradient(90deg, transparent, #ff2e46 45%, #fff0f2); box-shadow: 0 0 14px #c41a34; animation: nanaliWitchLineSweep .52s ease-out both; }
+.nanali-witch-cross b { position: absolute; left: 50%; top: 32%; width: 62%; height: 6px; margin-left: -31%; background: linear-gradient(90deg, transparent, #ff2e46 20%, #fff0f2 50%, #ff2e46 80%, transparent); box-shadow: 0 0 14px #c41a34; animation: nanaliWitchCrossSlash 1s ease-out both; }
+.nanali-witch-cross b:nth-of-type(2) { rotate: 90deg; animation-delay: .1s; }
+.nanali-witch-cross i { position: absolute; left: 50%; top: 40%; width: 5px; height: 5px; border-radius: 50%; background: #ff8a94; box-shadow: 0 0 10px #ff2e46; animation: nanaliWitchEmberBurst .9s ease-out both; }
+.nanali-witch-cross i:nth-of-type(2) { left: 62%; animation-delay: .12s; }
+.nanali-witch-cross span { position: absolute; left: 30%; top: 52%; width: 9px; height: 14px; border: 1px solid rgba(255,138,148,.85); border-radius: 2px; background: linear-gradient(145deg, #2a060c, #c41a34); animation: nanaliWitchBleedShard .95s ease-out both; }
+.nanali-witch-cross span:nth-of-type(2) { left: 44%; animation-delay: .1s; }
+.nanali-witch-cross span:nth-of-type(3) { left: 58%; animation-delay: .2s; }
+.nanali-witch-cross span:nth-of-type(4) { left: 72%; animation-delay: .3s; }
+/* 胜利：巨刀插地、独眼闭合、双翼收拢、拔刀化作血雾消散（地面留下血迹与断裂恶魔角） */
+.victory-screen.nanali-slaughter-witch-victory { background: radial-gradient(circle at 18% 30%, rgba(196,26,52,.36), transparent 38%), linear-gradient(120deg, #08070a, #1d0a10 56%, #3a1018); }
+.nanali-witch-victory-show { position: absolute; inset: 0 auto 0 0; z-index: 1; width: 43%; overflow: hidden; pointer-events: none; }
+.nanali-witch-victory-art { position: absolute; inset: 0; overflow: hidden; mask-image: linear-gradient(90deg, #000 68%, transparent 100%); }
+.nanali-witch-victory-art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; animation: nanaliWitchVictoryFade 4.2s ease-in-out infinite; }
+.nanali-victory-blade { position: absolute; left: 46%; top: 12%; bottom: 10%; z-index: 3; width: 22px; background: linear-gradient(180deg, #e8dcc8, #c41a34 28%, #4d0d18); box-shadow: 0 0 14px rgba(196,26,52,.7); clip-path: polygon(0% 0%, 58% 0%, 58% 12%, 100% 18%, 58% 24%, 58% 36%, 100% 42%, 58% 48%, 58% 60%, 100% 66%, 58% 72%, 58% 84%, 100% 90%, 58% 100%, 0% 100%); transform-origin: 50% 100%; animation: nanaliWitchVictoryBlade 4.2s ease-in-out infinite; }
+.nanali-victory-eye { position: absolute; left: 44%; top: 34%; z-index: 4; width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, #ff8a94, #c41a34 46%, #5c0a16); box-shadow: 0 0 12px rgba(255,46,70,.8); animation: nanaliWitchVictoryEye 4.2s ease-in-out infinite; }
+.nanali-victory-blood { position: absolute; left: 20%; bottom: 6%; z-index: 2; width: 46%; height: 12%; border-radius: 50%; background: radial-gradient(ellipse, rgba(196,26,52,.62), transparent 70%); animation: nanaliWitchVictoryPool 4.2s ease-in-out infinite; }
+.nanali-victory-mist i { position: absolute; z-index: 3; width: 10px; height: 10px; border-radius: 50%; background: rgba(255,92,110,.55); box-shadow: 0 0 10px rgba(196,26,52,.8); animation: nanaliWitchVictoryMist 3.4s ease-in-out infinite; }
+.nanali-victory-mist i:nth-child(1) { left: 12%; top: 68%; }
+.nanali-victory-mist i:nth-child(2) { left: 60%; top: 62%; animation-delay: .6s; }
+.nanali-victory-mist i:nth-child(3) { left: 32%; top: 82%; animation-delay: 1.2s; }
+.nanali-victory-mist i:nth-child(4) { left: 74%; top: 78%; animation-delay: 1.8s; }
+.nanali-victory-motto { position: absolute; left: 8%; bottom: 9%; z-index: 4; color: #e8b0ac; font-size: 15px; text-shadow: 0 0 10px rgba(196,26,52,.85); }
+.victory-screen.nanali-slaughter-witch-victory .victory-stats { z-index: 5; width: 64%; margin-left: auto; background: rgba(8,6,8,.78); backdrop-filter: blur(8px); }
+@media (max-height:520px) { .nanali-witch-victory-show { width: 35%; } .victory-screen.nanali-slaughter-witch-victory .victory-stats { width: 70%; } }
+@keyframes nanaliWitchIdleWings { 0%,100% { transform: scale(1.02) translateY(0); } 46% { transform: scale(1.04) translateY(-3px); } }
+@keyframes nanaliWitchEyeScan { 0%,100% { transform: translate(0,0) scale(1); opacity: .85; } 30% { transform: translate(-4px,2px) scale(1.08); } 62% { transform: translate(3px,-2px) scale(.94); opacity: .6; } }
+@keyframes nanaliWitchEntryDrop { from { opacity: 0; transform: translateY(-46%) scale(1.12); } 58% { opacity: 1; transform: translateY(0) scale(1); } 70% { transform: translateY(-4%) scale(1.02); } to { transform: translateY(0) scale(1); } }
+@keyframes nanaliWitchBladeSlam { from { opacity: 0; transform: translateY(-90%) rotate(-16deg); } 42% { opacity: 1; transform: translateY(0) rotate(0deg); } 56% { transform: translateY(-6%) rotate(1deg); } to { opacity: 0; transform: translateY(0) rotate(0deg); } }
+@keyframes nanaliWitchEmberBurst { from { opacity: 0; transform: translateY(14px) scale(.4); } 45% { opacity: 1; } to { opacity: 0; transform: translateY(-40px) scale(1.15); } }
+@keyframes nanaliWitchCorpseBlast { from { opacity: 0; transform: scaleX(.4); } 40% { opacity: .9; } to { opacity: 0; transform: scaleX(2.1); } }
+@keyframes nanaliWitchBloodFlash { from { opacity: 0; } 26% { opacity: 1; } to { opacity: 0; } }
+@keyframes nanaliWitchEyeLock { from { opacity: 0; scale: .4; } 40% { opacity: 1; scale: 1.25; } to { opacity: 0; scale: 1; } }
+@keyframes nanaliWitchPupilShrink { from { opacity: 0; scale: 1.9; } 45% { opacity: 1; } to { opacity: 0; scale: .35; } }
+@keyframes nanaliWitchEyeRing { from { opacity: 0; scale: .3; } to { opacity: 0; scale: 1.9; } }
+@keyframes nanaliWitchCrescentSweep { from { opacity: 0; transform: scale(.35) rotate(-24deg); } 45% { opacity: 1; } to { opacity: 0; transform: scale(1.5) rotate(12deg); } }
+@keyframes nanaliWitchLineSweep { from { opacity: 0; transform: rotate(var(--line-angle)) scaleX(.05); } 38% { opacity: .95; } to { opacity: 0; transform: rotate(var(--line-angle)) scaleX(1); } }
+@keyframes nanaliWitchChainBind { from { opacity: 0; transform: rotate(calc((var(--i) - (var(--n) - 1) / 2) * 26deg)) scaleY(.15); } 45% { opacity: 1; } to { opacity: 0; transform: rotate(calc((var(--i) - (var(--n) - 1) / 2) * 26deg)) scaleY(1.1); } }
+@keyframes nanaliWitchSealCard { from { opacity: 0; transform: translateY(24px) scale(.5); } 40% { opacity: 1; } to { opacity: 0; transform: translateY(-28px) scale(1.08); } }
+@keyframes nanaliWitchChainSnap { from { opacity: 0; transform: scaleY(1.2); } 30% { opacity: 1; transform: scaleY(.5) rotate(14deg); } to { opacity: 0; transform: scaleY(.1) rotate(26deg); } }
+@keyframes nanaliWitchEssenceReturn { from { opacity: 0; transform: translate(0,0) scale(.5); } 35% { opacity: 1; } to { opacity: 0; transform: translate(34px,-30px) scale(1.2); } }
+@keyframes nanaliWitchCircleRise { from { opacity: 0; transform: scale(.3) rotate(-30deg); } 45% { opacity: 1; } to { opacity: 0; transform: scale(1.25) rotate(18deg); } }
+@keyframes nanaliWitchCircleSpoke { from { opacity: 0; transform: scaleY(.2); } 45% { opacity: 1; } to { opacity: 0; transform: scaleY(1.3); } }
+@keyframes nanaliWitchCirclePulse { from { opacity: 0; scale: .4; } 40% { opacity: .9; } to { opacity: 0; scale: 1.4; } }
+@keyframes nanaliWitchCrossSlash { from { opacity: 0; transform: scaleX(.15); } 34% { opacity: 1; transform: scaleX(1.05); } to { opacity: 0; transform: scaleX(1.25); } }
+@keyframes nanaliWitchBleedShard { from { opacity: 0; transform: translateY(18px) scale(.5); } 40% { opacity: 1; } to { opacity: 0; transform: translateY(-32px) scale(1.1); } }
+@keyframes nanaliWitchVictoryFade { 0%,100% { opacity: 1; transform: scale(1.03) translateY(0); } 46% { opacity: .82; transform: scale(1.05) translateY(-4px); } }
+@keyframes nanaliWitchVictoryBlade { 0%,100% { opacity: .9; transform: rotate(1deg); } 50% { opacity: .7; transform: rotate(-2deg); } }
+@keyframes nanaliWitchVictoryEye { 0%,100% { opacity: .95; scale: 1; } 48% { opacity: .2; scale: .55; } }
+@keyframes nanaliWitchVictoryPool { 0%,100% { opacity: .7; transform: scaleX(1); } 50% { opacity: .45; transform: scaleX(1.08); } }
+@keyframes nanaliWitchVictoryMist { 0%,100% { opacity: 0; transform: translateY(14px) scale(.5); } 40% { opacity: .85; } 78% { opacity: .25; transform: translateY(-38px) scale(1.1); } }
+@keyframes nanaliWitchLeapRise { from { opacity: 0; transform: translateY(24%) scaleY(.7); } 42% { opacity: 1; transform: translateY(-14%) scaleY(1.1); } to { opacity: 0; transform: translateY(-34%) scaleY(1); } }
+@keyframes nanaliWitchCleaveDown { from { opacity: 0; transform: translateY(-38%) rotate(-14deg) scaleY(.6); } 46% { opacity: 1; transform: translateY(6%) rotate(2deg) scaleY(1.05); } to { opacity: 0; transform: translateY(16%) rotate(4deg) scaleY(1); } }
+@media (prefers-reduced-motion:reduce) {
+  .skin-effect-nanali-slaughter-witch::before, .unit:not(.dead) .unit-art.nanali-witch-idle > img, .nanali-witch-idle::before,
+  .nanali-witch-entering, .nanali-witch-victory-art img, .nanali-victory-blade, .nanali-victory-eye,
+  .nanali-victory-blood, .nanali-victory-mist i,
+  .nanali-witch-leap b, .nanali-witch-leap i, .nanali-witch-cleave b, .nanali-witch-cleave i, .nanali-witch-cleave span { animation: none !important; }
+}
