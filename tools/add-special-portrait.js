@@ -6,7 +6,10 @@
 //   查看覆盖：node tools/add-special-portrait.js --list
 // 选项：--level=10 --width=1024 --quality=82 --dry（只打印不落盘）
 //       --no-build（跳过重建产物）
-//       --auto-initial（角色缺"默认外观"时，用角色表的默认立绘自动补一条）
+//       --no-initial（默认行为相反：不自动补"默认外观"）
+// 默认外观：商店需要。接入等级立绘时，若该角色尚无 initial 皮肤条目，
+//           自动用角色表的默认立绘补一条 {charId}_default。
+//           没有皮肤、也没有特殊立绘的角色不主动补（只在接入时按需补）。
 // 契约：命名 {charId}_level_{N}_special、品质 special、价格 0、
 //       图片统一为 assets/generated 下的 hash webp；校验由
 //       tools/test-character-special-art.js 自动派生，新增无需改测试。
@@ -115,8 +118,9 @@ async function addOne(charId, src) {
   if (!name) die(`未知角色 ${charId}（可用：${[...CHARS.keys()].join(", ")}）`);
   if (!src || !fs.existsSync(src)) die(`源图不存在：${src}`);
   if (!SKINS.some(s => s.charId === charId && s.initial)) {
-    if (!args["auto-initial"]) {
-      die(`${name}(${charId}) 缺少默认外观；加 --auto-initial 自动补，或先手工补 initial 皮肤`);
+    if (args["no-initial"]) {
+      die(`${name}(${charId}) 缺少默认外观，且已指定 --no-initial；`
+        + `请先手工补 initial 皮肤，或去掉该选项自动补`);
     }
     const r = upsertInitial(charId, name);
     if (!r) die(`${name}(${charId}) 角色表里也没有默认立绘字段，无法补`);

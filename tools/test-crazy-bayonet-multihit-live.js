@@ -154,7 +154,10 @@ const segCount = (all, src) => hitLines(all, src).length;
   check("2 半魅魔血：总伤害 = 3 × 攻击力",
     s2.before.hp - s2.afterHp === 3 * s2.before.atk,
     `掉血 ${s2.before.hp - s2.afterHp}，期望 ${3 * s2.before.atk}`);
-  check("2 半魅魔血：逐段触发（受击技能触发 3 次）", kaiichi2 >= 3,
+  // 新口径：半魅魔血只由「实体牌或虚拟牌」造成的伤害触发。疯狂刺刀的追加段
+  // 是技能伤害（type:"skill"），因此不该触发；本场景只有追加段、没有实体牌
+  // 主伤害落到星野一身上，故期望触发 0 次。
+  check("2 半魅魔血：技能追加段不触发（受击技能触发 0 次）", kaiichi2 === 0,
     `触发相关日志 ${kaiichi2} 行`);
 
   // ---- 场景 3：X = 5，目标带半魅魔血（放大段数以暴露截断）----

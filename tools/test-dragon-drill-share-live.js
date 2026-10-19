@@ -203,12 +203,17 @@ run().then(res => {
     logs.some(l => l.includes("电钻火花") && l.includes("点数6")));
   check("2 半魅魔血交牌弹窗已出现",
     (f.shares || []).length > 0, `弹窗次数=${(f.shares || []).length}`);
-  // 每段都会再弹一次交牌窗（半魅魔血逐段触发 + 每段摸2张），
-  // 60 轮循环不足以跑满 7 段，故只断言「交牌后确实继续追加」而非完整 7 段。
-  check("3 交牌后追加段继续结算（血量持续下降 ≥4 段）",
-    drops >= 4, `实际下降=${drops} 轨迹=${JSON.stringify(f.hpTrack)}`);
-  check("4 交牌后仍有追加段（最后一段血量 < 第一段后血量）",
-    (f.hpTrack || []).length >= 3, `轨迹长度=${(f.hpTrack || []).length}`);
+  // 新口径：半魅魔血只由「实体牌或虚拟牌」造成的伤害触发。
+  // 电钻火花的主伤害是那张实体【杀】，触发一次；6 段追加是技能伤害
+  // （type:"skill"），不再触发，因此追加段不会被交牌打断，一次性打完。
+  const totalDrop = (f.hpTrack || []).length
+    ? f.hpTrack[0] - f.hpTrack[f.hpTrack.length - 1] : 0;
+  // 轨迹起点是主伤害结算后的血量（387），故此处衡量的是 6 段追加是否全部落地：
+  // 6 × 13 = 78。主伤害那 13 点发生在轨迹起点之前。
+  check("3 追加段伤害不丢失（6段×13 = 78）",
+    totalDrop >= 78, `追加段掉血=${totalDrop} 轨迹=${JSON.stringify(f.hpTrack)}`);
+  check("4 半魅魔血只由主伤害触发一次（追加段不再逐段弹窗）",
+    (f.shares || []).length === 1, `弹窗次数=${(f.shares || []).length}`);
   check("5 结束时无残留挂起段", f.resumeLeft == null, `resumeLeft=${f.resumeLeft}`);
   check("6 无页面 JS 错误", (res.errors || []).length === 0,
     (res.errors || []).slice(0, 2).join(" | "));

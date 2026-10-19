@@ -35,9 +35,16 @@ window.HoshinoKaiichiSkills = (() => {
     return true;
   }
 
+  // 半魅魔血仅由「实体牌或虚拟牌」造成的伤害触发。
+  // 技能追加段（电钻火花/疯狂刺刀 type:"skill"）、技能牌（_skill，如猛龙断空斩）、
+  // 状态类技能伤害（燃烧/锁魂镰刀）均不属于牌伤害，不触发。
+  // 虚拟牌（螺旋桨、组合进攻、追魂之刃重放、疯狂射击转化等）type 仍为 slash，属于牌。
+  const isCardDamage = card => !!card && !card._skill && card.type !== "skill";
+
   function afterDamage(state, actor, target, card, hpLoss, deps) {
     if (!hpLoss || !alive(target) || target.ref !== "hoshino_kaiichi"
       || !hasSkill(target, "半魅魔血")) return;
+    if (!isCardDamage(card)) return;
     const drawn = deps.draw(target, 2, state.battle);
     const yi = state.battle.allies.find(unit => unit.ref === "hoshino_yi" && alive(unit));
     const shareQueued = share.queueShare(state, target, actor);

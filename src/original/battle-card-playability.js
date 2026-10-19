@@ -53,6 +53,17 @@ window.BattleCardPlayability = deps => {
   const canMagicBullet = (battle, actor, card) => !card?.magicBullet || !!(battle
     && opposingUnits(battle, actor).some(unit =>
       unit.hp > 0 && window.CardUtils.magicBulletCards(unit).length));
+  // 【窃取】需要「有牌可偷的敌人」+「另一个存活的同阵营接收者」两个条件同时成立。
+  // 缺任一条件时 handleSpecialCard 会直接 return false（点了没反应），
+  // 故在置灰阶段就判掉，避免玩家点了毫无反馈。
+  // 与 skill-once-per-turn.js 的 usedCatherineSteal 置灰互不冲突：那是「已用过」。
+  const canCatherineSteal = (battle, actor, card) => !card?.catherineSteal || !!(battle
+    && opposingUnits(battle, actor).some(unit => unit.hp > 0 && hasVisibleHand(unit))
+    && sameSideUnits(battle, actor).some(unit => unit.uid !== actor?.uid && unit.hp > 0));
+  // 【狙击目标】需要「有手牌可展示的存活敌人」。目标空手牌时 revealSnipe
+  // 会在取不到牌时直接 return false（点了没反应），故同样在置灰阶段判掉。
+  const canArtinaSniper = (battle, actor, card) => !card?.artinaSniper || !!(battle
+    && opposingUnits(battle, actor).some(unit => unit.hp > 0 && hasVisibleHand(unit)));
   const activeRelicOf = card => card?.demonPoker ? "鬼王扑克"
     : card?.succubusFork ? "魅魔钢叉"
     : card?.assassinLatex ? "刺客胶衣"
@@ -118,6 +129,8 @@ window.BattleCardPlayability = deps => {
     if (card.comboAttack && !canComboAttack(battle, actor, card)) return true;
     if (card.borrowSlash && !canBorrowSlash(battle, actor, card)) return true;
     if ((card.discardTarget || card.stealCard) && !handTarget()) return true;
+    if (card.catherineSteal && !canCatherineSteal(battle, actor, card)) return true;
+    if (card.artinaSniper && !canArtinaSniper(battle, actor, card)) return true;
     if (card.statusKey && !opposingUnits(battle, actor)
       .some(unit => unit.hp > 0
         && !window.BattleStatusCards?.has?.(unit, card.statusKey))) return true;

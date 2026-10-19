@@ -174,15 +174,18 @@ run().then(res => {
   // 追加段是否结算改由断言 4（护驾者掉血段数）验证。
   check("3 追加段走反应队列（不再依赖 remainingHits 挂起）",
     p.resumeAfterGuard == null, `挂起=${p.resumeAfterGuard}`);
-  check("4 追加段继续结算给护驾者（掉血 ≥5 段）",
-    drops >= 5, `掉血段数=${drops} 轨迹=${JSON.stringify(hp)}`);
+  // 新口径：追加段是技能伤害（type:"skill"），不再逐段触发半魅魔血，
+  // 因此追加段一次性结算完毕，掉血只分成「主伤害」与「6段追加」两次采样。
+  const totalDrop = hp.length ? hp[0] - hp[hp.length - 1] : 0;
+  check("4 追加段继续结算给护驾者（总掉血 ≥91）",
+    totalDrop >= 91, `总掉血=${totalDrop} 轨迹=${JSON.stringify(hp)}`);
   check("5 奥菲莉亚全程未掉血（伤害全部转移给护驾者）",
     (p.opheliaTrack || []).every(v => v === 400),
     `轨迹=${JSON.stringify(p.opheliaTrack)}`);
   // 交牌弹窗出现很快，20ms 轮询采样会漏；改用日志计数（每段各触发一次摸牌）
   const shareHits = logs.filter(l => l.includes("半魅魔血令其摸2张牌")).length;
-  check("6 半魅魔血逐段触发（摸牌次数 ≥5）",
-    shareHits >= 5, `摸牌次数=${shareHits} 弹窗采样=${p.shares}`);
+  check("6 半魅魔血只由主伤害触发一次（追加段为技能伤害不触发）",
+    shareHits === 1, `摸牌次数=${shareHits} 弹窗采样=${p.shares}`);
   check("7 结束时无残留挂起段", f.resumeLeft == null, `resumeLeft=${f.resumeLeft}`);
   check("8 无页面 JS 错误", (res.errors || []).length === 0,
     (res.errors || []).slice(0, 2).join(" | "));
