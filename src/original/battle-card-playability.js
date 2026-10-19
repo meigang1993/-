@@ -1,3 +1,6 @@
+// 出牌阶段可用性判定工厂。
+// 「出牌阶段限一次」登记表已拆到同目录 skill-once-per-turn.js（零依赖，先于本文件装配）；
+// 本文件只做消费：blockedByUsage 调用 window.SkillOncePerTurn.blocked。
 window.BattleCardPlayability = deps => {
   const sameSideUnits = (battle, actor) => actor?.side === "enemy" ? battle.enemies : battle.allies;
   const opposingUnits = (battle, actor) => actor?.side === "enemy" ? battle.allies : battle.enemies;
@@ -65,39 +68,20 @@ window.BattleCardPlayability = deps => {
       || !window.RelicSystem?.hasEquipped?.(state, actor, relic);
   }
 
-  function blockedByUsage(actor, card, battle) {
-    return card.extract && actor.usedExtract
-      || card.preshiDrain && actor.usedPreshiDrain
-      || card.bloodPact && actor.usedBloodPact
-      || card.crazyShooting && actor.usedCrazyShooting
-      || card.speedAssault && (battle?.phase === 6
-        ? actor.usedSpeedAssaultEnd : actor.usedSpeedAssaultPrepare)
-      || card.ailengBet && actor.usedAilengBet
-      || card.elranaHeal && actor.usedElranaHeal
-      || card.bestaEndSlash && actor.usedBestaEndSlash
-      || card.mannyArmory && actor.usedMannyArmory
-      || card.mannyBarrett && actor.usedBarrett
-      || card.millerSlot && actor.usedMillerSlot
-      || card.crimsonRampage && !window.AngelicaLukaSkills?.canUseCrimsonRampage?.(actor)
-      || card.mimicVoice && actor.usedMimic
-      || card.idolKiss && actor.usedIdolKiss
-      || card.bertisWhip && actor.usedBertisWhip
-      || card.bertisTakeFood && actor.usedTakeFood
-      || card.crazySlaughter && actor.usedCrazySlaughter
-      || card.wendyTutor && actor.usedWendyTutor
-      || card.demonPoker && actor.usedDemonPoker
-      || card.succubusFork && actor.usedSuccubusFork
-      || card.assassinLatex && actor.usedAssassinLatex
-      || card.arsenal && actor.usedArsenal
-      || card.withererTongueActive && actor.usedWithererTongue
-      || card.withererPeek && actor.usedWithererPeek
-      || card.aceContribution && actor.usedAceContribution
-      || card.ailengCharge && actor.usedAilengCharge
-      || card.kaiichiMilk && actor.usedKaiichiMilk
-      || card.artinaSniper && actor.usedArtinaSniper
-      || card.mariaHonorBlessing && (actor.usedMariaHonorBlessing
-        || actor.mariaBlessingSuits?.length > 0);
-  }
+  // 缺登记表时直接抛错，而不是静默放行：静默会让「出牌阶段限一次」的技能
+  // 用过后仍可点、仍可再次结算，且无任何报错，排查成本极高。
+  // 装配顺序由 build 清单保证（本模块排在 skill-once-per-turn.js 之后）。
+  const oncePerTurnRegistry = () => {
+    const registry = window.SkillOncePerTurn;
+    if (!registry?.blocked) {
+      throw new Error("[skill-once-per-turn] 登记表未装配："
+        + "skill-once-per-turn.js 必须先于 battle-card-playability.js 加载");
+    }
+    return registry;
+  };
+
+  const blockedByUsage = (actor, card, battle) =>
+    oncePerTurnRegistry().blocked(actor, card, battle);
 
   function blockedByHand(actor, card, hasHand) {
     if ((card.bloodPact || card.elranaBag || card.ailengBet || card.elranaHeal)

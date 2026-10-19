@@ -41,10 +41,17 @@ function visit(node, parent, file) {
   });
 }
 
+const { sharedFileNames, sharedOrderFailures } = require("./publish-bundle-shared");
 const groups = Object.values(manifest);
 const manifestFiles = groups.flat();
 const rootScripts = fs.readdirSync(sourceDir).filter(file => file.endsWith(".js")).sort();
-if (new Set(manifestFiles).size !== manifestFiles.length) failures.push("bundle manifest contains duplicate source files");
+const duplicates = manifestFiles
+  .filter((file, index) => manifestFiles.indexOf(file) !== index)
+  .filter(file => !sharedFileNames.includes(file));
+if (duplicates.length) {
+  failures.push(`bundle manifest contains duplicate source files: ${duplicates.join(", ")}`);
+}
+failures.push(...sharedOrderFailures(manifest));
 const missing = rootScripts.filter(file => !manifestFiles.includes(file));
 const extra = manifestFiles.filter(file => !rootScripts.includes(file));
 if (missing.length || extra.length) {

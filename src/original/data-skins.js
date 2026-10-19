@@ -35,6 +35,9 @@ window.GameSkinData = (() => {
     { id: "angelica_level_10_special", charId: "angelica", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/angelica-level-10-special.3b5baca5.webp", desc: "安洁莉卡达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "nanali_default", charId: "nanali", name: "默认", quality: "default", price: 0, art: "./assets/images/nanali-portrait.d0a3e4da.webp", desc: "娜娜莉的初始外观。", initial: true },
     { id: "nanali_slaughter_witch", charId: "nanali", name: "杀戮魔女", quality: "epic", price: 10, art: "./assets/generated/nanali-slaughter-witch.f48f8fc2.webp", dynamicEffect: "nanali-slaughter-witch", specialEffect: true, desc: "纯白长发与红黑恶魔角在尸骸洞穴中染上血色微光，巨型魔刀“阿波罗”刀背倒刺狰狞，刀格的猩红独眼锁定猎物。" },
+    { id: "nanali_level_10_special", charId: "nanali", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/nanali-level-10-special.e0976401.webp", desc: "娜娜莉达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "preshi_default", charId: "preshi", name: "默认", quality: "default", price: 0, art: "./assets/images/preshi-portrait.97741e33.webp", desc: "普雷希的初始外观。", initial: true },
+    { id: "preshi_level_10_special", charId: "preshi", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/preshi-level-10-special.20133612.webp", desc: "普雷希达到10级后自动解锁，可作为正式战斗立绘装备。" },
   ];
   return { quality, skins };
 })();

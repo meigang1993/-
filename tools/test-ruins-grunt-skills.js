@@ -10,6 +10,9 @@ const {
 installGlobals();
 loadRuntime();
 [
+  // ruins-enemy-skills.js 的 isSkillBlocked 走 SkillOncePerTurn 登记表，
+  // 缺登记表时直接抛错（非静默放行），所以必须先加载它。
+  "skill-once-per-turn.js",
   "battle-status-card-registry.js",
   "battle-status-card-storage.js",
   "battle-status-card-triggers.js",

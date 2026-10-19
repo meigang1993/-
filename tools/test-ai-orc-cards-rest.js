@@ -11,7 +11,7 @@ const {
 installGlobals();
 loadRuntime();
 [
-  "battle-card-playability.js", "battle-combat-targeting.js",
+  "skill-once-per-turn.js", "battle-card-playability.js", "battle-combat-targeting.js",
 ].forEach(file => vm.runInThisContext(
   fs.readFileSync(`./src/original/${file}`, "utf8"), { filename: file }));
 

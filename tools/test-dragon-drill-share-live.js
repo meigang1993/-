@@ -132,17 +132,38 @@ async function run() {
       })()`);
       let handled = false;
       try {
-        const prompt = page.locator(".dimension-prompt").first();
-        if (await prompt.count() && await prompt.isVisible()) {
+        // 交牌类已统一为手牌区底部提示条（.discard-prompt），居中浮层
+        // .dimension-prompt 已移除；改用 kaiichiShare 状态判断是否等待交牌。
+        const sharing = await page.evaluate(
+          `!!(window.state.battle && window.state.battle.kaiichiShare)`);
+        if (sharing) {
           if (MODE === "give") {
             const cards = page.locator(".hand.active-hand .play-card");
-            if (await cards.count()) await cards.first().click();
+            let clicked = false;
+            if (await cards.count()) {
+              try { await cards.first().click({ timeout: 2000 }); clicked = true; }
+              catch (e) { clicked = false; }
+            }
             await page.waitForTimeout(150);
-            const ally = page.locator(`[data-target="${out.setup.allyUid}"]`).first();
-            if (await ally.count()) await ally.first().click();
+            if (clicked) {
+              const ally = page.locator(`[data-target="${out.setup.allyUid}"]`).first();
+              if (await ally.count()) {
+                try { await ally.first().click({ timeout: 2000 }); }
+                catch (e) { /* 交牌目标不可点则回退到不交 */ }
+              }
+            }
+            // 兜底：若选牌/交牌都没能完成，点「不交」避免永久挂起
+            const stillSharing = await page.evaluate(
+              `!!(window.state.battle && window.state.battle.kaiichiShare)`);
+            if (stillSharing) {
+              const skip = page.locator("[data-kaiichi-share-skip]").first();
+              if (await skip.count()) {
+                try { await skip.click({ timeout: 2000 }); } catch (e) { /* ignore */ }
+              }
+            }
           } else {
             const skip = page.locator("[data-kaiichi-share-skip]").first();
-            if (await skip.count()) await skip.click();
+            if (await skip.count()) await skip.click({ timeout: 2000 });
           }
           handled = true;
         }

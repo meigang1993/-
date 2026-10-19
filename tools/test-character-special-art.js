@@ -15,6 +15,8 @@ const expectedSpecialArt = {
   wendy_level_10_special: ["wendy", "./assets/generated/wendy-level-10-special.8b3d47ab.webp"],
   elrana_level_10_special: ["elrana", "./assets/generated/elrana-level-10-special.812773fa.webp"],
   angelica_level_10_special: ["angelica", "./assets/generated/angelica-level-10-special.3b5baca5.webp"],
+  nanali_level_10_special: ["nanali", "./assets/generated/nanali-level-10-special.e0976401.webp"],
+  preshi_level_10_special: ["preshi", "./assets/generated/preshi-level-10-special.20133612.webp"],
 };
 
 function verifySpecialArt(charId, skinId, art) {

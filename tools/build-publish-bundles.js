@@ -49,12 +49,22 @@ function readSources(files) {
   }));
 }
 
+// 允许同一份零依赖模块被打进多个 bundle（见 publish-bundle-shared.js）：
+// 跨包共享的登记表如果只存在于先加载的包里，后加载的包一旦被调整到前面就会因
+// 取不到全局而抛错。共享文件必须纯声明式、重复执行幂等，且排在消费方之前。
+const { sharedFileNames, sharedOrderFailures } = require("./publish-bundle-shared");
+
 function validateManifest() {
-  const groups = Object.values(manifest).flat();
-  const duplicates = groups.filter((file, index) => groups.indexOf(file) !== index);
+  const bundles = Object.entries(manifest);
+  const groups = bundles.flatMap(([, files]) => files);
+  const duplicates = groups
+    .filter((file, index) => groups.indexOf(file) !== index)
+    .filter(file => !sharedFileNames.includes(file));
   if (duplicates.length) throw new Error(`Duplicate bundle sources: ${[...new Set(duplicates)].join(", ")}`);
+  const orderFailures = sharedOrderFailures(manifest);
+  if (orderFailures.length) throw new Error(orderFailures.join("; "));
   const expected = listJavaScript(sourceDir).sort();
-  const actual = [...groups].sort();
+  const actual = [...new Set(groups)].sort();
   if (JSON.stringify(expected) !== JSON.stringify(actual)) {
     const missing = expected.filter(file => !actual.includes(file));
     const extra = actual.filter(file => !expected.includes(file));

@@ -18,6 +18,7 @@ global.GameEconomy = { shop: { defaultCardPrice: 500 } };
 vm.runInThisContext(fs.readFileSync("src/original/data-cards.js", "utf8"));
 global.GameData = { cardCodex: GameDataCards.cardCodex };
 vm.runInThisContext(fs.readFileSync("src/original/card-utils.js", "utf8"));
+vm.runInThisContext(fs.readFileSync("src/original/skill-once-per-turn.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/battle-card-playability.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/wendy-skills.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/cadicis-skill-utils.js", "utf8"));
@@ -104,8 +105,10 @@ battle.wendyTutorPicker.cardName = tacticNames[0];
 const tutorTargetHtml = pickers.wendyTutorPicker(battle);
 assert(!tutorTargetHtml.includes("armory-popup"), "Wendy tutor hand-off must not use the centered popup");
 assert(!tutorTargetHtml.includes("data-wendy-tutor-target"), "Wendy tutor hand-off buttons must be gone");
-assert(tutorTargetHtml.includes("dimension-prompt") && tutorTargetHtml.includes(tacticNames[0]),
-  "Wendy tutor hand-off should be a prompt banner naming the picked card");
+// 交牌环节已统一为手牌区底部提示条（见 ui-hand-view.js），picker 不再渲染任何浮层；
+// 底部条「已选择<牌名>」的文案由 test-give-card-prompt-bar-only-live.js 实机校验。
+assert(tutorTargetHtml === "",
+  "Wendy tutor hand-off renders no overlay; the hand panel shows the prompt bar");
 delete battle.wendyTutorPicker;
 
 const overlayCss = fs.readFileSync("publish/battle-overlays.css", "utf8");
@@ -221,9 +224,12 @@ battle.ailengDrillPicker = { actorUid: ally.uid, card: { name: "演练牌" } };
 const drillHtml = pickers.ailengDrillPicker(battle);
 assert(!drillHtml.includes("armory-popup"), "Aileng drill must not use the centered popup");
 assert(!drillHtml.includes("data-aileng-drill-target"), "Aileng drill hand-off buttons must be gone");
-assert(drillHtml.includes("dimension-prompt") && drillHtml.includes("演练牌"),
-  "Aileng drill should be a prompt banner naming the drilled card");
-assert(drillHtml.includes("data-aileng-drill-skip"), "Aileng drill must keep its skip button");
+// 交牌类统一为手牌区底部提示条（ui-hand-view.js），pickers 侧不再渲染任何浮层。
+// 提示条写明牌名 + 保留「不交」按钮由 test-give-card-no-popup-live.js 覆盖。
+assert(drillHtml.trim() === "",
+  "Aileng drill must render no centered popup; the hand-panel prompt bar carries it");
+assert(!drillHtml.includes("data-aileng-drill-skip"),
+  "Aileng drill skip button lives in the hand-panel prompt, not the picker");
 delete battle.ailengDrillPicker;
 
 battle.animQueue = [{ type: "pending-animation" }];
@@ -236,7 +242,9 @@ assert(!CadicisSkills.resolveResponsibility(state, 0)
 "Cadicis responsibility must reject hand input while its prompt is hidden");
 battle.animQueue = [];
 const cadicisPrompt = pickers.cadicisResponsibilityPicker(battle);
-assert(cadicisPrompt.includes("从手牌区选择") && !cadicisPrompt.includes("data-cadicis-give-index"), "Cadicis picker should direct selection to the character hand area");
+// 统一口径：交牌类不渲染居中浮层，提示改由手牌区底部提示条承载
+assert(cadicisPrompt.trim() === "" && !cadicisPrompt.includes("data-cadicis-give-index"),
+  "Cadicis picker renders no centered popup; selection is directed to the hand panel");
 delete battle.cadicisResponsibility;
 
 battle.animQueue = [{ type: "pending-animation" }];
@@ -244,7 +252,9 @@ battle.dimensionTransfer = {};
 assert(!pickers.dimensionPicker(battle),
   "dimension transfer prompt must stay hidden while effects are pending");
 battle.animQueue = [];
-assert(pickers.dimensionPicker(battle).includes("次元转移"), "dimension transfer prompt should render");
+// 次元转移同样改为手牌区底部提示条（ui-hand-view.js），pickers 侧不再渲染浮层
+assert(pickers.dimensionPicker(battle).trim() === "",
+  "dimension transfer renders no centered popup; the hand-panel prompt carries it");
 delete battle.dimensionTransfer;
 
 battle.animQueue = [{ type: "pending-animation" }];
@@ -252,7 +262,9 @@ battle.opheliaGuard = {};
 assert(!pickers.opheliaGuardPicker(battle),
   "Ophelia guard prompt must stay hidden while effects are pending");
 battle.animQueue = [];
-assert(pickers.opheliaGuardPicker(battle).includes("为我护驾"), "Ophelia guard prompt should render");
+// 为我护驾发生在敌方回合，提示条由手牌区空态面板承载（ui-hand.js）
+assert(pickers.opheliaGuardPicker(battle).trim() === "",
+  "Ophelia guard renders no centered popup; the empty-hand panel carries it");
 BattleEffects.animating = true;
 assert(!pickers.opheliaGuardPicker(battle),
   "Ophelia guard prompt must stay hidden during an active animation");
@@ -264,19 +276,21 @@ BattleEffects.draining = false;
 delete battle.opheliaGuard;
 
 battle.newMoonShare = { unitUid: ally.uid, count: 2 };
-assert(pickers.newMoonPicker(battle).includes("新月之歌"), "new moon prompt should render");
+assert(pickers.newMoonPicker(battle).trim() === "",
+  "New moon share renders no centered popup; the hand-panel prompt carries it");
 delete battle.newMoonShare;
 
 battle.gerdaComfort = { unitUid: ally.uid };
 const gerdaPrompt = pickers.gerdaComfortPicker(battle);
-assert(gerdaPrompt.includes("data-gerda-comfort-skip=\"1\"")
-  && gerdaPrompt.includes("其他队友") && !gerdaPrompt.includes("男性"),
-"Gerda Comfort prompt should allow every other teammate and retain decline");
+// 萌虎慰劳改为手牌区底部提示条，skip 按钮随提示条一起渲染（ui-hand-view.js）
+assert(gerdaPrompt.trim() === "",
+  "Gerda Comfort renders no centered popup; the hand-panel prompt carries it");
 delete battle.gerdaComfort;
 
 battle.kaiichiShare = { unitUid: ally.uid, maxCount: 2, indexes: [0] };
 const kaiichiShareHtml = pickers.kaiichiSharePicker(battle);
-assert(kaiichiShareHtml.includes("至多2张") && kaiichiShareHtml.includes("一次性交出") && kaiichiShareHtml.includes("当前已选1张"), "Kaiichi share prompt must describe one batch of up to two cards for one ally");
+assert(kaiichiShareHtml.trim() === "",
+  "Kaiichi share renders no centered popup; the hand-panel prompt describes the batch");
 delete battle.kaiichiShare;
 
 const dualBackflip = { name: "后空翻", type: "response", suit: "♠", backflip: true, text: "测试双重响应身份。" };

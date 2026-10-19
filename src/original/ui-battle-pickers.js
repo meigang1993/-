@@ -10,69 +10,50 @@ window.GameUIBattlePickers = U => {
     const picker = battle.wendyTutorPicker;
     if (!picker) return "";
     if (picker.cardName) {
-      // 交牌环节统一口径：不再弹居中窗口，改为提示条 + 直接点击角色
+      // 交牌环节统一口径：不渲染居中浮层，只保留手牌区底部提示条
       // （点温蒂自己＝加入自己手牌，点队友＝交给该队友）。
-      const actor = battle.allies.concat(battle.enemies).find(unit => unit.uid === picker.uid);
-      return `<div class="dimension-prompt"><b>解答迷惑</b><span>已选择${U.esc(picker.cardName)}，点击一名队友交给TA，或点击${U.esc(actor?.name || "温蒂")}自己加入其手牌。</span></div>`;
+      return "";
     }
     const cards = window.WendyCadicisSkills?.tutorPool?.(window.state) || (GameData.cardCodex || []).filter(card => card.type === "tactic");
     return `<div class="armory-popup"><div class="armory-card"><h2>解答迷惑</h2><p class="muted">从全部${cards.length}张正式战术牌中选择1张，再选择加入自己手牌或交给队友。</p><div class="armory-options" ${scrollKey(`wendy:${picker.uid}:cards`)}>${cards.map(card => `<button class="armory-option" data-wendy-tutor-card="${U.esc(card.name)}"><b>${U.esc(card.name)}</b><span>${U.esc(card.text)}</span></button>`).join("")}</div></div></div>`;
   }
   function ailengDrillPicker(battle) {
-    const picker = battle.ailengDrillPicker;
-    if (!picker) return "";
-    const actor = battle.allies.concat(battle.enemies)
-      .find(unit => unit.uid === picker.actorUid);
-    // 交牌类统一口径：不再弹居中窗口，改为提示条 + 直接点击队友交出，
+    // 交牌类统一口径：不渲染居中浮层，只保留手牌区底部提示条
     // 与【半魅魔血】【新月之歌】【收获分享】【指挥官责任】保持一致。
-    return `<div class="dimension-prompt"><b>战斗演练</b><span>${U.esc(actor?.name || "艾伦格")}使用了${U.esc(picker.card?.name || "卡牌")}，请点击一名队友将这张牌交给TA。</span><button data-aileng-drill-skip="1">不交</button></div>`;
+    return "";
   }
   function catherineStealPicker(battle) {
-    const picker = battle.catherineStealPicker;
-    if (!picker) return "";
-    const units = battle.allies.concat(battle.enemies);
-    const victim = units.find(unit => unit.uid === picker.targetUid);
-    // 窃取统一为「先点敌方角色、再点我方角色」：接收队友的居中弹窗已删除，
-    // 改为提示条 + 直接点击我方角色（与战斗演练、解答迷惑交牌同一口径），
-    // 点「放弃」按钮则不转移任何牌。
-    return `<div class="dimension-prompt"><b>窃取</b><span>已指定${U.esc(victim?.name || "敌方角色")}，请点击一名我方角色接收其手牌。</span><button data-catherine-receiver-skip="1">放弃</button></div>`;
+    // 窃取统一为「先点敌方角色、再点我方角色」：不渲染居中浮层，
+    // 只保留手牌区底部提示条（与战斗演练、解答迷惑交牌同一口径）。
+    return "";
   }
   function cadicisResponsibilityPicker(battle) {
-    const picker = battle.cadicisResponsibility;
-    if (!picker || window.WendyCadicisSkills?.responsibilityVisible?.(battle) === false) return "";
-    const cadicis = battle.allies.find(unit => unit.uid === picker.cadicisUid);
-    const target = battle.allies.find(unit => unit.uid === picker.targetUid);
-    return `<div class="dimension-prompt"><b>指挥官责任</b><span>${U.esc(cadicis?.name || "卡迪西斯")}还需从手牌区选择${picker.remaining || 1}张牌交给${U.esc(target?.name || "目标")}。</span></div>`;
+    // 交牌类统一口径：不渲染居中浮层，只保留手牌区底部提示条。
+    return "";
   }
   function dimensionPicker(battle) {
-    if (!battle.dimensionTransfer
-      || window.MannySkills?.dimensionTransferVisible?.(battle) === false) return "";
-    return `<div class="dimension-prompt"><b>次元转移</b><span>${battle.dimensionTransfer.costIndex == null ? "请先从曼妮手牌中选择1张黑色牌" : "已选择黑色牌，请指定一名敌人承受本次伤害"}</span></div>`;
+    // 次元转移统一为手牌区底部提示条（与交牌类同一口径），不渲染居中浮层。
+    // 两步进度（是否已选黑色牌）改由底部提示条文案承载，见 ui-hand-view.js。
+    if (battle.dimensionTransfer) return "";
+    return "";
   }
   function opheliaGuardPicker(battle) {
-    return battle.opheliaGuard
-      && window.GuestCharacterSkills?.guardVisible?.(battle) !== false
-      ? `<div class="dimension-prompt"><b>为我护驾</b><span>请选择一名其他我方角色替奥菲莉亚护驾</span></div>`
-      : "";
+    // 为我护驾统一为底部提示条：护驾发生在敌方回合，当前行动人是敌方单位，
+    // 手牌区会渲染空态面板（见 ui-hand.js），居中浮层改由该空态面板承载。
+    // 与交牌类（半魅魔血/战斗演练/窃取等）保持同一口径。
+    return "";
   }
   function newMoonPicker(battle) {
-    const picker = battle.newMoonShare;
-    const unit = picker && battle.allies.find(item => item.uid === picker.unitUid);
-    if (!picker || !unit) return "";
-    const selected = (picker.indexes || []).length;
-    return `<div class="dimension-prompt"><b>新月之歌</b><span>${U.esc(unit.name)}已选${selected}/${picker.count}张牌；选满后点击队友交出，或选择不交。</span></div>`;
+    // 交牌类统一口径：不渲染居中浮层，只保留手牌区底部提示条。
+    return "";
   }
   function gerdaComfortPicker(battle) {
-    const picker = battle.gerdaComfort;
-    const unit = picker && battle.allies.find(item => item.uid === picker.unitUid);
-    return picker && unit ? `<div class="dimension-prompt gerda-comfort-prompt"><b>萌虎慰劳</b><span>请选择一名其他队友，双方各摸2张牌；也可以放弃。</span><button data-gerda-comfort-skip="1">放弃</button></div>` : "";
+    // 萌虎慰劳统一为手牌区底部提示条（与交牌类同一口径），不渲染居中浮层。
+    return "";
   }
   function kaiichiSharePicker(battle) {
-    const picker = battle.kaiichiShare;
-    const unit = picker && battle.allies.find(item => item.uid === picker.unitUid);
-    if (!picker || !unit || window.HoshinoSkills?.shareVisible?.(battle) === false) return "";
-    const selected = (picker.indexes || []).length;
-    return `<div class="dimension-prompt"><b>半魅魔血</b><span>选择至多${picker.maxCount}张手牌，再点击一名其他队友一次性交出；当前已选${selected}张。</span><button data-kaiichi-share-skip="1">不交</button></div>`;
+    // 交牌类统一口径：不渲染居中浮层，只保留手牌区底部提示条。
+    return "";
   }
   function millerSlot(battle) {
     const slot = battle.millerSlot;

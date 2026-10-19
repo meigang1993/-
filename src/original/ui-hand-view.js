@@ -20,8 +20,20 @@ window.GameUIHandView = (() => {
       const useSlash = battle.handReveal.mode === "borrowSlashChoice";
       return `<span class="discard-prompt">借刀杀人：从${U.esc(actor.name)}的手牌区选择${useSlash ? "实际使用的单体杀牌" : "要获得的1张手牌"}。</span>`;
     }
+    if (modes.ailengDrill) {
+      return `<span class="discard-prompt">战斗演练：${U.esc(actor.name)}使用了${U.esc(battle.ailengDrillPicker?.card?.name || "卡牌")}，点击一名队友将这张牌交给TA。</span><button data-aileng-drill-skip="1">不交</button>`;
+    }
+    if (modes.catherineSteal) {
+      const victim = battle.allies.concat(battle.enemies)
+        .find(unit => unit.uid === battle.catherineStealPicker?.targetUid);
+      return `<span class="discard-prompt">窃取：已指定${U.esc(victim?.name || "敌方角色")}，请点击一名我方角色接收其手牌。</span><button data-catherine-receiver-skip="1">放弃</button>`;
+    }
+    if (modes.wendyTutor) {
+      return `<span class="discard-prompt">解答迷惑：已选择${U.esc(battle.wendyTutorPicker?.cardName || "战术牌")}，点击一名队友交给TA，或点击${U.esc(actor.name)}自己加入其手牌。</span>`;
+    }
     if (modes.dimensionTransfer) {
-      return `<span class="discard-prompt">次元转移：选择1张黑色手牌，再点击一名敌方角色转移伤害。</span><button data-dimension-transfer-skip="1">放弃发动</button>`;
+      const pickedCost = battle.dimensionTransfer?.costIndex != null;
+      return `<span class="discard-prompt">次元转移：${pickedCost ? "已选择黑色牌，请点击一名敌方角色承受本次伤害" : "请先从手牌中选择1张黑色牌"}。</span><button data-dimension-transfer-skip="1">放弃发动</button>`;
     }
     if (modes.kaiichiShare) {
       return `<span class="discard-prompt">半魅魔血：已选${picks.kaiichi.length}/${battle.kaiichiShare.maxCount}张，选择至多2张后点击一名队友一次性交出。</span><button data-kaiichi-share-skip="1">不交</button>`;
@@ -34,6 +46,9 @@ window.GameUIHandView = (() => {
     }
     if (modes.millerShare) {
       return `<span class="discard-prompt">收获分享：已选${picks.miller.length}/${needDiscard}张，点队友交出，或直接弃置。</span><button data-miller-discard="1" ${picks.miller.length ? "" : "disabled"}>直接弃置</button>`;
+    }
+    if (modes.gerdaComfort) {
+      return `<span class="discard-prompt">萌虎慰劳：点击一名其他队友，双方各摸2张牌；也可以放弃。</span><button data-gerda-comfort-skip="1">放弃</button>`;
     }
     if (modes.hammer) {
       return `<span class="discard-prompt">霹雳之锤：点击一张手牌弃置，令刚被闪抵消的杀强制造成伤害。</span><button class="ghost" data-cancel-hammer="1">放弃发动</button>`;

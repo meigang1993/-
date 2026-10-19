@@ -74,7 +74,9 @@ const stealOpenTpl = `(() => {
   return { handled, foeBefore, foeAfter: foe.hand.length,
     picker: !!b.catherineStealPicker, locked: !!b.locked,
     hasPopup: !!el, text: el?.innerText || "",
-    promptText: document.querySelector(".dimension-prompt")?.textContent || "",
+    // 窃取已改为手牌区底部提示条（居中浮层移除），两者都取以兼容
+    promptText: document.querySelector(".dimension-prompt")?.textContent
+      || document.querySelector(".hand-panel .discard-prompt")?.textContent || "",
     hasReceiver: !!document.querySelector("[data-catherine-receiver]"),
     hasSkip: !!document.querySelector("[data-catherine-receiver-skip]"),
     selectable: [...document.querySelectorAll("[data-target].selectable-target")]

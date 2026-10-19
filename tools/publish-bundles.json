@@ -220,6 +220,7 @@
     "battle-damage-hit.js",
     "battle-damage.js",
     "character-skill-access.js",
+    "skill-once-per-turn.js",
     "battle-card-playability.js",
     "battle-combat-targeting.js",
     "green-hat.js",
@@ -270,6 +271,7 @@
     "battle-victory.js"
   ],
   "battle-skills": [
+    "skill-once-per-turn.js",
     "battle-line-data.js",
     "new-character-line-data.js",
     "battle-line-intro.js",

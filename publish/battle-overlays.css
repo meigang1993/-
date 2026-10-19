@@ -83,10 +83,17 @@
 .battle-locked.kaiichi-sharing > .dimension-prompt button { opacity: 1; }
 /* 交牌类（战斗演练 / 解答迷惑）改为提示条 + 点击队友：解锁我方单位行的点击 */
 .battle-locked.ally-picking > .ally-row,
+.battle-locked.ally-picking > .hand-panel,
 .battle-locked.ally-picking > .dimension-prompt { filter: none; opacity: 1; pointer-events: auto; }
+.battle-locked.ally-picking > .hand-panel button,
 .battle-locked.ally-picking > .dimension-prompt button { opacity: 1; }
 .battle-screen.battle-locked.gerda-comforting:not(.dimension-transfering):not(.ophelia-guarding):not(.manual-dodge-active):not(.kaiichi-sharing) > .ally-row,
 .battle-locked.gerda-comforting > .dimension-prompt { filter: none; opacity: 1; pointer-events: auto; }
+/* 为我护驾 / 萌虎慰劳：居中浮层已移除，改由手牌区底部提示条承载。
+   不解除置灰与 pointer-events 的话提示条会发暗，慰劳的「放弃」按钮也点不动。 */
+.battle-locked.ophelia-guarding > .hand-panel,
+.battle-locked.gerda-comforting > .hand-panel { filter: none; opacity: 1; pointer-events: auto; }
+.battle-locked.gerda-comforting > .hand-panel button { opacity: 1; }
 .defeat-popup { position: absolute; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(5,0,10,.72); backdrop-filter: blur(4px); pointer-events: auto; }
 .defeat-card { width: min(360px, 82vw); display: grid; gap: 12px; justify-items: center; padding: 26px; border-radius: 24px; background: linear-gradient(180deg, rgba(72,14,35,.96), rgba(20,5,28,.96)); border: 1px solid rgba(255,255,255,.22); box-shadow: 0 24px 80px rgba(0,0,0,.55); text-align: center; animation: popIn .32s ease-out; }
 .defeat-card h2 { color: #ff6c8f; font-size: 32px; text-shadow: 0 0 18px rgba(255,55,110,.7); }

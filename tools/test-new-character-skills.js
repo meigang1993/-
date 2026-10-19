@@ -7,6 +7,7 @@ const {
 installGlobals();
 loadRuntime();
 vm.runInThisContext(fs.readFileSync("./src/original/battle-card-cleanup.js", "utf8"), { filename: "battle-card-cleanup.js" });
+vm.runInThisContext(fs.readFileSync("./src/original/skill-once-per-turn.js", "utf8"), { filename: "skill-once-per-turn.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/battle-card-playability.js", "utf8"), { filename: "battle-card-playability.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/battle-combat-targeting.js", "utf8"), { filename: "battle-combat-targeting.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/battle-turn-state.js", "utf8"), { filename: "battle-turn-state.js" });

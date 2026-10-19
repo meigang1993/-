@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { sharedFileNames } = require("./publish-bundle-shared.js");
 
 function load(publish, file, context) {
   const code = fs.readFileSync(path.join(publish, file), "utf8");
@@ -44,7 +45,11 @@ function validateScripts(publish, sourceDir, unique, fail, dependencies) {
     const startupGroups = Object.keys(manifest)
       .filter(group => group === "startup" || group.startsWith("startup-"));
     scripts = Object.values(manifest).flat();
-    unique(scripts.map(src => ({ src })), "src", "bundle source");
+    // 共享白名单内的文件允许同时存在于多个 bundle（自给自足、幂等），
+    // 因此不参与「一个源文件只能归属一个包」的唯一性判定；
+    // 它们在各包内的装配顺序由 check-split-assembly 的 sharedOrderFailures 单独校验。
+    const sharedSet = new Set(sharedFileNames);
+    unique(scripts.filter(src => !sharedSet.has(src)).map(src => ({ src })), "src", "bundle source");
     scripts.forEach(src => {
       if (!fs.existsSync(path.join(sourceDir, src))) fail(`Bundle manifest references missing source: ${src}`);
     });

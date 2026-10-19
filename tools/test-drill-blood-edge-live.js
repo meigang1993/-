@@ -171,10 +171,12 @@ async function run() {
       } catch (e) { /* ignore */ }
       if (!handled) {
         try {
-          const prompt = page.locator(".dimension-prompt").first();
-          if (await prompt.count() && await prompt.isVisible()) {
+          // 交牌类已统一为手牌区底部提示条，居中浮层 .dimension-prompt 已移除
+          const sharing = await page.evaluate(
+            `!!(window.state.battle && window.state.battle.kaiichiShare)`);
+          if (sharing) {
             const skip = page.locator("[data-kaiichi-share-skip]").first();
-            if (await skip.count()) await skip.click();
+            if (await skip.count()) await skip.click({ timeout: 2000 });
             handled = true;
           }
         } catch (e) { /* ignore */ }

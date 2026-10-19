@@ -56,7 +56,8 @@ const setupTpl = `(() => {
     const bb = window.state && window.state.battle;
     if (!bb) return;
     // 玩家真正看得见的交牌弹窗：DOM 提示条（.dimension-prompt）或手牌区提示
-    const promptEl = document.querySelector(".dimension-prompt");
+    const promptEl = [...document.querySelectorAll(".hand-panel .discard-prompt")]
+      .find(n => /半魅魔血/.test(n.textContent || "")) || null;
     const visible = !!promptEl && promptEl.offsetParent !== null;
     window.__samples.push({
       t: Date.now(),

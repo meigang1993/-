@@ -69,7 +69,7 @@ const dumpTpl = `(() => {
     picker: !!b.catherineStealPicker, locked: !!b.locked,
     used: !!b.allies[0].usedCatherineSteal,
     hasReceiver: !!document.querySelector("[data-catherine-receiver]"),
-    promptText: document.querySelector(".dimension-prompt")?.textContent || "",
+    promptText: document.querySelector(".hand-panel .discard-prompt")?.textContent || "",
     selectable: [...document.querySelectorAll("[data-target].selectable-target")]
       .map(node => node.dataset.target) };
 })()`;
@@ -114,7 +114,7 @@ const dumpTpl = `(() => {
   // 提示条与可选高亮都在 render 之后才落到 DOM，固定 sleep 会采到出牌前的旧界面
   // （表现为敌人仍被标成可选、提示条为空）。改为等提示条真正出现。
   await page.waitForFunction(
-    () => !!document.querySelector(".dimension-prompt"), null, { timeout: 8000 })
+    () => !!document.querySelector(".hand-panel .discard-prompt"), null, { timeout: 8000 })
     .catch(() => {});
   const afterFoe = await page.evaluate(dumpTpl);
   T("点击敌方角色后进入接收者选择阶段",
@@ -176,7 +176,7 @@ const dumpTpl = `(() => {
     window.BattleTurnState.cleanupPrompts(b);
     window.render();
     return { before, picker: !!b.catherineStealPicker, locked: !!b.locked,
-      prompt: !!document.querySelector(".dimension-prompt") };
+      prompt: !!document.querySelector(".hand-panel .discard-prompt") };
   })()`);
   T("回合流转前 picker 与锁定确实存在（前提）",
     stale.before.picker === true && stale.before.locked === true, stale);

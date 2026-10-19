@@ -15,7 +15,10 @@ window.GameUIHandState = (() => {
       || (showCadicisResponsibility
         ? battle.cadicisResponsibility.cadicisUid : null)
       || battle.newMoonShare?.unitUid
-      || battle.millerShare?.unitUid;
+      || battle.millerShare?.unitUid
+      || battle.ailengDrillPicker?.actorUid
+      || battle.catherineStealPicker?.actorUid
+      || battle.wendyTutorPicker?.uid;
     const actor = transferUid
       ? battle.allies.find(unit => unit.uid === transferUid)
       : BattleSystem.active(battle);
@@ -29,7 +32,12 @@ window.GameUIHandState = (() => {
       cadicisShare: showCadicisResponsibility
         && battle.cadicisResponsibility?.cadicisUid === actor.uid,
       millerShare: battle.millerShare?.unitUid === actor.uid,
+      ailengDrill: battle.ailengDrillPicker?.actorUid === actor.uid,
+      catherineSteal: battle.catherineStealPicker?.actorUid === actor.uid,
+      wendyTutor: !!battle.wendyTutorPicker?.cardName
+        && battle.wendyTutorPicker?.uid === actor.uid,
       borrowChoice,
+      gerdaComfort: battle.gerdaComfort?.unitUid === actor.uid,
       hammer: battle.thunderHammer?.actorUid === actor.uid,
       extractStart: battle.phase === 1 && battle.awaitingExtractUid === actor.uid,
       mimicStart: battle.phase === 1 && battle.awaitingMimicUid === actor.uid,
@@ -37,7 +45,8 @@ window.GameUIHandState = (() => {
         && battle.awaitingSpeedAssaultUid === actor.uid,
     };
     modes.transferLocked = modes.dimensionTransfer || modes.kaiichiShare
-      || modes.cadicisShare || modes.borrowChoice;
+      || modes.cadicisShare || modes.borrowChoice
+      || modes.ailengDrill || modes.catherineSteal || modes.wendyTutor;
     modes.discard = battle.phase === 5 && !modes.share && !modes.cadicisShare || modes.hammer;
     modes.playable = battle.phase === 4 || modes.extractStart || modes.mimicStart
       || modes.speedStart || modes.dimensionTransfer || modes.share || modes.kaiichiShare

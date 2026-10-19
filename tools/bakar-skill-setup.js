@@ -38,6 +38,7 @@ window.BattleCards = {
   "src/original/data-relics.js",
   "src/original/relics.js",
   "src/original/battle-draw-feedback.js",
+  "src/original/skill-once-per-turn.js",
   "src/original/battle-card-playability.js",
   "src/original/battle-combat-targeting.js",
   "src/original/bakar-relic-skills.js",

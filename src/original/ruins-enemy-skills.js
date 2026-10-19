@@ -97,11 +97,15 @@ window.RuinsEnemySkills = (() => {
   // 通用日志先于技能效果打印，若不在日志前拦截，守卫命中时会留下
   // 「使用了N次但只生效一次」的误导性日志。
   function isSkillBlocked(actor, card) {
-    if (!actor || !card) return false;
-    if (card.ruinsPlaceLandmine) return !!actor.usedRuinsLandmine;
-    if (card.ruinsSnipe) return !!actor.usedRuinsSnipe;
-    if (card.ruinsTankShell) return !!actor.usedRuinsTankShell;
-    return false;
+    // 统一走 SkillOncePerTurn 登记表：全项目「出牌阶段限一次」只有一份登记，
+    // 新增技能不必再来这里补分支（旧的三条已并入登记表）。
+    // 缺登记表时直接抛错而非静默放行（静默=用过了还能用，且无报错）。
+    const registry = window.SkillOncePerTurn;
+    if (!registry?.blocked) {
+      throw new Error("[skill-once-per-turn] 登记表未装配："
+        + "skill-once-per-turn.js 必须先于 ruins-enemy-skills.js 加载");
+    }
+    return !!registry.blocked(actor, card);
   }
 
   function useSkillCard(state, actor, target, card, damage) {

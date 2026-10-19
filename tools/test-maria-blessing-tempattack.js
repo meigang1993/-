@@ -6,7 +6,7 @@ const {
 
 installGlobals();
 loadRuntime();
-["battle-card-cleanup.js", "battle-card-playability.js", "battle-combat-targeting.js",
+["battle-card-cleanup.js", "skill-once-per-turn.js", "battle-card-playability.js", "battle-combat-targeting.js",
   "battle-turn-state.js", "battle-discard-flow.js", "battle-end-phase.js",
   "artina-maria-skills.js"].forEach(file => {
   vm.runInThisContext(fs.readFileSync(`./src/original/${file}`, "utf8"), { filename: file });

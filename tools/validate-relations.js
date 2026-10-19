@@ -145,7 +145,7 @@ context.RelicSystem.all({ resources: { relics: [] }, equipment: {} }).forEach(da
 });
 const dependencies = [
   ["economy-config.js", "data-cards.js", "card-utils.js"],
-  ["battle-card-playability.js", "battle-combat-targeting.js", "battle-combat.js"],
+  ["skill-once-per-turn.js", "battle-card-playability.js", "battle-combat-targeting.js", "battle-combat.js", "ruins-enemy-skills.js"],
   ["battle-card-cleanup.js", "battle-combat-card-effects.js", "battle-combat-attack-values.js", "battle-combat-attack-flow.js", "battle-combat-attack.js", "battle-combat-resolver.js", "battle-combat.js"],
   ["data-characters-core.js", "data-characters.js"],
   ["data-machine-factory-enemies.js", "data-world.js"],

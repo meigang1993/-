@@ -66,11 +66,13 @@ const domTpl = `(() => {
   const popup = document.querySelector(".armory-popup");
   const prompts = [...document.querySelectorAll(".dimension-prompt")]
     .map(node => node.textContent || "");
+  const bars = [...document.querySelectorAll(".hand-panel .discard-prompt")]
+    .map(node => node.textContent || "");
   const skip = document.querySelector("[data-aileng-drill-skip]");
   const selectable = [...document.querySelectorAll("[data-target]")]
     .filter(node => node.classList.contains("selectable-target"))
     .map(node => node.dataset.target);
-  return { hasPopup: !!popup, prompts, skip: !!skip, selectable };
+  return { hasPopup: !!popup, prompts, bars, skip: !!skip, selectable };
 })()`;
 
 const drillAfterTpl = `(() => {
@@ -115,10 +117,12 @@ const tutorDomTpl = `(() => {
   const popup = document.querySelector(".armory-popup");
   const prompts = [...document.querySelectorAll(".dimension-prompt")]
     .map(node => node.textContent || "");
+  const bars = [...document.querySelectorAll(".hand-panel .discard-prompt")]
+    .map(node => node.textContent || "");
   const selectable = [...document.querySelectorAll("[data-target]")]
     .filter(node => node.classList.contains("selectable-target"))
     .map(node => node.dataset.target);
-  return { hasPopup: !!popup, prompts, selectable };
+  return { hasPopup: !!popup, prompts, bars, selectable };
 })()`;
 
 const tutorAfterTpl = `(() => {
@@ -153,7 +157,7 @@ const tutorAfterTpl = `(() => {
   console.log(`[战斗演练-DOM] 弹窗=${dom.hasPopup} 提示条=${JSON.stringify(dom.prompts)} 可选=${JSON.stringify(dom.selectable)}`);
   T("战斗演练：不再出现居中弹窗", dom.hasPopup === false, dom);
   T("战斗演练：出现提示条并写明牌名",
-    dom.prompts.some(text => text.includes("战斗演练") && text.includes("杀（普攻）")), dom);
+    dom.bars.some(text => text.includes("战斗演练") && text.includes("杀（普攻）")), dom);
   T("战斗演练：保留「不交」按钮", dom.skip === true, dom);
   T("战斗演练：队友被标为可选目标", dom.selectable.includes(teammateUid), dom);
 
@@ -201,7 +205,7 @@ const tutorAfterTpl = `(() => {
   console.log(`[解答迷惑-DOM] 弹窗=${tutorDom1.hasPopup} 提示条=${JSON.stringify(tutorDom1.prompts)} 可选=${JSON.stringify(tutorDom1.selectable)}`);
   T("解答迷惑：选定牌名后不再弹窗", tutorDom1.hasPopup === false, tutorDom1);
   T("解答迷惑：出现交牌提示条",
-    tutorDom1.prompts.some(text => text.includes("解答迷惑") && text.includes(pick.name)),
+    tutorDom1.bars.some(text => text.includes("解答迷惑") && text.includes(pick.name)),
     tutorDom1);
   T("解答迷惑：我方角色被标为可选目标",
     tutorDom1.selectable.includes(teammateUid), tutorDom1);
