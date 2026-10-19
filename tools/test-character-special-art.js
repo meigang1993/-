@@ -5,19 +5,35 @@ global.window = global;
 require("../src/original/data-skins.js");
 require("../src/original/skins.js");
 
-const expectedSpecialArt = {
-  lokar_level_10_special: ["lokar", "./assets/generated/lokar-level-10-special.2be685ee.webp"],
-  besta_doll_level_10_special: ["besta_doll", "./assets/generated/besta-doll-level-10-special.7d69a6be.webp"],
-  bertis_level_10_special: ["bertis", "./assets/generated/bertis-level-10-special.022dd113.webp"],
-  nonoka_level_10_special: ["nonoka", "./assets/generated/nonoka-level-10-special.ba4c8ff8.webp"],
-  manny_level_10_special: ["manny", "./assets/generated/manny-level-10-special.a8c2eeed.webp"],
-  flora_level_10_special: ["flora", "./assets/generated/flora-level-10-special.075896ea.webp"],
-  wendy_level_10_special: ["wendy", "./assets/generated/wendy-level-10-special.8b3d47ab.webp"],
-  elrana_level_10_special: ["elrana", "./assets/generated/elrana-level-10-special.812773fa.webp"],
-  angelica_level_10_special: ["angelica", "./assets/generated/angelica-level-10-special.3b5baca5.webp"],
-  nanali_level_10_special: ["nanali", "./assets/generated/nanali-level-10-special.e0976401.webp"],
-  preshi_level_10_special: ["preshi", "./assets/generated/preshi-level-10-special.20133612.webp"],
-};
+// 期望表不再硬编码：直接由 data-skins.js 派生，新增等级立绘无需改动本文件。
+// 统一命名/字段校验放在 verifyRegistry 里，保证所有条目口径一致。
+const expectedSpecialArt = Object.fromEntries(
+  SkinSystem.skins.filter(skin => skin.specialIllustration)
+    .map(skin => [skin.id, [skin.charId, skin.art]]));
+
+function verifyRegistry() {
+  const specials = SkinSystem.skins.filter(skin => skin.specialIllustration);
+  assert(specials.length > 0, "至少要有一条等级特殊立绘登记");
+  const seen = new Set();
+  specials.forEach(skin => {
+    assert(!seen.has(skin.charId), `${skin.charId} 不能重复登记等级立绘`);
+    seen.add(skin.charId);
+    assert.strictEqual(skin.id, `${skin.charId}_level_${skin.unlockLevel}_special`,
+      `${skin.id} 必须遵循 {charId}_level_{N}_special 命名`);
+    assert.strictEqual(skin.unlockLevel, 10, `${skin.id} 的解锁等级必须为 10`);
+    assert.strictEqual(skin.name, "特殊立绘", `${skin.id} 的名称必须为「特殊立绘」`);
+    assert.strictEqual(skin.quality, "special", `${skin.id} 的品质必须为 special`);
+    assert.strictEqual(skin.price, 0, `${skin.id} 必须免费（等级自动解锁）`);
+    assert(/^\.\/assets\/generated\/[a-z0-9_-]+-level-\d+-special\.[0-9a-f]{8}\.webp$/
+      .test(skin.art), `${skin.id} 的美术路径必须统一为 generated 目录下的 hash webp`);
+    assert(fs.existsSync(`./publish/${skin.art.slice(2)}`),
+      `${skin.id} 的图片必须真实存在`);
+    assert(SkinSystem.skins.some(item =>
+      item.charId === skin.charId && item.initial),
+    `${skin.charId} 缺少默认外观，等级立绘会无处回落`);
+  });
+}
+verifyRegistry();
 
 function verifySpecialArt(charId, skinId, art) {
   const skin = SkinSystem.byId(skinId);

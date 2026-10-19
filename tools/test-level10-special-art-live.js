@@ -4,6 +4,7 @@
 //   这两张图来自远端上传，必须确认真的渲染出来，而不只是数据登记正确。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
+const fs = require("fs");
 const path = require("path");
 const { chromium } = require("playwright");
 const { openGame, startFreshGame, dismissOpeningStory } = require(
@@ -14,20 +15,26 @@ function check(name, cond, extra) {
   return cond ? 1 : 0;
 }
 
-const CASES = [
-  {
-    charId: "nanali",
-    name: "娜娜莉",
-    skinId: "nanali_level_10_special",
-    art: "./assets/generated/nanali-level-10-special.e0976401.webp",
-  },
-  {
-    charId: "preshi",
-    name: "普雷希",
-    skinId: "preshi_level_10_special",
-    art: "./assets/generated/preshi-level-10-special.20133612.webp",
-  },
-];
+// 用例不再硬编码：由 data-skins.js 派生，新增等级立绘自动纳入实机验证。
+global.window = global;
+["data-characters-core", "data-characters-extra", "data-future-characters",
+  "data-new-characters"].forEach(f => {
+  const p = path.join(__dirname, "..", "src/original", `${f}.js`);
+  if (fs.existsSync(p)) require(p);
+});
+require(path.join(__dirname, "..", "src/original/data-characters.js"));
+require(path.join(__dirname, "..", "src/original/data-skins.js"));
+
+const CHAR_NAMES = new Map(
+  window.GameDataCharacters.map(c => [c.id, c.name]));
+const CASES = window.GameSkinData.skins
+  .filter(s => s.specialIllustration)
+  .map(s => ({
+    charId: s.charId,
+    name: CHAR_NAMES.get(s.charId) || s.charId,
+    skinId: s.id,
+    art: s.art,
+  }));
 
 // 设定角色等级并打开该角色的皮肤商店
 const openAtLevel = (charId, level) => `(() => {
