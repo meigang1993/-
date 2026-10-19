@@ -72,11 +72,13 @@ window.GameUIBattleScene = (U, I) => {
     // 否则 .battle-locked 会让它们 pointer-events:none，点了完全没反应。
     const allyPicking = !!battle.ailengDrillPicker || !!battle.wendyTutorPicker?.cardName
       || !!battle.catherineStealPicker;
+    // 渴血杀戮选定牌名后要点敌方角色：敌方单位行同样要放开点击。
+    const enemyPicking = !!battle.mieryulaBloodthirstPicker?.cardName;
     const handSharing = visible.kaiichiVisible || visible.responsibilityVisible
-      || visible.dimensionVisible || borrowChoice || allyPicking;
+      || visible.dimensionVisible || borrowChoice || allyPicking || enemyPicking;
     const headshotPending = battle.judgement?.skill === "爆头一击"
       || battle.animQueue?.some(event => event.type === "judgement" && event.skill === "爆头一击");
-    return `${battle.locked ? "battle-locked" : ""} ${headshotPending ? "headshot-pending" : ""} ${visible.dimensionVisible ? "dimension-transfering" : ""} ${visible.guardVisible ? "ophelia-guarding" : ""} ${battle.gerdaComfort ? "gerda-comforting" : ""} ${visible.kaiichiVisible ? "kaiichi-sharing" : ""} ${visible.reactionPending ? "reaction-prompt-pending" : ""} ${handSharing ? "hand-sharing" : ""} ${allyPicking ? "ally-picking" : ""} ${battle.manualDodge || battle.manualCounter || battle.counterTrigger || battle.recklessPrompt || battle.risaEyePrompt || battle.landmineRpsPrompt || ["magicBullet", "magicBulletReveal"].includes(battle.handReveal?.mode) ? "manual-dodge-active" : ""}`;
+    return `${battle.locked ? "battle-locked" : ""} ${headshotPending ? "headshot-pending" : ""} ${visible.dimensionVisible ? "dimension-transfering" : ""} ${visible.guardVisible ? "ophelia-guarding" : ""} ${battle.gerdaComfort ? "gerda-comforting" : ""} ${visible.kaiichiVisible ? "kaiichi-sharing" : ""} ${visible.reactionPending ? "reaction-prompt-pending" : ""} ${handSharing ? "hand-sharing" : ""} ${allyPicking ? "ally-picking" : ""} ${enemyPicking ? "enemy-picking" : ""} ${battle.manualDodge || battle.manualCounter || battle.counterTrigger || battle.recklessPrompt || battle.risaEyePrompt || battle.landmineRpsPrompt || ["magicBullet", "magicBulletReveal"].includes(battle.handReveal?.mode) ? "manual-dodge-active" : ""}`;
   }
   function skillCaption(battle) {
     const captions = battle.skillCaptions || (battle.skillCaption ? [battle.skillCaption] : []);

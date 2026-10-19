@@ -65,6 +65,18 @@ function chooseCatherineReceiver(uid) {
   if (!window.CatherineSkills?.chooseReceiver?.(state, uid)) return;
   BattleSystem.checkEnd(state); render(); setTimeout(() => persist({ battleOperation: true }), 0);
 }
+// 渴血杀戮（米尔尤拉）：牌名只能从牌库里挑，故这一步保留弹窗；
+// 选定后进入「点击敌方角色」环节，与解答迷惑同口径，不再弹第二层窗口。
+function chooseMieryulaSlashCard(name) {
+  if (!state.battle?.mieryulaBloodthirstPicker
+    || state.battle.mieryulaBloodthirstPicker.cardName) return;
+  if (window.MieryulaSkills?.chooseBloodthirstCard?.(state, name)) render();
+}
+function chooseMieryulaSkip() {
+  if (!state.battle?.mieryulaBloodthirstPicker) return;
+  if (!window.MieryulaSkills?.cancelBloodthirst?.(state)) return;
+  render(); setTimeout(() => persist({ battleOperation: true }), 0);
+}
 async function skipCadicisResponsibility() {
   const actionState = state;
   if (!actionState.battle?.cadicisResponsibility

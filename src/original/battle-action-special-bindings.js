@@ -31,6 +31,21 @@ window.BattleActionSpecialBindings = (() => {
         chooseCatherineReceiver(null);
       },
     );
+    document.querySelectorAll("[data-mieryula-slash]").forEach(button => {
+      button.onpointerdown = event => {
+        event.preventDefault();
+        event.stopPropagation();
+        chooseMieryulaSlashCard(button.dataset.mieryulaSlash);
+      };
+    });
+    // 渴血杀戮的「不发动」出现在两处：牌名弹窗内与底部提示条，统一绑定。
+    document.querySelectorAll("[data-mieryula-skip]").forEach(button => {
+      button.onpointerdown = event => {
+        event.preventDefault();
+        event.stopPropagation();
+        chooseMieryulaSkip();
+      };
+    });
     document.querySelector("[data-aileng-drill-skip]")?.addEventListener(
       "pointerdown",
       event => {

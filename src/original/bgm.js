@@ -8,6 +8,9 @@ window.GameBGM = (() => {
   const audio = new Audio();
   audio.loop = true; audio.volume = 0.42; audio.preload = "auto";
   let current = "", pending = "", enabled = false, fadeId = 0;
+  // 时停等效果可临时挂起 BGM：按 reason 计数，最后一个解除时恢复。
+  const suspends = new Set();
+  let lastState = null;
   function loadSrc(src) {
     audio.loop = true;
     audio.src = src;
@@ -82,6 +85,8 @@ window.GameBGM = (() => {
     loadSrc(src); audio.currentTime = 0; audio.volume = 0; playCurrent();
   }
   function update(state) {
+    lastState = state || lastState;
+    if (suspends.size) { if (!audio.paused) pauseForSuspend(); return; }
     const targetVolume = clampVolume((Number(state?.settings?.musicVolume ?? 80) || 0) / 100 * .9);
     const key = keyFor(state), src = tracks[key] || key;
     if (!src) return stopCurrent();
@@ -100,6 +105,21 @@ window.GameBGM = (() => {
     if (!current || audio.paused) return switchNow();
     fadeTo(0, 250, token, switchNow);
   }
+  function pauseForSuspend() {
+    const token = ++fadeId;
+    fadeTo(0, 200, token, () => {
+      if (token === fadeId && suspends.size) audio.pause();
+    });
+  }
+  function suspend(reason) {
+    const had = suspends.size;
+    suspends.add(reason || "default");
+    if (!had && !audio.paused) pauseForSuspend();
+  }
+  function resume(reason) {
+    if (!suspends.delete(reason || "default")) return;
+    if (!suspends.size) update(lastState);
+  }
   function stopCurrent() {
     pending = ""; current = ""; const token = ++fadeId;
     if (audio.paused) return;
@@ -112,5 +132,5 @@ window.GameBGM = (() => {
   }
   document.addEventListener("pointerdown", unlock, { once: true });
   document.addEventListener("click", unlock, { once: true });
-  return { update, setVolume, unlock, playCurrent, primeBattle, battleTrack };
+  return { update, setVolume, unlock, playCurrent, primeBattle, battleTrack, suspend, resume };
 })();

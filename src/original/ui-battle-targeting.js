@@ -43,6 +43,7 @@ window.GameUIBattleTargeting = (() => {
     const ailengDrill = battle.ailengDrillPicker;
     const catherineSteal = battle.catherineStealPicker;
     const tutorReady = !!battle.wendyTutorPicker?.cardName;
+    const bloodthirstReady = !!battle.mieryulaBloodthirstPicker?.cardName;
     const millerOwner = millerShare
       && battle.allies.find(unit => unit.uid === millerShare.unitUid);
     const millerReady = !!millerShare?.cards?.length
@@ -62,6 +63,9 @@ window.GameUIBattleTargeting = (() => {
     // 窃取：已点过敌方角色后，接收者改为直接点击我方其他角色（弹窗已删除）。
     else if (catherineSteal) allowed = unitData.side === "ally" && unitData.hp > 0
       && unitData.uid !== catherineSteal.actorUid;
+    // 渴血杀戮：选定牌名后点击敌方角色打出虚拟牌，故敌方须标成可选。
+    else if (bloodthirstReady) allowed = unitData.side !== actorSide(battle)
+      && unitData.hp > 0;
     else if (share) allowed = (share.indexes || []).length === share.count
       && unitData.side === "ally" && unitData.uid !== share.unitUid;
     else if (card?.mimicVoice) allowed = unitData.uid !== battle.activeUid;
@@ -101,8 +105,11 @@ window.GameUIBattleTargeting = (() => {
     // 隐身中的希尔德不可被单体【杀】指定：与逻辑层 chooseTarget 同一判定源，
     // 否则会出现「点得到但点了没反应」。
     if (allowed && window.RuinsEnemySkills?.blocksKillTarget?.(unitData, card)) allowed = false;
+    // 渴血杀戮：选定牌名后没有选中手牌也没有技能牌（selectedSkillCard 已在
+    // 出牌结算里清空），若不放行这里，敌方单位不会被标成 selectable-target，
+    // 虽然没有高亮也能点，但玩家看不出该点谁——与窃取/狙击同一类问题。
     return (kaiichiShare || gerdaComfort || millerShare || share || ailengDrill
-      || tutorReady || catherineSteal
+      || tutorReady || catherineSteal || bloodthirstReady
       || battle.selectedCardIndex != null || battle.selectedSkillCard) && allowed;
   }
 

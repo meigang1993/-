@@ -20,6 +20,8 @@ const eventIds = [
   "hoshino_yi", "hoshino_kaiichi", "artina", "maria", "hitwell",
   // 普雷希：首次击败机械AI龙后返回别墅触发事件解锁
   "preshi",
+  // 米尔尤拉：首次击败XX型凋零者1312号后返回大厅触发事件解锁
+  "mieryula",
 ];
 // 前置角色解锁后自动加入，无独立解锁入口（凯瑟琳：曼妮解锁后自动加入）
 const autoIds = ["catherine"];
@@ -27,9 +29,9 @@ const autoIds = ["catherine"];
 function assertRosterPartition() {
   const ids = GameData.characters.map(character => character.id);
   const routes = [...initialIds, ...nurseryIds, ...eventIds, ...autoIds];
-  assert(ids.length === 31 && new Set(ids).size === 31,
-    "the playable roster must contain 31 unique characters");
-  assert(routes.length === 31 && new Set(routes).size === 31,
+  assert(ids.length === 32 && new Set(ids).size === 32,
+    "the playable roster must contain 32 unique characters");
+  assert(routes.length === 32 && new Set(routes).size === 32,
     "every playable character must have exactly one unlock route");
   assert([...routes].sort().join(",") === [...ids].sort().join(","),
     "the unlock-route matrix must cover the complete playable roster");
@@ -73,7 +75,7 @@ async function testAllCharactersUnlock() {
   for (const id of [
     "miller", "gerlot", "cadicis", "luka", "little_elrana", "ace",
     "underwater_train", "ophelia", "chiyo_recruit", "hoshino_family",
-    "ruins_sand_city", "hitwell", "preshi",
+    "ruins_sand_city", "hitwell", "preshi", "mieryula",
   ]) {
     const result = await ServerCore.call("unlockEvent", { id }, state);
     assert(result.changed, `${id} must complete its character unlock route`);

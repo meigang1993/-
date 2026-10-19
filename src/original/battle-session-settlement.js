@@ -19,6 +19,9 @@ window.BattleSessionSettlement = ({
   }
 
   async function finishBattle(state, win, skipVictory = false) {
+    // 时停标记若在战斗结束时仍未解除，GameBGM 的 suspend 令牌会永久残留，
+    // 回到大厅后整局静音（suspends 非空就一直 pause）。这里无条件清理。
+    window.MieryulaTimeStop?.clear?.(state);
     if (!win) {
       getCombat().checkDefeat(state);
       return;

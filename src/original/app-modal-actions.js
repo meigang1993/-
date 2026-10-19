@@ -15,6 +15,7 @@ function completeClosableEventModal() {
     ruinsSandCityUnlock: window.completeRuinsSandCityUnlockEvent,
     hitwellUnlock: window.completeHitwellUnlockEvent,
     preshiUnlock: window.completePreshiUnlockEvent,
+    mieryulaUnlock: window.completeMieryulaUnlockEvent,
     newGameIntro: window.completeNewGameIntroEvent,
     firstVictory: window.completeFirstVictoryEvent,
   };

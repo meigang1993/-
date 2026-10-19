@@ -96,6 +96,18 @@ window.BattleCombat = (deps) => {
       && !window.WithererSkills?.canUseTongueActive?.(state, actor, target, useCard)) return false;
     if (card?.armyOrder
       && !window.BakarSkills?.canUseArmyOrder?.(state, actor, card, useCard)) return false;
+    // 米尔尤拉【无谋霸姬】：战术牌对她无效。牌照常消耗（从手牌移出、进弃牌堆），
+    // 但效果一步都不结算 —— 所以必须拦在所有 specials/effects 分支之前。
+    if (window.MieryulaSkills?.interceptTactic?.(state, actor, target, card)) {
+      if (!card._skill && !card._skipHandMove) {
+        const handIndex = actor.hand.indexOf(card);
+        if (handIndex >= 0) actor.hand.splice(handIndex, 1);
+        putCard(state, actor, card, card.type === "consume" || card.copiedByEdis || card.void
+          ? "consumed" : "discard", {});
+      }
+      card._countAsPlayed = true;
+      return false;
+    }
     state.battle.testRecovery = false; if (actor.hand.includes(card)) card._playedFromHand = true; window.WithererSkills?.convertBerserkCard?.(state, actor, card); if (!card._skill) { window.AngelicaLukaSkills?.beforeCardPlayed?.(state, actor, card); window.ArtinaMariaSkills?.beforeCardPlayed?.(state, actor, card, deps); } window.CatherineSkills?.beforeCardPlayed?.(state, actor, card); window.RuinsEnemySkills?.beforeCardPlayed?.(state, actor, card); window.PreshiSkills?.beforeCardPlayed?.(state, actor, card, target);
     window.EdisSkills?.rememberPrePlayHand?.(actor, card);
     window.WithererSkills?.prepareSpeedCard?.(state, actor, card);
@@ -107,6 +119,7 @@ window.BattleCombat = (deps) => {
     if (window.FloraCarlosSkills?.handleSpecialCard?.(state, actor, target, card, deps, { ...specialCtx, damage })) { card._countAsPlayed = true; return; }
     if (window.BertisGerlotSkills?.handleSpecialCard?.(state, actor, target, card, deps, { ...specialCtx, damage })) { card._countAsPlayed = true; return; }
     if (window.PreshiSkills?.handleSpecialCard?.(state, actor, target, card, deps, { ...specialCtx, damage })) { card._countAsPlayed = true; return; }
+    if (window.MieryulaSkills?.handleSpecialCard?.(state, actor, target, card, deps, { ...specialCtx, damage })) { card._countAsPlayed = true; return; }
     if (window.WendyCadicisSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, pushFloat, selectedHand })) { card._countAsPlayed = true; return; }
     if (window.LokarSkills?.handleSpecialCard?.(state, actor, target, card, deps, specialCtx)) { card._countAsPlayed = true; return; }
     if (window.MillerSkills?.handleSpecialCard?.(state, actor, target, card, deps)) { card._countAsPlayed = true; return; }

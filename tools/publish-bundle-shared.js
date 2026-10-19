@@ -16,6 +16,11 @@ const SHARED_SOURCES = [
     file: "skill-once-per-turn.js",
     consumers: ["battle-card-playability.js", "ruins-enemy-skills.js"],
   },
+  // 时停标记表与登记表同理：battle-rules 的置灰判据读它，battle-skills 的技能逻辑写它。
+  {
+    file: "mieryula-time-stop.js",
+    consumers: ["battle-card-playability.js", "mieryula-skills.js"],
+  },
 ];
 
 const sharedFileNames = SHARED_SOURCES.map(entry => entry.file);

@@ -86,6 +86,25 @@ window.NewCharacterUnlockEvents = (() => {
     return eventView("preshiUnlock", state, "魅魔女王的加油机", ["lokar", "preshi"], lines,
       "事件结束后，普雷希加入角色栏。", "带普雷希同行", "preshi-unlock-complete");
   }
+  function mieryulaUnlock(state) {
+    const lines = [
+      ["罗卡尔", "你是谁，在我门口做什么？"],
+      ["米尔尤拉", "我的妈妈，普雷希，是不是来了？"],
+      ["罗卡尔", "二姨妈的女儿吗？"],
+      ["米尔尤拉", "居然还有比较少见的男魅魔呀，听说大姨妈用科技生了一大堆男魅魔果然是真的。"],
+      ["罗卡尔", "二姨妈好像不在家，要不要我们进去？我妈妈还有曼妮姐姐应该都在家。"],
+      ["米尔尤拉", "谢谢你哦，小表弟。你看起来很帅，要不要让我尝尝你的血？"],
+      ["罗卡尔", "……！你这是什么意思，你是吸血鬼？"],
+      ["米尔尤拉", "我有渴血症，需要喝血，身体才有力气。不过我喜欢喝帅哥的血。对了，我爸爸艾伦格，是不是也来过？"],
+      ["罗卡尔", "嗯，是来过。妈妈有困难，舅舅来帮妈妈的。姐姐都醒了，舅舅就去天日国出差了。"],
+      ["米尔尤拉", "这样啊，看来吸不了爸爸的血了。那我们进去吧。"],
+      ["罗卡尔", "好的，走吧。"],
+      ["米尔尤拉", "不过，到时候让我吸你一口，作为交换，我的下面嘴巴，会让你很舒服的。"],
+      ["罗卡尔", "好……好吧……"],
+    ];
+    return eventView("mieryulaUnlock", state, "嗜血公主来访", ["lokar", "mieryula"], lines,
+      "事件结束后，米尔尤拉加入角色栏。", "带米尔尤拉同行", "mieryula-unlock-complete");
+  }
   function recordDungeonClear(state, run) {
     if (run?.missionId !== "orc_dungeon" || run?.difficultyId !== "adventure" || run?.complete !== true) return false;
     if (state.flags?.hoshinoFamilyUnlockSeen || state.flags?.hoshinoFamilyUnlockPending) return false;
@@ -122,6 +141,12 @@ window.NewCharacterUnlockEvents = (() => {
       state.hallModal = "preshiUnlock";
       return true;
     }
+    // 首次击败XX型凋零者1312号后回到大厅触发；1312号是废墟沙城首领，击败即写入 defeatedElites。
+    const mieryula = state.chars.find(character => character.id === "mieryula");
+    if (mieryula?.locked && defeated(state, "witherer_1312") && !state.flags?.mieryulaUnlockSeen) {
+      state.hallModal = "mieryulaUnlock";
+      return true;
+    }
     return false;
   }
   async function complete(id, message, flashId) {
@@ -145,5 +170,7 @@ window.NewCharacterUnlockEvents = (() => {
   window.completeRuinsSandCityUnlockEvent = () => complete("ruins_sand_city", "废墟沙城已解锁，亚缇娜与玛利亚加入角色栏。", "artina");
   window.completeHitwellUnlockEvent = () => complete("hitwell", "希特威加入角色栏。", "hitwell");
   window.completePreshiUnlockEvent = () => complete("preshi", "普雷希加入角色栏。", "preshi");
-  return { gerdaUnlock, hoshinoUnlock, ruinsSandCityUnlock, hitwellUnlock, preshiUnlock, recordDungeonClear, triggerPending };
+  window.completeMieryulaUnlockEvent = () => complete("mieryula", "米尔尤拉加入角色栏。", "mieryula");
+  return { gerdaUnlock, hoshinoUnlock, ruinsSandCityUnlock, hitwellUnlock, preshiUnlock,
+    mieryulaUnlock, recordDungeonClear, triggerPending };
 })();

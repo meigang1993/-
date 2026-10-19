@@ -4,6 +4,7 @@ window.BattleSaveCheckpointValidation = (() => {
     "selectedBagIndexes", "pendingTargetUid", "pendingTargetUids",
     "comboPartnerUid", "discardPick", "handReveal", "mannyArmoryPicker",
     "wendyTutorPicker", "ailengDrillPicker", "catherineStealPicker", "cadicisResponsibility",
+    "mieryulaBloodthirstPicker",
     "cadicisResponsibilityResume", "manualDodge", "manualDodgeResume",
     "manualCounter", "counterTrigger", "counterTriggerQueue",
     "recklessPrompt", "risaEyePrompt", "landmineRpsPrompt", "thunderHammer",

@@ -4,14 +4,16 @@ module.exports = ({ assert, card, unit }) => {
   const access = window.CharacterSkillAccess;
   const definitions = access.definitions;
   // 26 → 27：新增普雷希正式主动技「女王榨取」。
-  assert(definitions.length === 27,
-    "Character active-skill boundary catalog must cover 24 base and 3 derived skills");
+  // 27 → 29：新增米尔尤拉「渴血杀戮」「神奇怀表」。
+  assert(definitions.length === 29,
+    "Character active-skill boundary catalog must cover 26 base and 3 derived skills");
 
   const formal = GameData.characters.flatMap(character =>
     character.skills.filter(skill => skill.type === "active" && skill.card));
   // 24 → 23：删除卡迪西斯正式主动技「战场指挥官」；23 → 24：新增普雷希「女王榨取」。
-  assert(formal.length === 24,
-    "Character catalog must retain 24 formal active skills");
+  // 24 → 26：新增米尔尤拉「渴血杀戮」「神奇怀表」。
+  assert(formal.length === 26,
+    "Character catalog must retain 26 formal active skills");
   formal.forEach(skill => {
     assert(access.definitionOf(skill.card)?.name === skill.name,
       `${skill.name} must be registered in the active-skill boundary catalog`);

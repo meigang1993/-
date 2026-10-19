@@ -85,9 +85,9 @@ const openManual = async page => {
   await page.locator("[data-butler-tab='hero']").click();
   await page.locator(".butler-hero-grid").waitFor({ state: "visible" });
   const heroCount = await page.locator(".butler-hero").count();
-  T("魅魔目标列出 31 名角色", heroCount === 31, { heroCount });
+  T("魅魔目标列出 32 名角色", heroCount === 32, { heroCount });
   const sum = await page.locator(".butler-sum").textContent();
-  T("显示已满级统计", /已满级：\d+ \/ 31/.test(sum || ""), { sum });
+  T("显示已满级统计", /已满级：\d+ \/ 32/.test(sum || ""), { sum });
 
   await page.locator("[data-butler-tab='explore']").click();
   await page.waitForTimeout(120);

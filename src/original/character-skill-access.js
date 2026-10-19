@@ -27,6 +27,8 @@ window.CharacterSkillAccess = (() => {
     { flags: ["ailengCharge"], name: "充能精华", target: "friendlyFemale" },
     { flags: ["catherineSteal"], name: "窃取", target: "enemy" },
     { flags: ["preshiDrain"], name: "女王榨取", target: "friendlyMale" },
+    { flags: ["mieryulaBloodthirst"], name: "渴血杀戮", target: "friendlyMale" },
+    { flags: ["mieryulaTimeStop"], name: "神奇怀表", target: "self" },
   ];
   const matchesOf = card => definitions.filter(def =>
     def.flags.some(flag => card?.[flag]));

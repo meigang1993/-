@@ -39,7 +39,7 @@ const HEROES = [
   "芙萝娅", "贝尔蒂丝", "娜娜莉", "洛基", "卡洛斯", "米勒", "杰洛特", "鲁卡",
   "卡迪西斯", "艾斯", "奥菲莉亚", "艾伦格", "格尔达", "星野依", "星野海一",
   "索尼娅", "橘千樱", "亚缇娜", "玛利亚", "小艾尔拉娜", "贝丝妲", "凯瑟琳",
-  "希特威", "普雷希",
+  "希特威", "普雷希", "米尔尤拉",
 ];
 const MISSION_NAMES = ["魔国机械工厂", "水下列车", "兽人地下城", "废墟沙城"];
 const DIFF_NAMES = ["普通级", "冒险级", "勇士级", "王者级", "英雄级"];
@@ -90,7 +90,7 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
   }
   const allElite = Object.values(data.groups).flatMap(g => g.elite);
   T("精英共 12 名且与清单一致", allElite.length === 12 && same(allElite, ELITES), allElite);
-  T("魅魔共 31 名且与清单一致", data.heroes.length === 31 && same(data.heroes, HEROES), data.heroes.length);
+  T("魅魔共 32 名且与清单一致", data.heroes.length === 32 && same(data.heroes, HEROES), data.heroes.length);
   T("满级线为 20 级", data.maxLevel === 20, data.maxLevel);
   T(`管家名为「${BUTLER_NAME}」`, data.butlerName === BUTLER_NAME, data.butlerName);
 
@@ -126,7 +126,7 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
   // 魅魔目标
   await tab(page, "hero");
   const heroNames = (await texts(page, ".butler-hero b")).map(s => s.trim());
-  T("魅魔目标列出 31 名", same(heroNames, HEROES), heroNames.length);
+  T("魅魔目标列出 32 名", same(heroNames, HEROES), heroNames.length);
   const lv = await page.locator(".butler-hero small").first().textContent();
   T("等级显示为 X/20", /\/\s*20$/.test((lv || "").trim()), { lv });
 

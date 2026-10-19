@@ -221,6 +221,7 @@
     "battle-damage.js",
     "character-skill-access.js",
     "skill-once-per-turn.js",
+    "mieryula-time-stop.js",
     "battle-card-playability.js",
     "battle-combat-targeting.js",
     "green-hat.js",
@@ -341,7 +342,9 @@
     "guest-characters-skills.js",
     "catherine-skills.js",
     "hitwell-skills.js",
-    "preshi-skills.js"
+    "preshi-skills.js",
+    "mieryula-time-stop.js",
+    "mieryula-skills.js"
   ],
   "battle-flow": [
     "battle-counter-triggers.js",

@@ -66,7 +66,7 @@
 }
 
 .battle-locked:not(.manual-dodge-active):not(.headshot-pending):not(.hand-sharing):not(.reaction-prompt-pending) > :not(.battle-retreat):not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel):not(.defeat-popup):not(.reward-popup):not(.dimension-prompt):not(.manual-dodge-overlay):not(.armory-popup):not(.hand-reveal-overlay):not(.reveal-popup):not(.clash-popup):not(.judgement-popup):not(.unit-row) { filter: grayscale(.85) brightness(.55); pointer-events: none; }
-.battle-locked:not(.dimension-transfering):not(.ophelia-guarding):not(.manual-dodge-active):not(.headshot-pending):not(.kaiichi-sharing):not(.ally-picking):not(.reaction-prompt-pending) .unit-row { filter: grayscale(.85) brightness(.55); pointer-events: none; }
+.battle-locked:not(.dimension-transfering):not(.ophelia-guarding):not(.manual-dodge-active):not(.headshot-pending):not(.kaiichi-sharing):not(.ally-picking):not(.enemy-picking):not(.reaction-prompt-pending) .unit-row { filter: grayscale(.85) brightness(.55); pointer-events: none; }
 .battle-locked:not(.manual-dodge-active):not(.hand-sharing):not(.reaction-prompt-pending) > :not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel):not(.defeat-popup):not(.reward-popup):not(.dimension-prompt):not(.manual-dodge-overlay):not(.armory-popup):not(.hand-reveal-overlay):not(.reveal-popup) button:not([data-retreat]):not([data-return-hall]):not([data-reward-confirm]) { opacity: .35; }
 .battle-locked.reaction-prompt-pending > :not(.battle-retreat):not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel) { pointer-events: none; }
 .battle-locked.reaction-prompt-pending .hand-panel.locked { opacity: 1; }
@@ -87,6 +87,11 @@
 .battle-locked.ally-picking > .dimension-prompt { filter: none; opacity: 1; pointer-events: auto; }
 .battle-locked.ally-picking > .hand-panel button,
 .battle-locked.ally-picking > .dimension-prompt button { opacity: 1; }
+/* 渴血杀戮：选定牌名后点击敌方角色打出虚拟牌，需放开敌方单位行与手牌区
+   （手牌区承载「不发动」按钮），否则 .battle-locked 会让点击完全无反应。 */
+.battle-locked.enemy-picking > .enemy-row,
+.battle-locked.enemy-picking > .hand-panel { filter: none; opacity: 1; pointer-events: auto; }
+.battle-locked.enemy-picking > .hand-panel button { opacity: 1; }
 .battle-screen.battle-locked.gerda-comforting:not(.dimension-transfering):not(.ophelia-guarding):not(.manual-dodge-active):not(.kaiichi-sharing) > .ally-row,
 .battle-locked.gerda-comforting > .dimension-prompt { filter: none; opacity: 1; pointer-events: auto; }
 /* 为我护驾 / 萌虎慰劳：居中浮层已移除，改由手牌区底部提示条承载。

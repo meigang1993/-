@@ -17,6 +17,20 @@ window.GameUIBattlePickers = U => {
     const cards = window.WendyCadicisSkills?.tutorPool?.(window.state) || (GameData.cardCodex || []).filter(card => card.type === "tactic");
     return `<div class="armory-popup"><div class="armory-card"><h2>解答迷惑</h2><p class="muted">从全部${cards.length}张正式战术牌中选择1张，再选择加入自己手牌或交给队友。</p><div class="armory-options" ${scrollKey(`wendy:${picker.uid}:cards`)}>${cards.map(card => `<button class="armory-option" data-wendy-tutor-card="${U.esc(card.name)}"><b>${U.esc(card.name)}</b><span>${U.esc(card.text)}</span></button>`).join("")}</div></div></div>`;
   }
+  function mieryulaBloodthirstPicker(battle) {
+    const picker = battle.mieryulaBloodthirstPicker;
+    if (!picker) return "";
+    // 已选牌名后不渲染居中浮层，只保留手牌区底部提示条：
+    // 与【解答迷惑】交牌环节同一口径，点击敌方角色即打出虚拟杀牌。
+    if (picker.cardName) return "";
+    const names = window.MieryulaSkills?.availableSlashNames?.(window.state,
+      battle.allies.concat(battle.enemies).find(u => u.uid === picker.uid)) || [];
+    const pool = window.MieryulaSkills?.slashPool?.(window.state) || [];
+    return `<div class="armory-popup"><div class="armory-card"><h2>渴血杀戮</h2><p class="muted">选择一项“杀”牌的牌名，随后点击一名敌方角色，视为使用一张该牌名的虚拟牌（不消耗杀意）。本回合每项限一次。</p><div class="armory-options" ${scrollKey(`mieryula:${picker.uid}:cards`)}>${pool.map(card => {
+      const used = !names.includes(card.name);
+      return `<button class="armory-option${used ? " disabled" : ""}" ${used ? "disabled" : ""} data-mieryula-slash="${U.esc(card.name)}"><b>${U.esc(card.name)}</b><span>${U.esc(card.text || "")}</span></button>`;
+    }).join("")}</div><button class="armory-skip" data-mieryula-skip="1">不发动</button></div></div>`;
+  }
   function ailengDrillPicker(battle) {
     // 交牌类统一口径：不渲染居中浮层，只保留手牌区底部提示条
     // 与【半魅魔血】【新月之歌】【收获分享】【指挥官责任】保持一致。
@@ -62,7 +76,7 @@ window.GameUIBattlePickers = U => {
     return `<div class="slot-popup"><div class="slot-card"><b>${U.esc(unit.name)}的贪玩老虎机</b><div class="slot-reels">${slot.rolls.map(value => `<span>${U.esc(value)}</span>`).join("")}</div><p>摸${slot.count}张牌</p></div></div>`;
   }
   return {
-    ailengDrillPicker, armoryPicker, catherineStealPicker,
+    ailengDrillPicker, armoryPicker, catherineStealPicker, mieryulaBloodthirstPicker,
     cadicisResponsibilityPicker,
     dimensionPicker, gerdaComfortPicker, kaiichiSharePicker, millerSlot, newMoonPicker, opheliaGuardPicker,
     wendyTutorPicker,

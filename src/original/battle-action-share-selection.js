@@ -105,8 +105,24 @@ async function resolveCatherineSteal(targetUid) {
   return true;
 }
 
-// 解答迷惑（温蒂）交牌环节：选定牌名后不再弹窗，改为点击角色交出
-// （点温蒂自己＝加入自己手牌，点队友＝交给该队友）。
+// 渴血杀戮（米尔尤拉）：选定牌名后不再弹第二层窗口，改为点击敌方角色
+// 打出该牌名的虚拟牌（不消耗杀意）。牌名只能从牌库挑，故牌名阶段仍保留弹窗。
+async function resolveMieryulaBloodthirst(targetUid) {
+  const actionState = state;
+  const battle = actionState.battle;
+  const prompt = battle?.mieryulaBloodthirstPicker;
+  if (!prompt?.cardName || !targetUid) return false;
+  const ctx = { useCard: window.BattleSystem?.useCard };
+  if (!window.MieryulaSkills?.useBloodthirstVirtual?.(actionState, targetUid, ctx)) {
+    return false;
+  }
+  if (window.state !== actionState || actionState.battle !== battle) return false;
+  BattleSystem.checkEnd(actionState);
+  render();
+  persist({ battleOperation: true });
+  return true;
+}
+
 async function resolveWendyTutor(targetUid) {
   const actionState = state;
   const battle = actionState.battle;

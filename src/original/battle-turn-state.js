@@ -6,14 +6,18 @@ window.BattleTurnState = (() => {
     // 这里兜底解锁，避免弹窗消失但战斗仍锁死。
     const hadLandminePrompt = !!b.landmineRpsPrompt;
     const hadStealPicker = !!b.catherineStealPicker;
+    const hadBloodthirstPicker = !!b.mieryulaBloodthirstPicker;
     b.selectedCardIndex = null; b.selectedCostCardIndex = null; b.selectedSkillCard = null; b.selectedBagIndexes = null; b.pendingTargetUid = null; b.pendingTargetUids = null; b.comboPartnerUid = null;
     b.mannyArmoryPicker = null; b.wendyTutorPicker = null; b.ailengDrillPicker = null; b.cadicisResponsibility = null; b.cadicisResponsibilityResume = null; b.millerSlot = null;
     // 【窃取】接收者选择已改为点击我方角色（弹窗删除），picker 必须随回合流转清空：
     // 否则残留的 picker 会在下一回合劫持玩家对我方角色的点击（误触发转移），
     // 且 battle.locked 也会残留导致界面变灰。与其它 picker 同一口径。
     b.catherineStealPicker = null;
+    // 【渴血杀戮】同理：选牌名/点敌方阶段会锁界面，picker 必须随回合流转清空，
+    // 否则残留的 picker 会在下一回合劫持玩家对敌方角色的点击，locked 也会残留。
+    b.mieryulaBloodthirstPicker = null;
     b.manualDodge = null; b.manualDodgeResume = null; b.manualCounter = null; b.counterTrigger = null; b.counterTriggerQueue = null; delete b._counterTriggerResolving; b.recklessPrompt = null; b.risaEyePrompt = null; b.landmineRpsPrompt = null; b.thunderHammer = null; b.greenGatlingResume = null; b.crazySlaughterResume = null; b.demonInvasionResume = null; b.bakarInvasionCapture = null; b.comboAttackResume = null; b.opheliaGuard = null; b.opheliaGuardUid = null; b.opheliaGuardRedirectUid = null; b.opheliaGuardRepeats = 0; b.dimensionTransfer = null; b.newMoonShare = null; b.gerdaComfort = null; b.millerShare = null; b.kaiichiShare = null; b.kaiichiShareQueue = null; b.kaiichiShareScheduled = false; b.reactionQueue = null; delete b._reactionFlushing; delete b._reactionNested; b.discardPick = null; delete b.endPhaseStep; delete b.endPhaseUnitUid; delete b.prepareUnitUid; delete b.prepareStep; delete b.enemyPrepareUnitUid; delete b.enemyPrepareStep; delete b.enemyPrepareHandled;
-    if ((hadLandminePrompt || hadStealPicker) && !b.pendingVictory && !b.pendingDefeat
+    if ((hadLandminePrompt || hadStealPicker || hadBloodthirstPicker) && !b.pendingVictory && !b.pendingDefeat
       && !b.victoryScreen && !b.defeat) b.locked = false;
   }
   function resetBeginTurn(unit, b, intent) {

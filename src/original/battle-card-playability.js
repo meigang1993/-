@@ -94,6 +94,16 @@ window.BattleCardPlayability = deps => {
   const blockedByUsage = (actor, card, battle) =>
     oncePerTurnRegistry().blocked(actor, card, battle);
 
+  // 时停标记表同样不允许静默放行：缺了它，被时停的角色仍能用技能、仍能响应。
+  const timeStopTable = () => {
+    const table = window.MieryulaTimeStop;
+    if (!table?.isSkillDisabled) {
+      throw new Error("[mieryula-time-stop] 时停模块未装配："
+        + "mieryula-time-stop.js 必须先于 battle-card-playability.js 加载");
+    }
+    return table;
+  };
+
   function blockedByHand(actor, card, hasHand) {
     if ((card.bloodPact || card.elranaBag || card.ailengBet || card.elranaHeal)
       && !hasHand) return true;
@@ -110,6 +120,9 @@ window.BattleCardPlayability = deps => {
 
   function blockedByBattle(actor, card, battle) {
     if (!battle) return false;
+    // 时停：技能失效。无谋霸姬：无法使用战术牌（技能牌除外）。
+    if (timeStopTable().isSkillDisabled(actor)) return true;
+    if (window.MieryulaSkills?.blocksTactic?.(actor, card)) return true;
     const livingPartner = () => sameSideUnits(battle, actor).some(unit => unit.uid !== actor?.uid && unit.hp > 0);
     const livingFemale = () => sameSideUnits(battle, actor).some(unit => unit.gender === "female" && unit.hp > 0);
     const livingMale = () => sameSideUnits(battle, actor).some(unit => unit.gender === "male" && unit.hp > 0);
@@ -122,6 +135,7 @@ window.BattleCardPlayability = deps => {
     if (card.bertisWhip && !livingPartner()) return true;
     if (card.extract && !livingMale()) return true;
     if (card.preshiDrain && !livingMale()) return true;
+    if (card.mieryulaBloodthirst && !livingMale()) return true;
     if ((card.speedAssault || card.withererPeek || card.crazySlaughter
       || card.crimsonRampage || card.bestaEndSlash) && !livingEnemy()) return true;
     if (card.arsenal && !sameSideUnits(battle, actor).some(unit => unit.uid !== actor.uid && unit.hp > 0)) return true;

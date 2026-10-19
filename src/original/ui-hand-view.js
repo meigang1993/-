@@ -28,6 +28,9 @@ window.GameUIHandView = (() => {
         .find(unit => unit.uid === battle.catherineStealPicker?.targetUid);
       return `<span class="discard-prompt">窃取：已指定${U.esc(victim?.name || "敌方角色")}，请点击一名我方角色接收其手牌。</span><button data-catherine-receiver-skip="1">放弃</button>`;
     }
+    if (modes.mieryulaBloodthirst) {
+      return `<span class="discard-prompt">渴血杀戮：已选择${U.esc(battle.mieryulaBloodthirstPicker?.cardName || "杀牌")}，请点击一名敌方角色，视为使用一张该牌名的虚拟牌（不消耗杀意）。</span><button data-mieryula-skip="1">不发动</button>`;
+    }
     if (modes.wendyTutor) {
       return `<span class="discard-prompt">解答迷惑：已选择${U.esc(battle.wendyTutorPicker?.cardName || "战术牌")}，点击一名队友交给TA，或点击${U.esc(actor.name)}自己加入其手牌。</span>`;
     }

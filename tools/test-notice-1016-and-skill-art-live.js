@@ -28,7 +28,7 @@ const check = (name, ok, detail = "") => {
   await startFreshGame(page);
   await dismissOpeningStory(page);
 
-  console.log("\n【一】更新公告：首期为 2026-10-16");
+  console.log("\n【一】更新公告：首期与数据源一致");
   await page.locator('[data-open-modal="updates"]').click();
   await page.waitForTimeout(600);
   const notice = await page.evaluate(() => {
@@ -37,11 +37,18 @@ const check = (name, ok, detail = "") => {
     const sections = Array.from(root.querySelectorAll("section, .update-section, article"));
     const firstDt = root.querySelector("[datetime]")?.getAttribute("datetime") || "";
     const text = (root.textContent || "").replace(/\s+/g, " ");
+    // 首期标题不再写死日期：以数据源为准，避免每次改公告就要改测试。
+    const src = window.UpdateNotice?.latestDate?.() || {};
+    const firstTitle = (window.UpdateNoticeRecent?.[0]?.title || "");
     return {
       firstDt,
-      text: text.slice(0, 1200),
-      has1016: /2026年10月16日|2026\.10\.16/.test(text),
-      has1015: /2026年10月15日/.test(text),
+      srcIso: src.iso || "",
+      srcLabel: src.label || "",
+      firstTitle,
+      text: text.slice(0, 4000),
+      // 首期标题的日期段（如「2026年10月19日 · 今日更新」）
+      firstTitleOnPage: /2026年10月\d+日\s*·\s*今日更新/.test(text),
+      hasLatestIso: new RegExp(src.iso || "__none__").test(firstDt),
       topics: {
         queen: /女王榨取/.test(text),
         beast: /快速装弹/.test(text),
@@ -50,9 +57,11 @@ const check = (name, ok, detail = "") => {
       len: text.length,
     };
   });
-  check("首期日期为 2026-10-16", notice.firstDt === "2026-10-16",
-    `datetime=${notice.firstDt}`);
-  check("页面含 10月16日 且不含 10月15日作为首期", notice.has1016, `has1016=${notice.has1016}`);
+  check("首期 datetime 与数据源 iso 一致", notice.firstDt === notice.srcIso,
+    `datetime=${notice.firstDt} src=${notice.srcIso}`);
+  check("页面含数据源日期文案", notice.hasLatestIso, `src=${notice.srcIso}`);
+  check("首期标题形如「2026年10月X日 · 今日更新」", notice.firstTitleOnPage,
+    `firstTitle=${notice.firstTitle}`);
   check("公告含「女王榨取」立绘条目", notice.topics.queen, JSON.stringify(notice.topics));
   check("公告含「快速装弹」删除条目", notice.topics.beast, JSON.stringify(notice.topics));
   check("公告文本长度合理（非空壳）", notice.len > 200, `len=${notice.len}`);

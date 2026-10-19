@@ -38,6 +38,8 @@ window.GameSkinData = (() => {
     { id: "nanali_level_10_special", charId: "nanali", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/nanali-level-10-special.e0976401.webp", desc: "娜娜莉达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "preshi_default", charId: "preshi", name: "默认", quality: "default", price: 0, art: "./assets/images/preshi-portrait.97741e33.webp", desc: "普雷希的初始外观。", initial: true },
     { id: "preshi_level_10_special", charId: "preshi", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/preshi-level-10-special.20133612.webp", desc: "普雷希达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "mieryula_default", charId: "mieryula", name: "默认", quality: "default", price: 0, art: "./assets/images/mieryula-portrait.38ce3440.webp", desc: "米尔尤拉的初始外观。", initial: true },
+    { id: "mieryula_level_10_special", charId: "mieryula", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/mieryula-level-10-special.62862e21.webp", desc: "米尔尤拉达到10级后自动解锁，可作为正式战斗立绘装备。" },
   ];
   return { quality, skins };
 })();

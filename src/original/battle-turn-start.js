@@ -77,11 +77,18 @@ window.BattleTurnStart = ({
     battle.prepareStep = 0;
     window.BattleTurnState.resetBeginTurn(unit, battle, intentMax(unit));
     window.SakuraRisaSkills?.beginTurn?.(state, unit);
+    window.MieryulaSkills?.onTurnStart?.(state, unit);
     if (battle.locked || window.BattleCounterTriggers?.pending?.(battle)
       || window.BattleReactionQueue?.pending?.(battle)) return unit;
     if (window.GuardKellySkills?.consumeFaceDown?.(state, unit)) {
       window.BattleTurnState.resetBeginTurn(unit, battle, intentMax(unit));
       unit.faceDownTurnSkipped = true;
+      battle.phase = 6;
+      window.BattleTurnState.cleanupTurn(battle, unit, true, allUnits(battle));
+      return unit;
+    }
+    if (window.MieryulaTimeStop?.shouldSkipTurn?.(unit)) {
+      record(state, `${unit.name} 处于时停状态，跳过其回合。`);
       battle.phase = 6;
       window.BattleTurnState.cleanupTurn(battle, unit, true, allUnits(battle));
       return unit;

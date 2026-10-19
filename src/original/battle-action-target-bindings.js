@@ -13,6 +13,11 @@ window.BattleActionTargetBindings = (() => {
     if (battle?.wendyTutorPicker?.cardName) {
       return ["wendyTutorPicker", battle.wendyTutorPicker];
     }
+    // 渴血杀戮：选定牌名后点击敌方角色打出虚拟牌（牌名阶段仍需弹窗，见
+    // battle-prepare-actions.js 的 chooseMieryulaSlashCard）。
+    if (battle?.mieryulaBloodthirstPicker?.cardName) {
+      return ["mieryulaBloodthirstPicker", battle.mieryulaBloodthirstPicker];
+    }
     return null;
   }
 

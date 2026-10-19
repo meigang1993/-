@@ -4,6 +4,7 @@ window.AppRuntimeRecovery = (() => {
     "recklessPrompt", "risaEyePrompt", "landmineRpsPrompt",
     "handReveal", "thunderHammer", "dimensionTransfer", "opheliaGuard",
     "cadicisResponsibility", "wendyTutorPicker", "ailengDrillPicker", "catherineStealPicker",
+    "mieryulaBloodthirstPicker",
     "mannyArmoryPicker", "gerdaComfort", "kaiichiShare", "newMoonShare",
     "millerShare", "discardPick", "pendingVictory", "pendingDefeat",
     "victoryScreen", "defeat", "testComplete",

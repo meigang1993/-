@@ -141,5 +141,15 @@ window.GameDataCharactersExtra = [
       { name: "女王威压", type: "passive", icon: "⭐", text: "锁定技，当你使用的牌指定敌方角色为目标时，若你的手牌数大于该角色，该角色不可响应你的牌。若你的手牌数为全场最多，你使用实体牌造成或受到的伤害为2倍（技能伤害、技能生成的牌与虚拟牌不触发）。" },
       { name: "女王榨取", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以指定我方一名男性角色，对其造成等同于你魔力值的伤害，弃置其所有手牌，然后你摸等量的牌。", card: { name: "女王榨取", type: "tactic", preshiDrain: true, allyTarget: true, icon: "⚔️", text: "指定我方一名男性角色，对其造成等同于你魔力值的伤害，弃置其所有手牌，然后你摸等量的牌。" } }
     ]
+  },
+  {
+    id: "mieryula", name: "米尔尤拉", gender: "female", face: "尤", art: "./assets/images/mieryula-portrait.38ce3440.webp", avatar: "./assets/images/mieryula-portrait.38ce3440.webp", role: "嗜血公主", locked: true, combatRoles: ["输出"],
+    stats: { attack: 4, magic: 2, speed: 5, maxHp: 52, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
+    evaluation: "以队友鲜血换取额外出牌的高攻输出。渴血杀戮对友方男性造成伤害后换取一张不消耗杀意的虚拟杀牌，无谋霸姬让她彻底放弃战术牌并换来稳定的伤害翻倍，神奇怀表提供一次全场时停的控场窗口。",
+    skills: [
+      { name: "渴血杀戮", type: "active", icon: "⚔️", text: "出牌阶段，你可以指定我方一名男性角色，对其造成等同于你攻击力的伤害。之后你可以选择一项“杀”牌的牌名，视为使用一张该牌名的虚拟牌，此牌不消耗杀意。本回合每项限一次。", card: { name: "渴血杀戮", type: "tactic", mieryulaBloodthirst: true, allyTarget: true, icon: "⚔️", text: "指定我方一名男性角色，对其造成等同于你攻击力的伤害，之后选择一项“杀”牌的牌名，视为使用一张该牌名的虚拟牌，此牌不消耗杀意。" } },
+      { name: "无谋霸姬", type: "passive", icon: "⭐", text: "锁定技，战术牌对你无效，你无法使用战术牌。若你手牌中没有战术牌，你使用实体牌或虚拟牌造成的伤害为2倍。" },
+      { name: "神奇怀表", type: "active", icon: "🔺", text: "限定技，出牌阶段，你可以指定所有敌方角色，对其施加“时停”标记。拥有此标记的角色跳过其回合，不可响应，禁用技能等负面效果。在你下一个回合开始时，该标记消失。", card: { name: "神奇怀表", type: "tactic", mieryulaTimeStop: true, targetless: true, icon: "🔺", text: "指定所有敌方角色并施加“时停”标记：被标记的角色跳过其回合、不可响应且技能失效，直到你下一个回合开始时解除。" } }
+    ]
   }
 ];

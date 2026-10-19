@@ -59,6 +59,9 @@ window.BattleDamageResolution = ({
     // 女王威压：手牌为全场最多时，普雷希造成的伤害翻倍。
     amount = window.PreshiSkills?.modifyOutgoingDamage?.(
       state, effectiveActor, amount, effectiveCard) ?? amount;
+    // 无谋霸姬：手牌中没有战术牌时，米尔尤拉的实体牌与虚拟牌伤害翻倍。
+    amount = window.MieryulaSkills?.modifyOutgoingDamage?.(
+      state, effectiveActor, amount, effectiveCard) ?? amount;
     if (!effectiveCard?.skipDamageModify) {
       amount = window.EnemySkills?.modifyDamage(
         state, target, amount, effectiveCard) ?? amount;
@@ -91,14 +94,17 @@ window.BattleDamageResolution = ({
     // 且残留标记会在弃牌堆重洗复用后永久生效。
     const preshiNoResponse = window.PreshiSkills?.suppressesResponse?.(
       state, effectiveActor, target, effectiveCard);
+    // 时停标记：被时停的角色不可响应（与女王威压同一并入点）。
+    const timeStopNoResponse = window.MieryulaTimeStop?.suppressesResponse?.(target)
+      || window.MieryulaTimeStop?.suppressesResponse?.(effectiveActor);
     queueAttackAnim(state, actor, target, effectiveCard);
     if (deps.isKillCard(effectiveCard)
-      && (effectiveCard?.ignoreResponse || preshiNoResponse)) {
+      && (effectiveCard?.ignoreResponse || preshiNoResponse || timeStopNoResponse)) {
       window.BattleLog.add(state,
         `${target.name} 无法使用响应牌响应本次杀。`);
     }
     window.WithererSkills?.refreshShiftState?.(target);
-    const responseCards = !(effectiveCard?.ignoreResponse || preshiNoResponse)
+    const responseCards = !(effectiveCard?.ignoreResponse || preshiNoResponse || timeStopNoResponse)
       && needsResponse(effectiveCard)
       ? (target.noResponse ? [] : target.hand.filter(candidate => canDodge(effectiveCard, candidate)))
       : [];
@@ -124,7 +130,7 @@ window.BattleDamageResolution = ({
     }
     // 神速之翼：对所有"需用【闪】抵消"的牌生效（含【杀】、机枪扫杀、
     // 坦克炮弹等带 responseKind 的牌），与技能描述一致
-    if (!response && !(effectiveCard?.ignoreResponse || preshiNoResponse)
+    if (!response && !(effectiveCard?.ignoreResponse || preshiNoResponse || timeStopNoResponse)
       && needsResponse(effectiveCard)) {
       response = window.FloraCarlosSkills?.dodgeAsFlash?.(
         state, target, actor, effectiveCard,

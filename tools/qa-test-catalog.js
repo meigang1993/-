@@ -50,6 +50,7 @@ const groups = Object.freeze({
   progression: [
     "test-local-core.js",
     "test-unlock-event-progress.js",
+    "test-unlock-chain-consistency.js",
     "test-settlement-recovery.js",
     "test-economy-balance.js",
     "test-balance-values.js",
@@ -253,6 +254,10 @@ const groups = Object.freeze({
   characters: [
     "test-hitwell-skills-strict-live.js",
     "test-preshi-skills-live.js",
+    "test-mieryula-skills-live.js",
+    "test-mieryula-strict-effects-live.js",
+    "test-mieryula-fullchain-live.js",
+    "test-mieryula-bloodthirst-ui-live.js",
     "test-preshi-fullchain-live.js",
     "test-preshi-skills-strict-effects-live.js",
     "test-preshi-drain-click-live.js",

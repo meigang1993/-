@@ -73,6 +73,8 @@ window.CardArt = (() => {
     "热血契约": "./assets/generated/cards/skill-art-blood-pact.d333993a.webp",
     "狂风绝息斩": "./assets/generated/cards/skill-art-wind-execution.b663998e.webp",
     "榨取精华": "./assets/generated/cards/skill-art-essence-extract.ecb49b53.webp",
+    "渴血杀戮": "./assets/generated/cards/skill-art-bloodthirst-slaughter.52cdcdce.webp",
+    "神奇怀表": "./assets/generated/cards/skill-art-magic-watch.8f812c23.webp",
     "次元军火库": "./assets/generated/cards/skill-art-dimension-armory.98680273.webp",
     "贪玩老虎机": "./assets/generated/cards/skill-art-playful-slot.3104c35f.webp",
     "模仿之音": "./assets/generated/cards/skill-art-mimic-voice.ee17d220.webp",

@@ -5,6 +5,7 @@ function battleCardView(actor, card) {
 async function selectBattleTarget(targetUid) {
   if (await resolveAilengDrill(targetUid) || state.battle?.ailengDrillPicker) return;
   if (await resolveCatherineSteal(targetUid) || state.battle?.catherineStealPicker) return;
+  if (await resolveMieryulaBloodthirst(targetUid) || state.battle?.mieryulaBloodthirstPicker?.cardName) return;
   if (await resolveWendyTutor(targetUid) || state.battle?.wendyTutorPicker?.cardName) return;
   if (await resolveKaiichiShare(targetUid) || state.battle?.kaiichiShare) return;
   if (await resolveGerdaComfort(targetUid) || state.battle?.gerdaComfort) return;

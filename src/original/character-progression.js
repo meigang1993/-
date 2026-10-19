@@ -34,6 +34,8 @@ window.CharacterProgression = (() => {
     catherine: { maxHp: 116.84, attack: 7.49, magic: 32.66, speed: 7.3 },
     hitwell: { maxHp: 140.21, attack: 18.73, magic: 32.66, speed: 18.24 },
     preshi: { maxHp: 128.53, attack: 18.73, magic: 32.66, speed: 14.59 },
+    // 专属成长表：每级 生命+10 / 攻击+2 / 魔力+1 / 速度+2（20 级总量）。
+    mieryula: { maxHp: 200, attack: 40, magic: 20, speed: 40 },
     sonia: { maxHp: 175.27, attack: 26.22, magic: 16.32, speed: 20.06 },
     chiyo: { maxHp: 128.53, attack: 26.22, magic: 8.16, speed: 25.54 },
     gerda: { maxHp: 222.00, attack: 14.98, magic: 28.57, speed: 18.24 },

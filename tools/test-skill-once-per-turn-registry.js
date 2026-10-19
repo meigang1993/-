@@ -201,6 +201,56 @@ for (const [name, re, file] of aiRespects) {
     "bundle 分段为串行加载（顺序可被依赖）");
 }
 
+// ── 十、时停模块：与登记表同口径，缺文件抛错 + 打进每个含消费方的 bundle ──
+// 时停表原本只在 battle-skills，而 battle-rules 的置灰判据（技能失效）要读它，
+// 属于与登记表完全同型的跨包依赖，因此一并纳入共享白名单与抛错口径。
+{
+  const skills = read("mieryula-skills.js");
+  const play = read("battle-card-playability.js");
+  const stop = read("mieryula-time-stop.js");
+  const manifest = JSON.parse(fs.readFileSync(
+    path.join(__dirname, "publish-bundles.json"), "utf8"));
+  const shared = require("./publish-bundle-shared.js");
+
+  check(/window\.MieryulaTimeStop\s*=/.test(stop),
+    "时停表为零依赖纯声明式赋值（重复执行幂等）", { sample: stop.slice(0, 80) });
+
+  // 两个消费方都不得再写可选链静默放行
+  check(!/MieryulaTimeStop\?\./.test(skills),
+    "技能模块：时停表取值不得用可选链静默放行");
+  check(!/MieryulaTimeStop\?\./.test(play),
+    "置灰判据：时停表取值不得用可选链静默放行");
+  check(/未装配/.test(skills) && /未装配/.test(play),
+    "两个消费方均带「未装配」抛错文案");
+
+  const file = "mieryula-time-stop.js";
+  check(shared.sharedFileNames.includes(file),
+    "时停表在共享白名单内", { got: shared.sharedFileNames });
+  const groupsWith = f => Object.keys(manifest)
+    .filter(name => Array.isArray(manifest[name]) && manifest[name].includes(f));
+  const entry = shared.SHARED_SOURCES.find(e => e.file === file);
+  for (const consumer of (entry?.consumers || [])) {
+    for (const group of groupsWith(consumer)) {
+      check(groupsWith(file).includes(group),
+        `时停表已打进 ${group}（消费方 ${consumer} 所在包）`,
+        { group, consumer, in: groupsWith(file) });
+    }
+  }
+  check(groupsWith(file).length >= 2, "时停表同时存在于多个 bundle",
+    { groups: groupsWith(file) });
+
+  // 实测：真的在没有时停表的作用域里跑一次，确认是 throw 而不是静默放行
+  const sandbox = { window: {}, console };
+  vm.createContext(sandbox);
+  vm.runInContext(skills, sandbox);
+  let thrown = "";
+  try {
+    sandbox.window.MieryulaSkills.onTurnStart({ battle: { enemies: [], allies: [] } },
+      { ref: "mieryula" });
+  } catch (err) { thrown = String((err && err.message) || err); }
+  check(/时停模块未装配/.test(thrown), "缺时停表时技能模块抛错（非静默放行）", { thrown });
+}
+
 if (failures.length) {
   console.log(`FAIL ${pass} passed, ${failures.length} failed`);
   failures.forEach(line => console.log(`  ✗ ${line}`));

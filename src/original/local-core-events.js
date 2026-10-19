@@ -29,6 +29,7 @@ window.LocalCoreEventOps = (() => {
       ruins_sand_city: () => flags.ruinsSandCityUnlocked,
       hitwell: () => flags.hitwellUnlockSeen && unlocked(core, "hitwell"),
       preshi: () => flags.preshiUnlockSeen && unlocked(core, "preshi"),
+      mieryula: () => flags.mieryulaUnlockSeen && unlocked(core, "mieryula"),
     };
     return window.UnlockEventProgress.isCompleted(core, id) || !!checks[id]?.();
   }
@@ -74,6 +75,7 @@ window.LocalCoreEventOps = (() => {
     else if (id === "ruins_sand_city" && core.flags.ruinsSandCityUnlockPending && character(core, "artina") && character(core, "maria")) { setFlag("ruinsSandCityUnlockSeen"); setFlag("ruinsSandCityUnlocked"); clearFlag("ruinsSandCityUnlockPending"); unlock("artina"); unlock("maria"); }
     else if (id === "hitwell" && core.defeatedElites?.includes("pursuer_edis") && character(core, "hitwell")) { setFlag("hitwellUnlockSeen"); unlock("hitwell"); }
     else if (id === "preshi" && core.defeatedElites?.includes("mech_ai_dragon") && character(core, "preshi")) { setFlag("preshiUnlockSeen"); unlock("preshi"); }
+    else if (id === "mieryula" && core.defeatedElites?.includes("witherer_1312") && character(core, "mieryula")) { setFlag("mieryulaUnlockSeen"); unlock("mieryula"); }
     else if (!knownEvents.has(id)) throw new Error("未知本地剧情解锁");
     const satisfied = isSatisfied(core, args);
     if (satisfied && window.UnlockEventProgress.complete(core, id)) changed = true;

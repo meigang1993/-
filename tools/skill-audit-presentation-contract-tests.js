@@ -10,12 +10,13 @@ module.exports = ({ assert, unit }) => {
   const skills = templates.flatMap(template => template.skills || []);
   const relics = Object.keys({ ...GameDataRelics, ...GameDataFutureRelics });
 
-  assert(GameData.characters.length === 31,
-    "skill audit must cover all 31 playable characters");
+  assert(GameData.characters.length === 32,
+    "skill audit must cover all 32 playable characters");
   assert(enemies.length === 36, "skill audit must cover all 36 enemies");
   // 80 → 78：删除洛基「护母心切」与卡迪西斯「战场指挥官」各 1 项。
-  assert(GameData.characters.flatMap(template => template.skills || []).length === 80,
-    "skill audit must cover all 80 playable-character skills");
+  // 78 → 81：新增米尔尤拉（渴血杀戮 / 无谋霸姬 / 神奇怀表）。
+  assert(GameData.characters.flatMap(template => template.skills || []).length === 83,
+    "skill audit must cover all 83 playable-character skills");
   // 72 → 71：删除魔王军猛兽部队「快速装弹」。
   assert(enemies.flatMap(template => template.skills || []).length === 71,
     "skill audit must cover all 71 enemy skills");
@@ -78,8 +79,9 @@ module.exports = ({ assert, unit }) => {
   activeSkills.forEach(skill => namedActiveSkills.set(skill.name, skill));
   // 47 → 46：删除卡迪西斯主动技「战场指挥官」（带技能立绘）。
   // 46 → 47：新增普雷希主动技「女王榨取」（带技能立绘）。
-  assert(namedActiveSkills.size === 47,
-    `skill artwork audit must cover all 47 named active skills (实际 ${namedActiveSkills.size})`);
+  // 47 → 49：新增米尔尤拉主动技「渴血杀戮」「神奇怀表」。
+  assert(namedActiveSkills.size === 49,
+    `skill artwork audit must cover all 49 named active skills (实际 ${namedActiveSkills.size})`);
   const artOwners = new Map();
   const hashOwners = new Map();
   namedActiveSkills.forEach((skill, name) => {

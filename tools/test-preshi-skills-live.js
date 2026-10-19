@@ -232,7 +232,7 @@ const entityOnlyTpl = `(() => {
     return { count: tpls.length, has: tpls.some(c => c.id === "preshi"),
       skills: (tpls.find(c => c.id === "preshi") || {}).skills?.map(s => s.name) || [] };
   })()`);
-  T("① 可培养职业为 31 名", roster.count === 31, roster);
+  T("① 可培养职业为 32 名", roster.count === 32, roster);
   T("① 角色表含普雷希", roster.has, roster);
   T("① 普雷希拥有两个技能", roster.skills.length === 2, roster);
 
