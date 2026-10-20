@@ -24,6 +24,9 @@ window.BattleCounterTriggers = (() => {
     const unit = battle?.allies?.find(item => item.uid === payload?.unitUid);
     if (!battle || !unit || unit.hp <= 0
       || !payload?.skill || !payload?.sourceUid) return false;
+    // 时停（米尔尤拉【神奇怀表】）：触发技（复仇反击/终焉回旋斩/螺旋桨等）
+    // 同样属于「技能」，被时停者一律不能发动。
+    if (window.MieryulaTimeStop?.isSkillDisabled?.(unit)) return false;
     const prompt = entry(payload, unit);
     if (battle.counterTrigger || battle._counterTriggerResolving
       || battle._damageDepth > 0) {

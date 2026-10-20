@@ -119,24 +119,29 @@ for (const [name, re, file] of aiRespects) {
   check(re.test(read(file)), `AI 决策尊重已使用标记：${name}`, { file });
 }
 
-// ── 七、夹具必须同时加载登记表 ──
-// blockedByUsage 在缺登记表时直接抛错，而不是静默放行。所以任何在 node 里手工
-// 加载 playability 的夹具都必须顺带加载 skill-once-per-turn.js，否则一调用就炸。
-// 两个消费方都会在缺登记表时抛错：置灰走 battle-card-playability.js，
-// 二次使用守卫走 ruins-enemy-skills.js，夹具只要加载其一就必须带上登记表。
+// ── 七、夹具必须同时加载共享模块 ──
+// 共享模块（登记表 / 时停表）缺失时直接抛错，而不是静默放行。所以任何在 node 里
+// 手工加载消费方的夹具都必须顺带加载共享文件，否则一调用就炸。
+// 白名单直接复用构建侧同一份，避免两处漂移。
 {
+  const { SHARED_SOURCES } = require("./publish-bundle-shared.js");
   const toolFiles = fs.readdirSync(__dirname).filter(f => f.endsWith(".js"));
-  const consumers = ["battle-card-playability.js", "ruins-enemy-skills.js"];
   const missing = [];
   for (const file of toolFiles) {
     const text = fs.readFileSync(path.join(__dirname, file), "utf8");
     // 只看真的在 node 里 run 源码的夹具；纯静态扫描 / 浏览器实机类不在此列
-    if (!text.includes("vm.runInThisContext(")) continue;
-    const hits = consumers.filter(name => text.includes(name));
-    if (!hits.length) continue;
-    if (!/skill-once-per-turn\.js/.test(text)) missing.push(`${file} ← ${hits.join(",")}`);
+    // 两种运行写法都认：vm.runInThisContext 与 new Function（后者见 check-card-drop-impl.js）
+    const runsSource = text.includes("vm.runInThisContext(") || text.includes("new Function(");
+    if (!runsSource) continue;
+    for (const { file: shared, consumers } of SHARED_SOURCES) {
+      const hits = consumers.filter(name => text.includes(name));
+      if (!hits.length) continue;
+      if (!text.includes(shared)) {
+        missing.push(`${file} ← ${shared}（消费方 ${hits.join(",")}）`);
+      }
+    }
   }
-  check(missing.length === 0, "加载消费方的夹具均已加载登记表", { missing });
+  check(missing.length === 0, "加载消费方的夹具均已加载共享模块", { missing });
 }
 
 // ── 八、实测：缺登记表时必须抛错而非静默放行 ──
@@ -245,7 +250,10 @@ for (const [name, re, file] of aiRespects) {
   vm.runInContext(skills, sandbox);
   let thrown = "";
   try {
-    sandbox.window.MieryulaSkills.onTurnStart({ battle: { enemies: [], allies: [] } },
+    // 必须走到 TS() 的分支：onTurnStart 只在存在拥有者、且拥有者已阵亡时才调 TS().clear，
+    // 所以这里要把 ownerUid 设上，否则函数会提前返回、根本不碰时停表（假绿）。
+    sandbox.window.MieryulaSkills.onTurnStart(
+      { battle: { enemies: [], allies: [], mieryulaTimeStopOwner: 1 } },
       { ref: "mieryula" });
   } catch (err) { thrown = String((err && err.message) || err); }
   check(/时停模块未装配/.test(thrown), "缺时停表时技能模块抛错（非静默放行）", { thrown });

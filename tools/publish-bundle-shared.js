@@ -17,9 +17,22 @@ const SHARED_SOURCES = [
     consumers: ["battle-card-playability.js", "ruins-enemy-skills.js"],
   },
   // 时停标记表与登记表同理：battle-rules 的置灰判据读它，battle-skills 的技能逻辑写它。
+  // 消费方补录：伊迪斯【无限暗刃】(beforeHeal) 与机械牛王【防御系统】(absorbDefense)
+  // 都是在「被标记者自己的回合之外」触发的技能，跳过回合挡不住，必须显式守卫。
   {
     file: "mieryula-time-stop.js",
-    consumers: ["battle-card-playability.js", "mieryula-skills.js"],
+    consumers: [
+      "battle-card-playability.js",
+      "mieryula-skills.js",
+      "edis-skills.js",
+      "machine-factory-skills.js",
+    ],
+  },
+  // 米尔尤拉技能模块：battle-rules 的置灰判据（无谋霸姬封锁战术牌）读它，
+  // 本文件只在顶层定义、不在加载期调用依赖，因此同样适合打进两个包。
+  {
+    file: "mieryula-skills.js",
+    consumers: ["battle-card-playability.js"],
   },
 ];
 

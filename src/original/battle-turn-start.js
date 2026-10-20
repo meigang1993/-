@@ -76,6 +76,8 @@ window.BattleTurnStart = ({
     battle.prepareUnitUid = unit.uid;
     battle.prepareStep = 0;
     window.BattleTurnState.resetBeginTurn(unit, battle, intentMax(unit));
+    // 时停：回合开始技归属该单位，跳回合判据在其后，故先在此拦掉。
+    if (!window.MieryulaTimeStop?.isSkillDisabled?.(unit))
     window.SakuraRisaSkills?.beginTurn?.(state, unit);
     window.MieryulaSkills?.onTurnStart?.(state, unit);
     if (battle.locked || window.BattleCounterTriggers?.pending?.(battle)
@@ -91,6 +93,8 @@ window.BattleTurnStart = ({
       record(state, `${unit.name} 处于时停状态，跳过其回合。`);
       battle.phase = 6;
       window.BattleTurnState.cleanupTurn(battle, unit, true, allUnits(battle));
+      // 跳过后消耗该单位自己的标记，保证「跳过其回合」真的发生一次。
+      window.MieryulaTimeStop?.consume?.(state, unit);
       return unit;
     }
     window.ElranaAceNanaliSkills?.beforeBeginTurn?.(state, unit);

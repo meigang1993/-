@@ -6,6 +6,9 @@ window.BattleEndPhase = deps => {
     if (b.endPhaseUnitUid && b.endPhaseUnitUid !== unit.uid) return false;
     b.phase = 6;
     b.endPhaseUnitUid = unit.uid;
+    // 时停：结束阶段技（如【百眼魅魔】）归属该单位，被时停时不发动；
+    // 但回合清理仍需照常执行，故只清空步骤列表而不提前 return。
+    const timeStopped = !!window.MieryulaTimeStop?.isSkillDisabled?.(unit);
     const steps = [
       () => window.NonokaLokiSkills?.endTurn?.(state, unit, { draw }),
       () => window.GuestCharacterSkills?.endTurn?.(state, unit, { draw }),
@@ -21,6 +24,7 @@ window.BattleEndPhase = deps => {
       () => window.RuinsCardSkills?.clearVulnerable?.(state, unit),
       () => promptSpeedAssault(state, unit),
     ];
+    if (timeStopped) steps.length = 0;
     let index = Number.isInteger(b.endPhaseStep) ? b.endPhaseStep : 0;
     while (index < steps.length) {
       b.endPhaseStep = index + 1;

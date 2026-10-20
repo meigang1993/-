@@ -51,6 +51,9 @@ window.MachineFactorySkills = deps => {
   }
   function absorbDefense(state, target, amount, effectMeta = null) {
     if (target.ai !== "mechanical_bull_king" || !target.defenseSystem) return { absorbed: 0, rest: amount };
+    // 时停：防御系统是机械牛王的锁定技，且是在它自己回合之外（我方攻击时）触发的，
+    // 跳过回合挡不住。被时停期间不再吸收伤害，也不会进入湮灭模式。
+    if (window.MieryulaTimeStop?.isSkillDisabled?.(target)) return { absorbed: 0, rest: amount };
     const absorbed = Math.min(target.defenseSystem, amount);
     const rest = amount - absorbed;
     target.defenseSystem -= absorbed;

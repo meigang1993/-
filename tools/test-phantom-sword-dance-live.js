@@ -137,7 +137,7 @@ const segCount = (all, src) => hitLines(all, src).length;
   await settle(page);
   const l2 = await logs(page);
   const seg2 = segCount(l2, "幻影剑舞");
-  // 每次触发会写「发动技能【半魅魔血】」+「半魅魔血令其摸2张牌」两行，
+  // 每次触发会写「发动技能【半魅魔血】」+「半魅魔血令其摸3张牌」两行，
   // 只按后者计数才是真实触发次数；前者会把 1 次触发数成 2 次。
   const blood2 = l2.filter(t => /半魅魔血令其摸/.test(t));
   // 驱动返回时后续段还压在反应队列里（交牌窗未处理），此时读到的是中间值，

@@ -40,7 +40,7 @@ const setupTpl = `(() => {
   kaiichi.stats = Object.assign({}, kaiichi.stats, { handLimit: 99 });
   kaiichi.hand = [];
   kaiichi.skills = [{ name: "半魅魔血", type: "trigger", icon: "🔵",
-    text: "当你受到生命值伤害后，你摸2张牌，然后可以选择至多2张手牌并将这些牌交给一名其他友方角色。" }];
+    text: "当你受到生命值伤害后，你摸3张牌，然后可以选择至多2张手牌并将这些牌交给一名其他友方角色。" }];
 
   b.allies.slice(2).forEach(u => { u.hp = 0; });
   b.enemies.slice(1).forEach(u => { u.hp = 0; });
@@ -183,7 +183,7 @@ run().then(res => {
     (p.opheliaTrack || []).every(v => v === 400),
     `轨迹=${JSON.stringify(p.opheliaTrack)}`);
   // 交牌弹窗出现很快，20ms 轮询采样会漏；改用日志计数（每段各触发一次摸牌）
-  const shareHits = logs.filter(l => l.includes("半魅魔血令其摸2张牌")).length;
+  const shareHits = logs.filter(l => l.includes("半魅魔血令其摸3张牌")).length;
   check("6 半魅魔血只由主伤害触发一次（追加段为技能伤害不触发）",
     shareHits === 1, `摸牌次数=${shareHits} 弹窗采样=${p.shares}`);
   check("7 结束时无残留挂起段", f.resumeLeft == null, `resumeLeft=${f.resumeLeft}`);

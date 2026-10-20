@@ -41,7 +41,7 @@ window.BattleCombatAttackFlow = (api, values) => {
       specials.sweepDamage(state, actor, amount, card, unit =>
         values.slashTargetAmount(state, actor, unit, card, amount));
     } else if (attacks) {
-      window.EdisSkills?.copyTargetedCard?.(state, actor, target, card);
+      if (!stopped(actor)) window.EdisSkills?.copyTargetedCard?.(state, actor, target, card);
       values.hitTarget(
         state, actor, target, card,
         values.slashTargetAmount(state, actor, target, card, amount));
@@ -56,7 +56,7 @@ window.BattleCombatAttackFlow = (api, values) => {
     const noIntent = hasNoIntentCost(actor, card);
     // 本就不消耗杀意的杀牌不应白白吃掉狂战标记：先判定免费，再尝试抵扣。
     const ragePaid = noIntent ? false
-      : !!window.AngelicaLukaSkills?.beforeIntentCost?.(state, actor, card);
+      : (!stopped(actor) && !!window.AngelicaLukaSkills?.beforeIntentCost?.(state, actor, card));
     const noCost = noIntent || ragePaid;
     const spent = noCost ? 0 : 1;
     actor.intent = Math.max(0, (actor.intent || 0) - spent);
@@ -74,15 +74,24 @@ window.BattleCombatAttackFlow = (api, values) => {
       : `杀意消耗${spent}点，剩余${actor.intent}。`);
   }
 
+  // 时停取值：这里只用于「跳过钩子」，缺模块时按未时停处理（不额外改变行为）。
+  const stopped = unit => !!window.MieryulaTimeStop?.isSkillDisabled?.(unit);
+
   function prepareSlash(state, actor, target, card) {
     if (!card._skipUseKillTriggers) actor.playedSlashThisTurn = true;
     triggerWhiteLolita?.(state, actor, target, card);
-    if (window.BondiSkills?.cancelKillCard?.(state, target, card)) {
-      window.WithererSkills?.afterKillFailed?.(state, actor, card);
+    // 出牌者侧的杀牌前置钩子（水下列车 / 兽人地下城 / 聚焦喷火器）归属 actor：
+    // 被时停时不得发动。正常流程里被时停者会在回合开始被跳过、根本轮不到出牌，
+    // 这里是为了防住将来任何「非本回合出牌」的入口（响应 / 反击 / 复制技能）。
+    const actorStopped = stopped(actor);
+    const targetStopped = stopped(target);
+    // 目标侧的取消类钩子同样归属 target（邦迪【白萝莉】取消杀牌）。
+    if (!targetStopped && window.BondiSkills?.cancelKillCard?.(state, target, card)) {
+      if (!actorStopped) window.WithererSkills?.afterKillFailed?.(state, actor, card);
       return false;
     }
-    window.UnderwaterTrainSkills?.prepareBite?.(state, actor, card);
-    if (values.baseCardCanFlame(actor, card)) {
+    if (!actorStopped) window.UnderwaterTrainSkills?.prepareBite?.(state, actor, card);
+    if (!actorStopped && values.baseCardCanFlame(actor, card)) {
       window.BattleLines?.skill(state, actor, "聚焦喷火器");
       if (!card.sweep) card._tempSweep = true;
       if (!card.ignoreResponse) card._tempIgnoreResponse = true;
@@ -92,19 +101,20 @@ window.BattleCombatAttackFlow = (api, values) => {
       card.ignoreResponse = true;
       card.fire = true;
     }
-    window.OrcDungeonSkills?.prepareSlash?.(state, actor, target, card);
+    if (!actorStopped) window.OrcDungeonSkills?.prepareSlash?.(state, actor, target, card);
     if (!card.virtual) specials.prepareGreenGatling(state, actor, target, card);
-    if (!card.virtual) specials.queueBattleCourage(state, actor, target, card);
-    window.UnderwaterTrainSkills?.prepareKill?.(state, actor, target, card);
-    window.GuestCharacterSkills?.prepareQueenTail?.(actor, card);
+    // 【战斗之勇】是角色技能（非饰品），归属 actor：被时停时不得发动
+    if (!actorStopped && !card.virtual) specials.queueBattleCourage(state, actor, target, card);
+    if (!actorStopped) window.UnderwaterTrainSkills?.prepareKill?.(state, actor, target, card);
+    if (!actorStopped) window.GuestCharacterSkills?.prepareQueenTail?.(actor, card);
     window.BattleAttackAnimations?.ensureInitialFlight?.(
       state, actor, target, card);
-    window.BondiSkills?.beforeKillTargeted?.(state, actor, target, card);
+    if (!actorStopped) window.BondiSkills?.beforeKillTargeted?.(state, actor, target, card);
     if (card.assassinate) specials.discardTarget(state, actor, target, card);
-    window.MannySkills?.beforeSlash(state, actor, target, card);
-    window.WendyCadicisSkills?.beforeKillTargeted?.(
+    if (!actorStopped) window.MannySkills?.beforeSlash(state, actor, target, card);
+    if (!actorStopped) window.WendyCadicisSkills?.beforeKillTargeted?.(
       state, actor, target, card, deps);
-    window.ElranaAceNanaliSkills?.beforeKillTargeted?.(
+    if (!actorStopped) window.ElranaAceNanaliSkills?.beforeKillTargeted?.(
       state, actor, target, card, deps);
     if (window.CardUtils?.isSingleTargetCard?.(card)) {
       window.EnemySkills?.beforeKillTargeted(state, actor, target, card);

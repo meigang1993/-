@@ -35,6 +35,13 @@ window.HoshinoKaiichiShareQueue = ({ alive, allUnits }) => {
     const battle = state.battle;
     if (!battle || battle.locked || battle.kaiichiShare
       || !battle.kaiichiShareQueue?.length) return false;
+    // 批量驱动期间不激活交牌提示：如百眼魅魔让全体友方互殴，
+    // 半魅魔血虽已改为底部提示条（不遮挡），但它仍需玩家选牌选人，
+    // 故必定置 battle.locked 等待输入；而 locked 会让后续被驱动的虚拟杀
+    // 在 resolveCard 处静默丢失（实测 3 人只打 2 下）。
+    // 统一在这里设闸最可靠——反应队列 flush 也会调 activateShare，
+    // 只在 queueShare 处拦挡不住那条路径。
+    if (battle._deferSharePrompts) return false;
     battle.kaiichiShare = battle.kaiichiShareQueue.shift();
     battle.locked = true;
     const unit = allUnits(battle).find(item => item.uid === battle.kaiichiShare.unitUid);

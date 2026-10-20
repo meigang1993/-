@@ -149,7 +149,7 @@ window.GameDataCharactersExtra = [
     skills: [
       { name: "渴血杀戮", type: "active", icon: "⚔️", text: "出牌阶段，你可以指定我方一名男性角色，对其造成等同于你攻击力的伤害。之后你可以选择一项“杀”牌的牌名，视为使用一张该牌名的虚拟牌，此牌不消耗杀意。本回合每项限一次。", card: { name: "渴血杀戮", type: "tactic", mieryulaBloodthirst: true, allyTarget: true, icon: "⚔️", text: "指定我方一名男性角色，对其造成等同于你攻击力的伤害，之后选择一项“杀”牌的牌名，视为使用一张该牌名的虚拟牌，此牌不消耗杀意。" } },
       { name: "无谋霸姬", type: "passive", icon: "⭐", text: "锁定技，战术牌对你无效，你无法使用战术牌。若你手牌中没有战术牌，你使用实体牌或虚拟牌造成的伤害为2倍。" },
-      { name: "神奇怀表", type: "active", icon: "🔺", text: "限定技，出牌阶段，你可以指定所有敌方角色，对其施加“时停”标记。拥有此标记的角色跳过其回合，不可响应，禁用技能等负面效果。在你下一个回合开始时，该标记消失。", card: { name: "神奇怀表", type: "tactic", mieryulaTimeStop: true, targetless: true, icon: "🔺", text: "指定所有敌方角色并施加“时停”标记：被标记的角色跳过其回合、不可响应且技能失效，直到你下一个回合开始时解除。" } }
+      { name: "神奇怀表", type: "active", icon: "🔺", text: "限定技，出牌阶段，你可以指定所有敌方角色，对其施加“时停”标记。拥有此标记的角色跳过其回合，不可响应，禁用技能等负面效果。每个被标记的角色跳过一次回合后，其身上的标记消失。", card: { name: "神奇怀表", type: "tactic", mieryulaTimeStop: true, targetless: true, icon: "🔺", text: "指定所有敌方角色并施加“时停”标记：被标记的角色跳过其回合、不可响应且技能失效，每个被标记者跳过一次回合后标记消失。" } }
     ]
   }
 ];

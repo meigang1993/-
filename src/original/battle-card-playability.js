@@ -104,6 +104,16 @@ window.BattleCardPlayability = deps => {
     return table;
   };
 
+  // 无谋霸姬（战术牌封锁）同样不允许静默放行：缺了它，战术牌不会被置灰。
+  const mieryulaSkillsRegistry = () => {
+    const skills = window.MieryulaSkills;
+    if (!skills?.blocksTactic) {
+      throw new Error("[mieryula-skills] 米尔尤拉技能模块未装配："
+        + "mieryula-skills.js 必须先于 battle-card-playability.js 加载");
+    }
+    return skills;
+  };
+
   function blockedByHand(actor, card, hasHand) {
     if ((card.bloodPact || card.elranaBag || card.ailengBet || card.elranaHeal)
       && !hasHand) return true;
@@ -122,7 +132,7 @@ window.BattleCardPlayability = deps => {
     if (!battle) return false;
     // 时停：技能失效。无谋霸姬：无法使用战术牌（技能牌除外）。
     if (timeStopTable().isSkillDisabled(actor)) return true;
-    if (window.MieryulaSkills?.blocksTactic?.(actor, card)) return true;
+    if (mieryulaSkillsRegistry().blocksTactic(actor, card)) return true;
     const livingPartner = () => sameSideUnits(battle, actor).some(unit => unit.uid !== actor?.uid && unit.hp > 0);
     const livingFemale = () => sameSideUnits(battle, actor).some(unit => unit.gender === "female" && unit.hp > 0);
     const livingMale = () => sameSideUnits(battle, actor).some(unit => unit.gender === "male" && unit.hp > 0);

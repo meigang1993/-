@@ -26,6 +26,7 @@ function setup() {
   load("./src/original/game-random.js");
   ["economy-config.js", "data-cards.js", "data-ruins-content.js", "card-utils.js", "battle-card-cleanup.js"].forEach(f =>
     load(`./src/original/${f}`));
+  load("./src/original/ruins-witherer-common.js");
   load("./src/original/ruins-witherer-skills.js");
   load("./src/original/witherer-relic-skills.js");
   load("./src/original/bakar-relic-skills.js");

@@ -3,19 +3,22 @@ window.BattleDamageTriggers = (api) => {
   function afterDodged(state, actor, target, card) {
     const b = state.battle, settling = b?.pendingVictory || b?.pendingDefeat || b?.victoryScreen || b?.defeat || b?.testComplete;
     if (!b || actor?.hp <= 0 || settling) return;
+    if (!tsStopped(actor) && !tsStopped(target))
     window.WithererSkills?.afterDodged?.(state, actor, target, card);
+    if (!tsStopped(target))
     window.ElranaAceNanaliSkills?.afterResponse?.(state, target, actor, { damage });
     window.BertisGerlotSkills?.afterDodge?.(state, actor, target, card, { damage });
     window.GuestCharacterSkills?.afterDodge?.(state, actor, target, card, { damage });
+    if (!tsStopped(actor) && !tsStopped(target))
     window.RuinsEnemySkills?.afterDodged?.(state, actor, target, card);
     if (!deps.isKillCard(card)) return;
-    if (ctx.hasSkill(actor, "剪切邪斩")) {
+    if (!tsStopped(actor) && ctx.hasSkill(actor, "剪切邪斩")) {
       window.BattleLines?.skill(state, actor, "剪切邪斩", target);
       const drawn = deps.draw?.(actor, 1, state.battle);
       window.BattleLog.add(state, `${actor.name} 触发剪切邪斩，抵消本次杀的闪被剪碎并移入消耗牌堆，${actor.name}${window.BattleDrawFeedback.action(actor, 1, drawn)}。`);
     }
     const repeatedCard = soulBladeCard(actor, card);
-    if (!repeatedCard || !ctx.hasSkill(actor, "追魂之刃") || typeof damage.useCard !== "function") return;
+    if (!repeatedCard || tsStopped(actor) || !ctx.hasSkill(actor, "追魂之刃") || typeof damage.useCard !== "function") return;
     repeatedCard._soulBladeRepeated = true;
     const replay = window.CardUtils.clean(repeatedCard, {
       virtual: true, _skipHandMove: true, _soulBladeRepeat: true,
@@ -33,32 +36,51 @@ window.BattleDamageTriggers = (api) => {
     if (!source || source.virtual || source._soulBladeRepeated) return null;
     return source;
   }
+  // 时停：被标记角色的技能失效。此处按「效果归属方」逐条判断——只有归属方被时停才跳过，
+  // 避免误伤（我方【锁魂镰刀】打被时停的敌人时仍应正常连锁）。时停只标记敌方，
+  // 因此纯我方归属的分支无需加判（归属方永远不会被标记），下方不再逐个包裹。
+  const tsStopped = unit => !!window.MieryulaTimeStop?.isSkillDisabled?.(unit);
+  // 曼妮的武器效果归属「曼妮本人」，只有她被时停才失效。
+  const tsStoppedManny = (a, b) => [a, b].some(u => u && u.ref === "manny" && tsStopped(u));
   function afterDamage(state, actor, target, card, hpLoss, blockLoss, cardUser = actor) {
     // directDamage 一并提供：电钻火花改为「追加多段伤害」而非增加结算次数，
     // 需要直接发伤害的接口。
+    if (!tsStopped(actor) && !tsStopped(target))
     window.EnemySkills?.afterDamage?.(
       state, actor, target, card, hpLoss, damage, cardUser, directDamage);
+    if (!tsStopped(target))
     window.SakuraRisaSkills?.afterDamage?.(state, target, hpLoss, deps.draw);
+    if (!tsStoppedManny(actor, target))
     window.MannySkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, directDamage);
     // blockLoss 一并提供：疯狂刺刀改为「造成生命值或护甲值伤害」即触发，
     // 全额被护甲吸收时 hpLoss 为 0，只看 hpLoss 会漏触发。
+    if (!tsStopped(actor))
     window.FloraCarlosSkills?.afterSlashDamage?.(
       state, actor, target, card, hpLoss, { damage, directDamage, blockLoss });
+    if (!tsStopped(actor) && !tsStopped(target))
     window.EdisSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, blockLoss);
     // 逐段结算：多段/连击的每一段各自触发一次（杰洛特【复仇反击】）。
+    if (!tsStopped(target))
     window.BertisGerlotSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage });
-    // 半魅魔血（星野一）逐段结算：多段/连击的每一段各自摸 2 张并弹一次交牌窗。
+    // 半魅魔血（星野一）逐段结算：多段/连击的每一段各自摸 3 张并弹一次交牌窗。
+    if (!tsStopped(target))
     window.HoshinoSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
     // 狂战（安洁莉卡）逐段结算：多段/连击的每一段各自获得 1 枚标记。
     window.AngelicaLukaSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
     window.GuestCharacterSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
     window.WithererSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, deps.draw, ctx.pushFloat);
+    if (!tsStopped(target))
     window.BondiSkills?.afterDamage?.(state, actor, target, card, hpLoss);
+    if (!tsStopped(target))
     window.HitwellSkills?.afterDamage?.(
       state, actor, target, card, hpLoss, { damage, directDamage });
+    if (!tsStopped(actor) && !tsStopped(target))
     window.BakarSkills?.afterDamage?.(state, actor, target, card, hpLoss);
+    if (!tsStopped(actor) && !tsStopped(target))
     window.RuinsCardSkills?.applyVulnerable?.(state, actor, target, card);
+    if (!tsStopped(actor) && !tsStopped(target))
     window.RuinsCardSkills?.stealAfterHit?.(state, actor, target, card);
+    if (!tsStopped(actor) && !tsStopped(target))
     window.RuinsCardSkills?.chainExtraTargets?.(state, actor, target, card, damage);
     window.BertisGerlotSkills?.refreshArrogance?.(state);
     window.BertisGerlotSkills?.afterAnyDeath?.(state);

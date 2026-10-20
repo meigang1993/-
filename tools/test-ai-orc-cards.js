@@ -12,7 +12,7 @@ loadRuntime();
 // 注意：loadRuntime 已加载 data-cards.js / battle-ai.js / battle-ai-tactics.js /
 // card-utils.js，重复加载会触发 "already declared"，此处只补未加载的两项。
 [
-  "skill-once-per-turn.js", "battle-card-playability.js", "battle-combat-targeting.js",
+  "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-skills.js", "battle-card-playability.js", "battle-combat-targeting.js",
 ].forEach(file => vm.runInThisContext(
   fs.readFileSync(`./src/original/${file}`, "utf8"), { filename: file }));
 

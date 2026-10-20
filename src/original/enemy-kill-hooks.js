@@ -18,8 +18,13 @@ window.EnemyKillHooks = ({ black, hasSkill, drawJudge }) => {
     queue.splice(settlementIndex, 0, result.event);
   }
 
+  // 时停：被标记角色的技能失效。判据按「归属方」区分——
+  // minotaurDefense 是 target（被打者）的锁定技，minotaurRage 与其余是 actor（出杀者）的技能，
+  // 各自按自己那一方判定，避免误伤未被标记的另一方。
+  const tsStopped = unit => !!window.MieryulaTimeStop?.isSkillDisabled?.(unit);
+
   function beforeKillUsed(state, actor, card) {
-    if (!actor || !card) return;
+    if (!actor || !card || tsStopped(actor)) return;
     window.BakarSkills?.beforeKillTargeted?.(state, actor, card);
     window.RuinsEnemySkills?.beforeKillUsed?.(state, actor, card);
     if (window.RelicSystem?.hasEquipped?.(state, actor, "圣鹰剑")
@@ -32,7 +37,10 @@ window.EnemyKillHooks = ({ black, hasSkill, drawJudge }) => {
 
   function beforeKillTargeted(state, actor, target, card, options = {}) {
     if (!actor || !target || !card) return;
+    const actorStopped = tsStopped(actor);
+    const targetStopped = tsStopped(target);
     if (!options.targetOnly) beforeKillUsed(state, actor, card);
+    if (!actorStopped) {
     window.SakuraRisaSkills?.beforeKillTargeted?.(state, actor, target, card);
     window.UnderwaterTrainSkills?.beforeKillTargeted?.(state, actor, target, card);
     if (actor.ai === "krow_doctor" && target.gender === "female") {
@@ -48,8 +56,9 @@ window.EnemyKillHooks = ({ black, hasSkill, drawJudge }) => {
     window.OrcDungeonSkills?.beforeKillTargeted?.(state, actor, target, card);
     window.RuinsEnemySkills?.beforeKillTargeted?.(state, actor, target, card);
     monaSlash(state, actor, target, card);
-    minotaurDefense(state, target, card);
-    minotaurRage(state, actor, card);
+    }
+    if (!targetStopped) minotaurDefense(state, target, card);
+    if (!actorStopped) minotaurRage(state, actor, card);
   }
 
   function monaSlash(state, actor, target, card) {

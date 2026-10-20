@@ -27,6 +27,7 @@ function setup() {
       (state.virtualKills ||= []).push({ from: attacker.id, to: target.id });
     },
   };
+  load("./src/original/ruins-witherer-common.js");
   load("./src/original/ruins-witherer-skills.js");
 }
 

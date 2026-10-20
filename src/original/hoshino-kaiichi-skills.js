@@ -45,7 +45,7 @@ window.HoshinoKaiichiSkills = (() => {
     if (!hpLoss || !alive(target) || target.ref !== "hoshino_kaiichi"
       || !hasSkill(target, "半魅魔血")) return;
     if (!isCardDamage(card)) return;
-    const drawn = deps.draw(target, 2, state.battle);
+    const drawn = deps.draw(target, 3, state.battle);
     const yi = state.battle.allies.find(unit => unit.ref === "hoshino_yi" && alive(unit));
     const shareQueued = share.queueShare(state, target, actor);
     if (!shareQueued) share.scheduleBloodCaption(state, target, actor);
@@ -59,7 +59,7 @@ window.HoshinoKaiichiSkills = (() => {
       && window.BattleReactionQueue?.enqueue?.(state, healAction);
     if (healAction && !queued) heal(state, target, healAction.amount, yi, deps);
     window.BattleLog.add(state,
-      `${target.name}受到生命值伤害，半魅魔血令其${window.BattleDrawFeedback.action(target, 2, drawn)}${yi ? `并接受${yi.name}治疗` : ""}。`);
+      `${target.name}受到生命值伤害，半魅魔血令其${window.BattleDrawFeedback.action(target, 3, drawn)}${yi ? `并接受${yi.name}治疗` : ""}。`);
   }
 
   function resolveBloodHeal(state, action, deps) {

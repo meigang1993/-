@@ -172,8 +172,10 @@ window.MieryulaSkills = (() => {
     }
     if (!isMieryula(unit)) return;
     unit.mieryulaBloodthirstUsed = {};
-    const owner = battle.mieryulaTimeStopOwner;
-    if (owner === unit.uid || !owner) TS().clear(state);
+    // 时停不再在她的下个回合开始统一清除：回合按速度排序，速度比她慢的敌人
+    // 排在她的回合之后，标记会先被清掉、那些敌人一次都跳不过，技能等于失效。
+    // 改为：敌人真的跳过其回合时逐个消耗（见 battle-turn-start.js 的 consume）。
+    // 这里只保留拥有者阵亡的兜底（上面已处理），避免标记与 BGM 永久残留。
   }
 
   return {

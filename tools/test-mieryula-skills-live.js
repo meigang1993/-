@@ -246,7 +246,8 @@ async function run() {
   T("神奇怀表：用过之后再次发动被拦住", twice === true, { twice });
 
   const clr = await page.evaluate(timeStopClearTpl);
-  T("神奇怀表：下个回合开始解除标记", clr.remaining === 0 && !clr.owner, clr);
+  T("神奇怀表：下个回合开始标记仍在（改为逐个敌人跳过其回合后消耗）",
+    clr.remaining === 2 && !!clr.owner, clr);
   T("神奇怀表：回合开始清空「每项限一次」记录", clr.usedReset === 0, clr);
 
   const en = await page.evaluate(enemyTimeStopTpl);

@@ -77,6 +77,9 @@ window.RuinsEnemySkills = (() => {
 
   function aiMove(state, actor, team, foes, hand, canPlay, context) {
     if (!isRuins(actor)) return null;
+    // 时停（米尔尤拉【神奇怀表】）：技能失效。杂兵/精英/巨龙的自主动作
+    // 不走 canPlay，若这里不拦，被时停的敌人照样会用地雷、狙击、炮击。
+    if (window.MieryulaTimeStop?.isSkillDisabled?.(actor)) return null;
     const moves = [
       () => grunt?.landmineMove?.(state, actor),
       () => grunt?.sniperMove?.(state, actor),

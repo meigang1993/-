@@ -9,7 +9,7 @@ installGlobals(); loadRuntime();
 
 const SRC = "./src/original/";
 const read = f => fs.readFileSync(SRC + f, "utf8");
-["data-ruins-sand-city-enemies.js", "ruins-witherer-skills.js"].forEach(f => {
+["data-ruins-sand-city-enemies.js", "ruins-witherer-common.js", "ruins-witherer-skills.js"].forEach(f => {
   vm.runInThisContext(read(f), { filename: f });
 });
 

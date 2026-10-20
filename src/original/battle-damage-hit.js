@@ -92,6 +92,9 @@ window.BattleDamageHit = ({
       getTriggers().afterDamage(
         state, effectiveActor, target, card, hpLoss, blocked, actor);
     } else if (hpLoss) {
+      // 时停：【以牙还牙】归属 target（邦迪），被时停时不发动。
+      // 此处是 noAfterDamageTriggers 分支，不经过通用触发链，需单独判。
+      if (!window.MieryulaTimeStop?.isSkillDisabled?.(target))
       window.BondiSkills?.afterDamage?.(
         state, effectiveActor, target, card, hpLoss);
     }

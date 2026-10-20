@@ -19,6 +19,8 @@ vm.runInThisContext(fs.readFileSync("src/original/data-cards.js", "utf8"));
 global.GameData = { cardCodex: GameDataCards.cardCodex };
 vm.runInThisContext(fs.readFileSync("src/original/card-utils.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/skill-once-per-turn.js", "utf8"));
+vm.runInThisContext(fs.readFileSync("src/original/mieryula-time-stop.js", "utf8"));
+vm.runInThisContext(fs.readFileSync("src/original/mieryula-skills.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/battle-card-playability.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/wendy-skills.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/cadicis-skill-utils.js", "utf8"));
@@ -360,7 +362,7 @@ window.GameUIInfo = () => ({ infoPanelForState: () => "" });
 window.GameUILivingRoom = () => ({ render: () => "" });
 window.GameUIBattlePickers = () => ({
   armoryPicker: () => "", wendyTutorPicker: () => "", ailengDrillPicker: () => "",
-  catherineStealPicker: () => "",
+  catherineStealPicker: () => "", mieryulaBloodthirstPicker: () => "",
   cadicisResponsibilityPicker: () => "", dimensionPicker: () => "",
   opheliaGuardPicker: () => "", newMoonPicker: () => "", gerdaComfortPicker: () => "",
   kaiichiSharePicker: () => "", millerSlot: () => "",

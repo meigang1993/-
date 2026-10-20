@@ -60,9 +60,9 @@ module.exports = ({
     damage() {},
     pushFloat() {},
   });
-  assert(kaiichi.hand.length === 3
+  assert(kaiichi.hand.length === 4
     && kaiichi.hp === 20 + yiHealer.stats.magic,
-    "Half-Succubus Blood must draw two and receive Yi's magic healing");
+    "Half-Succubus Blood must draw three and receive Yi's magic healing");
   assert(bloodState.battle.kaiichiShare?.maxCount === 2 && bloodState.battle.locked,
     "Half-Succubus Blood must synchronously offer up to two cards in one transfer");
   const sharedCards = kaiichi.hand.slice(0, 2);

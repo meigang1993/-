@@ -21,6 +21,8 @@ vm.runInThisContext(fs.readFileSync("./src/original/battle-card-interactions.js"
 vm.runInThisContext(fs.readFileSync("./src/original/battle-card-specials.js", "utf8"), { filename: "battle-card-specials.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/character-skill-access.js", "utf8"), { filename: "character-skill-access.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/skill-once-per-turn.js", "utf8"), { filename: "skill-once-per-turn.js" });
+vm.runInThisContext(fs.readFileSync("./src/original/mieryula-time-stop.js", "utf8"), { filename: "mieryula-time-stop.js" });
+vm.runInThisContext(fs.readFileSync("./src/original/mieryula-skills.js", "utf8"), { filename: "mieryula-skills.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/battle-card-playability.js", "utf8"), { filename: "battle-card-playability.js" });
 ["battle-combat-card-effects.js", "battle-combat-attack-values.js",
   "battle-combat-attack-flow.js", "battle-combat-attack.js",

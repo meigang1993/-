@@ -25,6 +25,21 @@ window.MieryulaTimeStop = (() => {
     return count;
   }
 
+  // 敌人真的跳过一次回合后，消耗掉它自己的标记。
+  // 原先只靠「米尔尤拉的下一个回合开始」统一清除，但回合顺序里速度比她慢的
+  // 敌人排在她的回合之后 —— 标记在她回合开始就被清掉了，那些敌人根本轮不到
+  // 被跳过，时停等于完全无效。改为逐个消耗，保证每个被标记者真的跳过一次。
+  function consume(state, unit) {
+    const battle = state?.battle;
+    if (!battle || !isStopped(unit)) return 0;
+    unit.statuses = unit.statuses.filter(item => item !== KEY);
+    if (!allUnits(battle).some(isStopped)) {
+      battle.mieryulaTimeStopOwner = null;
+      window.GameBGM?.resume?.("mieryula-time-stop");
+    }
+    return 1;
+  }
+
   function clear(state) {
     const battle = state?.battle;
     if (!battle) return 0;
@@ -42,7 +57,7 @@ window.MieryulaTimeStop = (() => {
   }
 
   return {
-    KEY, isStopped, mark, clear,
+    KEY, isStopped, mark, clear, consume,
     shouldSkipTurn: isStopped,
     isSkillDisabled: isStopped,
     suppressesResponse: isStopped,

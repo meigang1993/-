@@ -59,7 +59,9 @@ window.BattleCardResumeHooks = (api, stateApi) => {
           return false;
         }
       }
-      if (action.counted && !action.card.skipAfterCardPlayed) {
+      // 时停：出牌后的技能钩子归属出牌者，被时停时不触发。
+      const actorStopped = !!window.MieryulaTimeStop?.isSkillDisabled?.(actor);
+      if (action.counted && !action.card.skipAfterCardPlayed && !actorStopped) {
         while (action.hookIndex < hooks.length) {
           hooks[action.hookIndex++](state, actor, target, action.card);
           if (stateApi.paused(battle)) {

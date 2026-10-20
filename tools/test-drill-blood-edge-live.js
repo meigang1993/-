@@ -30,7 +30,7 @@ const setupTpl = `(() => {
   kaiichi.name = "星野海一";
   kaiichi.ref = "hoshino_kaiichi";
   kaiichi.skills = [{ name: "半魅魔血", type: "trigger", icon: "🔵",
-    text: "当你受到生命值伤害后，你摸2张牌，然后可以选择至多2张手牌并将这些牌交给一名其他友方角色。" }];
+    text: "当你受到生命值伤害后，你摸3张牌，然后可以选择至多2张手牌并将这些牌交给一名其他友方角色。" }];
   kaiichi.hp = ${LOW_HP ? 30 : 400}; kaiichi.maxHp = ${LOW_HP ? 30 : 400};
   kaiichi.stats = Object.assign({}, kaiichi.stats, { handLimit: 99 });
   kaiichi.hand = [];

@@ -125,6 +125,9 @@ window.EdisSkills = (() => {
   function beforeHeal(state, target, amount, actor, card, damage) {
     const edis = state.battle?.enemies?.find(e => e.ai === "pursuer_edis" && e.hp > 0);
     if (!edis || target.side !== "ally") return null;
+    // 时停：无限暗刃是在「伊迪斯自己的回合之外」触发的技能（我方治疗时发动），
+    // 跳过回合挡不住它，必须显式守卫，否则被时停的伊迪斯仍会挥刀。
+    if (window.MieryulaTimeStop?.isSkillDisabled?.(edis)) return null;
     const groupHeal = card?.teamHealPct || card?._groupHeal;
     if (groupHeal && card._edisDarkDone) return card._edisDarkBlocked?.has(target.uid) ? null : 0;
     window.BattleLines?.skill(state, edis, "无限暗刃", target);

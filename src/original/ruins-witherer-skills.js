@@ -1,32 +1,17 @@
 window.RuinsWithererSkills = (() => {
-  const alive = units => (units || []).filter(unit => unit.hp > 0);
-  const visible = unit => (unit?.hand || []).filter(card => !card._pendingDraw);
-  const stat = (unit, key) => (unit.stats?.[key] || 0)
-    + (key === "attack" ? unit.tempAttack || 0 : 0);
-  const log = (state, text) => window.BattleLog?.add?.(state, text);
-  const isTactic = card => card?.type === "tactic";
-  // 实体牌：非技能伤害、非技能生成、非虚拟牌。
-  // 判定必须与 CardUtils.isEntityKillCard（isKillCard && !card.virtual）保持一致：
-  // 只要带 virtual 就不是实体牌，没有任何例外。
-  // 转换杀走 CardUtils.convertAs 生成，带 convertedFrom 且不带 virtual，天然算实体牌；
-  // 而 CardUtils.fromEntity 生成的虚拟牌一律带 virtual:true——即便它额外挂了
-  // _entitySourceCard（如芙萝娅【神速之袭】的虚拟【刺杀】），也仍是虚拟牌，不能算实体。
-  // 注意：燃烧/毒/感电/勒脖/锁魂镰刀/机尾机枪等技能伤害传的是 type:"skill" 的
-  // 伤害载荷，既不带 _skill 也不带 virtual，必须按 type 排除，否则会被误判成实体牌。
-  // "skill" 不在卡牌类型（slash/response/tactic/consume/obstacle）之内，可安全排除。
-  // 饰品主动技把「实体手牌」转换而成的牌走 CardUtils.convertAs：带 convertedFrom、
-  // 不带 virtual，本质是实体牌，因此额外标了 _entityConversion，此处视为实体牌。
-  // 不能靠删掉 _skill 来实现：_skill 同时被伤害加成计算（battle-combat-attack-values.js）
-  // 等多个位置依赖，删除会改变伤害值。
-  // 已标注：魅魔钢叉、鬼王扑克、刺客胶衣（三件 convertAs 饰品口径统一）。
-  // 实体牌判定统一走 CardUtils.isEntityCard（单一来源），此处不再各写一份。
-  const isEntityCard = card => !!window.CardUtils?.isEntityCard?.(card);
+  const common = window.RuinsWithererCommon;
+  if (!common) throw new Error("[ruins-witherer-common] 凋零者公共 helper 未装配："
+    + "ruins-witherer-common.js 必须先于 ruins-witherer-skills.js 加载");
+  const {
+    alive, visible, stat, log, isTactic, isEntityCard, timeStopped,
+  } = common;
 
   // 魅魔吸精术的「对无性别角色造成的伤害为2倍」：判断的是被打者的性别，
   // 不能放进 modifyDamage（那里 target 恒为凋零者本人，且她自己是女性，条件永不成立），
   // 故改走统一伤害结算链的 outgoing 钩子。
   function modifyOutgoingDamage(state, actor, target, amount, card) {
     if (amount <= 0 || !actor || actor.ai !== "ruins_witherer") return amount;
+    if (timeStopped(actor)) return amount;
     // 与外神之眼同一口径：技能伤害、技能生成牌、虚拟牌均不算「你使用的战术牌」。
     if (!isTactic(card) || !isEntityCard(card)) return amount;
     if (target?.gender === "male" || target?.gender === "female") return amount;
@@ -36,6 +21,7 @@ window.RuinsWithererSkills = (() => {
 
   function afterDamage(state, actor, target, card, hpLoss, damage) {
     if (!hpLoss) return;
+    if (timeStopped(target) || timeStopped(actor)) return; // 时停：被动技失效
     // 外神之眼只响应实体牌伤害：技能卡、技能生成的虚拟杀、无卡直接伤害均不触发，
     // 否则技能伤害会连锁触发，且与「实体牌」描述不符。
     // 外神之眼逐段结算：多段/连击的每一段只要是实体牌就各自触发一次。
@@ -116,6 +102,7 @@ window.RuinsWithererSkills = (() => {
 
   function endTurn(state, unit) {
     if (unit?.ai !== "ruins_witherer") return;
+    if (timeStopped(unit)) return; // 时停：百眼魅魔不发动，红桃牌也不弃
     const hearts = visible(unit).filter(card => card.suit === "♥");
     if (!hearts.length) return;
     hearts.forEach(card => {
@@ -127,10 +114,33 @@ window.RuinsWithererSkills = (() => {
     log(state, `${unit.name} 发动百眼魅魔，弃置${hearts.length}张红桃牌。`);
     const allies = alive(state.battle.allies);
     // 逐一驱动，中途被同伴打倒的角色不再行动（描述为「所有敌方角色」，阵亡者不算）。
-    allies.forEach(ally => {
-      if (ally.hp <= 0) return;
-      fireHundredEyes(state, unit, ally, allies);
-    });
+    //
+    // 驱动期间必须推迟交牌窗：半魅魔血（星野海一）受击即触发，会立刻置 locked，
+    // 而 resolveCard 开头有 `if (battle.locked) return;`——一旦中途被锁，
+    // 排在后面的角色就会被静默跳过，表现为「百眼魅魔只打了一半就断了」
+    // （实测 3 人只结算 2 次伤害，第三人毫发无伤也无日志）。
+    // 故整段驱动期间只把交牌请求入队，等循环跑完再统一激活。
+    const battle = state.battle;
+    battle._deferSharePrompts = true;
+    try {
+      allies.forEach(ally => {
+        if (ally.hp <= 0) return;
+        fireHundredEyes(state, unit, ally, allies);
+      });
+    } finally {
+      delete battle._deferSharePrompts;
+    }
+    // HoshinoKaiichiShare / …ShareQueue 都是工厂（需传 alive/allUnits 才返回实例），
+    // 直接取 window.HoshinoKaiichiShareQueue.activateShare 会拿到 undefined。
+    // 两者只对外暴露各自的子集：…Share 有 activateShare、…ShareQueue 有 scheduleShare。
+    const deps = {
+      alive: item => !!item && item.hp > 0,
+      allUnits: field => (field?.allies || []).concat(field?.enemies || []),
+    };
+    const share = window.HoshinoKaiichiShare?.(deps);
+    if (share?.activateShare?.(state) !== true) {
+      window.HoshinoKaiichiShareQueue?.(deps)?.scheduleShare?.(state);
+    }
   }
 
   function fireHundredEyes(state, witherer, ally, allies) {

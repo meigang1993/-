@@ -78,12 +78,21 @@ if (!fs.existsSync(bundlesPath)) {
       "battle-reaction-queue-store.js",
       "battle-reaction-queue-run.js",
     ],
-    // 跨包共享：登记表同时打进 battle-rules 与 battle-skills，消除跨包依赖
-    "battle-card-playability.js": ["skill-once-per-turn.js"],
+    // 跨包共享：登记表与时停表同时打进 battle-rules 与 battle-skills，消除跨包依赖
+    "battle-card-playability.js": [
+      "skill-once-per-turn.js",
+      "mieryula-time-stop.js",
+      "mieryula-skills.js",
+    ],
     "ruins-enemy-skills.js": ["skill-once-per-turn.js"],
+    "mieryula-skills.js": ["mieryula-time-stop.js"],
   };
   // 共享模块必须同时出现在两个消费方所在的 bundle，否则跨包依赖并未消除
-  const sharedCross = { "skill-once-per-turn.js": ["battle-rules", "battle-skills"] };
+  const sharedCross = {
+    "skill-once-per-turn.js": ["battle-rules", "battle-skills"],
+    "mieryula-time-stop.js": ["battle-rules", "battle-skills"],
+    "mieryula-skills.js": ["battle-rules", "battle-skills"],
+  };
   for (const [shared, required] of Object.entries(sharedCross)) {
     for (const bundle of required) {
       if (!Array.isArray(bundles[bundle]) || !bundles[bundle].includes(shared)) {

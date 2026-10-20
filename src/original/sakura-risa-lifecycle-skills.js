@@ -30,9 +30,16 @@ window.SakuraRisaLifecycleSkills = ({
     if (state?.battle?.risaEye?.targetUid === unit?.uid) state.battle.risaEye = null;
   }
 
+  // 时停：不死食尸鬼归属「樱羽丽莎本人」，被标记时免死失效。
+  // 它是死亡结算里触发的（battle-damage-hit / battle-damage-lifecycle /
+  // battle-card-specials 三处调用点），跳过回合挡不住，必须在技能内部判。
+  // 时停模块在本文件之前的同一 bundle（battle-skills 位置 18 < 62），必然已装配。
+  const stopped = unit => !!window.MieryulaTimeStop?.isSkillDisabled?.(unit);
+
   function preventDeath(state, unit) {
     if (!state?.battle || !isRisa(unit) || unit.hp > 0
       || pendingRevival(unit) || !unit.hand?.length) return false;
+    if (stopped(unit)) return false;
     unit.risaRevivePending = true;
     unit.statuses ||= [];
     if (!unit.statuses.includes("待复活")) unit.statuses.push("待复活");
