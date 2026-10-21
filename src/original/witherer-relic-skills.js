@@ -97,7 +97,8 @@ window.WithererRelicSkills = (() => {
   }
   function markChoke(state, actor, target) {
     if (target.withererChoke) return;
-    target.withererChoke = { sourceUid: actor.uid, amount: Math.max(1, Math.floor(stat(actor, "attack") / 2)) };
+    // 勒脖持续伤害 = 施加标记时使用者的攻击力（快照，后续攻击力变化不影响）。
+    target.withererChoke = { sourceUid: actor.uid, amount: Math.max(1, Math.floor(stat(actor, "attack"))) };
     target.statuses ||= []; target.statuses.push("勒脖");
     window.BattleLog.add(state, `${target.name} 获得勒脖标记。`);
   }

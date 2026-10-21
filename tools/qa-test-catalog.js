@@ -183,6 +183,7 @@ const groups = Object.freeze({
     "test-status-card-rules.js",
     "test-ruins-card-effects.js",
     "test-ruins-cards-practical.js",
+    "test-strangle-choke-damage-live.js",
     "test-ai-ruins-cards.js",
     "test-ruins-card-flag-driven.js",
     "test-ruins-dodge-counter.js",
