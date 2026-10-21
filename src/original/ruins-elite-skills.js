@@ -11,7 +11,13 @@ window.RuinsEliteSkills = (() => {
   // 暗幕隐身（锁定技）：有黑色牌时不会成为单体【杀】牌的目标。
   // 实时判定而非回合制缓存：缓存只在她自己准备阶段刷新，我方回合会读到
   // 上回合的过期值，锁定技便时灵时不灵。
-  const stealthOn = unit => unit?.ai === "ruins_hilde"
+  // 时停：暗幕隐身归属「希尔德本人」，被标记时失效。
+  // 守卫写在技能内部而非调用点 —— 它有三个互不重合的入口：目标选择逻辑
+  // （battle-combat-targeting）、饰品自动斩（battle-relic-turns）、UI 敌方可选高亮
+  // （ui-battle-targeting），在调用点逐个加判必然漏掉一条。
+  // 时停模块在本文件之前的同一 bundle 分组内，必然已装配。
+  const stopped = unit => !!window.MieryulaTimeStop?.isSkillDisabled?.(unit);
+  const stealthOn = unit => !stopped(unit) && unit?.ai === "ruins_hilde"
     && visible(unit).some(black);
   const blocksKillTarget = (unit, card) => !!card && !card._skill
     && stealthOn(unit) && singleKill(card);

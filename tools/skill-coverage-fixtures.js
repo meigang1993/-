@@ -123,7 +123,7 @@ function loadRuntime() {
     "wendy-skills.js", "cadicis-skill-utils.js", "cadicis-heavy-fire.js", "cadicis-responsibility.js", "cadicis-skills.js", "wendy-cadicis-skills.js",
     "lokar-skills.js", "battle-card-tactics.js", "manny-skills.js",
     "miller-skills.js", "bertis-gerlot-skills.js", "angelica-luka-skills.js", "nanali-sealed.js",
-    "mieryula-time-stop.js", "mieryula-skills.js",
+    "mieryula-time-stop.js", "mieryula-tactic-immunity.js", "mieryula-skills.js",
     "elrana-healing-skills.js", "ace-skills.js", "nanali-skills.js",
     "ace-nanali-skills.js", "elrana-ace-nanali-skills.js",
     "edis-skills.js", "machine-factory-skills.js", "enemy-status-effects.js",

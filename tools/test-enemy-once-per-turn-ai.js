@@ -14,7 +14,7 @@ const { unitFromCharacter, installGlobals, loadRuntime } = require("./skill-cove
 installGlobals();
 loadRuntime();
 [
-  "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-skills.js", "battle-card-playability.js", "card-utils.js",
+  "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-tactic-immunity.js", "mieryula-skills.js", "battle-card-playability.js", "card-utils.js",
   "enemy-tactical-skills.js", "machine-factory-skills.js",
   // 废墟杂兵依赖 RuinsGruntCommon（C.alive / C.visible 的宿主），缺了会抛
   // "C.alive is not a function"，必须与其使用者一起加载。

@@ -90,6 +90,11 @@ window.BattleDamageLifecycle = ({
 
   function damage(state, target, amount, source, actor, card) {
     if (state.battle?.locked) return { dodged: false, hpLoss: 0 };
+    // 米尔尤拉【无谋霸姬】：战术牌对她无效。AOE 战术牌（targetless）不走
+    // resolveCard 的单体拦截，兜底放在伤害入口，确保任何路径都打不掉她的血。
+    if (window.MieryulaSkills?.blockTacticDamage?.(state, target, card, actor)) {
+      return { dodged: false, hpLoss: 0, immune: true };
+    }
     const rootDamage = !state.battle._damageDepth;
     state.battle._damageDepth = (state.battle._damageDepth || 0) + 1;
     try {

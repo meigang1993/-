@@ -68,6 +68,9 @@ window.BattleDamageTriggers = (api) => {
     // 狂战（安洁莉卡）逐段结算：多段/连击的每一段各自获得 1 枚标记。
     window.AngelicaLukaSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
     window.GuestCharacterSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
+    // 凋零者是敌方单位，会被时停标记；此处不加判会让鲜血之忆/勒脖/长舌头/
+    // 镰刀额外回合在被时停时照常触发。
+    if (!tsStopped(actor) && !tsStopped(target))
     window.WithererSkills?.afterDamage?.(state, actor, target, card, hpLoss, damage, deps.draw, ctx.pushFloat);
     if (!tsStopped(target))
     window.BondiSkills?.afterDamage?.(state, actor, target, card, hpLoss);
@@ -80,8 +83,8 @@ window.BattleDamageTriggers = (api) => {
     window.RuinsCardSkills?.applyVulnerable?.(state, actor, target, card);
     if (!tsStopped(actor) && !tsStopped(target))
     window.RuinsCardSkills?.stealAfterHit?.(state, actor, target, card);
-    if (!tsStopped(actor) && !tsStopped(target))
-    window.RuinsCardSkills?.chainExtraTargets?.(state, actor, target, card, damage);
+    // 魔之连杀的连锁不在这里触发：afterDamage 只在命中后跑，被闪/被守护/被锁定
+    // 时整条链不执行，额外目标会全部丢失。现改由 battle-damage.js 的伤害出口统一触发。
     window.BertisGerlotSkills?.refreshArrogance?.(state);
     window.BertisGerlotSkills?.afterAnyDeath?.(state);
     // 锁魂镰刀仅由实体单体【杀】触发：技能生成的虚拟【杀】不触发。

@@ -35,7 +35,7 @@ window.RuinsRelicEffects = { missileLauncherBlock: () => true };
   "battle-ai-skill-moves.js", "battle-ai-skill-planner.js", "battle-ai.js",
   "battle-status-card-registry.js", "battle-status-card-storage.js", "battle-status-card-triggers.js", "battle-status-cards.js",
   "battle-draw-feedback.js", "battle-turn-state.js", "battle-combat-visuals.js",
-  "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-skills.js", "battle-card-playability.js", "battle-combat-targeting.js",
+  "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-tactic-immunity.js", "mieryula-skills.js", "battle-card-playability.js", "battle-combat-targeting.js",
   "battle-reaction-queue-store.js",
   "battle-reaction-queue-run.js",
   "battle-reaction-queue.js",

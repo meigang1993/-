@@ -109,8 +109,16 @@ window.BattleCardTactics = ({ log, ctx, deps, reveal, openHandReveal }) => {
       `${actor.name} 使用借刀杀人，${partner.name}没有单体杀牌，获得其${gained.suit || ""}${gained.name}。`);
   }
   function demonInvasion(state, actor, card) {
-    const foes = window.BakarSkills?.invasionTargets?.(state, actor, card)
+    const rawFoes = window.BakarSkills?.invasionTargets?.(state, actor, card)
       || (actor.side === "enemy" ? state.battle.allies : state.battle.enemies).filter(u => u.hp > 0);
+    // 【无谋霸姬】：战术牌对米尔尤拉无效。魔王军入侵是 targetless 的 AOE，
+    // 不走 resolveCard 的单体拦截，所以免疫者必须在此移出名单——
+    // 否则她照样掉血，还会被要求打出【杀】抵消一次根本打不到她的伤害。
+    const foes = rawFoes.filter(unit => {
+      if (!window.MieryulaSkills?.immunizesTactic?.(state, unit, card)) return true;
+      window.MieryulaSkills.interceptTactic(state, actor, unit, card);
+      return false;
+    });
     const targetUids = foes.map(u => u.uid), amount = ctx.statOf(actor, "attack") + ctx.statOf(actor, "magic"), base = damageCopy(card, { type: "tactic", responseKind: "slash" });
     window.EdisSkills?.copyTargetedCards?.(state, actor, foes, card);
     if (!card._playedFlightDone && !state.battle._manualGroupFlightShown) state.battle.animQueue?.push({ type: "virtualPlay", id: `di${deps.nextAnim()}`, uid: actor.uid, side: actor.side, targetUids, card: base, enemyLine: actor.side === "enemy", show: false });

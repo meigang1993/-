@@ -18,6 +18,15 @@ assert(types({ name: "杀（普攻）", type: "slash" }, "", { skills: [{ name: 
 assert(types({ name: "感电", type: "skill", shockBonus: true }).join(",") === "thunder", "shock bonus damage should resolve as thunder");
 assert(types({ name: "火杀", type: "slash", fire: true }).join(",") === "fire", "Fire Kill should resolve as fire damage");
 assert(types({ name: "混合攻击", fire: true, holy: true, dark: true }).join(",") === "fire,holy,dark", "multiple damage attributes should follow the fixed priority");
+// 元素杀除字段标记外需有牌名兜底：否则虚拟牌/转换牌未带上标记就退化成物理特效。
+// 火杀此前只有 card.fire，是毒/雷/圣/冰之外唯一缺牌名兜底的元素杀。
+assert(types({ name: "火杀", type: "slash" }).join(",") === "fire", "Fire Kill without flag should still resolve as fire by name");
+assert(types({ name: "毒杀", type: "slash" }).join(",") === "poison", "Poison Kill without flag should still resolve as poison by name");
+assert(types({ name: "雷杀", type: "slash" }).join(",") === "thunder", "Thunder Kill without flag should still resolve as thunder by name");
+assert(types({ name: "圣杀", type: "slash" }).join(",") === "holy", "Holy Kill without flag should still resolve as holy by name");
+assert(types({ name: "冰杀", type: "slash" }).join(",") === "ice", "Ice Kill without flag should still resolve as ice by name");
+assert(types({ name: "杀（普攻）", type: "slash" }).join(",") === "physical", "plain slash must stay physical");
+
 assert(types({ name: "魔杀", type: "slash" }).join(",") === "physical", "ordinary magic kill should not become dark without a dark source");
 assert(types({ name: "魔杀", type: "slash", dark: true }).join(",") === "dark", "dark magic kill should resolve as dark");
 assert(attackType({ name: "杀（普攻）", type: "slash", scale: "attack" }) === "physical", "attack-scaled damage should be a physical attack");

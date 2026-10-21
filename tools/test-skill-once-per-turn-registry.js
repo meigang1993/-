@@ -124,7 +124,7 @@ for (const [name, re, file] of aiRespects) {
 // 手工加载消费方的夹具都必须顺带加载共享文件，否则一调用就炸。
 // 白名单直接复用构建侧同一份，避免两处漂移。
 {
-  const { SHARED_SOURCES } = require("./publish-bundle-shared.js");
+  const { SHARED_SOURCES, ORDER_DEPENDENCIES } = require("./publish-bundle-shared.js");
   const toolFiles = fs.readdirSync(__dirname).filter(f => f.endsWith(".js"));
   const missing = [];
   for (const file of toolFiles) {
@@ -132,9 +132,29 @@ for (const [name, re, file] of aiRespects) {
     // 只看真的在 node 里 run 源码的夹具；纯静态扫描 / 浏览器实机类不在此列
     // 两种运行写法都认：vm.runInThisContext 与 new Function（后者见 check-card-drop-impl.js）
     const runsSource = text.includes("vm.runInThisContext(") || text.includes("new Function(");
-    if (!runsSource) continue;
-    for (const { file: shared, consumers } of SHARED_SOURCES) {
-      const hits = consumers.filter(name => text.includes(name));
+    // 只导出「待加载源码清单」的夹具（如 pursue-kill-fixtures.js 本身不 run 源码，
+    // 由其它文件消费这份数组）同样会漏：清单里写了消费方却没写共享文件，一跑就炸。
+    // 限定为「导出待加载源码清单」的夹具（pursue-kill-fixtures.js 等），
+    // 不扩大到所有 .js——静态审计类文件只是拿文件名做正则，不会真加载。
+    if (!runsSource && /-(fixtures|helpers|setup|harness)\.js$/.test(file)) {
+      for (const { file: shared, consumers } of [...SHARED_SOURCES, ...ORDER_DEPENDENCIES]) {
+        const hits = consumers.filter(name => text.includes(`"${name}"`));
+        if (!hits.length) continue;
+        if (!text.includes(`"${shared}"`)) {
+          missing.push(`${file}（源码清单）← ${shared}（消费方 ${hits.join(",")}）`);
+        }
+      }
+      continue;
+    }
+    for (const { file: shared, consumers } of [...SHARED_SOURCES, ...ORDER_DEPENDENCIES]) {
+      // 只统计「真的会被 run 起来」的引用：写在 read("x.js") 里的只是取源码做正则
+      // 静态检查，并不执行，缺共享文件也不会炸（本文件自己就是这种情况）。
+      // 判据收紧为「该文件名出现在真正执行源码的那条语句里」：
+      // 形如 readSrc("x.js") / UI_FILES 数组里的名字只是取文本做正则静态扫描，
+      // 不会执行，缺共享文件也不会炸（check-trigger-player-choice.js 即属此类）。
+      const runStatements = text.split(";").filter(st => /runInThisContext\(|new Function\(/.test(st));
+      const runtimeHits = consumers.filter(name => runStatements.some(st => st.includes(name)));
+      const hits = runtimeHits;
       if (!hits.length) continue;
       if (!text.includes(shared)) {
         missing.push(`${file} ← ${shared}（消费方 ${hits.join(",")}）`);

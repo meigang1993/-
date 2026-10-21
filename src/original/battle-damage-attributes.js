@@ -33,7 +33,9 @@ window.BattleDamageAttributes = (() => {
     });
     if (card.poison || /(?:毒杀|毒针|毒气手雷|中毒|^毒$)/.test(label) || hasSkill(actor, "毒针") && isSlash(card)) found.add("poison");
     if (card.shock || card.shockBonus || /(?:雷杀|感电|电磁反制装置)/.test(label)) found.add("thunder");
-    if (card.fire || /聚焦喷火器/.test(label)) found.add("fire");
+    // 与毒/雷/圣/冰保持一致：元素杀除字段标记外，还需牌名兜底。
+    // 火杀此前只有 card.fire，一旦虚拟牌/转换牌未带上标记就退化成物理特效。
+    if (card.fire || /(?:火杀|聚焦喷火器)/.test(label)) found.add("fire");
     if (card.holy || /(?:圣杀|圣剑无双|圣天破军剑|圣痕)/.test(label)) found.add("holy");
     if (card.dark || /终焉鬼影斩/.test(label)) found.add("dark");
     if (card.ice || /(?:冰杀|冰晶|寒冰)/.test(label)) found.add("ice");

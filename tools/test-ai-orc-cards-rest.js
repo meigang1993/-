@@ -11,7 +11,7 @@ const {
 installGlobals();
 loadRuntime();
 [
-  "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-skills.js", "battle-card-playability.js", "battle-combat-targeting.js",
+  "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-tactic-immunity.js", "mieryula-skills.js", "battle-card-playability.js", "battle-combat-targeting.js",
 ].forEach(file => vm.runInThisContext(
   fs.readFileSync(`./src/original/${file}`, "utf8"), { filename: file }));
 

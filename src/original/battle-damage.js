@@ -16,10 +16,20 @@ window.BattleDamage = (deps, ctx) => {
   let triggers;
   let resolution;
   let responses;
+  // 魔之连杀：连锁在「伤害出口」触发，而非「命中后」——主目标被闪/被守护/被锁定时
+  // afterDamage 不跑，挂在里面会让额外目标整段不结算（详见 ruins-card-skills 注释）。
+  const resolveDamageWithChain =
+    (state, target, amount, source, actor, card) => {
+      const out = resolution.resolveDamage(
+        state, target, amount, source, actor, card);
+      window.RuinsCardSkills?.chainAfterResolution?.(
+        state, actor, target, card, lifecycle.damage, out);
+      return out;
+    };
   const lifecycle = window.BattleDamageLifecycle({
     deps, ctx, utils,
     getTriggers: () => triggers,
-    getResolveDamage: () => resolution.resolveDamage,
+    getResolveDamage: () => resolveDamageWithChain,
   });
   const hit = window.BattleDamageHit({
     deps, ctx, lifecycle, getTriggers: () => triggers, logSource,

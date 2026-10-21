@@ -134,8 +134,20 @@ window.RuinsCardSkills = (() => {
     if (unit) delete unit.vulnerable;
   }
 
+  // 魔之连杀：连锁只认「这张牌指定了目标」，不认主目标是否真的掉了生命值。
+  // 此前挂在 afterDamage（命中后才跑）上，主目标一旦被【闪】抵消、被守护，
+  // 或结算瞬间战斗已锁定，afterDamage 根本不会执行 → 额外目标全部不结算，
+  // 与描述「根据你【杀】牌数量，额外随机指定等量目标」不符。
+  // 现改为在伤害出口统一触发：命中 / 被闪 / 被守护 / 被锁定都会连锁。
+  // 唯一例外是 killInvalidated——本次【杀】压根不成立，不连锁。
+  function chainAfterResolution(state, actor, target, card, damage, result) {
+    if (!card || !actor || result?.killInvalidated) return;
+    chainExtraTargets(state, actor, target, card, damage);
+  }
+
   return {
-    beforeResponseCheck, chainExtraTargets, applyVulnerable, stealAfterHit,
+    beforeResponseCheck, chainExtraTargets, chainAfterResolution,
+    applyVulnerable, stealAfterHit,
     modifyIncomingDamage, clearVulnerable,
   };
 })();

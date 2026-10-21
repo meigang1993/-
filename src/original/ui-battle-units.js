@@ -108,13 +108,21 @@ window.GameUIBattleUnits = (U, I) => {
     const statusTip = status => status === "毒" ? `毒：${unitData.poison || 0}层`
       : status === "感电" ? `感电：${unitData.shock || 0}层`
         : status === "歼灭" ? "歼灭模式"
-          : status === "锁魂" ? "锁魂：杀牌伤害会传导给另一名锁魂目标"
-            : timerCount(status) ? `自爆倒计时：${timerCount(status)}` : status;
+          // 时停是米尔尤拉限定技【神奇怀表】的状态，说明写全三个负面效果，
+          // 避免玩家只看到一个字却不知道发生了什么。
+          : status === "时停" ? "时停：跳过其回合、不可响应且技能失效，跳过一次回合后标记消失"
+            : status === "锁魂" ? "锁魂：杀牌伤害会传导给另一名锁魂目标"
+              : timerCount(status) ? `自爆倒计时：${timerCount(status)}` : status;
+    // 时停此前走 status[0] 兜底，只显示一个「时」字 —— 与「计时」的「计」
+    // 同为单字且同样走默认粉色圆点样式，混在一起根本分不清，等于没有徽章。
     const statusText = status => status === "毒" ? `毒${unitData.poison || 0}`
       : status === "感电" ? `电${unitData.shock || 0}`
         : status === "锁魂" ? "锁"
-          : timerCount(status) ? `计${timerCount(status)}` : status[0];
-    const statusClass = status => `${status === "感电" ? "shock" : ""} ${timerCount(status) ? "timer" : ""}`;
+          : status === "时停" ? "停"
+            : timerCount(status) ? `计${timerCount(status)}` : status[0];
+    const statusClass = status => `${status === "感电" ? "shock" : ""}`
+      + ` ${status === "时停" ? "time-stop" : ""}`
+      + ` ${timerCount(status) ? "timer" : ""}`;
     const burning = (unitData.hand || []).some(card => card.burning && !card._pendingDraw)
       ? `<span class="status-icon burning-hand" title="燃烧：每个准备阶段按燃烧牌数量失去生命，受到火属性伤害翻倍">火</span>`
       : "";

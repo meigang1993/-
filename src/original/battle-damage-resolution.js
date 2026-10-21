@@ -10,13 +10,17 @@ window.BattleDamageResolution = ({
       queueAttackAnim(state, actor, target, card);
       window.WithererSkills?.afterKillFailed?.(state, actor, card);
       window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, card);
-      return { dodged: false, hpLoss: 0, blockLoss: 0 };
+      // killInvalidated：本次【杀】根本不成立（魔偶无效 / 邦迪使杀牌失效），
+      // 魔之连杀不连锁——连锁只认「这张牌指定了目标」，不认是否造成生命值伤害。
+      return { dodged: false, hpLoss: 0, blockLoss: 0, killInvalidated: true };
     }
     if (window.BondiSkills?.invalidateKillCard?.(state, target, card)) {
       queueAttackAnim(state, actor, target, card);
       window.WithererSkills?.afterKillFailed?.(state, actor, card);
       window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, card);
-      return { dodged: false, hpLoss: 0, blockLoss: 0 };
+      // killInvalidated：本次【杀】根本不成立（魔偶无效 / 邦迪使杀牌失效），
+      // 魔之连杀不连锁——连锁只认「这张牌指定了目标」，不认是否造成生命值伤害。
+      return { dodged: false, hpLoss: 0, blockLoss: 0, killInvalidated: true };
     }
 
     const effectiveCard = card?.krowFemaleTarget && target?.gender !== "female"
@@ -31,7 +35,7 @@ window.BattleDamageResolution = ({
       window.WithererSkills?.afterKillFailed?.(state, actor, effectiveCard);
       window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(
         state, effectiveCard);
-      return { dodged: false, hpLoss: 0, blockLoss: 0 };
+      return { dodged: false, hpLoss: 0, blockLoss: 0, killInvalidated: true };
     }
     window.ElranaAceNanaliSkills?.beforeKillTargeted?.(
       state, actor, target, effectiveCard, deps);

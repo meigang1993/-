@@ -24,7 +24,7 @@ function setup() {
     "ui-common-skills.js", "ui-common-art.js", "ui-common-card-art.js",
     "ui-common-card-combat.js", "ui-common-cards.js",
     "ui-common-relics.js", "ui-common.js",
-    "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-skills.js", "battle-card-playability.js", "battle-combat-targeting.js",
+    "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-tactic-immunity.js", "mieryula-skills.js", "battle-card-playability.js", "battle-combat-targeting.js",
     "battle-ai-helpers.js", "battle-ai-tactics.js", "battle-ai-slash-planner.js",
     "battle-ai-skill-helpers.js", "battle-ai-skill-evaluation.js",
     "battle-ai-skill-moves.js", "battle-ai-skill-planner.js", "battle-ai.js",

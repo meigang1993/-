@@ -127,6 +127,9 @@ module.exports = ({
   vm.runInThisContext(fs.readFileSync("./src/original/ui-hand-state.js", "utf8"), {
     filename: "ui-hand-state.js",
   });
+  vm.runInThisContext(fs.readFileSync("./src/original/ui-selection-tip.js", "utf8"), {
+    filename: "ui-selection-tip.js",
+  });
   vm.runInThisContext(fs.readFileSync("./src/original/ui-hand-view.js", "utf8"), {
     filename: "ui-hand-view.js",
   });

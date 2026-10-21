@@ -45,6 +45,7 @@ const DISPATCHERS = [
   ["edis-skills.js", "伊迪斯【无限暗刃】"],
   ["ruins-carrier-armor.js", "装甲运输车【坚硬装甲】（本轮新增）"],
   ["sakura-risa-lifecycle-skills.js", "樱羽丽莎【不死食尸鬼】（本轮新增）"],
+  ["ruins-elite-skills.js", "希尔德【暗幕隐身】（本轮新增）"],
 ];
 for (const [file, desc] of DISPATCHERS) {
   const text = read(file);
@@ -59,7 +60,7 @@ const QUERY_ONLY = new Set([
   "displayCard", "displayBiteCard", "aiMove", "aiHand", "aiTacticBonus", "aiTacticTarget",
   "pendingRevival", "canDiscard", "canShift", "canCounterTacticCard", "canFeintCard",
   "canUseTongueActive", "canUseArmyOrder", "validArmyOrder", "invasionTargets",
-  "armyOrderIndexes", "backflipCandidates", "isSkillBlocked", "blocksKillTarget",
+  "armyOrderIndexes", "backflipCandidates", "isSkillBlocked",
   "sourceLabel", "drawRecipient", "onDrawRedirected", "rememberPrePlayHand",
   "copyTargetedCards", "copyTargetedCard", "copyEarlySingleTarget", "flushCopies",
   "refreshShiftState", "markFaceDown", "consumeFaceDown", "convertBerserkCard",
@@ -116,6 +117,16 @@ const CONFIRMED_GUARDED = new Set([
   //     EdisSkills.beforeHeal（无限暗刃）与 RuinsEnemySkills.beforeHeal
   //     → ruins-carrier-armor.beforeHeal（坚硬装甲，本轮新增）。
   "beforeHeal",
+  // 11) blocksKillTarget —— 希尔德【暗幕隐身】是锁定技，会真正改变战局
+  //     （让她不可被单体【杀】指定），不是纯查询；守卫写在 ruins-elite-skills.js
+  //     的 stealthOn 内部，因为它有三个互不重合的入口（目标选择 / 饰品自动斩 / UI）。
+  //     曾误列入 QUERY_ONLY，导致该技能被时停豁免却无人察觉。
+  "blocksKillTarget",
+  // 12) chainAfterResolution —— 魔之连杀的「额外随机指定目标」，属【杀】牌自身的
+  //     卡牌效果，不是角色技能；且唯一入口是「出牌方打出【杀】」，被时停者回合被
+  //     跳过（shouldSkipTurn），根本不会有出牌机会。按「只覆盖角色技能、不覆盖
+  //     饰品与卡牌效果」的口径，不再加判（此前误加过，已还原）。
+  "chainAfterResolution",
 ]);
 
 // EnemySkills 是聚合体：它的方法散落在 enemy-*.js 里，守卫也常写在那些文件的

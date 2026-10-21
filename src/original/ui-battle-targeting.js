@@ -102,6 +102,11 @@ window.GameUIBattleTargeting = (() => {
     // （side === "enemy"）而仍被标成可选，故在此统一按「我方男性且非自己」收口。
     if (card?.preshiDrain) allowed = unitData.side === actorSide(battle)
       && unitData.gender === "male" && unitData.uid !== battle.activeUid;
+    // 渴血杀戮同为「我方男性」目标：此前与其余 allyTarget 牌共用「同阵营即可」，
+    // 女性队友会被标成可选，点了在 handleSpecialCard 里静默 return（无反应），
+    // 与女王榨取、狙击目标同一类，故按同一口径收口。
+    if (card?.mieryulaBloodthirst) allowed = unitData.side === actorSide(battle)
+      && unitData.gender === "male" && unitData.uid !== battle.activeUid;
     // 隐身中的希尔德不可被单体【杀】指定：与逻辑层 chooseTarget 同一判定源，
     // 否则会出现「点得到但点了没反应」。
     if (allowed && window.RuinsEnemySkills?.blocksKillTarget?.(unitData, card)) allowed = false;

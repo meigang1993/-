@@ -55,7 +55,7 @@ load("src/original/battle-status-cards.js");
 load("src/original/battle-card-tactics.js");
 load("src/original/miller-skills.js");
 load("src/original/mieryula-time-stop.js");
-load("src/original/mieryula-skills.js");
+load("src/original/mieryula-tactic-immunity.js", "src/original/mieryula-skills.js");
 load("src/original/gerda-skills.js");
 load("src/original/battle-turn-state.js");
 load("src/original/battle-prepare-prompts.js");

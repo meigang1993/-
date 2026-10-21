@@ -39,7 +39,7 @@ window.BattleCards = {
   "src/original/relics.js",
   "src/original/battle-draw-feedback.js",
   "src/original/skill-once-per-turn.js",
-  "src/original/mieryula-time-stop.js", "src/original/mieryula-skills.js",
+  "src/original/mieryula-time-stop.js", "src/original/mieryula-tactic-immunity.js", "src/original/mieryula-skills.js",
   "src/original/battle-card-playability.js",
   "src/original/battle-combat-targeting.js",
   "src/original/bakar-relic-skills.js",

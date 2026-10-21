@@ -28,11 +28,29 @@ const SHARED_SOURCES = [
       "machine-factory-skills.js",
     ],
   },
+  // 米尔尤拉【无谋霸姬】战术牌免疫：消费方横跨出牌判定、战术牌结算与伤害结算
+  // （battle-card-playability / battle-card-tactics / battle-damage-lifecycle /
+  //  battle-damage-resolution）。mieryula-skills.js 只是转发它，因此它必须排在
+  //  skills 之前，否则转发时会因取不到全局而抛错。
+  {
+    file: "mieryula-tactic-immunity.js",
+    consumers: ["mieryula-skills.js", "battle-card-playability.js"],
+  },
   // 米尔尤拉技能模块：battle-rules 的置灰判据（无谋霸姬封锁战术牌）读它，
   // 本文件只在顶层定义、不在加载期调用依赖，因此同样适合打进两个包。
   {
     file: "mieryula-skills.js",
     consumers: ["battle-card-playability.js"],
+  },
+];
+
+// 只在单个 bundle 内存在、但同样「缺文件即抛错」的拆出模块。
+// 它们不需要打进多个包，因此不进 SHARED_SOURCES，但仍要参与顺序校验和夹具护栏
+// ——否则一旦有人调整清单顺序，或某个 node 夹具只加载消费方，就会直接炸。
+const ORDER_DEPENDENCIES = [
+  {
+    file: "ui-selection-tip.js",
+    consumers: ["ui-hand-view.js"],
   },
 ];
 
@@ -43,7 +61,7 @@ function sharedOrderFailures(bundles) {
   const failures = [];
   for (const [name, files] of Object.entries(bundles)) {
     if (!Array.isArray(files)) continue;
-    for (const { file, consumers } of SHARED_SOURCES) {
+    for (const { file, consumers } of [...SHARED_SOURCES, ...ORDER_DEPENDENCIES]) {
       const at = files.indexOf(file);
       if (at < 0) continue;
       for (const consumer of consumers) {
@@ -59,4 +77,9 @@ function sharedOrderFailures(bundles) {
   return failures;
 }
 
-module.exports = { SHARED_SOURCES, sharedFileNames, sharedOrderFailures };
+module.exports = {
+  SHARED_SOURCES,
+  ORDER_DEPENDENCIES,
+  sharedFileNames,
+  sharedOrderFailures,
+};

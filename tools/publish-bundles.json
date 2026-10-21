@@ -222,6 +222,7 @@
     "character-skill-access.js",
     "skill-once-per-turn.js",
     "mieryula-time-stop.js",
+    "mieryula-tactic-immunity.js",
     "mieryula-skills.js",
     "battle-card-playability.js",
     "battle-combat-targeting.js",
@@ -346,6 +347,7 @@
     "catherine-skills.js",
     "hitwell-skills.js",
     "preshi-skills.js",
+    "mieryula-tactic-immunity.js",
     "mieryula-skills.js"
   ],
   "battle-flow": [
@@ -441,6 +443,7 @@
     "ui-battle-overlays.js",
     "ui-battle-scene.js",
     "ui-hand-state.js",
+    "ui-selection-tip.js",
     "ui-hand-view.js",
     "ui-hand.js",
     "battle-action-guard.js",

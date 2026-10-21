@@ -13,6 +13,7 @@ const timeouts = Object.freeze({
   "test-edis-chainsaw-vs-counter-live.js": 240,
   // 每段各弹一次交牌窗，需等交牌窗挂载并跳过，等待链更长
   "test-double-and-chain-slash-live.js": 300,
+  "test-chain-slash-dodge-live.js": 300,
   "test-reaction-queue-guards-live.js": 300,
 });
 
@@ -145,6 +146,7 @@ const groups = Object.freeze({
     "test-phantom-sword-dance-live.js",
     "test-crazy-bayonet-multihit-live.js",
     "test-double-and-chain-slash-live.js",
+    "test-chain-slash-dodge-live.js",
     "test-multihit-slash-sweep-live.js",
     "test-edis-chainsaw-vs-counter-live.js",
     "test-dungeon-drop-rate-live.js",
@@ -264,13 +266,17 @@ const groups = Object.freeze({
     "test-mieryula-timestop-all-skill-types-live.js",
     "test-mieryula-timestop-kill-hook-live.js",
     "test-mieryula-timestop-heal-defense-live.js",
+    "test-timestop-witherer-afterdamage-live.js",
     "test-mieryula-timestop-recover-live.js",
     "test-mieryula-tactic-lockout-live.js",
+    "test-mieryula-bloodthirst-target-aoe-live.js",
     "test-mieryula-timestop-hub-guards-live.js",
+    "test-mieryula-timestop-badge-live.js",
     "test-mieryula-timestop-courage-live.js",
     "test-mieryula-timestop-orc-dungeon-live.js",
     "test-mieryula-timestop-monster-skills-live.js",
     "test-timestop-monster-skill-audit.js",
+    "test-timestop-hilde-stealth-live.js",
     "test-hundred-eyes-halfblood-live.js",
     "test-preshi-fullchain-live.js",
     "test-preshi-skills-strict-effects-live.js",

@@ -1,6 +1,6 @@
-// 米尔尤拉（嗜血公主）技能：渴血杀戮 / 无谋霸姬 / 神奇怀表。
+// 米尔尤拉（嗜血公主）技能：渴血杀戮 / 神奇怀表，以及【无谋霸姬】的转发。
 // 独立成模块是为了不让 battle-combat.js 等大文件继续膨胀；
-// 时停标记在 mieryula-time-stop.js，本文件只负责技能逻辑。
+// 时停标记在 mieryula-time-stop.js，战术牌免疫在 mieryula-tactic-immunity.js。
 window.MieryulaSkills = (() => {
   // 与 skill-once-per-turn 同一口径：缺文件时直接抛错，而不是静默放行。
   function TS() {
@@ -10,51 +10,21 @@ window.MieryulaSkills = (() => {
     return stop;
   }
   const alive = unit => !!unit && unit.hp > 0;
-  const visible = unit => (unit?.hand || []).filter(card => !card._pendingDraw);
   const isMieryula = unit => unit?.ref === "mieryula" || unit?.id === "mieryula";
-  const hasSkill = (unit, name) =>
-    (unit?.skills || []).some(skill => skill.name === name);
   const attackOf = unit => (unit?.stats?.attack || 0) + (unit?.tempAttack || 0);
   const allUnits = battle => (battle?.allies || []).concat(battle?.enemies || []);
   const line = (state, unit, name, target) =>
     window.BattleLines?.skill(state, unit, name, target);
-  const isTactic = card => !!card && card.type === "tactic";
-
-  // ------------------------------------------------------- 无谋霸姬（锁定）
-  // 战术牌对她无效：指定她的战术牌不产生效果。
-  function immunizesTactic(state, target, card) {
-    if (!isMieryula(target) || !alive(target)) return false;
-    if (!hasSkill(target, "无谋霸姬") || !isTactic(card) || card._skill) return false;
-    return true;
-  }
-  // 她无法使用战术牌：手牌区的战术牌一律不可打出。
-  function blocksTactic(actor, card) {
-    if (!isMieryula(actor) || !alive(actor)) return false;
-    // 技能牌（渴血杀戮/神奇怀表）本身是战术牌类型，不受「无法使用战术牌」限制。
-    if (!hasSkill(actor, "无谋霸姬") || !isTactic(card) || card._skill) return false;
-    return true;
-  }
-  // 战术牌指定她时的统一拦截入口：返回 true 表示这张牌对她完全不产生效果。
-  // 此前源码里没有任何地方调用 immunizesTactic —— 只有测试直接调它，
-  // 于是「战术牌对你无效」这条锁定技实际完全不生效（手牌照样被弃、伤害照常结算）。
-  function interceptTactic(state, actor, target, card) {
-    if (!immunizesTactic(state, target, card)) return false;
-    line(state, target, "无谋霸姬", actor);
-    window.BattleLog?.add(state, `${actor?.name || "对方"} 对${target.name}使用${card?.name || "战术牌"}，`
-      + `但${target.name}免疫战术牌，此牌没有任何效果。`);
-    return true;
-  }
-  const hasTacticInHand = unit => visible(unit).some(isTactic);
-  // 手牌中没有战术牌时，实体牌与虚拟牌造成的伤害翻倍。
-  function modifyOutgoingDamage(state, actor, amount, card) {
-    if (!isMieryula(actor) || !alive(actor) || !(amount > 0)) return amount;
-    if (!hasSkill(actor, "无谋霸姬") || hasTacticInHand(actor)) return amount;
-    if (!card) return amount;
-    // 技能伤害（type:"skill"）不属于「实体牌或虚拟牌」，不翻倍。
-    if (card.type === "skill") return amount;
-    line(state, actor, "无谋霸姬造成伤害");
-    return amount * 2;
-  }
+  // 无谋霸姬（战术牌免疫 / 无法使用战术牌 / 无战术牌时伤害翻倍）已拆到
+  // mieryula-tactic-immunity.js，此处只做转发，既有调用点无需改动。
+  // 与 skill-once-per-turn 同一口径：缺文件时直接抛错，而不是静默放行。
+  const immunity = () => {
+    const mod = window.MieryulaTacticImmunity;
+    if (!mod?.immunizesTactic) throw new Error(
+      "[mieryula-tactic-immunity] 未装配：mieryula-tactic-immunity.js"
+      + " 必须先于 mieryula-skills.js 加载");
+    return mod;
+  };
 
   // ------------------------------------------------------- 渴血杀戮（主动）
   // 可选牌名：全部正式【杀】牌（与温蒂【解答迷惑】的牌池同源）。
@@ -179,7 +149,12 @@ window.MieryulaSkills = (() => {
   }
 
   return {
-    immunizesTactic, interceptTactic, blocksTactic, hasTacticInHand, modifyOutgoingDamage,
+    immunizesTactic: (...a) => immunity().immunizesTactic(...a),
+    interceptTactic: (...a) => immunity().interceptTactic(...a),
+    blockTacticDamage: (...a) => immunity().blockTacticDamage(...a),
+    blocksTactic: (...a) => immunity().blocksTactic(...a),
+    hasTacticInHand: (...a) => immunity().hasTacticInHand(...a),
+    modifyOutgoingDamage: (...a) => immunity().modifyOutgoingDamage(...a),
     slashPool, availableSlashNames, chooseBloodthirstCard, useBloodthirstVirtual,
     cancelBloodthirst, handleSpecialCard, onTurnStart,
   };

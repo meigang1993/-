@@ -20,6 +20,7 @@ global.GameData = { cardCodex: GameDataCards.cardCodex };
 vm.runInThisContext(fs.readFileSync("src/original/card-utils.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/skill-once-per-turn.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/mieryula-time-stop.js", "utf8"));
+vm.runInThisContext(fs.readFileSync("src/original/mieryula-tactic-immunity.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/mieryula-skills.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/battle-card-playability.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/wendy-skills.js", "utf8"));
@@ -42,6 +43,7 @@ vm.runInThisContext(fs.readFileSync("src/original/ui-common-relics.js", "utf8"))
 vm.runInThisContext(fs.readFileSync("src/original/ui-common.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/battle-response-ui.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/ui-hand-state.js", "utf8"));
+vm.runInThisContext(fs.readFileSync("src/original/ui-selection-tip.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/ui-hand-view.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/ui-hand.js", "utf8"));
 

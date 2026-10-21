@@ -74,6 +74,8 @@
 .status-icon.shock { width: auto; min-width: 18px; padding: 0 3px; background: #33d7ff; color: #102033; font-weight: 900; }
 .status-icon.burning-hand { background: #ff642e; color: #fff3d1; border-color: #ffbf4d; box-shadow: 0 0 10px rgba(255,86,28,.9); }
 .status-icon.timer { width: auto; min-width: 20px; padding: 0 3px; background: #2c2333; border: 1px solid #ffcc66; color: #ffdd8a; font-weight: 900; }
+/* 时停（米尔尤拉限定技【神奇怀表】）：冷蓝发光，与「计时」的金底明确区分 */
+.status-icon.time-stop { width: auto; min-width: 20px; padding: 0 3px; background: linear-gradient(180deg, #17456e, #08182a); border: 1px solid #7fe4ff; color: #e6fbff; font-weight: 900; box-shadow: 0 0 9px rgba(110, 214, 255, .9); }
 
 .target-mark { position: absolute; top: -18px; left: 50%; z-index: 3; transform: translateX(-50%); padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.9); color: #2b1331; font-size: 12px; font-weight: 800; }
 .mimic-name { top: 8px; max-width: 84%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: rgba(159,244,255,.92); color: #10283a; box-shadow: 0 0 12px rgba(159,244,255,.6); }
