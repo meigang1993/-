@@ -2,7 +2,7 @@ window.HoshinoKaiichiShareQueue = ({ alive, allUnits }) => {
   function queueShare(state, unit, source) {
     const battle = state.battle;
     const others = battle.allies.filter(item => item.uid !== unit.uid && alive(item));
-    const count = Math.min(2, unit.hand.length);
+    const count = Math.min(3, unit.hand.length);
     if (!others.length || !count || unit.side !== "ally") return false;
     const active = allUnits(battle).find(item => item.uid === battle.activeUid);
     const resumeEnemyUid = active?.side === "enemy" && battle.phase === 4 ? active.uid : null;

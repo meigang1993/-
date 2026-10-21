@@ -56,7 +56,7 @@ const setupTpl = `(() => {
   kaiichi.stats = Object.assign({}, kaiichi.stats, { attack: 4, magic: 0, speed: 5 });
   kaiichi.skills = [{ name: "半魅魔血", type: "trigger", icon: "🔵",
     text: "当你受到实体牌或虚拟牌造成的伤害后（同一张牌的多段或连击伤害逐段结算），"
-      + "你摸3张牌，然后可以选择至多2张手牌并将这些牌交给一名其他友方角色。"
+      + "你摸3张牌，然后可以选择至多3张手牌并将这些牌交给一名其他友方角色。"
       + "若星野依在队伍中且存活，星野依令你恢复等同于其魔力值的生命值。"
       + "技能造成的追加伤害不触发此技。" }];
   [bUnit, cUnit].forEach((u, i) => {

@@ -39,7 +39,7 @@ window.GameUIHandView = (() => {
       return `<span class="discard-prompt">次元转移：${pickedCost ? "已选择黑色牌，请点击一名敌方角色承受本次伤害" : "请先从手牌中选择1张黑色牌"}。</span><button data-dimension-transfer-skip="1">放弃发动</button>`;
     }
     if (modes.kaiichiShare) {
-      return `<span class="discard-prompt">半魅魔血：已选${picks.kaiichi.length}/${battle.kaiichiShare.maxCount}张，选择至多2张后点击一名队友一次性交出。</span><button data-kaiichi-share-skip="1">不交</button>`;
+      return `<span class="discard-prompt">半魅魔血：已选${picks.kaiichi.length}/${battle.kaiichiShare.maxCount}张，选择至多3张后点击一名队友一次性交出。</span><button data-kaiichi-share-skip="1">不交</button>`;
     }
     if (modes.cadicisShare) {
       return `<span class="discard-prompt">指挥官责任：点击${U.esc(actor.name)}的一张手牌交给目标，还需交出${battle.cadicisResponsibility.remaining || 1}张。</span><button data-cadicis-responsibility-skip="1">不交</button>`;

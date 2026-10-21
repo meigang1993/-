@@ -40,7 +40,7 @@ const setupTpl = `(() => {
   kaiichi.stats = Object.assign({}, kaiichi.stats, { handLimit: 99 });
   kaiichi.hand = [];
   kaiichi.skills = [{ name: "半魅魔血", type: "trigger", icon: "🔵",
-    text: "当你受到生命值伤害后，你摸3张牌，然后可以选择至多2张手牌并将这些牌交给一名其他友方角色。" }];
+    text: "当你受到生命值伤害后，你摸3张牌，然后可以选择至多3张手牌并将这些牌交给一名其他友方角色。" }];
 
   b.allies.slice(2).forEach(u => { u.hp = 0; });
   b.enemies.slice(1).forEach(u => { u.hp = 0; });

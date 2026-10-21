@@ -63,20 +63,21 @@ module.exports = ({
   assert(kaiichi.hand.length === 4
     && kaiichi.hp === 20 + yiHealer.stats.magic,
     "Half-Succubus Blood must draw three and receive Yi's magic healing");
-  assert(bloodState.battle.kaiichiShare?.maxCount === 2 && bloodState.battle.locked,
-    "Half-Succubus Blood must synchronously offer up to two cards in one transfer");
-  const sharedCards = kaiichi.hand.slice(0, 2);
+  assert(bloodState.battle.kaiichiShare?.maxCount === 3 && bloodState.battle.locked,
+    "Half-Succubus Blood must synchronously offer up to three cards in one transfer");
+  const sharedCards = kaiichi.hand.slice(0, 3);
   assert(HoshinoSkills.toggleShareCard(bloodState, 0)
-    && HoshinoSkills.toggleShareCard(bloodState, 1),
-  "Half-Succubus Blood must let the player choose up to two cards");
-  HoshinoSkills.toggleShareCard(bloodState, 2);
-  assert(bloodState.battle.kaiichiShare.indexes.length === 2,
-    "Half-Succubus Blood must reject a third selected card");
+    && HoshinoSkills.toggleShareCard(bloodState, 1)
+    && HoshinoSkills.toggleShareCard(bloodState, 2),
+  "Half-Succubus Blood must let the player choose up to three cards");
+  HoshinoSkills.toggleShareCard(bloodState, 3);
+  assert(bloodState.battle.kaiichiShare.indexes.length === 3,
+    "Half-Succubus Blood must reject a fourth selected card");
   const firstShare = HoshinoSkills.resolveShare(bloodState, yiHealer.uid);
   assert(firstShare.ok && firstShare.done
     && sharedCards.every(item => yiHealer.hand.includes(item))
     && !bloodState.battle.locked,
-  "Half-Succubus Blood must give both selected cards together to one ally");
+  "Half-Succubus Blood must give all three selected cards together to one ally");
   bloodState.battle.activeUid = "enemy-turn";
   bloodState.battle.enemies = [{ uid: "enemy-turn", side: "enemy", hp: 10 }];
   HoshinoSkills.afterDamage(
