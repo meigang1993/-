@@ -278,6 +278,7 @@ const groups = Object.freeze({
     "test-timestop-monster-skill-audit.js",
     "test-timestop-hilde-stealth-live.js",
     "test-hundred-eyes-halfblood-live.js",
+    "test-mieryula-virtual-tactic-immunity-live.js",
     "test-preshi-fullchain-live.js",
     "test-preshi-skills-strict-effects-live.js",
     "test-preshi-drain-click-live.js",

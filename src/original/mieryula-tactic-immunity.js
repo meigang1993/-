@@ -17,9 +17,15 @@ window.MieryulaTacticImmunity = (() => {
   const isTactic = card => !!card && card.type === "tactic";
 
   // 战术牌对她无效：指定她的战术牌不产生效果。
+  // _skill 豁免只针对「角色技能牌本身」—— 她自己的渴血杀戮/神奇怀表是 tactic 类型，
+  // 靠 _skill 标记区分。虚拟牌与转换牌本质是真正的战术牌（军令状的虚拟【魔王军入侵】、
+  // 魔法巡飞弹的虚拟【魔弹特攻】、鬼王扑克转换出的【魔弹特攻】），必须照常免疫，
+  // 否则「战术牌对你无效」会被这些牌整段绕过。口径与 card-utils.js 的
+  // isCounterableTactic（响应判定）一致：(!card._skill || card.virtual || card.convertedFrom)。
   function immunizesTactic(state, target, card) {
     if (!isMieryula(target) || !alive(target)) return false;
-    if (!hasSkill(target, "无谋霸姬") || !isTactic(card) || card._skill) return false;
+    if (!hasSkill(target, "无谋霸姬") || !isTactic(card)) return false;
+    if (card._skill && !card.virtual && !card.convertedFrom) return false;
     return true;
   }
   // 她无法使用战术牌：手牌区的战术牌一律不可打出。
