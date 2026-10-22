@@ -61,6 +61,10 @@ window.BattleEffectPlay = (() => {
       }
       if (!active()) return false;
       fly = projectile(played, actor?.side === "enemy");
+      // 与敌方出牌同一口径：起飞前等牌面图就绪（有上限，等不到就照旧飞），
+      // 避免未缓存美术的牌飞过去是空白的。
+      await window.BattleEffectCardDOM?.ready?.(fly, 320);
+      if (!active()) return false;
       if (playedSource) {
         playedSource._playedFlightDone = true;
         playedSource._playedTargetUid = targetUid;

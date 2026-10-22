@@ -50,6 +50,23 @@ function bumpRepositoryVersion(root, current) {
       after = parts.join(next[kind]);
     }
     if (!count || after === before) continue;
+    // 漏改护栏：任一形态只要还残留旧值，说明这次升版是「半截」的，
+    // 直接抛错而不是静默写盘——否则只会留下一处对不上的版本号。
+    const leftover = target.tokens.filter(kind => after.includes(previous[kind]));
+    if (leftover.length) {
+      throw new Error(
+        `Incomplete version bump in ${target.file}: stale ${leftover.join(", ")} ` +
+        `(${leftover.map(kind => previous[kind]).join(", ")}) still present`
+      );
+    }
+    // index.html 必须同时命中两种形态：点分形态只有徽章一处，
+    // 一轮替换里它若没出现，说明徽章文案已与其它版本串脱节。
+    if (target.tokens.includes("dotted") && !before.includes(previous.dotted)) {
+      throw new Error(
+        `Version bump aborted: ${target.file} has no dotted token ${previous.dotted}; ` +
+        `badge label is out of sync with meta[name=game-build]`
+      );
+    }
     fs.writeFileSync(full, after);
     summary.push(`${target.file} ×${count}`);
   }

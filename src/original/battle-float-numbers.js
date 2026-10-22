@@ -2,7 +2,26 @@ window.BattleFloatNumbers = (() => {
   let seen = new Set();
   let runtimeVersion = 0;
   const active = new Map();
-  const maxActivePerTarget = 3;
+  // 同一目标上允许同时存在的飘字上限。
+  //
+  // 原值为 3，且超限时会把最旧的那个立刻 remove() —— 多段伤害
+  // （连击 / 追击 / 狂暴链锯额外结算）一旦在同一目标上叠加到第 4 个，
+  // 最早的几个会在同一帧内被销毁，实测存活 0ms，玩家根本看不到数字。
+  // 多段攻击一段最多 6 段，故上限提到 6；且超限只"停止跟踪"、不再强制
+  // remove()，让数字按自己的 1200ms 动画自然飘完再消失。
+  const maxActivePerTarget = 6;
+  // 纵向槽位按【每个单位各自计数】，不能用全局 seq。
+  // seq 是全局递增的，同单位上 seq 相差 4 的两次伤害会落到完全相同的坐标
+  // 相互盖住，看起来就像少了一个数字。
+  // 槽位给到 8：一次性弹出积压飘字时（cancel / 存档回档后）8 段仍各有落点。
+  const SLOT_COUNT = 8;
+  const SLOT_STEP = 8;
+  const slots = new Map();
+  function nextSlot(uid) {
+    const next = ((slots.get(uid) ?? -1) + 1) % SLOT_COUNT;
+    slots.set(uid, next);
+    return next;
+  }
   const later = (callback, ms) => setTimeout(
     callback, window.BattleEffectAnimation?.scaleMs?.(ms) ?? ms);
   const current = (state, battle, version = runtimeVersion) =>
@@ -25,7 +44,7 @@ window.BattleFloatNumbers = (() => {
   function trackFloat(uid, element) {
     const floats = (active.get(uid) || [])
       .filter(item => item.isConnected !== false);
-    while (floats.length >= maxActivePerTarget) floats.shift().remove();
+    while (floats.length >= maxActivePerTarget) floats.shift();
     floats.push(element);
     active.set(uid, floats);
   }
@@ -56,7 +75,7 @@ window.BattleFloatNumbers = (() => {
     const barRect = bar?.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return false;
     const element = document.createElement("div");
-    const offset = Math.min(44, (float.seq % 4) * 12);
+    const offset = Math.min(56, nextSlot(float.uid) * SLOT_STEP);
     const damageType = float.damageTypes?.[0] || "physical";
     const magicAttack =
       float.attackType === "magic" || float.magicDamage;
@@ -119,6 +138,7 @@ window.BattleFloatNumbers = (() => {
     runtimeVersion += 1;
     seen.clear();
     active.clear();
+    slots.clear();
     document.querySelectorAll(".float-num,.armor-shard")
       .forEach(element => element.remove());
   }

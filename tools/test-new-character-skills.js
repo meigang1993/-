@@ -33,7 +33,9 @@ assert(yiData.role === "XX型凋零者" && yiData.combatRoles[0] === "输出", "
 assert(yiData.entrance === "晚上好，我是A小町，星野依，天才般偶像，今天演唱新曲。", "Hoshino Yi entrance line mismatch");
 assert(idolSkill?.text === "锁定技，当你使用的牌与上一次使用的牌颜色不同时，你摸一张牌。若诺诺卡在队伍中，诺诺卡也摸一张牌。", "Idol Star wording mismatch");
 assert(yiData.skills.find(skill => skill.name === "巨蛋演出")?.text === "锁定技，你每使用四种不同花色的牌，你对所有敌方角色造成等同于你攻击力+魔力数值的物理魔法复合伤害。", "Dome Performance wording mismatch");
-assert(truthSkill?.text === "使命技。3回合内你使用的牌达到20张成功，3回合后未达到20张失败。触发技能后切换立绘为凋零者形态。", "Dream Truth wording mismatch");
+assert(truthSkill?.text.startsWith("使命技。3回合内你使用的牌达到20张成功，3回合后未达到20张失败。"), "Dream Truth wording mismatch");
+assert(truthSkill?.text.includes("成功：当你使用的牌与上一次使用的牌花色不同时，你本回合内攻击力和魔力各+1。"), "Dream Truth wording must explain the success suit growth");
+assert(truthSkill?.text.includes("失败：你每使用四种不同花色的牌，弃置所有敌方角色各一张牌。"), "Dream Truth wording must explain the failure suit discard");
 assert(comfortSkill?.type === "trigger" && !comfortSkill.card
   && comfortSkill.text.includes("其他友方角色") && !comfortSkill.text.includes("男性"),
 "Gerda Comfort must be an unrestricted end-phase ally trigger");

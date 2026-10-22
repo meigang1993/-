@@ -3,6 +3,15 @@ window.BattleEffectPlayedCardFlight = U => {
   const FLY_MID_MS = 280;
   const FLY_DIRECT_MS = 300;
   const HIT_HOLD_MS = 90;
+  // 飞行牌的牌面图是异步加载的：BattleEffectCardDOM.bindArt 给每张飞行牌建了
+  // cardArtReady Promise，但此前没有任何一处 await 它——projectile() 一建出
+  // 元素就立刻 runAnim，飞完就 remove()。
+  // 后果：战斗中才拿到、美术尚未缓存的牌（偷/摸/转化来的非初始牌）往往在
+  // 图还没解码完时就被删掉，玩家看到的是「牌飞过去了但空的」，也就是反馈里
+  // 的「动画卡没了」。
+  // 这里在起飞前等一下美术，但有硬上限：本地资源通常几毫秒就就绪，等不到就
+  // 照旧起飞，绝不因为一张图把整场动画拖住（这才是「卡顿」的另一半）。
+  const ART_READY_BUDGET_MS = 320;
   const FLIGHT_EASE = "cubic-bezier(.16,1,.3,1)";
   const SETTLE_EASE = "cubic-bezier(.4,0,.2,1)";
   const {
@@ -26,6 +35,8 @@ window.BattleEffectPlayedCardFlight = U => {
     showSlashText(event);
     if (!active()) return;
     const fly = projectile(card, !!enemyLine);
+    await window.BattleEffectCardDOM?.ready?.(fly, ART_READY_BUDGET_MS);
+    if (!active()) { fly.remove(); return; }
     fly.style.left = `${start.x}px`;
     fly.style.top = `${start.y}px`;
     BattleFX.cardMove();
@@ -62,6 +73,8 @@ window.BattleEffectPlayedCardFlight = U => {
       if (!active()) return;
     }
     const fly = projectile(card, !!enemyLine);
+    await window.BattleEffectCardDOM?.ready?.(fly, ART_READY_BUDGET_MS);
+    if (!active()) { fly.remove(); return; }
     const start = center(from);
     const target = center(to);
     const end = center(zone || to);

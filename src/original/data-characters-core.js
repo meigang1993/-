@@ -88,7 +88,7 @@ window.GameDataCharactersCore = [
     ]
   },
   {
-    id: "carlos", name: "卡洛斯", gender: "male", face: "卡", art: "./assets/images/carlos-portrait.3f1e07f0.webp", avatar: "./assets/images/carlos-portrait.3f1e07f0.webp", role: "风女之子", locked: true,
+    id: "carlos", name: "卡洛斯", gender: "male", face: "卡", art: "./assets/images/carlos-portrait.52b82e3d.webp", avatar: "./assets/images/carlos-portrait.52b82e3d.webp", role: "风女之子", locked: true,
     stats: { attack: 4.8, magic: 2.5, speed: 6.7, maxHp: 55, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 4 },
     evaluation: "红牌转化与单体追加伤害输出。疯狂射击把红色手牌转为群体杀牌且不消耗杀意，疯狂刺刀根据命中后仍持有的【杀】数量追加多段无视护甲伤害。",
     skills: [

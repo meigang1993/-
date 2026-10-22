@@ -111,7 +111,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "catherine", name: "凯瑟琳", gender: "female", face: "凯", art: "./assets/images/butler-portrait.75f7a7f4.webp", avatar: "./assets/images/butler-portrait.75f7a7f4.webp", role: "别墅管家", locked: true,
+    id: "catherine", name: "凯瑟琳", gender: "female", face: "凯", art: "./assets/images/butler-portrait.d3a5d909.webp", avatar: "./assets/images/butler-portrait.d3a5d909.webp", role: "别墅管家", locked: true,
     stats: { attack: 2.4, magic: 5, speed: 4.4, maxHp: 48, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "牌权夺取与战术牌精通辅助。窃取将敌方手牌直接转交队友，知识吸收不断回收友方已结算的战术牌，魔力增幅把手牌中的战术牌转化为魔力并让战术牌无法被响应。",
     skills: [

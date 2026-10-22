@@ -1,7 +1,7 @@
 window.ButlerManual = (() => {
   const U = window.UICommon;
   const P = window.ButlerManualProgress;
-  const PORTRAIT = "./assets/images/butler-portrait.75f7a7f4.webp";
+  const PORTRAIT = "./assets/images/butler-portrait.d3a5d909.webp";
   const TABS = [
     { id: "boss", label: "讨伐目标" },
     { id: "elite", label: "精英目标" },
