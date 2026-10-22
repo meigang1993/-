@@ -40,6 +40,14 @@ window.GameSkinData = (() => {
     { id: "preshi_level_10_special", charId: "preshi", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/preshi-level-10-special.20133612.webp", desc: "普雷希达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "mieryula_default", charId: "mieryula", name: "默认", quality: "default", price: 0, art: "./assets/images/mieryula-portrait.38ce3440.webp", desc: "米尔尤拉的初始外观。", initial: true },
     { id: "mieryula_level_10_special", charId: "mieryula", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/mieryula-level-10-special.62862e21.webp", desc: "米尔尤拉达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "catherine_default", charId: "catherine", name: "默认", quality: "default", price: 0, art: "./assets/images/butler-portrait.d3a5d909.webp", desc: "凯瑟琳的初始外观。", initial: true },
+    { id: "catherine_level_10_special", charId: "catherine", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/catherine-level-10-special.a7c0c2c2.webp", desc: "凯瑟琳达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "ophelia_default", charId: "ophelia", name: "默认", quality: "default", price: 0, art: "./assets/images/ophelia-portrait.10278309.webp", desc: "奥菲莉亚的初始外观。", initial: true },
+    { id: "ophelia_level_10_special", charId: "ophelia", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/ophelia-level-10-special.d7766ef6.webp", desc: "奥菲莉亚达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "besta_default", charId: "besta", name: "默认", quality: "default", price: 0, art: "./assets/images/besta-portrait.3dca20b9.webp", desc: "贝丝妲的初始外观。", initial: true },
+    { id: "besta_level_10_special", charId: "besta", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/besta-level-10-special.45c81978.webp", desc: "贝丝妲达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "luka_default", charId: "luka", name: "默认", quality: "default", price: 0, art: "./assets/images/luka-portrait.c94e6540.webp", desc: "鲁卡的初始外观。", initial: true },
+    { id: "luka_level_10_special", charId: "luka", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/luka-level-10-special.5f8ea6d3.webp", desc: "鲁卡达到10级后自动解锁，可作为正式战斗立绘装备。" },
   ];
   return { quality, skins };
 })();
