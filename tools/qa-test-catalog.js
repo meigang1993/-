@@ -386,6 +386,7 @@ const groups = Object.freeze({
     "test-nanali-witch-skin-fx-wiring.js",
     "test-skin-unlock-cost.js",
     "test-skin-shop-purchase-live.js",
+    "test-level10-special-skin-unlock-live.js",
     "test-angelica-might-accumulate-live.js",
     "test-angelica-might-turnclear-live.js",
     "test-party-battle-order-live.js",
