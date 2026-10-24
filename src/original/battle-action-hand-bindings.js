@@ -71,7 +71,12 @@ window.BattleActionHandBindings = (() => {
         },
       );
     }
-    if (battle?.locked || cardNode.dataset.dragged === "1") return;
+    // 霹雳之锤挂起时会置 battle.locked，而发动锤子唯一的交互就是点击一张手牌弃置。
+    // 若沿用「locked 一律早退」，锤子永远发动不了：提示照常打印、点手牌毫无反应、
+    // 界面既不报错也不推进——即玩家反馈的「灰屏不能动」。
+    // 故锤子挂起时必须放行，其余 locked 场景（交牌/防御提示等）维持原样。
+    const wasHammer = !!battle?.thunderHammer;
+    if ((battle?.locked && !wasHammer) || cardNode.dataset.dragged === "1") return;
     if (battle?.newMoonShare) {
       return queuePromptCard(
         "新月之歌选牌失败", "newMoonShare", cardNode,
@@ -91,7 +96,6 @@ window.BattleActionHandBindings = (() => {
         return true;
       }, { control: cardNode });
     }
-    const wasHammer = !!battle?.thunderHammer;
     if (battle?.phase === 5 || wasHammer) {
       return BattleActionGuard.run("战斗弃牌失败", async ({ state: actionState, isCurrent }) => {
         const ok = await BattleSystem.discardCard(actionState, index, render);

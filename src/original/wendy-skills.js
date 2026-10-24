@@ -124,21 +124,20 @@ window.WendySkills = (() => {
 
   function afterDiscard(state, unit, cards, deps) {
     if (unit?.ref !== "wendy" || !cards?.length) return;
-    unit.wendyDiscardShieldCount = (unit.wendyDiscardShieldCount || 0)
-      + cards.length;
-    const gainBase = Math.floor(unit.wendyDiscardShieldCount / 2);
-    unit.wendyDiscardShieldCount %= 2;
+    // 每弃置 1 张牌即结算 1 点（此前为每 2 张 1 点，弃单数张时余量被吞）。
+    const gainBase = cards.length;
     if (!gainBase) return;
-    const flora = state.battle.allies
-      .find(ally => ally.ref === "flora" && alive(ally));
-    line(state, unit, "飘浮掩体", flora);
+    // 芙萝娅与卡迪西斯获得双倍（卡迪西斯此前只拿到基础值，仅为飘字打强化标记）。
+    const doubles = state.battle.allies
+      .filter(ally => ["flora", "cadicis"].includes(ally.ref) && alive(ally));
+    line(state, unit, "飘浮掩体", doubles.find(ally => ally.ref === "flora"));
     const gains = [];
     state.battle.allies.filter(alive).forEach(ally => {
-      const gain = gainBase * (ally.ref === "flora" ? 2 : 1);
+      const gain = gainBase * (["flora", "cadicis"].includes(ally.ref) ? 2 : 1);
       ally.block = (ally.block || 0) + gain;
       gains.push({
         unit: ally, gain,
-        reinforced: ally.ref === "cadicis" || gain > gainBase,
+        reinforced: gain > gainBase,
       });
       deps.pushFloat?.(state.battle, ally.uid, "armor-gain", gain);
     });
@@ -146,7 +145,7 @@ window.WendySkills = (() => {
       + gains.reduce((sum, item) => sum + item.gain, 0);
     window.WendyTeacherSkinFX?.cover?.(state, unit, gains);
     window.BattleLog.add(state,
-      `${unit.name} 弃牌触发飘浮掩体，每弃2张牌我方全体获得${gainBase}点护甲${flora ? `，${flora.name}获得双倍` : ""}。`);
+      `${unit.name} 弃牌触发飘浮掩体，每弃1张牌我方全体获得${gainBase}点护甲${doubles.length ? `，${doubles.map(ally => ally.name).join("、")}获得双倍` : ""}。`);
   }
 
   return { afterCardPlayed, afterDiscard, chooseTutorCard, isKill, tutor, tutorPool };

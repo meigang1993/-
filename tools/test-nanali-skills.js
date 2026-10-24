@@ -121,6 +121,9 @@ assert(sealEvents[0].visualHandBefore === 2 && sealEvents[0].visualHandCount ===
   "Apollo must snapshot the visible hand before and after sealing");
 assert(!("clearTargetLine" in sealEvents[0]),
   "Apollo seal events must no longer carry revenge-only fields");
+// 扣置张数取决于娜娜莉手牌数，可多至十余张：必须一次落位，不能逐张错峰
+assert(sealEvents[0].stagger === 0,
+  "Apollo must seal the whole batch in one flight (stagger 0)");
 
 // ④ 虚弱斩杀：目标空手时单体杀伤害翻倍
 assert(ElranaAceNanaliSkills.modifySlashDamage(state, nanali, enemyA, 4, card("杀（普攻）", "slash")) === 8,
@@ -153,6 +156,9 @@ assert(returnEvents.length === 2 && returnTargetA.hand.length === 1 && returnTar
   "Sealed cards must animate back from the public zone");
 assert(returnTargetA.statusSynced === 1 && returnTargetB.statusSynced === 1,
   "Returning Apollo cards must refresh status-card markers");
+// 摸回与扣置同口径：整批同时起飞、一次落位
+assert(returnEvents.every(event => event.stagger === 0),
+  "Returning Apollo cards must fly back in one batch (stagger 0)");
 
 // ⑥ 转换杀 / 虚拟杀 / 重复扣置的既有契约保持不变
 const lastHandKill = card("杀（普攻）", "slash");

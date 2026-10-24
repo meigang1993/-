@@ -73,7 +73,7 @@ window.GameDataCharactersCore = [
     stats: { attack: 2.4, magic: 5, speed: 6.7, maxHp: 59, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "战术牌生成与团队护甲辅助。读书的智慧从友方战术牌中补牌，解答迷惑定向制造临时战术牌，飘浮掩体把弃牌转化为全队护甲。",
     skills: [
-      { name: "飘浮掩体", type: "passive", icon: "⭐", text: "锁定技，弃牌阶段，你每弃置2张手牌，所有友方角色各获得1点护甲；芙萝娅改为获得2点护甲。" },
+      { name: "飘浮掩体", type: "passive", icon: "⭐", text: "锁定技，弃牌阶段，你每弃置1张手牌，所有友方角色各获得1点护甲；芙萝娅与卡迪西斯改为各获得2点护甲。" },
       { name: "读书的智慧", type: "passive", icon: "⭐", text: "锁定技，当一名友方角色使用一张非技能战术牌时，你摸1张牌。" },
       { name: "解答迷惑", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以选择1张战术牌并获得1张同名临时牌，然后可以将其交给一名其他友方角色。此牌离开手牌后进入消耗牌堆。若交给芙萝娅，此技能本回合可额外发动1次。", card: { name: "解答迷惑", type: "tactic", wendyTutor: true, targetless: true, icon: "⚔️", text: "获得1张所选战术牌的同名临时牌，并可将其交给一名其他友方角色；此牌离开手牌后进入消耗牌堆。" } }
     ]

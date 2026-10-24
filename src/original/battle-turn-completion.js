@@ -55,8 +55,6 @@ window.BattleTurnCompletion = ({
   const discardTools = window.BattleDiscardOverflow({
     visibleHand,
     handLimit,
-    draw,
-    combat,
   });
   const endPhase = window.BattleEndPhase({ allUnits, combat, draw });
   const enterEndPhase = (state, unit) => endPhase.run(state, unit);

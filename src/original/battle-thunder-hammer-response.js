@@ -7,7 +7,12 @@ window.BattleThunderHammerResponse = ({
       || battle?.victoryScreen || battle?.defeat || battle?.testComplete;
     if (!battle || actor?.hp <= 0 || target?.hp <= 0 || settling) return false;
     const hand = actor.hand.filter(item => !item._pendingDraw);
+    // 只有单体【杀】能发动：群体杀（机枪扫杀/流星杀…）一次打到多名目标，
+    // 逐目标触发会连挂多次锤子、且「令此杀依然造成伤害」的单次补伤语义
+    // 对多目标不成立。判据与 CardUtils.isGroupTargetCard 一致（此处内联，
+    // 避免额外装配依赖）。
     if (!deps.isKillCard(card) || card.virtual || card._skill
+      || card.sweep || card.allTargets || card.aoeLineShown
       || !card._entitySourceCard && card._skipHandMove || !hand.length
       || !window.RelicSystem?.hasEquipped?.(
         state, actor, "霹雳之锤")) return false;

@@ -25,6 +25,9 @@ window.BattleEffectCardTransfersExit = U => {
       cards: event.cards || [], count: event.count || 0,
       from, to: destination, className: "seal-card-fly",
       enemy: event.side === "enemy", active,
+      // 扣置张数可多至十余张，事件带 stagger:0 时整批同时起飞、一次落位；
+      // 未指定则沿用默认逐张错峰，不改其他调用方的既有表现。
+      stagger: event.stagger,
     });
     if (!active()) return;
     if (moving) renderStep();

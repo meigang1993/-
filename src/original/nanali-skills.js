@@ -31,6 +31,10 @@ window.NanaliSkills = deps => {
         type: "sealCards", uid: target.uid, side: target.side,
         count: cards.length, cards, visualHandBefore,
         visualHandCount: visible(target).length,
+        // 与「一次性摸等量牌」同口径：扣置张数取决于娜娜莉手牌数，
+        // 逐张错峰（每张 +100ms）会让一次扣置拖出十几段飞行。
+        // stagger:0 让整批同时起飞、一次落位。
+        stagger: 0,
       });
     }
     window.NanaliSlaughterWitchSkinFX?.apolloSeal?.(state, actor, target, cards);
