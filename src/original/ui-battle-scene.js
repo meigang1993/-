@@ -70,15 +70,24 @@ window.GameUIBattleScene = (U, I) => {
     // 交牌类（艾伦格战斗演练、温蒂解答迷惑选定牌名后、凯瑟琳窃取指定敌方后）
     // 改为点击队友/我方角色交出，需要放开我方单位行与手牌区的点击，
     // 否则 .battle-locked 会让它们 pointer-events:none，点了完全没反应。
+    // 萌虎慰劳同样是「点击一名其他队友」，必须一并纳入：
+    // 它此前只靠 battle-overlays.css 里 .battle-locked.gerda-comforting 的
+    // 专门放行规则，而那条规则特异性 (0,8) 低于 .unit-row 置灰规则的 (0,10)，
+    // 会被静默覆盖 —— 实测友方行 pointer-events:none、连「放弃」都点不动，
+    // 整个界面假死（即玩家反馈的「灰屏不能动」）。
     const allyPicking = !!battle.ailengDrillPicker || !!battle.wendyTutorPicker?.cardName
-      || !!battle.catherineStealPicker;
+      || !!battle.catherineStealPicker || !!battle.gerdaComfort;
     // 渴血杀戮选定牌名后要点敌方角色：敌方单位行同样要放开点击。
     const enemyPicking = !!battle.mieryulaBloodthirstPicker?.cardName;
+    // 霹雳之锤挂起：发动锤子的唯一交互是点击一张手牌弃置，必须放开手牌区，
+    // 否则 .battle-locked 会把手牌面板置灰且 pointer-events:none ——
+    // 提示照常显示、点手牌毫无反应，即玩家反馈的「灰屏不能动」。
+    const hammerPicking = !!battle.thunderHammer;
     const handSharing = visible.kaiichiVisible || visible.responsibilityVisible
       || visible.dimensionVisible || borrowChoice || allyPicking || enemyPicking;
     const headshotPending = battle.judgement?.skill === "爆头一击"
       || battle.animQueue?.some(event => event.type === "judgement" && event.skill === "爆头一击");
-    return `${battle.locked ? "battle-locked" : ""} ${headshotPending ? "headshot-pending" : ""} ${visible.dimensionVisible ? "dimension-transfering" : ""} ${visible.guardVisible ? "ophelia-guarding" : ""} ${battle.gerdaComfort ? "gerda-comforting" : ""} ${visible.kaiichiVisible ? "kaiichi-sharing" : ""} ${visible.reactionPending ? "reaction-prompt-pending" : ""} ${handSharing ? "hand-sharing" : ""} ${allyPicking ? "ally-picking" : ""} ${enemyPicking ? "enemy-picking" : ""} ${battle.manualDodge || battle.manualCounter || battle.counterTrigger || battle.recklessPrompt || battle.risaEyePrompt || battle.landmineRpsPrompt || ["magicBullet", "magicBulletReveal"].includes(battle.handReveal?.mode) ? "manual-dodge-active" : ""}`;
+    return `${battle.locked ? "battle-locked" : ""} ${headshotPending ? "headshot-pending" : ""} ${visible.dimensionVisible ? "dimension-transfering" : ""} ${visible.guardVisible ? "ophelia-guarding" : ""} ${battle.gerdaComfort ? "gerda-comforting" : ""} ${visible.kaiichiVisible ? "kaiichi-sharing" : ""} ${visible.reactionPending ? "reaction-prompt-pending" : ""} ${handSharing ? "hand-sharing" : ""} ${allyPicking ? "ally-picking" : ""} ${enemyPicking ? "enemy-picking" : ""} ${hammerPicking ? "hammer-picking" : ""} ${battle.manualDodge || battle.manualCounter || battle.counterTrigger || battle.recklessPrompt || battle.risaEyePrompt || battle.landmineRpsPrompt || ["magicBullet", "magicBulletReveal"].includes(battle.handReveal?.mode) ? "manual-dodge-active" : ""}`;
   }
   function skillCaption(battle) {
     const captions = battle.skillCaptions || (battle.skillCaption ? [battle.skillCaption] : []);

@@ -120,6 +120,19 @@ assert(/\.armory-card\s*\{[^}]*max-height:[^;}]+;[^}]*overflow:\s*hidden;/s.test
 assert(/\.armory-options\s*\{[^}]*min-height:\s*0;[^}]*overflow-y:\s*auto;/s.test(overlayCss), "armory options should scroll vertically");
 assert(/\.judge-card-wrap\s*\{[^}]*width:\s*104px;/s.test(overlayCss), "judgement cards must match the baseline reveal-card width");
 assert(/\.judgement-popup \.play-card\s*\{[^}]*width:\s*100%;/s.test(overlayCss), "judgement card content must not stretch its fixed reveal footprint");
+// 锁定态的两条置灰规则（置灰+禁用点击、按钮压暗）都必须把 hammer-picking 排除，
+// 否则霹雳之锤挂起时底部「放弃发动」按钮与手牌会被一起冻住（玩家反馈的「灰屏点不动」）。
+// 注意：靠后出现的低特异性规则（.battle-locked.hammer-picking > .hand-panel button）
+// 会被这两条高特异性规则静默覆盖，必须写进 :not() 白名单才真正生效。
+{
+  const lockRules = overlayCss.split("\n").filter(l => l.startsWith(".battle-locked:not("));
+  const greyRule = lockRules.find(l => /pointer-events:\s*none/.test(l));
+  const dimRule = lockRules.find(l => /opacity:\s*\.35/.test(l));
+  assert(greyRule && greyRule.includes(":not(.hammer-picking)"),
+    "hand-card clicks must stay enabled while thunder hammer is pending");
+  assert(dimRule && dimRule.includes(":not(.hammer-picking)"),
+    "hammer prompt buttons must not be dimmed by the battle-locked rule");
+}
 
 const handCostRules = window.BattleCardPlayability({
   isKillCard: window.CardUtils.isKillCard,

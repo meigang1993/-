@@ -145,10 +145,14 @@ window.GameUIHandView = (() => {
         && (!modes.playable || modes.extractStart || modes.mimicStart || modes.speedStart
           || costLocked
           || !handChoice && !BattleSystem.canPlay(actor, card));
+      // 霹雳之锤挂起时 battle.locked 为真，而发动锤子的唯一交互就是点击一张
+      // 手牌弃置。若沿用「locked 一律置灰」，提示照常显示、手牌却全部灰掉
+      // 且点不动——即玩家反馈的「灰屏不能动」。锤子模式下必须保留可点态。
       return U.card(card, false, {
         index: interactionIndex, selected,
         discard: modes.discard && canDiscard && !shareFull, actor,
-        disabled: battle.locked && !modes.transferLocked || dimensionLocked || newMoonFull
+        disabled: battle.locked && !modes.transferLocked && !modes.hammer
+          || dimensionLocked || newMoonFull
           || kaiichiFull || shareFull || borrowLocked
           || modes.discard && !canDiscard || normalLocked || skipLocked,
       });

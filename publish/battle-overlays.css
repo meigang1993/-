@@ -65,9 +65,9 @@
   box-shadow: 0 0 0 2px rgba(255,216,141,.9), 0 0 26px rgba(255,92,171,.45);
 }
 
-.battle-locked:not(.manual-dodge-active):not(.headshot-pending):not(.hand-sharing):not(.reaction-prompt-pending) > :not(.battle-retreat):not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel):not(.defeat-popup):not(.reward-popup):not(.dimension-prompt):not(.manual-dodge-overlay):not(.armory-popup):not(.hand-reveal-overlay):not(.reveal-popup):not(.clash-popup):not(.judgement-popup):not(.unit-row) { filter: grayscale(.85) brightness(.55); pointer-events: none; }
+.battle-locked:not(.manual-dodge-active):not(.headshot-pending):not(.hand-sharing):not(.hammer-picking):not(.reaction-prompt-pending) > :not(.battle-retreat):not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel):not(.defeat-popup):not(.reward-popup):not(.dimension-prompt):not(.manual-dodge-overlay):not(.armory-popup):not(.hand-reveal-overlay):not(.reveal-popup):not(.clash-popup):not(.judgement-popup):not(.unit-row) { filter: grayscale(.85) brightness(.55); pointer-events: none; }
 .battle-locked:not(.dimension-transfering):not(.ophelia-guarding):not(.manual-dodge-active):not(.headshot-pending):not(.kaiichi-sharing):not(.ally-picking):not(.enemy-picking):not(.reaction-prompt-pending) .unit-row { filter: grayscale(.85) brightness(.55); pointer-events: none; }
-.battle-locked:not(.manual-dodge-active):not(.hand-sharing):not(.reaction-prompt-pending) > :not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel):not(.defeat-popup):not(.reward-popup):not(.dimension-prompt):not(.manual-dodge-overlay):not(.armory-popup):not(.hand-reveal-overlay):not(.reveal-popup) button:not([data-retreat]):not([data-return-hall]):not([data-reward-confirm]) { opacity: .35; }
+.battle-locked:not(.manual-dodge-active):not(.hand-sharing):not(.hammer-picking):not(.reaction-prompt-pending) > :not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel):not(.defeat-popup):not(.reward-popup):not(.dimension-prompt):not(.manual-dodge-overlay):not(.armory-popup):not(.hand-reveal-overlay):not(.reveal-popup) button:not([data-retreat]):not([data-return-hall]):not([data-reward-confirm]) { opacity: .35; }
 .battle-locked.reaction-prompt-pending > :not(.battle-retreat):not(.battle-tools):not(.battle-asset-warning):not(.battle-log-panel) { pointer-events: none; }
 .battle-locked.reaction-prompt-pending .hand-panel.locked { opacity: 1; }
 .battle-locked .counter-trigger-panel { filter: none; opacity: 1; pointer-events: auto; }
@@ -99,6 +99,10 @@
 .battle-locked.ophelia-guarding > .hand-panel,
 .battle-locked.gerda-comforting > .hand-panel { filter: none; opacity: 1; pointer-events: auto; }
 .battle-locked.gerda-comforting > .hand-panel button { opacity: 1; }
+/* 霹雳之锤：挂起时提示「点击一张手牌弃置」，手牌区必须保持可点可辨，
+   否则 .battle-locked 的置灰 + pointer-events:none 会让玩家点了完全没反应。 */
+.battle-locked.hammer-picking > .hand-panel { filter: none; opacity: 1; pointer-events: auto; }
+.battle-locked.hammer-picking > .hand-panel button { opacity: 1; }
 .defeat-popup { position: absolute; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(5,0,10,.72); backdrop-filter: blur(4px); pointer-events: auto; }
 .defeat-card { width: min(360px, 82vw); display: grid; gap: 12px; justify-items: center; padding: 26px; border-radius: 24px; background: linear-gradient(180deg, rgba(72,14,35,.96), rgba(20,5,28,.96)); border: 1px solid rgba(255,255,255,.22); box-shadow: 0 24px 80px rgba(0,0,0,.55); text-align: center; animation: popIn .32s ease-out; }
 .defeat-card h2 { color: #ff6c8f; font-size: 32px; text-shadow: 0 0 18px rgba(255,55,110,.7); }
