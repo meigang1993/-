@@ -19,6 +19,8 @@ const CASES = [
   { id: "ophelia", name: "奥菲莉亚", skin: "ophelia_level_10_special" },
   { id: "besta", name: "贝丝妲", skin: "besta_level_10_special" },
   { id: "luka", name: "鲁卡", skin: "luka_level_10_special" },
+  { id: "artina", name: "亚缇娜", skin: "artina_level_10_special" },
+  { id: "miller", name: "米勒", skin: "miller_level_10_special" },
 ];
 
 // 设定角色状态（是否解锁 / 等级）并打开皮肤页，返回皮肤卡片的按钮与图片信息

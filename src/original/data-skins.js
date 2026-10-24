@@ -48,6 +48,10 @@ window.GameSkinData = (() => {
     { id: "besta_level_10_special", charId: "besta", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/besta-level-10-special.45c81978.webp", desc: "贝丝妲达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "luka_default", charId: "luka", name: "默认", quality: "default", price: 0, art: "./assets/images/luka-portrait.c94e6540.webp", desc: "鲁卡的初始外观。", initial: true },
     { id: "luka_level_10_special", charId: "luka", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/luka-level-10-special.5f8ea6d3.webp", desc: "鲁卡达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "artina_default", charId: "artina", name: "默认", quality: "default", price: 0, art: "./assets/new-portraits/artina.088f5fa4.webp", desc: "亚缇娜的初始外观。", initial: true },
+    { id: "artina_level_10_special", charId: "artina", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/artina-level-10-special.625d4315.webp", desc: "亚缇娜达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "miller_default", charId: "miller", name: "默认", quality: "default", price: 0, art: "./assets/images/miller-portrait.0bbd25fb.webp", desc: "米勒的初始外观。", initial: true },
+    { id: "miller_level_10_special", charId: "miller", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/miller-level-10-special.d192b390.webp", desc: "米勒达到10级后自动解锁，可作为正式战斗立绘装备。" },
   ];
   return { quality, skins };
 })();
