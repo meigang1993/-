@@ -52,6 +52,8 @@ window.GameSkinData = (() => {
     { id: "artina_level_10_special", charId: "artina", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/artina-level-10-special.625d4315.webp", desc: "亚缇娜达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "miller_default", charId: "miller", name: "默认", quality: "default", price: 0, art: "./assets/images/miller-portrait.0bbd25fb.webp", desc: "米勒的初始外观。", initial: true },
     { id: "miller_level_10_special", charId: "miller", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/miller-level-10-special.d192b390.webp", desc: "米勒达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "maria_default", charId: "maria", name: "默认", quality: "default", price: 0, art: "./assets/new-portraits/maria.dc753ea7.webp", desc: "玛利亚的初始外观。", initial: true },
+    { id: "maria_level_10_special", charId: "maria", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/maria-level-10-special.0aeba194.webp", desc: "玛利亚达到10级后自动解锁，可作为正式战斗立绘装备。" },
   ];
   return { quality, skins };
 })();

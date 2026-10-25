@@ -73,12 +73,43 @@ function setupTpl({ party, enemyIds }) {
   T("节点敌人真的含艾尔拉娜克隆体", s1.enemyIds.includes("elrana_clone"), s1);
   T("小艾尔拉娜初始为锁定态", s1.littleLocked === true, s1);
 
+  // 先把出征队伍打伤，用于验证触发时 healSortie 会把队伍回满
+  await page.evaluate(() => {
+    const st = window.state;
+    (st.explore?.party || st.party || []).forEach(id => {
+      const c = st.chars.find(x => x.id === id);
+      if (c) c.hp = 1;
+    });
+  });
+
   await page.locator(`[data-dungeon-node="${s1.nodeId}"]`).click();
   await page.waitForFunction(
     () => window.state.hallModal === "littleElranaUnlock" || window.state.battle,
     null, { timeout: 15000 });
   const s1Modal = await page.evaluate(() => window.state.hallModal);
   T("进入节点后触发「克隆体归巢」", s1Modal === "littleElranaUnlock", { hallModal: s1Modal });
+
+  // 触发实现（extra-unlock-events.js:27）会强制终止战斗并返回别墅
+  const s1Term = await page.evaluate(() => {
+    const st = window.state;
+    return {
+      exploreCleared: st.explore === null, battleCleared: st.battle === null,
+      view: st.view, modal: st.hallModal,
+    };
+  });
+  T("触发时战斗被强制终止（explore/battle 清空）",
+    s1Term.exploreCleared === true && s1Term.battleCleared === true, s1Term);
+  T("触发后回到别墅大厅", s1Term.view === "hall", s1Term);
+
+  const s1Heal = await page.evaluate(() => {
+    const st = window.state;
+    return (st.party || []).map(id => {
+      const c = st.chars.find(x => x.id === id);
+      return { id, hp: c?.hp, max: c?.stats?.maxHp };
+    });
+  });
+  T("触发时出征队伍回满血",
+    s1Heal.length > 0 && s1Heal.every(x => x.hp === x.max), s1Heal);
 
   await page.locator(".adv-event").waitFor({ state: "visible" });
   const s1Title = await page.locator(".adv-event h2").textContent();
@@ -150,6 +181,20 @@ function setupTpl({ party, enemyIds }) {
     return window.tryLittleElranaEncounter(st, { exploration: true, enemies: node.enemies }, () => true);
   })()`);
   T("已解锁后不再重复触发", s1Again === false, { result: s1Again });
+
+  // 解锁必须真正落盘：否则刷新读档后角色会退回锁定态
+  const s1Saved = await page.evaluate(() => {
+    const raw = localStorage.getItem("succubus-kill-save-v1");
+    if (!raw) return null;
+    const o = JSON.parse(raw);
+    const c = (o.chars || []).find(x => x.id === "little_elrana");
+    return { locked: !!c?.locked, seen: !!(o.flags || {}).littleElranaUnlockSeen };
+  });
+  T("解锁已落盘（存档里为解锁态且标记已置位）",
+    !!s1Saved && s1Saved.locked === false && s1Saved.seen === true, s1Saved);
+
+  // 注：刷新后停在启动界面需再点「读档」→选存档位才载入，属存档系统交互，
+  // 不在本用例范围；解锁持久化由上面「解锁已落盘」断言覆盖。
 
   // ---------- 场景 2：敌人不含克隆体，不应触发 ----------
   console.log("\n— 场景2：艾尔拉娜在队伍，但敌人不含克隆体 —");
