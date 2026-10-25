@@ -16,6 +16,7 @@ window.StoreMigrationsUnlocks = deps => {
       "unlockMillerAfterEvent",
       "unlockGerlotAfterEvent", "unlockCadicisAfterEvent", "unlockLukaAfterEvent",
       "unlockAceAfterEvent", "recoverPendingLittleElranaEvent", "unlockLittleElranaAfterEvent",
+      "recoverPendingAbeKarunaEvent",
       "recoverPendingDefeatEvents", "unlockUnderwaterTrainAfterEvent",
       "unlockOrcDungeonAfterEvent",
       "unlockAilengAfterUnderwaterTrain", "syncBestaNurseryUnlock",

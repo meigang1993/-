@@ -53,6 +53,7 @@ window.AppHallBindings = (() => {
     bind("[data-cadicis-unlock-complete]", () => window.HallUnlockEvents?.complete("cadicisUnlock"));
     bind("[data-luka-unlock-complete]", () => window.HallUnlockEvents?.complete("lukaUnlock"));
     bind("[data-little-elrana-unlock-complete]", window.completeLittleElranaUnlockEvent);
+    bind("[data-abe-karuna-unlock-complete]", window.completeAbeKarunaUnlockEvent);
     bind("[data-ace-unlock-complete]", window.completeAceUnlockEvent);
     bind("[data-underwater-train-unlock-complete]", window.completeUnderwaterTrainUnlockEvent);
     bind("[data-ophelia-unlock-complete]", window.completeOpheliaUnlockEvent);

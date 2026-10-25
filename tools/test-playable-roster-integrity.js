@@ -22,6 +22,8 @@ const eventIds = [
   "preshi",
   // 米尔尤拉：首次击败XX型凋零者1312号后返回大厅触发事件解锁
   "mieryula",
+  // 安倍卡露娜：艾尔拉娜在队伍中首次对战鱼人武士安倍麦克时强制结束战斗回大厅触发事件解锁
+  "abe_karuna",
 ];
 // 前置角色解锁后自动加入，无独立解锁入口（凯瑟琳：曼妮解锁后自动加入）
 const autoIds = ["catherine"];
@@ -29,9 +31,9 @@ const autoIds = ["catherine"];
 function assertRosterPartition() {
   const ids = GameData.characters.map(character => character.id);
   const routes = [...initialIds, ...nurseryIds, ...eventIds, ...autoIds];
-  assert(ids.length === 32 && new Set(ids).size === 32,
-    "the playable roster must contain 32 unique characters");
-  assert(routes.length === 32 && new Set(routes).size === 32,
+  assert(ids.length === 33 && new Set(ids).size === 33,
+    "the playable roster must contain 33 unique characters");
+  assert(routes.length === 33 && new Set(routes).size === 33,
     "every playable character must have exactly one unlock route");
   assert([...routes].sort().join(",") === [...ids].sort().join(","),
     "the unlock-route matrix must cover the complete playable roster");
@@ -57,12 +59,15 @@ async function testAllCharactersUnlock() {
   state.flags.underwaterTrainFirstClear = true;
   state.flags.hoshinoFamilyUnlockPending = true;
   state.flags.ruinsSandCityUnlockPending = true;
+  state.flags.abeKarunaUnlockPending = true;
   state.defeatedElites.push(
     "xx_witherer_1124", "mechanical_bull_king", "demon_king_bakaar",
     // 希特威：首次击败内英组杀手伊迪斯后回到别墅触发，伊迪斯计入 defeatedElites
     "pursuer_edis",
     // 普雷希：首次击败机械AI龙后回到别墅触发
     "mech_ai_dragon",
+    // 米尔尤拉：首次击败XX型凋零者1312号后回到别墅触发
+    "witherer_1312",
   );
   for (const id of ["besta_nursery", "sonia_nursery", "gerda_nursery"]) {
     const result = await ServerCore.call("unlockEvent", { id }, state);
@@ -75,7 +80,7 @@ async function testAllCharactersUnlock() {
   for (const id of [
     "miller", "gerlot", "cadicis", "luka", "little_elrana", "ace",
     "underwater_train", "ophelia", "chiyo_recruit", "hoshino_family",
-    "ruins_sand_city", "hitwell", "preshi", "mieryula",
+    "ruins_sand_city", "hitwell", "preshi", "mieryula", "abe_karuna",
   ]) {
     const result = await ServerCore.call("unlockEvent", { id }, state);
     assert(result.changed, `${id} must complete its character unlock route`);

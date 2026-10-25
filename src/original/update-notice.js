@@ -1,6 +1,6 @@
 window.UpdateNotice = (() => {
   // 最新更新日期：公告标题、页脚时间与大厅按钮徽标统一以此为准，修改时只改这里。
-  const latest = { iso: "2026-10-24", label: "2026年10月24日", badge: "2026.10.24" };
+  const latest = { iso: "2026-10-25", label: "2026年10月25日", badge: "2026.10.25" };
     // 公告条目按「常改 / 归档」拆成两个数据文件，避免单文件超过 200 行硬约束：
   //   update-notice-recent.js  —— 最近几期，新条目一律加到该文件第一期
   //   update-notice-archive.js —— 历史归档，条目只增不改
@@ -29,7 +29,7 @@ window.UpdateNotice = (() => {
           </div>
         <time datetime="${latest.iso}">更新至${latest.label}</time>
       </header>
-        <p class="update-notice-summary">本次更新新增可玩角色【米尔尤拉】（嗜血公主），为第 32 名可培养职业，自带【渴血杀戮】【无谋霸姬】【神奇怀表】三个技能并修复其战术牌免疫未接入、时停音乐永久残留、选定牌名后敌人不高亮三处问题；并新增【娜娜莉】皮肤【杀戮魔女】与两张 10 级特殊立绘。</p>
+        <p class="update-notice-summary">本次更新新增可玩角色【安倍卡露娜】（追梦人鱼少女），为第 33 名可培养职业，自带【同频歌姬】【记忆泡泡】【幸运海螺】三个技能，本次先完成角色数据、立绘、解锁事件与管家手册、羁绊任务的接入；同时订正【米尔尤拉】的成长表描述。</p>
         <div class="update-notice-list">${sections}</div>
       </section>
     `;

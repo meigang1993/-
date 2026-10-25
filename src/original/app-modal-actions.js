@@ -3,6 +3,7 @@ function completeClosableEventModal() {
     && AppActionGuard?.isActive?.("unlock-event-completion")) return true;
   const actions = {
     littleElranaUnlock: window.completeLittleElranaUnlockEvent,
+    abeKarunaUnlock: window.completeAbeKarunaUnlockEvent,
     aceUnlock: window.completeAceUnlockEvent,
     underwaterTrainUnlock: window.completeUnderwaterTrainUnlockEvent,
     opheliaUnlock: window.completeOpheliaUnlockEvent,

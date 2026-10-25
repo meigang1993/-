@@ -54,6 +54,8 @@ window.GameSkinData = (() => {
     { id: "miller_level_10_special", charId: "miller", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/miller-level-10-special.d192b390.webp", desc: "米勒达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "maria_default", charId: "maria", name: "默认", quality: "default", price: 0, art: "./assets/new-portraits/maria.dc753ea7.webp", desc: "玛利亚的初始外观。", initial: true },
     { id: "maria_level_10_special", charId: "maria", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/maria-level-10-special.0aeba194.webp", desc: "玛利亚达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "abe_karuna_default", charId: "abe_karuna", name: "默认", quality: "default", price: 0, art: "./assets/new-portraits/abe-karuna.4cabcc12.webp", desc: "安倍卡露娜的初始外观。", initial: true },
+    { id: "abe_karuna_level_10_special", charId: "abe_karuna", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/abe_karuna-level-10-special.47fac87e.webp", desc: "安倍卡露娜达到10级后自动解锁，可作为正式战斗立绘装备。" },
   ];
   return { quality, skins };
 })();

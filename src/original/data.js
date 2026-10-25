@@ -13,6 +13,7 @@ window.GameData = {
     gerda: "首次击败魔王巴卡尔后，消耗精华宝珠 ×20",
     hoshino_yi: "首次通关兽人地下城·冒险级后触发剧情加入",
     hoshino_kaiichi: "解锁星野依后自动加入",
-    catherine: "解锁曼妮后自动加入"
+    catherine: "解锁曼妮后自动加入",
+    abe_karuna: "艾尔拉娜在队伍中，首次对战鱼人武士安倍麦克时触发剧情"
   },
 };

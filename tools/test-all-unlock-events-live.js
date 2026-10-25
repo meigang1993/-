@@ -1,4 +1,4 @@
-// 实战：22 个剧情/解锁事件「能不能真正解锁」的严格检查
+// 实战：23 个剧情/解锁事件「能不能真正解锁」的严格检查
 // 每个事件：重置存档 → 按服务端口径准备真实前置条件 → 打开弹窗 → ADV 推进到结尾
 // → 真实点击完成按钮 → 断言角色/标记/进度三处都落地。
 // 前置条件取自 local-core-events.js 的 unlockEvent 分支，不是凭空设置标志。
@@ -62,6 +62,9 @@ const CASES = [
   // 米尔尤拉：首次击败XX型凋零者1312号后触发，与普雷希同源
   { modal: "mieryulaUnlock", id: "mieryula", expect: { chars: ["mieryula"], flags: ["mieryulaUnlockSeen"] },
     setup: `s.defeatedElites.push("witherer_1312");` },
+  // 安倍卡露娜：艾尔拉娜在队中首次遭遇鱼人武士安倍麦克，强制终止战斗回大厅触发
+  { modal: "abeKarunaUnlock", id: "abe_karuna", expect: { chars: ["abe_karuna"], flags: ["abeKarunaUnlockSeen"] },
+    setup: `s.flags.abeKarunaUnlockPending = true;` },
   // 两个纯剧情事件：不调 ServerCore.unlockEvent，只置 flag，故不校验 unlockEvents
   { modal: "newGameIntro", id: "new_game_intro", story: true, expect: { flags: ["newGameIntroSeen"] }, setup: `` },
   { modal: "firstVictory", id: "first_victory", story: true, expect: { flags: ["firstVictorySeen"] }, setup: `` },
@@ -122,7 +125,8 @@ const probe = page => page.evaluate(() => {
     "OpheliaUnlockEvent", "BestaNurseryUnlockEvent", "OrcDungeonUnlockEvent",
     "SoniaNurseryUnlockEvent", "ChiyoRecruitUnlockEvent", "GerdaNurseryUnlockEvent",
     "HoshinoFamilyUnlockEvent", "RuinsSandCityUnlockEvent", "HitwellUnlockEvent",
-    "PreshiUnlockEvent", "MieryulaUnlockEvent", "NewGameIntroEvent", "FirstVictoryEvent"];
+    "PreshiUnlockEvent", "MieryulaUnlockEvent", "AbeKarunaUnlockEvent",
+    "NewGameIntroEvent", "FirstVictoryEvent"];
   for (const n of NAMED) {
     const ok = await page.evaluate(k => typeof window["complete" + k] === "function", n);
     T(`window.complete${n} 已定义为函数`, ok, { got: ok ? "function" : typeof 0 });

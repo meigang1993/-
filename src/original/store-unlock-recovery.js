@@ -51,6 +51,24 @@ window.StoreUnlockRecovery = (() => {
     }
   }
 
+  function recoverPendingAbeKarunaEvent(state) {
+    if (!state.flags?.abeKarunaUnlockPending) return;
+    if (state.flags.abeKarunaUnlockSeen) {
+      delete state.flags.abeKarunaUnlockPending;
+      return;
+    }
+    const karuna = character(state, "abe_karuna");
+    if (karuna && !karuna.locked) {
+      state.flags.abeKarunaUnlockSeen = true;
+      delete state.flags.abeKarunaUnlockPending;
+      return;
+    }
+    if (karuna?.locked) {
+      state.view = "hall";
+      state.hallModal = "abeKarunaUnlock";
+    }
+  }
+
   function recoverInterruptedBattle(state) {
     if (!state.battle && state.view !== "battle"
       && state.view !== "battleLoading") return null;
@@ -94,6 +112,7 @@ window.StoreUnlockRecovery = (() => {
     recoverPartyUnlocks,
     recoverPendingDefeatEvents,
     recoverPendingLittleElranaEvent,
+    recoverPendingAbeKarunaEvent,
     recoverPostUnderwaterTrainEvents,
   };
 })();

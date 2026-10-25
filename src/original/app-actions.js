@@ -47,6 +47,8 @@ function closeContextPanel(e) {
   } else if (!e.target.closest(".modal-card") || e.target.classList.contains("villa-modal")) {
     if (state.hallModal === "littleElranaUnlock"
       && state.flags?.littleElranaUnlockPending && completeClosableEventModal()) return;
+    if (state.hallModal === "abeKarunaUnlock"
+      && state.flags?.abeKarunaUnlockPending && completeClosableEventModal()) return;
     state.hallModal = null;
     state.infoUnit = null;
   }

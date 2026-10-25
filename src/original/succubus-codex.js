@@ -1,6 +1,6 @@
 window.SuccubusCodex = (() => {
   const U = window.UICommon;
-  const order = ["lokar", "besta_doll", "angelica", "luka", "nonoka", "loki", "elrana", "little_elrana", "ace", "manny", "miller", "wendy", "cadicis", "flora", "carlos", "bertis", "gerlot", "nanali", "aileng", "ophelia", "besta"];
+  const order = ["lokar", "besta_doll", "angelica", "luka", "nonoka", "loki", "elrana", "little_elrana", "ace", "manny", "miller", "wendy", "cadicis", "flora", "carlos", "bertis", "gerlot", "nanali", "aileng", "ophelia", "besta", "abe_karuna"];
   const mothers = { lokar: "贝丝妲", angelica: "贝丝妲", nonoka: "贝丝妲", elrana: "贝丝妲", manny: "贝丝妲", wendy: "贝丝妲", flora: "贝丝妲", bertis: "贝丝妲", loki: "诺诺卡", carlos: "芙萝娅", miller: "曼妮", gerlot: "贝尔蒂丝", luka: "安洁莉卡", cadicis: "温蒂", ace: "艾尔拉娜", little_elrana: "艾尔拉娜", nanali: "贝丝妲", aileng: "摩尔妮塔", ophelia: "人鱼女王", besta: "摩尔妮塔" };
   const sons = { angelica: "鲁卡", nonoka: "洛基", elrana: "艾斯", manny: "米勒", wendy: "卡迪西斯", flora: "卡洛斯", bertis: "杰洛特" };
   const nav = ["angelica", "nonoka", "elrana", "manny", "wendy", "flora", "bertis"];

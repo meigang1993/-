@@ -26,6 +26,7 @@ window.CharacterProgression = (() => {
     luka: { maxHp: 198.63, attack: 33.71, magic: 8.16, speed: 18.24 },
     elrana: { maxHp: 186.95, attack: 11.24, magic: 40.82, speed: 16.41 },
     little_elrana: { maxHp: 151.90, attack: 18.73, magic: 32.66, speed: 14.59 },
+    abe_karuna: { maxHp: 116.84, attack: 7.49, magic: 36.73, speed: 7.3 },
     ace: { maxHp: 163.58, attack: 18.73, magic: 12.25, speed: 20.06 },
     nanali: { maxHp: 128.53, attack: 33.71, magic: 12.25, speed: 16.41 },
     ophelia: { maxHp: 140.21, attack: 7.49, magic: 40.82, speed: 18.24 },
@@ -34,8 +35,9 @@ window.CharacterProgression = (() => {
     catherine: { maxHp: 116.84, attack: 7.49, magic: 32.66, speed: 7.3 },
     hitwell: { maxHp: 140.21, attack: 18.73, magic: 32.66, speed: 18.24 },
     preshi: { maxHp: 128.53, attack: 18.73, magic: 32.66, speed: 14.59 },
-    // 专属成长表：每级 生命+10 / 攻击+2 / 魔力+1 / 速度+2（20 级总量）。
-    mieryula: { maxHp: 200, attack: 40, magic: 20, speed: 40 },
+    // 高阶成长表（20 级总量），取值贴近 每级 生命+10 / 攻击+2 / 魔力+1 / 速度+2，
+    // 并落在统一档位网格上（档位单位 生命 5.842 / 攻击 3.7455 / 魔力 4.0815 / 速度 1.824）。
+    mieryula: { maxHp: 198.63, attack: 41.2, magic: 20.41, speed: 40.13 },
     sonia: { maxHp: 175.27, attack: 26.22, magic: 16.32, speed: 20.06 },
     chiyo: { maxHp: 128.53, attack: 26.22, magic: 8.16, speed: 25.54 },
     gerda: { maxHp: 222.00, attack: 14.98, magic: 28.57, speed: 18.24 },

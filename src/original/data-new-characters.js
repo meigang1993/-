@@ -78,4 +78,14 @@ window.GameDataNewCharacters = [
       { name: "荣誉祝福", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以弃置1至4张花色各不相同的手牌，令我方全体角色的攻击力、魔力、速度各+你当前的攻击力、魔力、速度（含神数咒语等临时加成），并记录这些花色。每回合结束时，我方每名角色弃去其中一种花色；当一名角色的花色全部弃去后，其因此获得的属性提升失效。只要你的花色未全部弃去，你便不能再次发动荣誉祝福。", card: { name: "荣誉祝福", type: "tactic", mariaHonorBlessing: true, icon: "⚔️", text: "弃置1至4张花色各不相同的手牌。" } },
     ],
   },
+  {
+    id: "abe_karuna", name: "安倍卡露娜", gender: "female", face: "卡", art: "./assets/new-portraits/abe-karuna.4cabcc12.webp", avatar: "./assets/new-portraits/abe-karuna.4cabcc12.webp", role: "追梦人鱼少女", locked: true,
+    stats: { attack: 2, magic: 4, speed: 3, maxHp: 50, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 1 },
+    evaluation: "同色连唱补牌与战斗收尾经验增益辅助。同频歌姬在使用与上张同色的牌时补牌，记忆泡泡把已结算的牌暂存为可复用资源，幸运海螺在存活收场时令全队经验翻倍。",
+    skills: [
+      { name: "同频歌姬", type: "passive", icon: "⭐", text: "锁定技，当你使用的牌与上一次使用的牌颜色相同时，你摸一张牌。" },
+      { name: "记忆泡泡", type: "trigger", icon: "🔵", text: "当你使用的牌结算完毕后，你可以将此牌放入“泡泡手牌区”（最多存放3张牌）。出牌阶段，你可以使用“泡泡手牌区”内的牌，若以此法使用【杀】牌，不消耗杀意。回合结束后，此区域内的所有牌进入弃牌堆。" },
+      { name: "幸运海螺", type: "passive", icon: "⭐", text: "锁定技，战斗结束后，若你在队伍中存活，我方队伍获得的经验值为2倍。" },
+    ],
+  },
 ];

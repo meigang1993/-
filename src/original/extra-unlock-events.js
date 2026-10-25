@@ -33,6 +33,33 @@ window.ExtraUnlockEvents = (() => {
     state.codexFlashId = "little_elrana"; state.log.unshift("小艾尔拉娜加入角色栏。克隆体归巢事件已完成。");
     state.hallModal = null; const saved = await persist({ flush: true }); render(); return saved;
   };
+  window.tryAbeKarunaEncounter = async function tryAbeKarunaEncounter(state, context, ownsAction = () => true) {
+    state.flags = state.flags || {};
+    const run = state.explore, active = run?.activeParty || state.party || [], enemies = context?.enemies || [];
+    const elrana = state.chars.find(x => x.id === "elrana"), karuna = state.chars.find(x => x.id === "abe_karuna");
+    if (!context?.exploration || state.flags.abeKarunaUnlockSeen || state.flags.abeKarunaUnlockPending || !active.includes("elrana") || elrana?.locked || !karuna?.locked) return false;
+    if (!enemies.some(e => e.id === "abe_mike")) return false;
+    const ready = await window.DungeonRewards?.retryPending?.(state);
+    if (!ownsAction()) return false;
+    if (!ready) { state.log.unshift("附加结算尚未完成，请重试后再次进入该节点。"); return true; }
+    const ok = await window.ServerCore.call("bankRun", { run }, state);
+    if (!ownsAction()) return false;
+    if (!ok.ok) { state.log.unshift("剧情结算失败，请重试。"); return true; }
+    window.BountySystem?.failRun?.(state, run?.missionId);
+    const key = run?.focusId || `${run?.missionId || "event"}:abe-karuna`;
+    window.SettlementRecovery?.enqueue?.(state, { id: `event-claim:${key}`, type: "claimBounty", data: {} });
+    const recovered = await window.DungeonRewards?.retryPending?.(state);
+    if (!ownsAction()) return false;
+    state.flags.abeKarunaUnlockPending = true;
+    healSortie(state, run?.party || state.party); window.BattleFX?.leave?.(state); state.explore = null; state.battle = null; state.view = "hall"; state.hallModal = "abeKarunaUnlock";
+    state.loadingBattleName = null; state.loadingBattleProgress = null; state.log.unshift(`艾尔拉娜与安倍麦克相遇，战斗被强制终止并返回别墅${recovered ? "。" : "，部分任务奖励待重试。"}`);
+    return true;
+  };
+  window.completeAbeKarunaUnlockEvent = async function completeAbeKarunaUnlockEvent() {
+    if (!await unlockEvent(state, "abe_karuna")) return;
+    state.codexFlashId = "abe_karuna"; state.log.unshift("安倍卡露娜加入角色栏。鱼人武士的托付事件已完成。");
+    state.hallModal = null; const saved = await persist({ flush: true }); render(); return saved;
+  };
   window.triggerAceUnlockEvent = function triggerAceUnlockEvent() {
     state.flags = state.flags || {};
     const elrana = state.chars.find(x => x.id === "elrana"), ace = state.chars.find(x => x.id === "ace");

@@ -27,7 +27,7 @@
     "completeNewGameIntroEvent", "completeFirstVictoryEvent", "triggerNewGameIntroEvent", "triggerFirstVictoryEvent",
     "preserveNextScroll", "releaseScrollLock", "render", "restoreScrollInstant", "startOpen", "state",
     "triggerAceUnlockEvent", "triggerOrcDungeonUnlockEvent", "triggerPostUnderwaterTrainClearEvents", "triggerUnderwaterTrainUnlockEvent",
-    "tryLittleElranaEncounter", "WithererSkills"
+    "tryLittleElranaEncounter", "tryAbeKarunaEncounter", "WithererSkills"
   ];
 
   names.forEach((name) => {

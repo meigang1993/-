@@ -34,6 +34,7 @@ window.bindDungeonActions = function bindDungeonActions() {
     let encounterHandled;
     try {
       encounterHandled = await window.tryLittleElranaEncounter?.(actionState, r.context, ownsNode);
+      if (!encounterHandled) encounterHandled = await window.tryAbeKarunaEncounter?.(actionState, r.context, ownsNode);
     } catch (err) {
       await restoreNode(err);
       return false;

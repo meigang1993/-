@@ -42,6 +42,7 @@ window.VillaUI = (() => {
       gerlotUnlock: window.VillaEvents.gerlotUnlock, cadicisUnlock: window.VillaEvents.cadicisUnlock,
       lukaUnlock: window.VillaEvents.lukaUnlock,
       littleElranaUnlock: state => window.ExtraUnlockEvents?.littleElranaUnlock?.(state) || "",
+      abeKarunaUnlock: state => window.ExtraUnlockEvents?.abeKarunaUnlock?.(state) || "",
       aceUnlock: state => window.ExtraUnlockEvents?.aceUnlock?.(state) || "",
       underwaterTrainUnlock: state => window.ExtraUnlockEvents?.underwaterTrainUnlock?.(state) || "",
       opheliaUnlock: state => window.ExtraUnlockEvents?.opheliaUnlock?.(state) || "",
@@ -62,7 +63,7 @@ window.VillaUI = (() => {
     const close = state.hallModal === "teamRoster" ? `data-open-modal="team" title="返回准备启程"` : `data-close-modal="1"`;
     const eventModals = new Set([
       "firstDefeat", "secondDefeat", "millerUnlock", "gerlotUnlock", "cadicisUnlock",
-      "lukaUnlock", "littleElranaUnlock", "aceUnlock", "underwaterTrainUnlock",
+      "lukaUnlock", "littleElranaUnlock", "abeKarunaUnlock", "aceUnlock", "underwaterTrainUnlock",
       "opheliaUnlock", "bestaNurseryUnlock", "orcDungeonUnlock", "soniaNurseryUnlock",
       "chiyoRecruitUnlock", "gerdaNurseryUnlock", "hoshinoFamilyUnlock",
       "ruinsSandCityUnlock", "hitwellUnlock", "preshiUnlock", "mieryulaUnlock",

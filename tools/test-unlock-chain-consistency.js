@@ -110,8 +110,8 @@ const progSrc = fs.readFileSync("src/original/character-progression.js", "utf8")
 const gm = progSrc.match(/mieryula:\s*\{([^}]*)\}/);
 const gv = gm ? Object.fromEntries(gm[1].split(",").map(s => s.split(":")
   .map(x => x.trim())).filter(p => p.length === 2).map(([k, v]) => [k, Number(v)])) : null;
-T("米尔尤拉：专属成长表为每级 血+10/攻+2/魔+1/速+2（20级总量 200/40/20/40）",
-  !!gv && gv.maxHp === 200 && gv.attack === 40 && gv.magic === 20 && gv.speed === 40, { gv });
+T("米尔尤拉：高阶成长表落在统一档位网格上（20级总量 198.63/41.2/20.41/40.13）",
+  !!gv && gv.maxHp === 198.63 && gv.attack === 41.2 && gv.magic === 20.41 && gv.speed === 40.13, { gv });
 // 所有可解锁角色都应有专属成长表，否则会静默走 fallback
 for (const cid of Object.values(targetChar)) {
   T(`${cid}：在 character-progression 中有专属成长表`,

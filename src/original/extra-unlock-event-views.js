@@ -6,6 +6,8 @@ window.ExtraUnlockEventViews = (() => {
   const preshi = { name: "普雷希", art: "./assets/images/preshi-portrait.97741e33.webp" };
   /* 魅魔女大臣只在杰洛特归还事件里出现两句台词，没有角色栏条目，单独给一张立绘。 */
   const minister = { name: "魅魔女大臣", art: "./assets/images/succubus-minister-portrait.5f2ba968.webp" };
+  /* 安倍麦克是副本精英兼剧情人物（不进角色栏），复用他在敌人表里的立绘。 */
+  const abeMike = { name: "安倍麦克", art: "./assets/images/abe-mike.8d685b02.webp" };
   const view = (key, state, title, cast, lines, note, buttonText, action) =>
     window.AdvDialogue.render({
       key, title, cast: window.AdvDialogue.cast(state, cast), lines, note,
@@ -25,6 +27,24 @@ window.ExtraUnlockEventViews = (() => {
       [char(state, "elrana"), char(state, "little_elrana")], lines,
       "战斗被强制终止，小艾尔拉娜加入角色栏，队伍返回别墅。",
       "带小艾尔拉娜回别墅", "little-elrana-unlock-complete");
+  }
+
+  function abeKarunaUnlock(state) {
+    const lines = [
+      ["安倍麦克", "艾尔拉娜医生，你怎么在这里？老夫一直找你。"],
+      ["艾尔拉娜", "又要看病吗？跟我走吧，去我的家，我暂时不在医院工作。"],
+      ["安倍麦克", "不是老夫，是我的女儿。因为老夫故乡被污染的废水侵蚀，女儿受到了严重的辐射感染，病情一直没有好转，只有你能治疗。"],
+      ["艾尔拉娜", "废水污染？我不知道能不能治疗，你把她带过来吧。"],
+      ["安倍麦克", "好的。女儿交给你后，老夫要加入反抗军组织，为妻子报仇。如果老夫回不来，希望医生能照顾她。"],
+      ["艾尔拉娜", "你是认真的？对抗一个庞大的帝国，没什么好下场。"],
+      ["安倍麦克", "老夫已做好了觉悟。毕竟老夫家没了，连女儿都保护不了，就算死也要拉着毁灭我家乡的恶魔一起下地狱。"],
+      ["艾尔拉娜", "我理解你的感受。把你女儿交给我吧，我会尽力对她进行治疗，治疗费就免了吧。"],
+      ["安倍麦克", "谢谢你，医生……"],
+    ];
+    return view("abeKarunaUnlock", state, "鱼人武士的托付",
+      [abeMike, char(state, "elrana"), char(state, "abe_karuna")], lines,
+      "战斗被强制终止，安倍卡露娜加入角色栏，队伍返回别墅。",
+      "带安倍卡露娜回别墅", "abe-karuna-unlock-complete");
   }
 
   function aceUnlock(state) {
@@ -108,5 +128,5 @@ window.ExtraUnlockEventViews = (() => {
       "开放贝丝妲兑换", "besta-nursery-unlock-complete");
   }
 
-  return { littleElranaUnlock, aceUnlock, underwaterTrainUnlock, opheliaUnlock, bestaNurseryUnlock };
+  return { littleElranaUnlock, abeKarunaUnlock, aceUnlock, underwaterTrainUnlock, opheliaUnlock, bestaNurseryUnlock };
 })();

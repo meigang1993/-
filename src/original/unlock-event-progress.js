@@ -5,6 +5,7 @@ window.UnlockEventProgress = (() => {
     "little_elrana", "ace", "underwater_train", "ophelia", "besta_nursery",
     "orc_dungeon", "sonia_nursery", "chiyo_recruit", "gerda_nursery",
     "hoshino_family", "ruins_sand_city", "hitwell", "preshi", "mieryula",
+    "abe_karuna",
   ]);
   const known = new Set(ids);
   const record = value => !!value && typeof value === "object"
@@ -34,6 +35,7 @@ window.UnlockEventProgress = (() => {
     hitwell: state => state.flags?.hitwellUnlockSeen || unlocked(state, "hitwell"),
     preshi: state => state.flags?.preshiUnlockSeen || unlocked(state, "preshi"),
     mieryula: state => state.flags?.mieryulaUnlockSeen || unlocked(state, "mieryula"),
+    abe_karuna: state => state.flags?.abeKarunaUnlockSeen || unlocked(state, "abe_karuna"),
   };
   const legacyEvidence = {
     ...durableEvidence,

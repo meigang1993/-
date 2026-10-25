@@ -57,6 +57,11 @@ const expectedCharacters = {
   // 普雷希（第 31 名）：0 级生命 56、杀意 1、手牌上限 4；摸牌为「基础 2+1」「初始 4+1」，
   // 与其余角色同口径，基础表内仍记 drawPerTurn 1 / initialDraw 1。
   preshi: { attack: 4.8, magic: 5, speed: 5.5, maxHp: 56, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
+  // 米尔尤拉（第 32 名）：0 级生命 52、魔力 2；高阶成长表落在统一档位网格上。
+  mieryula: { attack: 4, magic: 2, speed: 5, maxHp: 52, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
+  // 安倍卡露娜（第 33 名）：0 级生命 50、攻击 2、魔力 4、速度 3；摸牌为「基础 2+1」「初始 4+1」，
+  // 与其余角色同口径，基础表内仍记 drawPerTurn 1 / initialDraw 1。
+  abe_karuna: { attack: 2, magic: 4, speed: 3, maxHp: 50, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 1 },
 };
 assert.strictEqual(Object.keys(expectedCharacters).length, GameDataCharacters.length,
   "every character needs a complete initial-stat baseline");
@@ -77,7 +82,8 @@ const expectedGrowth = {
   catherine: [116.84, 7.49, 32.66, 7.3], hitwell: [140.21, 18.73, 32.66, 18.24], gerda: [222.00, 14.98, 28.57, 18.24],
   hoshino_yi: [151.90, 26.22, 28.57, 16.41], hoshino_kaiichi: [257.06, 11.24, 28.57, 10.95], artina: [116.84, 33.71, 12.25, 21.89],
   maria: [163.58, 22.48, 24.5, 18.24], sonia: [175.27, 26.22, 16.32, 20.06], chiyo: [128.53, 26.22, 8.16, 25.54],
-  preshi: [128.53, 18.73, 32.66, 14.59],
+  preshi: [128.53, 18.73, 32.66, 14.59], mieryula: [198.63, 41.2, 20.41, 40.13],
+  abe_karuna: [116.84, 7.49, 36.73, 7.3],
 };
 assert.strictEqual(Object.keys(expectedGrowth).length, GameDataCharacters.length,
   "every character needs a complete growth baseline");
@@ -316,9 +322,11 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.
     return `${character.id}|${levels.join(",")}`;
   }).sort();
   const digest = crypto.createHash("sha256").update(rows.join("\n")).digest("hex");
-  // 摘要变更记录：10-10 洛基/卡迪西斯满级成长重分配、10-14 新增第 31 名角色普雷希。
+  // 摘要变更记录：10-10 洛基/卡迪西斯满级成长重分配、10-14 新增第 31 名角色普雷希、
+  // 10-25 补第 32 名米尔尤拉与第 33 名安倍卡露娜的 0～20 级成长快照、
+  // 10-25 米尔尤拉成长表改回统一档位网格（198.63/41.2/20.41/40.13）。
   assert.strictEqual(digest,
-    "ad093f2300ebecad6b8d9a917ca32f2c3257ffa9c31c2fc52f12ad20cc02ca78",
+    "e7d1098af0ab98e292bbba0e3d4df6bcab0a18b0e5002182041de5c143c13f38",
     "0～20 级角色成长数据被改动（快照不匹配，若有意调整请更新摘要）");
   const lokar = GameDataCharacters.find(character => character.id === "lokar");
   assert.deepStrictEqual(
