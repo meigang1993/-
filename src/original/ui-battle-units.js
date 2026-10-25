@@ -72,7 +72,7 @@ window.GameUIBattleUnits = (U, I) => {
   function badgeStack(u) {
     const items = [
       I.greenHatMark(u), I.foodMark(u), I.rageMark(u), I.tankShellMark(u),
-      I.missionMark(u), I.idolSuitMark(u), I.domeSuitMark(u),
+      I.missionMark(u), I.idolSuitMark(u), I.karunaSuitMark(u), I.domeSuitMark(u),
       I.artinaSuitMark(u), I.deathWaveSuitMark(u), I.mariaNumberMark(u),
       I.mariaBlessingMark(u), I.vulnerableMark(u),
     ].filter(Boolean);

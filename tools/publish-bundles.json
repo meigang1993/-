@@ -33,7 +33,8 @@
     "data.js",
     "assets.js",
     "data-skins.js",
-    "skins.js"
+    "skins.js",
+    "abe-karuna-conch-skills.js"
   ],
   "startup-store": [
     "bounty-ledger.js",
@@ -348,7 +349,9 @@
     "hitwell-skills.js",
     "preshi-skills.js",
     "mieryula-tactic-immunity.js",
-    "mieryula-skills.js"
+    "mieryula-skills.js",
+    "abe-karuna-diva-skills.js",
+    "abe-karuna-bubble-skills.js"
   ],
   "battle-flow": [
     "battle-counter-triggers.js",

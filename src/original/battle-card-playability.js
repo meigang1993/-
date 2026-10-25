@@ -42,7 +42,9 @@ window.BattleCardPlayability = deps => {
     || card?.rageKill && actor?.hp < actor?.maxHp
     // 兽人「火力压制」：单体杀转全体杀后免杀意（技能文本），由转化方预判。
     || window.OrcDungeonSkills?.suppressionFreeIntent?.(actor, card)
-    || window.WithererSkills?.noIntentCost?.(actor, card));
+    || window.WithererSkills?.noIntentCost?.(actor, card)
+    // 记忆泡泡：从泡泡手牌区取回的牌不消耗杀意。
+    || window.AbeKarunaBubbleSkills?.isIntentFree?.(card));
   const canComboAttack = (battle, actor, card) => !card?.comboAttack || !!(battle
     && sameSideUnits(battle, actor).some(unit => unit.uid !== actor?.uid && unit.hp > 0)
     && opposingUnits(battle, actor).some(unit => unit.hp > 0));

@@ -41,7 +41,8 @@ window.BattleVictory = (() => {
     const witchShow = witch ? `<div class="nanali-witch-victory-show">${window.UICommon.artBox(witch, "nanali-witch-victory-art", witch.art || witch.avatar, witch.face || witch.name?.[0])}<span class="nanali-victory-blade"></span><span class="nanali-victory-eye"></span><div class="nanali-victory-blood"></div><div class="nanali-victory-mist"><i></i><i></i><i></i><i></i></div><b class="nanali-victory-motto">血雾散尽，猎物无存。</b></div>` : "";
     const berserkerShow = berserker ? `<div class="angelica-berserker-victory-show">${window.UICommon.artBox(berserker, "angelica-berserker-victory-art", berserker.art || berserker.avatar, berserker.face || berserker.name?.[0])}<span class="angelica-victory-sword"></span><div class="angelica-victory-embers"><i></i><i></i><i></i><i></i><i></i></div><b class="angelica-victory-motto">帝血未冷，下一场继续。</b></div>` : "";
     const retrying = !!b.settlementError;
-    const experience = experienceReward(state, b);
+    const experience = window.AbeKarunaConchSkills?.experience?.(
+      experienceReward(state, b), state, b) ?? experienceReward(state, b);
     const experienceItem = experience
       ? `<span data-victory-experience="1">队伍经验 +${experience}</span>` : "";
     const actions = retrying ? `<button data-victory-hall="1">重试结算</button>` : b.test ? `<button data-victory-test="1">返回配置</button>` : b.exploration ? `<button data-victory-continue="1">继续探索</button>` : `<button data-victory-hall="1">返回据点</button>`;

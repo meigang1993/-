@@ -42,6 +42,7 @@ window.GameUIHandState = (() => {
       borrowChoice,
       gerdaComfort: battle.gerdaComfort?.unitUid === actor.uid,
       hammer: battle.thunderHammer?.actorUid === actor.uid,
+      karunaBubble: battle.karunaBubble?.actorUid === actor.uid,
       extractStart: battle.phase === 1 && battle.awaitingExtractUid === actor.uid,
       mimicStart: battle.phase === 1 && battle.awaitingMimicUid === actor.uid,
       speedStart: [1, 6].includes(battle.phase)

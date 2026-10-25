@@ -5,13 +5,16 @@ window.GameUIHandView = (() => {
     const skillLine = renderSkills(context, U);
     const handCards = renderCards(context, U);
     const handWrap = `<div class="hand-scroll-wrap no-scroll"><button class="hand-scroll-btn left" data-hand-scroll="-1">‹</button><div class="hand active-hand" data-hand-owner="${U.esc(actor.uid)}">${handCards}</div><button class="hand-scroll-btn right" data-hand-scroll="1">›</button></div>`;
+    const bubbleZone = actor.ref === "abe_karuna"
+      && ((actor.bubbleCards?.length || 0) > 0 || modes.playable)
+      ? window.AbeKarunaBubbleSkills?.render?.(actor, U) || "" : "";
     const intentMax = Math.min(99, Math.max(1, (actor.stats.bloodlust || 1) + (actor.intentMaxBonus || 0)));
     const charge = actor.charge
       ? `<span class="tag">蓄力×${Math.pow(2, actor.charge).toFixed(3).replace(/\.0+$/, "").replace(/0+$/, "")}</span>`
       : "";
     const skipTag = actor.skipPlayPhase
       ? `<span class="tag hand-skip-tag">${U.esc(actor.skipPlayReason || "状态牌")}：本回合跳过出牌阶段${actor.noResponse ? "，且无法使用或打出响应牌" : ""}</span>` : "";
-    return `<div class="hand-panel ${battle.locked && !modes.transferLocked ? "locked" : ""}${actor.skipPlayPhase ? " play-locked" : ""}"><div class="hand-head"><b>${U.esc(actor.name)} 的手牌</b><span class="tag">${phaseLabel(context)}</span>${skipTag}<span class="tag">杀意 ${actor.intent || 0}/${intentMax}</span>${charge}${controls}</div>${window.Onboarding?.battleHint?.(context) || ""}<div class="hand-body ${skillLine ? "has-skills" : ""}">${skillLine}${handWrap}</div></div>`;
+    return `<div class="hand-panel ${battle.locked && !modes.transferLocked ? "locked" : ""}${actor.skipPlayPhase ? " play-locked" : ""}"><div class="hand-head"><b>${U.esc(actor.name)} 的手牌</b><span class="tag">${phaseLabel(context)}</span>${skipTag}<span class="tag">杀意 ${actor.intent || 0}/${intentMax}</span>${charge}${controls}</div>${window.Onboarding?.battleHint?.(context) || ""}<div class="hand-body ${skillLine ? "has-skills" : ""}">${skillLine}${handWrap}${bubbleZone}</div></div>`;
   }
 
   function renderControls(context, U) {
@@ -52,6 +55,10 @@ window.GameUIHandView = (() => {
     }
     if (modes.gerdaComfort) {
       return `<span class="discard-prompt">萌虎慰劳：点击一名其他队友，双方各摸2张牌；也可以放弃。</span><button data-gerda-comfort-skip="1">放弃</button>`;
+    }
+    if (modes.karunaBubble) {
+      const name = U.esc(battle.karunaBubble?.card?.name || "牌");
+      return `<span class="discard-prompt">记忆泡泡：将刚使用的${name}放入泡泡手牌区？</span><button data-karuna-bubble-store="1">放入</button><button class="ghost" data-karuna-bubble-skip="1">放弃</button>`;
     }
     if (modes.hammer) {
       return `<span class="discard-prompt">霹雳之锤：点击一张手牌弃置，令刚被闪抵消的杀强制造成伤害。</span><button class="ghost" data-cancel-hammer="1">放弃发动</button>`;
@@ -152,6 +159,7 @@ window.GameUIHandView = (() => {
         index: interactionIndex, selected,
         discard: modes.discard && canDiscard && !shareFull, actor,
         disabled: battle.locked && !modes.transferLocked && !modes.hammer
+          && !modes.karunaBubble
           || dimensionLocked || newMoonFull
           || kaiichiFull || shareFull || borrowLocked
           || modes.discard && !canDiscard || normalLocked || skipLocked,

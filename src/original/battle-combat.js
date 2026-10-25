@@ -169,6 +169,10 @@ window.BattleCombat = (deps) => {
   const { continueAfterCounter, attackValues } = resolver;
   function resolveThunderHammer(state, cardIndex) { const ok = resolveDamageThunderHammer(state, cardIndex), p = state.battle?.greenGatlingResume; if (!ok || !p || state.battle?.locked) return ok; state.battle.greenGatlingResume = null; const actor = allUnits(state.battle).find(u => u.uid === p.actorUid), target = allUnits(state.battle).find(u => u.uid === p.targetUid); if (actor && target) resumeGreenGatling(state, actor, target, p.card); return ok; }
   function cancelThunderHammer(state) { const ok = cancelDamageThunderHammer(state), p = state.battle?.greenGatlingResume; if (!ok || !p || state.battle?.locked) return ok; state.battle.greenGatlingResume = null; const actor = allUnits(state.battle).find(u => u.uid === p.actorUid), target = allUnits(state.battle).find(u => u.uid === p.targetUid); if (actor && target) resumeGreenGatling(state, actor, target, p.card); return ok; }
+  // 记忆泡泡：挂起后的「放入 / 放弃」，以及出牌阶段从泡泡区取回一张牌。
+  function storeKarunaBubble(state) { return !!window.AbeKarunaBubbleSkills?.store?.(state); }
+  function skipKarunaBubble(state) { return !!window.AbeKarunaBubbleSkills?.skip?.(state); }
+  function takeKarunaBubble(state, index) { return !!window.AbeKarunaBubbleSkills?.take?.(state, index); }
   function resolveDimensionTransfer(state, targetUid) { const ok = window.MannySkills?.resolveDimensionTransfer?.(state, targetUid, damage); if (ok) { checkDefeat(state); checkEnd(state); } return ok; }
   function resolveCounterTrigger(state, use) {
     return window.BattleCounterTriggers?.resolve(state, use, {
@@ -184,5 +188,5 @@ window.BattleCombat = (deps) => {
   function resumeCardTail(state) { return cardResume.resume(state); }
   function recordDeferredHit(state, actor, target, card, result) { cardResume.recordHit(state, actor, target, card, result); }
   function resumeGroupHeal(state) { const b = state.battle; if (b) b._resumingCardTail = true; try { return specials.resumeTeamHeal?.(state); } finally { if (b) delete b._resumingCardTail; } }
-  return { selectCard, selectSkill, selectExtract, selectMimic, selectPrepareSkill, chooseTarget, cancelSelection, playSelectedCard, playActiveCard, canSelectHandCost, canPlay, checkDefeat, checkEnd, useCard, useVirtualKill, damage, directDamage, resolveThunderHammer, cancelThunderHammer, resolveManualDodge, confirmDeflectResult, resolveManualCounter, resolveCounterTrigger, resolveDimensionTransfer, resolveHandReveal, resumeGreenGatling, resumeComboAttack, resumeCardTail, recordDeferredHit, resumeGroupHeal, continueAfterCadicisResponsibility, resolveOpheliaGuard, holdVisual, pushFloat, triggerBattleCourage: specials.triggerBattleCourage };
+  return { selectCard, selectSkill, selectExtract, selectMimic, selectPrepareSkill, chooseTarget, cancelSelection, playSelectedCard, playActiveCard, canSelectHandCost, canPlay, checkDefeat, checkEnd, useCard, useVirtualKill, damage, directDamage, resolveThunderHammer, cancelThunderHammer, resolveManualDodge, storeKarunaBubble, skipKarunaBubble, takeKarunaBubble, confirmDeflectResult, resolveManualCounter, resolveCounterTrigger, resolveDimensionTransfer, resolveHandReveal, resumeGreenGatling, resumeComboAttack, resumeCardTail, recordDeferredHit, resumeGroupHeal, continueAfterCadicisResponsibility, resolveOpheliaGuard, holdVisual, pushFloat, triggerBattleCourage: specials.triggerBattleCourage };
 };

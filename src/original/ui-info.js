@@ -7,7 +7,7 @@ window.GameUIInfo = (U) => {
   }
   const {
     greenHatMark, foodMark, rageMark, tankShellMark, vulnerableMark,
-    missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark,
+    missionMark, idolSuitMark, karunaSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark,
     deathWaveSuitMark, mariaNumberMark, mariaBlessingMark,
   } = marks();
   function findInfoUnit(state) {
@@ -125,5 +125,5 @@ window.GameUIInfo = (U) => {
     const stats = u?.id && window.RelicSystem ? RelicSystem.statsOf(state, u.id) : null;
     return infoPanel(u, state.infoTab, stats);
   }
-  return { greenHatMark, foodMark, rageMark, tankShellMark, vulnerableMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, deathWaveSuitMark, mariaNumberMark, mariaBlessingMark, findInfoUnit, infoPanel, infoPanelForState };
+  return { greenHatMark, foodMark, rageMark, tankShellMark, vulnerableMark, missionMark, idolSuitMark, karunaSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, deathWaveSuitMark, mariaNumberMark, mariaBlessingMark, findInfoUnit, infoPanel, infoPanelForState };
 };

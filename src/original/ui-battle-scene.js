@@ -83,11 +83,13 @@ window.GameUIBattleScene = (U, I) => {
     // 否则 .battle-locked 会把手牌面板置灰且 pointer-events:none ——
     // 提示照常显示、点手牌毫无反应，即玩家反馈的「灰屏不能动」。
     const hammerPicking = !!battle.thunderHammer;
+    // 记忆泡泡挂起同理：玩家需要点「放入泡泡区」按钮，手牌面板不能被置灰禁点。
+    const karunaBubblePicking = !!battle.karunaBubble;
     const handSharing = visible.kaiichiVisible || visible.responsibilityVisible
       || visible.dimensionVisible || borrowChoice || allyPicking || enemyPicking;
     const headshotPending = battle.judgement?.skill === "爆头一击"
       || battle.animQueue?.some(event => event.type === "judgement" && event.skill === "爆头一击");
-    return `${battle.locked ? "battle-locked" : ""} ${headshotPending ? "headshot-pending" : ""} ${visible.dimensionVisible ? "dimension-transfering" : ""} ${visible.guardVisible ? "ophelia-guarding" : ""} ${battle.gerdaComfort ? "gerda-comforting" : ""} ${visible.kaiichiVisible ? "kaiichi-sharing" : ""} ${visible.reactionPending ? "reaction-prompt-pending" : ""} ${handSharing ? "hand-sharing" : ""} ${allyPicking ? "ally-picking" : ""} ${enemyPicking ? "enemy-picking" : ""} ${hammerPicking ? "hammer-picking" : ""} ${battle.manualDodge || battle.manualCounter || battle.counterTrigger || battle.recklessPrompt || battle.risaEyePrompt || battle.landmineRpsPrompt || ["magicBullet", "magicBulletReveal"].includes(battle.handReveal?.mode) ? "manual-dodge-active" : ""}`;
+    return `${battle.locked ? "battle-locked" : ""} ${headshotPending ? "headshot-pending" : ""} ${visible.dimensionVisible ? "dimension-transfering" : ""} ${visible.guardVisible ? "ophelia-guarding" : ""} ${battle.gerdaComfort ? "gerda-comforting" : ""} ${visible.kaiichiVisible ? "kaiichi-sharing" : ""} ${visible.reactionPending ? "reaction-prompt-pending" : ""} ${handSharing ? "hand-sharing" : ""} ${allyPicking ? "ally-picking" : ""} ${enemyPicking ? "enemy-picking" : ""} ${hammerPicking ? "hammer-picking" : ""} ${karunaBubblePicking ? "karuna-bubble-picking" : ""} ${battle.manualDodge || battle.manualCounter || battle.counterTrigger || battle.recklessPrompt || battle.risaEyePrompt || battle.landmineRpsPrompt || ["magicBullet", "magicBulletReveal"].includes(battle.handReveal?.mode) ? "manual-dodge-active" : ""}`;
   }
   function skillCaption(battle) {
     const captions = battle.skillCaptions || (battle.skillCaption ? [battle.skillCaption] : []);

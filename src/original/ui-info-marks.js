@@ -27,6 +27,13 @@ window.GameUIInfoMarks = () => {
     const suit = ["♥", "♦", "♠", "♣"].includes(u?.hoshinoLastSuit) ? u.hoshinoLastSuit : "";
     return suit ? `<span class="green-hat-badge idol-suit-badge" title="偶像之星：上一张标准花色牌为${suit}">偶像 ${suit}</span>` : "";
   }
+  function karunaSuitMark(u) {
+    if (u?.ref !== "abe_karuna") return "";
+    const suit = ["♥", "♦", "♠", "♣"].includes(u?.karunaLastSuit) ? u.karunaLastSuit : "";
+    if (!suit) return "";
+    const label = ["♥", "♦"].includes(suit) ? "红色" : "黑色";
+    return `<span class="green-hat-badge idol-suit-badge" title="同频歌姬：上一张标准花色牌为${suit}，再使用${label}牌时摸一张牌">同频 ${suit}</span>`;
+  }
   function domeSuitMark(u) {
     if (u?.ref !== "hoshino_yi") return "";
     const suits = ["♥", "♦", "♠", "♣"].filter(suit => (u.hoshinoSuitSet || []).includes(suit));
@@ -78,5 +85,5 @@ window.GameUIInfoMarks = () => {
     const bonus = u.mariaBlessing || {};
     const gain = `攻击+${bonus.attack || 0}、魔力+${bonus.magic || 0}、速度+${bonus.speed || 0}`;
     return `<span class="green-hat-badge dome-suit-badge" title="荣誉祝福：${gain}；剩余花色${suits.join("、")}，每回合消失一个，全部消失后属性提升失效">祝福 ${suits.join("")}</span>`;
-  }  return { greenHatMark, foodMark, rageMark, tankShellMark, missionMark, idolSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, deathWaveSuitMark, vulnerableMark, mariaNumberMark, mariaBlessingMark };
+  }  return { greenHatMark, foodMark, rageMark, tankShellMark, missionMark, idolSuitMark, karunaSuitMark, domeSuitMark, jokerSuitMark, artinaSuitMark, deathWaveSuitMark, vulnerableMark, mariaNumberMark, mariaBlessingMark };
 };

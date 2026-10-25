@@ -20,6 +20,9 @@ window.DungeonNodeRewards = (() => {
         defeatedEnemyIds: battle.defeatedEnemyIds || [],
         // 实际参战角色：首战锁定的贝丝妲魔偶不入场，因此不应获得经验。
         participantIds: battle.allies.map(ally => ally.ref).filter(Boolean),
+        // 幸运海螺判定需要"存活"维度：参战名单不含血量信息。
+        aliveParticipantIds: battle.allies.filter(ally => ally.hp > 0)
+          .map(ally => ally.ref).filter(Boolean),
       }, state);
       if (result.stale) return false;
       if (!result.ok) return false;

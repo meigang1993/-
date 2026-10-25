@@ -20,6 +20,8 @@ window.BattleEndPhase = deps => {
       () => window.UnderwaterTrainSkills?.endTurn?.(state, unit),
       () => window.ElranaAceNanaliSkills?.endTurn?.(state, unit, { draw, damage: combat.damage, pushFloat: combat.pushFloat }),
       () => window.ArtinaMariaSkills?.endTurn?.(state, unit),
+      () => window.AbeKarunaDivaSkills?.endTurn?.(state, unit),
+      () => window.AbeKarunaBubbleSkills?.endTurn?.(state, unit),
       () => window.AngelicaLukaSkills?.endTurn?.(state, unit),
       () => window.RuinsCardSkills?.clearVulnerable?.(state, unit),
       () => promptSpeedAssault(state, unit),

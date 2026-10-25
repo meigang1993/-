@@ -52,7 +52,11 @@ window.LocalCoreDungeonOps = (() => {
     const enemyIds = (node.enemies || []).map(enemy => enemy.id).filter(Boolean);
     if (["normal", "elite", "boss"].includes(kind) && (!enemyIds.every(id => defeated.includes(id)) || defeated.some(id => !enemyIds.includes(id)))) return outcomes.rejected;
     const gold = rollGold(core, run, kind), essence = ["elite", "boss"].includes(kind) ? 1 : 0;
-    const experience = window.CharacterProgression.rewardFor(kind, diff, run.missionId);
+    const baseExperience = window.CharacterProgression.rewardFor(kind, diff, run.missionId);
+    // 幸运海螺：卡露娜参战且存活时队伍经验翻倍。缺模块（bundle 未加载）
+    // 时按 1 倍处理，绝不臆造翻倍。
+    const experience = baseExperience
+      * (window.AbeKarunaConchSkills?.partyMultiplier?.(core, args) || 1);
     const progression = progressionParty(run, args.participantIds).map(id => {
       const character = char(core, id);
       const template = GameData.characters?.find(item => item.id === id);

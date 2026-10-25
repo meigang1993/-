@@ -87,8 +87,8 @@
 .play-card.burning-status::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(90deg, rgba(255,89,20,.8), transparent 10% 90%, rgba(255,89,20,.8)), linear-gradient(0deg, rgba(255,180,44,.65), transparent 14%); mix-blend-mode: screen; }
 .hand-panel { grid-column: 1 / -1; grid-row: 6; position: relative; z-index: 11; min-width: 0; min-height: 0; padding: 6px 268px 6px 6px; border-radius: 16px; background: rgba(0,0,0,.34); border: 1px solid rgba(255,218,145,.18); overflow: hidden; }
 .response-hand-panel { box-shadow: inset 0 0 24px rgba(76,184,255,.12), 0 0 20px rgba(76,184,255,.12); }
-.hand-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0; min-height: 0; align-items: stretch; }
-.hand-body.has-skills { grid-template-columns: 52px minmax(0, 1fr); }
+.hand-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; min-width: 0; min-height: 0; align-items: center; overflow-y: auto; }
+.hand-body.has-skills { grid-template-columns: 52px minmax(0, 1fr) auto; }
 .hand-skills { padding: 4px; border-radius: 10px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,215,166,.18); overflow: hidden auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255,92,171,.55) transparent; }
 .discard-prompt { color: #fff1a8; font-weight: 900; text-shadow: 0 0 10px rgba(255,199,103,.7); }
 .active-info { grid-column: 3; grid-row: 6; z-index: 12; width: 268px; height: 208px; align-self: end; justify-self: end; display: grid; grid-template-columns: 80px 160px 12px; grid-template-rows: 196px; align-content: start; justify-content: center; gap: 3px; padding: 5px; margin: 0 5px 5px 0; border-radius: 14px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.16); overflow: hidden; }
@@ -112,3 +112,14 @@
 .active-skills .skill.with-name { width: 100%; min-width: 0; }
 .active-skills .skill.with-name em { max-width: 124px; }
 .skill-detail .skill.with-name { flex: 0 0 96px; }
+/* 安倍卡露娜【记忆泡泡】：泡泡手牌区显示在手牌区下方，出牌阶段可点击取回使用。 */
+.karuna-bubble-zone { display: flex; align-items: center; gap: clamp(4px, .8vw, 10px); margin-top: 0; padding: 2px 6px; max-width: 42vw; border-radius: 12px; background: rgba(60, 130, 200, .18); border: 1px solid rgba(150, 220, 255, .35); }
+.karuna-bubble-label { flex: 0 0 auto; font-size: clamp(9px, 1.6vw, 12px); font-weight: 900; color: #bfe9ff; text-shadow: 0 0 8px rgba(120, 200, 255, .6); }
+.karuna-bubble-cards { display: flex; align-items: center; gap: 4px; min-height: 42px; }
+.karuna-bubble-slot { display: inline-block; cursor: pointer; transform: scale(.72); transform-origin: center left; transition: transform .16s ease-out; }
+.karuna-bubble-slot:hover { transform: scale(.8); }
+.karuna-bubble-empty { font-size: clamp(9px, 1.6vw, 12px); color: rgba(220, 240, 255, .5); }
+.battle-locked .karuna-bubble-slot { pointer-events: none; }
+/* 非出牌阶段（phase≠4）：技能描述限定只有出牌阶段能使用，此时置灰并禁用点击，
+   避免玩家点下去毫无反应。 */
+.karuna-bubble-slot-idle { pointer-events: none; filter: grayscale(.75) brightness(.7); opacity: .6; }
