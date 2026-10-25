@@ -115,9 +115,12 @@
 /* 安倍卡露娜【记忆泡泡】：泡泡手牌区显示在手牌区下方，出牌阶段可点击取回使用。 */
 .karuna-bubble-zone { display: flex; align-items: center; gap: clamp(4px, .8vw, 10px); margin-top: 0; padding: 2px 6px; max-width: 42vw; border-radius: 12px; background: rgba(60, 130, 200, .18); border: 1px solid rgba(150, 220, 255, .35); }
 .karuna-bubble-label { flex: 0 0 auto; font-size: clamp(9px, 1.6vw, 12px); font-weight: 900; color: #bfe9ff; text-shadow: 0 0 8px rgba(120, 200, 255, .6); }
-.karuna-bubble-cards { display: flex; align-items: center; gap: 4px; min-height: 42px; }
-.karuna-bubble-slot { display: inline-block; cursor: pointer; transform: scale(.72); transform-origin: center left; transition: transform .16s ease-out; }
-.karuna-bubble-slot:hover { transform: scale(.8); }
+.karuna-bubble-cards { display: flex; align-items: center; gap: 4px; min-height: 160px; }
+/* 槽位必须是 flex 容器：.play-card 的 flex 尺寸只在 flex 父级下生效，
+   若用 inline-block 会被内容撑宽（实测 187px），牌面比例横向拉伸变形。 */
+.karuna-bubble-slot { display: inline-flex; cursor: pointer; transition: transform .16s ease-out; }
+.karuna-bubble-slot .play-card { flex: 0 0 104px; width: 104px; min-height: 160px; }
+.karuna-bubble-slot:hover { transform: translate3d(0, -8px, 0); }
 .karuna-bubble-empty { font-size: clamp(9px, 1.6vw, 12px); color: rgba(220, 240, 255, .5); }
 .battle-locked .karuna-bubble-slot { pointer-events: none; }
 /* 非出牌阶段（phase≠4）：技能描述限定只有出牌阶段能使用，此时置灰并禁用点击，

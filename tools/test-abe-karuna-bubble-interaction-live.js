@@ -230,6 +230,17 @@ const probeTpl = (sel, scroll) => `(() => {
     // 布局体验：默认不滚动时是否已被截掉（>0 表示超出视口底部）
     T("B10 默认布局下泡泡区完整可见（不溢出视口底部）",
       (slotRaw?.overflowBottom || 0) <= 0, slotRaw);
+    // 牌面尺寸必须与手牌一致：曾因 .karuna-bubble-slot 用 inline-block + transform:scale(.72)
+    // 导致卡片被内容撑宽到 187px 又被缩到 134×115，比例横向拉伸变形且与手牌大小不齐。
+    const size = await evalT(page, `(() => {
+      const hand = document.querySelector(".hand .play-card");
+      const bub = document.querySelector(".karuna-bubble-slot .play-card");
+      const R = el => el ? { w: Math.round(el.getBoundingClientRect().width), h: Math.round(el.getBoundingClientRect().height) } : null;
+      return { hand: R(hand), bubble: R(bub) };
+    })()`, 15000, "probeSize");
+    T("B11 泡泡区牌面尺寸与手牌一致（不被拉伸/缩放）",
+      !!size?.hand && !!size?.bubble
+      && size.bubble.w === size.hand.w && size.bubble.h === size.hand.h, size);
   }
 
   // ── C 段：点击泡泡区的牌取回并使用 ─────────────────────────────
