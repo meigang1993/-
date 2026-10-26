@@ -338,6 +338,7 @@ const groups = Object.freeze({
     "test-abe-karuna-bubble-matrix-live.js",
     "test-abe-karuna-bubble-relic-conflicts-live.js",
     "test-karuna-hammer-three-bugs-live.js",
+    "test-aoe-halfblood-continuation-live.js",
     "test-butler-manual-tutorial-goal-live.js",
     "test-all-unlock-events-live.js",
     "test-artina-skills-live.js",
