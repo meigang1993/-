@@ -54,6 +54,28 @@ window.BattleThunderHammerResponse = ({
       `${actor.name} 的霹雳之锤可发动：选择一张手牌弃置，令该杀强制造成伤害。`);
     return true;
   }
+  // 锤子解决后把暂存的「记忆泡泡」询问放出来。锤子挂起时 battle.locked 为真，
+  // 记忆泡泡的 afterCardPlayed 会把自己暂存在 karunaBubblePending；这里在其
+  // 解除锁定后补问，否则卡露娜的【杀】被【闪】抵消时永远存不进泡泡区。
+  function flushKarunaBubble(state) {
+    const battle = state?.battle;
+    const pending = battle?.karunaBubblePending;
+    if (!pending) return false;
+    const settling = battle.pendingVictory || battle.pendingDefeat
+      || battle.victoryScreen || battle.defeat || battle.testComplete;
+    if (settling || battle.locked || battle.karunaBubble) return false;
+    battle.karunaBubblePending = null;
+    const actor = ctx.allUnits(battle)
+      .find(unit => unit.uid === pending.actorUid);
+    if (!actor || actor.hp <= 0) return false;
+    const max = window.AbeKarunaBubbleSkills?.MAX || 2;
+    if ((actor.bubbleCards?.length || 0) >= max) return false;
+    battle.karunaBubble = { actorUid: pending.actorUid, card: pending.card };
+    battle.locked = true;
+    window.BattleLog.add(state, `${actor.name} 的记忆泡泡可发动：`
+      + `将刚使用的${pending.card.suit || ""}${pending.card.name}放入泡泡手牌区？`);
+    return true;
+  }
   function resolve(state, cardIndex) {
     const battle = state.battle;
     const hammer = battle?.thunderHammer;
@@ -82,6 +104,9 @@ window.BattleThunderHammerResponse = ({
       };
     }
     ctx.checkEnd(state);
+    // 补伤不等于回合结束：解决后应把控制权交回玩家继续出牌。
+    battle.thunderHammerKeepPhase = true;
+    flushKarunaBubble(state);
     return true;
   }
   function cancel(state) {
@@ -105,6 +130,9 @@ window.BattleThunderHammerResponse = ({
         card: hammer.card,
       };
     }
+    // 放弃发动同样不等于回合结束。
+    battle.thunderHammerKeepPhase = true;
+    flushKarunaBubble(state);
     return true;
   }
   return { queue, resolve, cancel };

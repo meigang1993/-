@@ -52,6 +52,12 @@ const ORDER_DEPENDENCIES = [
     file: "ui-selection-tip.js",
     consumers: ["ui-hand-view.js"],
   },
+  // 卡露娜【记忆泡泡】的区域模块：技能模块在运行时委托它取容量、牌堆与渲染，
+  // 必须排在其消费方之前，否则会出现「区域不渲染 / 存入时取不到容量」。
+  {
+    file: "abe-karuna-bubble-zone.js",
+    consumers: ["abe-karuna-bubble-skills.js"],
+  },
 ];
 
 const sharedFileNames = SHARED_SOURCES.map(entry => entry.file);

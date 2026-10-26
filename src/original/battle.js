@@ -110,9 +110,10 @@ window.BattleSystem = (() => {
     resolveKaiichiShare: turnFlow.resolveKaiichiShare,
     resolveMillerShare: turnFlow.resolveMillerShare,
     cancelThunderHammer: turnFlow.manualFlow.cancelThunderHammer,
-    storeKarunaBubble: combat.storeKarunaBubble,
-    skipKarunaBubble: combat.skipKarunaBubble,
-    takeKarunaBubble: combat.takeKarunaBubble,
+    // 走 manualFlow：解锁后需要续跑被中断的残留段（格林机枪等）。
+    storeKarunaBubble: turnFlow.manualFlow.storeKarunaBubble,
+    skipKarunaBubble: turnFlow.manualFlow.skipKarunaBubble,
+    selectKarunaBubble: combat.selectKarunaBubble,
     resolveManualDodge: turnFlow.manualFlow.resolveManualDodge,
     confirmDeflectResult: turnFlow.manualFlow.confirmDeflectResult,
     resolveManualCounter: turnFlow.manualFlow.resolveManualCounter,

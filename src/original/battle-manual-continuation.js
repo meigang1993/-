@@ -72,6 +72,18 @@ window.BattleManualContinuation = deps => {
   async function continueAfterInterruptedActions(state, onStep, inherited) {
     const current = actionGuard(state, inherited);
     if (!current()) return;
+    const battle = state.battle;
+    // 霹雳之锤解决（弃牌补伤或放弃发动）后，玩家仍处在自己的出牌阶段：
+    // 这两件事都不是「结束回合」，必须把控制权交回玩家继续出牌。
+    // 此前会一路走到 finishTurnAndAdvance，直接推进到弃牌阶段并换人。
+    if (battle?.thunderHammerKeepPhase) {
+      battle.thunderHammerKeepPhase = false;
+      if (battle.phase === 4 && !battle.locked
+        && active(battle)?.side === "ally") {
+        onStep?.();
+        return;
+      }
+    }
     const unit = active(state.battle);
     if (unit?.side === "enemy" && state.battle.phase === 1) {
       if (!await beginPlayPhase(state, unit, onStep, current, { guard: false, reckless: false })) return;

@@ -144,37 +144,39 @@ const clickBubbleBtn = async (page, which) => {
     await page.locator("[data-bubble-index='1']").click({ timeout: 5000 });
     await page.waitForTimeout(600);
     s = await evalT(page, snapTpl, 15000, "snapP7");
-    T("P7 取回后泡泡区剩 1 张", s?.bubbleLen === 1, s);
-    T("P8 杀回到手牌", (s?.hand || []).includes("泡泡杀"), s);
+    // 新语义：就地使用。选中阶段不扣区、不进手牌，打出才扣。
+    T("P7 选中后泡泡区仍是 2 张（打出才扣）", s?.bubbleLen === 2, s);
+    T("P8 杀未进入手牌（就地使用）", !(s?.hand || []).includes("泡泡杀"), s);
     const freeFlag = await evalT(page, `(() => {
       const u = window.state.battle.allies[0];
-      const c = u.hand.find(x => x._bubbleFree);
-      return { free: !!c?._bubbleFree, name: c?.name || "" };
+      const c = (u.bubbleCards || []).find(x => x.name === "泡泡杀");
+      return { free: !!c?._bubbleFree, cast: !!c?._bubbleCast, name: c?.name || "" };
     })()`, 15000, "snapFree");
-    T("P9 取回的杀带免杀意标记",
-      freeFlag?.free === true && freeFlag?.name === "泡泡杀", freeFlag);
+    T("P9 泡泡区的杀带免杀意与来源标记",
+      freeFlag?.free === true && freeFlag?.cast === true
+      && freeFlag?.name === "泡泡杀", freeFlag);
 
     // 关键判据：intent=0 时该杀是否仍可打出（普通杀此时不可打出）。
     const playable = await evalT(page, `(() => {
       const b = window.state.battle, u = b.allies[0];
-      const c = u.hand.find(x => x.name === "泡泡杀");
-      const idx = u.hand.indexOf(c);
+      const c = (u.bubbleCards || []).find(x => x.name === "泡泡杀");
+      const idx = (u.bubbleCards || []).indexOf(c);
       // canPlay 签名为 (actor, source, battle)，不是 (state, actor, card)。
       const free = window.BattleSystem.canPlay
         ? window.BattleSystem.canPlay(u, c, b) : null;
-      const pickable = window.BattleSystem.selectCard
-        ? (window.BattleSystem.selectCard(window.state, idx), true) : null;
+      const pickable = window.AbeKarunaBubbleSkills.select
+        ? window.AbeKarunaBubbleSkills.select(window.state, idx) : null;
       return { intent: u.intent, free, pickable,
-        selected: b.selectedCardIndex, selectedName: u.hand[b.selectedCardIndex]?.name || "" };
+        selSkill: b.selectedSkillCard?.name || "" };
     })()`, 15000, "snapPlayable");
     // 严格：只认 canPlay 返回值。此前用 `|| selectedName` 兜底，
     // 撤销免杀意判据后 selectCard 仍会成功，导致该断言恒真。
-    T("P10 杀意 0 时取回的杀仍可打出", playable?.free === true, playable);
+    T("P10 杀意 0 时泡泡区的杀仍可选中使用", playable?.free === true && playable?.pickable === true, playable);
 
     // 真正打出，验证杀意未被扣成负数、且确未消耗。
     const after = await evalT(page, `(() => {
       const st = window.state, b = st.battle, u = b.allies[0];
-      const c = u.hand.find(x => x.name === "泡泡杀" && x._bubbleFree);
+      const c = (u.bubbleCards || []).find(x => x.name === "泡泡杀" && x._bubbleFree);
       if (!c) return { played: false };
       // 杀意抬到 2：intent 为 0 时再扣也仍是 0，无法区分"没扣"与"扣了"。
       u.intent = 2;
@@ -182,7 +184,7 @@ const clickBubbleBtn = async (page, which) => {
       window.BattleSystem.useCard(st, u, b.enemies[0], c);
       return { played: true, before, after: u.intent };
     })()`, 15000, "playFreeKill");
-    T("P11 取回的杀已打出", after?.played === true, after);
+    T("P11 泡泡区的杀已打出", after?.played === true, after);
     await page.waitForTimeout(700);
     await evalT(page, "window.BattleEffects?.whenIdle?.()", 8000, "whenIdleP");
     await page.waitForTimeout(300);
@@ -195,21 +197,19 @@ const clickBubbleBtn = async (page, which) => {
       8000, "skipP");
   }
 
-  // ── M 上限 3 张 ────────────────────────────────────────────
+  // ── M 上限 2 张（由 3 张下调，描述同步为「最多存放2张牌」） ──
   if (want("M")) {
     await evalT(page, setupTpl, 15000, "setupM");
     await playAndWait(page, "泡泡牌1");
     await clickBubbleBtn(page, "store");
     await playAndWait(page, "泡泡牌2");
-    await clickBubbleBtn(page, "store");
-    await playAndWait(page, "泡泡牌3");
     const s = await clickBubbleBtn(page, "store");
-    T("M1 存入 3 张后泡泡区满", s?.bubbleLen === 3, s);
-    T("M2 泡泡区渲染 3 个点击位", s?.slots === 3, s);
-    const s4 = await playAndWait(page, "泡泡牌4");
-    T("M3 满 3 张后第 4 张不再挂起", s4?.pending === false, s4);
-    T("M4 第 4 张正常进入弃牌堆", (s4?.discard || []).includes("泡泡牌4"), s4);
-    T("M5 泡泡区仍为 3 张", s4?.bubbleLen === 3, s4);
+    T("M1 存入 2 张后泡泡区满", s?.bubbleLen === 2, s);
+    T("M2 泡泡区渲染 2 个点击位", s?.slots === 2, s);
+    const s4 = await playAndWait(page, "泡泡牌3");
+    T("M3 满 2 张后第 3 张不再挂起", s4?.pending === false, s4);
+    T("M4 第 3 张正常进入弃牌堆", (s4?.discard || []).includes("泡泡牌3"), s4);
+    T("M5 泡泡区仍为 2 张", s4?.bubbleLen === 2, s4);
     await evalT(page, "window.BattleSystem.skipKarunaBubble(window.state); window.render();",
       8000, "skipM");
   }

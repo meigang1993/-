@@ -2,7 +2,7 @@
 //   1. 触发后是不是由玩家决定放入（提示 + 放入/放弃，不点则不变）
 //   2. 手牌区与泡泡手牌区是否需要/存在「切换按键」
 //   3. 按键能不能点击（pointer-events / 命中测试 / 遮挡 / 置灰）
-//   4. 泡泡手牌区能不能点击牌取回并使用
+//   4. 泡泡手牌区能不能点击牌就地直接使用（用后不再触发放入）
 // 另设 D 段：非出牌阶段（弃牌阶段）能否取回——技能描述限定「出牌阶段」。
 //
 // 分批：KARUNA_BI=A|B|C|D|E，不设则跑全部。
@@ -79,6 +79,7 @@ const snapTpl = `(() => {
     pendingName: b.karunaBubble?.card?.name || "",
     slots: document.querySelectorAll("[data-bubble-index]").length,
     selected: b.selectedCardIndex,
+    selSkill: b.selectedSkillCard?.name || "",
     logs: (st.battleLog || []).join(" | "),
   };
 })()`;
@@ -243,69 +244,87 @@ const probeTpl = (sel, scroll) => `(() => {
       && size.bubble.w === size.hand.w && size.bubble.h === size.hand.h, size);
   }
 
-  // ── C 段：点击泡泡区的牌取回并使用 ─────────────────────────────
+  // ── C 段：点击泡泡区的牌就地直接使用（不进手牌、用后不再触发放入）──
   if (want("C")) {
-    console.log("\n[C] 点击泡泡区的牌取回并使用");
-    // 先凑够 2 张：出牌3 并放入
-    await playAndWait(page, "泡泡牌3");
-    await page.locator("[data-karuna-bubble-store]").click({ timeout: 5000 });
-    await page.waitForTimeout(600);
+    console.log("\n[C] 点击泡泡区的牌直接使用");
+    // 自带准备：先清空泡泡区，再出牌1/牌2 各放入一次，凑满 2 张。
+    // 此前依赖 A 段存入的那张，单独跑 C 段时只有 1 张，断言全红。
+    await evalT(page, `(() => {
+      const st = window.state, b = st.battle, u = b.allies[0];
+      b.animQueue = []; b.locked = false; b.phase = 4;
+      delete b.karunaBubble; b.selectedCardIndex = -1;
+      delete b.selectedSkillCard; delete b.pendingTargetUid;
+      // 连同手牌一起重置：A/B 段可能已把泡泡牌1/2 打出或放入，
+      // 只清泡泡区会导致下面出牌时找不到牌、等不到「放入」按钮而超时。
+      u.bubbleCards = [];
+      u.hand = [
+        { name: "泡泡牌1", type: "tactic", suit: "♦", text: "", targetless: true },
+        { name: "泡泡牌2", type: "tactic", suit: "♥", text: "", targetless: true },
+      ];
+      u.intent = 1;
+      window.render(); return true;
+    })()`, 8000, "resetC");
+    for (const nm of ["泡泡牌1", "泡泡牌2"]) {
+      await playAndWait(page, nm);
+      await page.locator("[data-karuna-bubble-store]").click({ timeout: 5000 });
+      await page.waitForTimeout(500);
+    }
     let s = await evalT(page, snapTpl, 15000, "snapC0");
     T("C0 准备：泡泡区 2 张", s?.bubbleLen === 2, s);
     T("C1 泡泡区渲染 2 个牌位", s?.slots === 2, s);
 
-    const before = s.hand.length;
     // 真实鼠标点击第 1 个牌位
     await page.locator("[data-bubble-index='0']").click({ timeout: 5000 });
     await page.waitForTimeout(700);
     s = await evalT(page, snapTpl, 15000, "snapC2");
-    T("C2 点击后泡泡区减 1", s?.bubbleLen === 1, s);
-    T("C3 取回的牌回到手牌", s?.hand.length === before + 1
-      && (s?.bubble || []).indexOf("泡泡牌1") < 0, s);
-    T("C4 取回后自动选中该牌", s?.selected >= 0, s);
+    T("C2 点击后即选中该牌", s?.selSkill === "泡泡牌1", s);
+    T("C3 选中阶段不扣泡泡区（打出才扣）", s?.bubbleLen === 2, s);
+    T("C4 牌未进入手牌（就地使用，不是取回）",
+      !(s?.hand || []).includes("泡泡牌1"), s);
 
     const sel = await evalT(page, `(() => {
       const b = window.state.battle, u = b.allies[0];
-      const i = b.selectedCardIndex;
-      return { idx: i, name: u.hand[i]?.name || "", free: !!u.hand[i]?._bubbleFree };
+      const card = (u.bubbleCards || [])[0];
+      return { name: card?.name || "", free: !!card?._bubbleFree,
+        cast: !!card?._bubbleCast };
     })()`, 15000, "snapC5");
-    T("C5 选中的正是取回的牌", sel?.name === "泡泡牌1", sel);
-    T("C6 取回的牌带免杀意标记", sel?.free === true, sel);
+    T("C5 选中的正是泡泡区第 1 张", sel?.name === "泡泡牌1", sel);
+    T("C6 该牌带免杀意标记", sel?.free === true, sel);
+    T("C7 该牌带泡泡来源标记", sel?.cast === true, sel);
 
-    // 打出取回的牌（目标less 战术牌 → 点「使用」）
     const useBtn = await evalT(page, probeTpl("[data-confirm-target]"), 15000, "probeUse");
-    T("C7 「使用」按钮存在且可点",
+    T("C8 「使用」按钮存在且可点",
       useBtn?.found === true && useBtn?.pe !== "none" && useBtn?.hitSelf === true
       && useBtn?.disabled === false, useBtn);
     if (useBtn?.found) {
       await page.locator("[data-confirm-target]").click({ timeout: 5000 });
       await page.waitForTimeout(700);
-      await evalT(page, "window.BattleEffects?.whenIdle?.()", 8000, "whenIdle:C8");
-      const after = await evalT(page, snapTpl, 15000, "snapC8");
-      T("C8 取回的牌成功打出（离开手牌）",
-        !(after?.hand || []).includes("泡泡牌1"), after);
-      // 打出后记忆泡泡会再次挂起 → 跳过，避免挂死
-      await evalT(page, "(() => { window.BattleSystem?.skipKarunaBubble?.(window.state, window.render);"
-        + " window.render(); return true; })()", 8000, "skipAfterC8");
-      await page.waitForTimeout(300);
+      await evalT(page, "window.BattleEffects?.whenIdle?.()", 8000, "whenIdle:C9");
+      const after = await evalT(page, snapTpl, 15000, "snapC9");
+      T("C9 打出后泡泡区减 1", after?.bubbleLen === 1, after);
+      T("C10 打出的牌进入弃牌堆", (after?.discard || []).includes("泡泡牌1"), after);
+      // 核心 BUG：此前取回到手牌打出后会再次询问放入，
+      // 同一张牌可无限「使用 → 放回 → 再使用」。
+      T("C11 泡泡区使用后不再触发「放入」提示（循环已断）",
+        after?.pending === false, after);
+      T("C12 使用后战斗未挂起", after?.locked === false, after);
     }
 
-    // 第二个牌位也能取回
-    const s2 = await evalT(page, snapTpl, 15000, "snapC9");
+    // 第二个牌位同样可用
+    const s2 = await evalT(page, snapTpl, 15000, "snapC13");
     if (s2?.slots >= 1) {
-      const n0 = s2.bubbleLen;
       await page.locator("[data-bubble-index='0']").click({ timeout: 5000 });
       await page.waitForTimeout(700);
-      const s3 = await evalT(page, snapTpl, 15000, "snapC10");
-      T("C9 第二个牌位点击同样生效", s3?.bubbleLen === n0 - 1, { n0, s3 });
+      const s3 = await evalT(page, snapTpl, 15000, "snapC13");
+      T("C13 第二个牌位点击同样可选中", s3?.selSkill !== "", s3);
     } else {
-      T("C9 第二个牌位点击同样生效", false, { reason: "no slots", s2 });
+      T("C13 第二个牌位点击同样可选中", false, { reason: "no slots", s2 });
     }
   }
 
   // ── D 段：非出牌阶段能否取回（描述限定「出牌阶段」）─────────────
   if (want("D")) {
-    console.log("\n[D] 非出牌阶段取回（描述限定出牌阶段）");
+    console.log("\n[D] 非出牌阶段使用（描述限定出牌阶段）");
     const d = await evalT(page, `(() => {
       const st = window.state, b = st.battle, u = b.allies[0];
       // 本段自带一张泡泡牌：前面 C 段已把牌取回/打出，bubble 可能已空。
@@ -320,21 +339,21 @@ const probeTpl = (sel, scroll) => `(() => {
     T("D2 弃牌阶段泡泡区仍渲染", d?.zoneVisible === true && d?.slots >= 1, d);
     if (d?.slots >= 1) {
       const before = d.bubble;
-      // D4 必须先于 D3 探测：D3 若取回成功会清空泡泡区，槽位随之消失，
+      // D4 必须先于 D3 探测：D3 若使用成功会消耗泡泡牌，槽位随之消失，
       // 导致 D4 查不到元素而"假红"，无法独立证明置灰规则存在。
       const idleSlot = await evalT(page, probeTpl("[data-bubble-index]", true), 15000, "probeD4");
       T("D4 弃牌阶段泡泡牌位置灰且不可点",
         idleSlot?.pe === "none" && idleSlot?.opacity < 1, idleSlot);
       const res = await evalT(page, `(() => {
         const st = window.state, b = st.battle, u = b.allies[0];
-        const ok = window.BattleSystem.takeKarunaBubble(st, 0, window.render);
+        const ok = window.BattleSystem.selectKarunaBubble(st, 0, window.render);
         window.render();
         return { ok, bubble: (u.bubbleCards || []).length, hand: u.hand.length };
       })()`, 15000, "snapD3");
-      T("D3 弃牌阶段取回被拒绝（符合描述）", res?.ok === false && res?.bubble === before,
+      T("D3 弃牌阶段使用被拒绝（符合描述）", res?.ok === false && res?.bubble === before,
         { before, res });
     } else {
-      T("D3 弃牌阶段取回被拒绝（符合描述）", false, { reason: "no slots", d });
+      T("D3 弃牌阶段使用被拒绝（符合描述）", false, { reason: "no slots", d });
       T("D4 弃牌阶段泡泡牌位置灰且不可点", false, { reason: "no slots", d });
     }
     // 还原到出牌阶段

@@ -83,7 +83,7 @@ const expectedGrowth = {
   hoshino_yi: [151.90, 26.22, 28.57, 16.41], hoshino_kaiichi: [257.06, 11.24, 28.57, 10.95], artina: [116.84, 33.71, 12.25, 21.89],
   maria: [163.58, 22.48, 24.5, 18.24], sonia: [175.27, 26.22, 16.32, 20.06], chiyo: [128.53, 26.22, 8.16, 25.54],
   preshi: [128.53, 18.73, 32.66, 14.59], mieryula: [198.63, 41.2, 20.41, 40.13],
-  abe_karuna: [116.84, 7.49, 36.73, 7.3],
+  abe_karuna: [116.84, 7.49, 36.73, 21.89],
 };
 assert.strictEqual(Object.keys(expectedGrowth).length, GameDataCharacters.length,
   "every character needs a complete growth baseline");
@@ -324,9 +324,10 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.
   const digest = crypto.createHash("sha256").update(rows.join("\n")).digest("hex");
   // 摘要变更记录：10-10 洛基/卡迪西斯满级成长重分配、10-14 新增第 31 名角色普雷希、
   // 10-25 补第 32 名米尔尤拉与第 33 名安倍卡露娜的 0～20 级成长快照、
-  // 10-25 米尔尤拉成长表改回统一档位网格（198.63/41.2/20.41/40.13）。
+  // 10-25 米尔尤拉成长表改回统一档位网格（198.63/41.2/20.41/40.13）、
+  // 10-26 安倍卡露娜速度成长由 4 档（7.3）上调至 12 档（21.89，满级速度 24.89）。
   assert.strictEqual(digest,
-    "e7d1098af0ab98e292bbba0e3d4df6bcab0a18b0e5002182041de5c143c13f38",
+    "dbf069eab77029c2f96dbc7117c2ac8304d77e83a2f639b4577013f38b87794c",
     "0～20 级角色成长数据被改动（快照不匹配，若有意调整请更新摘要）");
   const lokar = GameDataCharacters.find(character => character.id === "lokar");
   assert.deepStrictEqual(

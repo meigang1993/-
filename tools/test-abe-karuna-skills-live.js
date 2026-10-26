@@ -85,7 +85,8 @@ const snapTpl = `(() => {
     pendingName: b.karunaBubble?.card?.name || "",
     selected: b.selectedCardIndex,
     selectedName: u.hand[b.selectedCardIndex]?.name || "",
-    freeFlag: !!u.hand[b.selectedCardIndex]?._bubbleFree,
+    freeFlag: !!(u.bubbleCards || []).find(c => c._bubbleFree),
+    selSkill: b.selectedSkillCard?.name || "",
     intent: u.intent,
     prompt: document.querySelector(".discard-prompt")?.textContent || "",
     bubbleZone: !!document.querySelector(".karuna-bubble-zone"),
@@ -192,16 +193,17 @@ const settle = async (page, ms = 700) => {
     await page.locator("[data-bubble-index='0']").click({ timeout: 5000 });
     await page.waitForTimeout(600);
     const b5 = await evalT(page, snapTpl, 15000, "snapB5");
-    T("B13 取回后泡泡区清空", b5?.bubbleLen === 0, b5);
-    T("B14 牌回到手牌并自动选中", b5?.selectedName === "黑牌D", b5);
-    T("B15 取回的牌带免杀意标记", b5?.freeFlag === true, b5);
+    // 新语义：就地使用——选中阶段不扣区、不进手牌，打出才扣。
+    T("B13 选中后泡泡区仍 1 张（打出才扣）", b5?.bubbleLen === 1, b5);
+    T("B14 牌未进入手牌", !(b5?.hand || []).includes("黑牌D"), b5);
+    T("B15 泡泡区的牌带免杀意标记", b5?.freeFlag === true, b5);
 
     const intentBefore = b5?.intent;
     await evalT(page, `(() => {
       const st = window.state, b = st.battle, u = b.allies[0];
-      const i = u.hand.findIndex(c => c._bubbleFree);
-      if (i < 0) return false;
-      window.BattleSystem.useCard(st, u, b.enemies[0], u.hand[i]);
+      const c = (u.bubbleCards || []).find(x => x._bubbleFree);
+      if (!c) return false;
+      window.BattleSystem.useCard(st, u, b.enemies[0], c);
       return true;
     })()`, 15000, "playFree");
     // 关键：这张牌打出后同样会挂起记忆泡泡，必须跳过，否则后续 evaluate 全挂。
@@ -211,7 +213,7 @@ const settle = async (page, ms = 700) => {
     await evalT(page, "window.BattleSystem.skipKarunaBubble(window.state); window.render();",
       8000, "skipBubbleB6");
     const b6 = await evalT(page, snapTpl, 15000, "snapB6");
-    T("B16 使用取回的战术牌不消耗杀意", b6?.intent === intentBefore,
+    T("B16 使用泡泡区的战术牌不消耗杀意", b6?.intent === intentBefore,
       { before: intentBefore, after: b6?.intent });
   }
 

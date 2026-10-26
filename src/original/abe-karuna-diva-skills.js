@@ -27,7 +27,11 @@ window.AbeKarunaDivaSkills = (() => {
 
   function endTurn(state, unit) {
     if (unit?.ref !== "abe_karuna") return;
+    // 颜色记忆与头像花色标记必须一并清除：此前只删 karunaLastColor，
+    // 头像上的「同频 ♦」残留到下回合，玩家会误以为再出红色牌还能摸牌，
+    // 而 karunaLastColor 已为空、实际不会触发。
     delete unit.karunaLastColor;
+    delete unit.karunaLastSuit;
   }
 
   function suitMark(u) {
