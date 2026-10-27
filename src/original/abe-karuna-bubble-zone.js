@@ -17,6 +17,14 @@ window.AbeKarunaBubbleZone = (() => {
     && (card.type === "consume" || !!card.copiedByEdis || !!card.void);
   // 实体牌判定统一走 CardUtils.isEntityCard（单一来源），此处不再各写一份。
   const isEntityCard = card => !!window.CardUtils?.isEntityCard?.(card);
+  // 归属：与入堆口径 battle-cards-system.put 同源——偷来的牌（带 stolenFromUid）
+  // 结算后进**原主**的牌堆，而不是使用者的。摘牌必须与入堆同口径，否则
+  // 「放入」会在自己牌堆里找不到该牌而静默失败（点了「放入」牌却没进区）。
+  const ownerOf = (battle, card) => !!card?.stolenFromUid
+    && (battle?.allies || []).concat(battle?.enemies || [])
+      .find(unit => unit.uid === card.stolenFromUid);
+  // 原主可能已阵亡离场，此时回落使用者自己（put 的 dest = owner || holder）。
+  const destOf = (battle, actor, card) => ownerOf(battle, card) || actor;
 
   // 入堆时可能存的是还原副本（转换牌），故先按对象精确匹配，再按牌名花色回退。
   function removeFromPile(pile, card) {
@@ -68,6 +76,6 @@ window.AbeKarunaBubbleZone = (() => {
 
   return {
     MAX, alive, hasSkill, pileOf, consumedOf, bubbleOf, burnOnPlay,
-    isEntityCard, removeFromPile, endTurn, render,
+    isEntityCard, ownerOf, destOf, removeFromPile, endTurn, render,
   };
 })();

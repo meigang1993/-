@@ -18,6 +18,11 @@ window.AbeKarunaBubbleSkills = (() => {
       const bubble = zone.bubbleOf(actor);
       const at = bubble.indexOf(card);
       if (at >= 0) bubble.splice(at, 1);
+      // 标记必须随离区一并抹掉：否则牌带着「免杀意」进弃牌堆，被回收类效果
+      // 捞回后再打出会错误免杀意（isIntentFree），且因 _bubbleCast 残留会被
+      // 本分支再次拦下、不再提供「放入」机会。此处已在结算完毕之后，
+      // 清除不影响本次结算，与 endTurn 清空时的处理保持一致。
+      delete card._bubbleFree; delete card._bubbleCast;
       return;
     }
     if (!zone.hasSkill(actor, "记忆泡泡")) return;
@@ -71,10 +76,21 @@ window.AbeKarunaBubbleSkills = (() => {
     battle.locked = false;
     if (!actor) return false;
     const card = pick.card;
+    // 归属：偷来的牌（带 stolenFromUid）结算后进**原主**牌堆，与入堆口径
+    // battle-cards-system.put 同源。此前只在使用者自己牌堆里摘，偷来的牌
+    // 必然找不到 → 点了「放入」牌却留在原主弃牌堆、没进泡泡区。
+    // 顺序必须是「先原主、再自己」：removeFromPile 有按牌名花色回退匹配，
+    // 反序会误摘自己牌堆里同名同花色的另一张牌（总量凭空 +1）。
+    const dest = zone.destOf(battle, actor, card);
+    const cands = !dest || dest === actor ? [actor] : [dest, actor];
     // 消耗牌结算后进的是消耗区而非弃牌堆，两处都要摘；
     // 两处都找不到说明牌已不在玩家可及之处，不得凭空进区（否则就是复制牌）。
-    let removed = zone.removeFromPile(zone.pileOf(actor), card);
-    if (!removed) removed = zone.removeFromPile(zone.consumedOf(actor), card);
+    let removed = false;
+    cands.some((unit) => {
+      removed = zone.removeFromPile(zone.pileOf(unit), card)
+        || zone.removeFromPile(zone.consumedOf(unit), card);
+      return removed;
+    });
     if (!removed) return false;
     const bubble = zone.bubbleOf(actor);
     bubble.push(card);
