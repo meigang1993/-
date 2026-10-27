@@ -5,8 +5,14 @@ window.NonokaNewMoonSkills = (() => {
   const findUnit = (battle, uid) => allUnits(battle).find(unit => unit.uid === uid);
   const line = (state, unit, name, target) => window.BattleLines?.skill(state, unit, name, target);
 
+  // 实体牌判定统一走 CardUtils.isEntityCard（单一来源），与【同频歌姬】【偶像之星】同口径：
+  // 技能牌/虚拟牌既不记录花色，也不触发补牌。
+  const isEntityCard = card => !!window.CardUtils?.isEntityCard?.(card);
+
   function trackCard(state, actor, card, deps) {
     if (!alive(actor) || !actor.newMoonActive || !card.suit || actor.newMoonSuits?.includes(card.suit)) return;
+    // 仅实体牌参与新月之歌的花色记录与补牌。
+    if (!isEntityCard(card)) return;
     actor.newMoonSuits = [...new Set([...(actor.newMoonSuits || []), card.suit])];
     window.NonokaIdolSkinFX?.newMoon?.(state, actor, card.suit);
     const drawn = deps.draw(actor, 1, state.battle);

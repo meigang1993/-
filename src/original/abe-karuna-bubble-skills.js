@@ -136,9 +136,24 @@ window.AbeKarunaBubbleSkills = (() => {
 
   const isIntentFree = card => !!card?._bubbleFree;
 
+  // 已选中同一张泡泡牌时再次点击 → 与手牌区一致：不必再点「确定」，直接打出。
+  // 只有无需指定目标的牌（targetless / allyTarget）走这条快速通道；
+  // 需要选目标的牌（如【杀】）仍须点敌人，与手牌区行为保持一致。
+  function isPicked(state, index) {
+    const zone = Z();
+    const battle = state?.battle;
+    if (!zone || !battle) return false;
+    const actor = window.BattleSystem?.active?.(battle);
+    if (!actor) return false;
+    const card = zone.bubbleOf(actor)[index];
+    if (!card || battle.selectedSkillCard !== card) return false;
+    const view = window.CardUtils?.battleView?.(state, actor, card) || card;
+    return !!(view.targetless || view.allyTarget);
+  }
+
   return {
     get MAX() { return Z()?.MAX ?? 2; },
-    afterCardPlayed, store, skip, select, isIntentFree, flushPending,
+    afterCardPlayed, store, skip, select, isPicked, isIntentFree, flushPending,
     endTurn: (state, unit) => Z()?.endTurn?.(state, unit),
     render: (unit, U) => Z()?.render?.(unit, U) || "",
   };

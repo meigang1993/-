@@ -6,7 +6,7 @@
 //
 // 本轮补齐的 5 处（全库枚举出）：
 //   A 萌虎慰劳（gerda）        2 名角色各摸 2
-//   B 偶像之星（hoshino_yi）   actor + nonoka 各摸 1
+//   B 偶像之星（hoshino_yi）   仅 actor 摸 1（诺诺卡在场也不补牌）
 //   C 读书的智慧（wendy）      多名温蒂各摸 1
 //   D 模仿（nonoka_loki）      每个模仿者触发一次摸牌
 //   E 梦想真理（hoshino_yi）   敌方全体各弃 1
@@ -76,7 +76,7 @@ function check(name, cond, extra = "") {
       A.gHand === 2 && A.oHand === 2, `g=${A.gHand} o=${A.oHand}`);
   }
 
-  // ---------- B 偶像之星：actor + nonoka 各摸 1 ----------
+  // ---------- B 偶像之星：仅 actor 摸 1（诺诺卡在场也不再补牌）----------
   const B = await page.evaluate(`(async () => {
     const st = window.state, b = st.battle;
     const a = b.allies[0], n = b.allies[1];
@@ -108,11 +108,12 @@ function check(name, cond, extra = "") {
   })()`);
   if (B.skip) { check("B 构造：2 名友方", false, B.skip); }
   else {
-    check("B1 偶像之星 合并为 1 条 drawGroup", B.groups === 1, `groups=${B.groups}`);
-    check("B2 drawGroup 内 2 条子批次", B.groupBatches === 2, `batches=${B.groupBatches}`);
-    check("B3 队列无残留 drawBatch", B.batches === 0, `drawBatch=${B.batches}`);
-    check("B4 双方各摸到 1 张（合并未吞牌）",
-      B.aHand === 1 && B.nHand === 1, `a=${B.aHand} n=${B.nHand}`);
+    // 诺诺卡补牌已移除，偶像之星退化为单人摸牌：只应有 1 条 drawBatch，不再合组。
+    check("B1 单人摸牌不产生 drawGroup", B.groups === 0, `groups=${B.groups}`);
+    check("B2 单人摸牌只产生 1 条 drawBatch", B.batches === 1, `drawBatch=${B.batches}`);
+    check("B3 drawGroup 内无子批次", B.groupBatches === 0, `batches=${B.groupBatches}`);
+    check("B4 仅星野依摸到 1 张，诺诺卡不摸",
+      B.aHand === 1 && B.nHand === 0, `a=${B.aHand} n=${B.nHand}`);
   }
 
   // ---------- C 读书的智慧：多名温蒂各摸 1 ----------

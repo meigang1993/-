@@ -42,7 +42,7 @@ window.GameDataCharactersCore = [
     stats: { attack: 2.4, magic: 5, speed: 5.5, maxHp: 59, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "花色循环、伤害来源替换与治疗辅助。新月之歌持续补牌并分配手牌，模仿之音联动指定角色的出牌，偶像之吻同时恢复自己与一名队友。",
     skills: [
-      { name: "新月之歌", type: "passive", icon: "⭐", text: "锁定技，你的回合内，每当你首次使用一种花色的牌时，记录该花色并摸1张牌。结束阶段，你摸X张牌，然后可以将X张手牌交给一名其他友方角色；若手牌不足X张则全部交出（X为本回合记录的花色数）。" },
+      { name: "新月之歌", type: "passive", icon: "⭐", text: "锁定技，你的回合内，每当你首次使用一种花色的实体牌时，记录该花色并摸1张牌。结束阶段，你摸X张牌，然后可以将X张手牌交给一名其他友方角色；若手牌不足X张则全部交出（X为本回合记录的花色数）。" },
       { name: "模仿之音", type: "active", icon: "⚔️", text: "准备阶段，你可以指定一名其他角色。直到回合结束，你造成伤害时的伤害来源视为该角色；该角色每使用或打出1张牌后，友方手牌数最少的角色摸1张牌。", card: { name: "模仿之音", type: "tactic", mimicVoice: true, icon: "⚔️", text: "指定一名其他角色，直到回合结束，你造成伤害时的伤害来源视为该角色。" } },
       { name: "偶像之吻", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以弃置1张红桃牌并指定一名其他友方角色，你与其各恢复X点生命值（X为你弃牌后的手牌数+你的魔力）。", card: { name: "偶像之吻", type: "tactic", idolKiss: true, allyTarget: true, icon: "⚔️", text: "弃置1张红桃牌，你与一名其他友方角色各恢复等同于你剩余手牌数+魔力的生命值。" } }
     ]

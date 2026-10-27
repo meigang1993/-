@@ -31,11 +31,11 @@ assert(JSON.stringify(kaiichiData.stats) === JSON.stringify({ attack: 2.4, magic
 assert(gerdaData.grandfather === "兽人王邦迪" && yiData.mother === "混沌女神" && kaiichiData.father === "艾伦格", "New character family metadata mismatch");
 assert(yiData.role === "XX型凋零者" && yiData.combatRoles[0] === "输出", "Hoshino Yi role positioning mismatch");
 assert(yiData.entrance === "晚上好，我是A小町，星野依，天才般偶像，今天演唱新曲。", "Hoshino Yi entrance line mismatch");
-assert(idolSkill?.text === "锁定技，当你使用的牌与上一次使用的牌颜色不同时，你摸一张牌。若诺诺卡在队伍中，诺诺卡也摸一张牌。", "Idol Star wording mismatch");
-assert(yiData.skills.find(skill => skill.name === "巨蛋演出")?.text === "锁定技，你每使用四种不同花色的牌，你对所有敌方角色造成等同于你攻击力+魔力数值的物理魔法复合伤害。", "Dome Performance wording mismatch");
-assert(truthSkill?.text.startsWith("使命技。3回合内你使用的牌达到20张成功，3回合后未达到20张失败。"), "Dream Truth wording mismatch");
-assert(truthSkill?.text.includes("成功：当你使用的牌与上一次使用的牌花色不同时，你本回合内攻击力和魔力各+1。"), "Dream Truth wording must explain the success suit growth");
-assert(truthSkill?.text.includes("失败：你每使用四种不同花色的牌，弃置所有敌方角色各一张牌。"), "Dream Truth wording must explain the failure suit discard");
+assert(idolSkill?.text === "锁定技，当你使用的实体牌与上一次使用的实体牌颜色不同时，你摸一张牌。", "Idol Star wording mismatch");
+assert(yiData.skills.find(skill => skill.name === "巨蛋演出")?.text === "锁定技，你每使用四种不同花色的实体牌，你对所有敌方角色造成等同于你攻击力+魔力数值的物理魔法复合伤害。", "Dome Performance wording mismatch");
+assert(truthSkill?.text.startsWith("使命技。3回合内你使用的实体牌达到20张成功，3回合后未达到20张失败。"), "Dream Truth wording mismatch");
+assert(truthSkill?.text.includes("成功：当你使用的实体牌与上一次使用的实体牌花色不同时，你本回合内攻击力和魔力各+1。"), "Dream Truth wording must explain the success suit growth");
+assert(truthSkill?.text.includes("失败：你每使用四种不同花色的实体牌，弃置所有敌方角色各一张牌。"), "Dream Truth wording must explain the failure suit discard");
 assert(comfortSkill?.type === "trigger" && !comfortSkill.card
   && comfortSkill.text.includes("其他友方角色") && !comfortSkill.text.includes("男性"),
 "Gerda Comfort must be an unrestricted end-phase ally trigger");
@@ -131,7 +131,8 @@ HoshinoSkills.afterCardPlayed(yiState, yi, enemy, card("红牌", "tactic", { sui
 assert(yi.hoshinoLastSuit === "♥", "Idol Star must display the first standard suit used");
 HoshinoSkills.afterCardPlayed(yiState, yi, enemy, card("黑牌", "tactic", { suit: "♠" }), { draw, damage() {} });
 assert(yi.hoshinoLastSuit === "♠", "Idol Star must update its displayed suit after the second standard-suit card");
-assert(yi.hand.length === yiHandBefore + 1 && nonoka.hand.length === nonokaHandBefore + 1, "Idol Star must draw for Yi and Nonoka after a color switch");
+assert(yi.hand.length === yiHandBefore + 1, "Idol Star must draw for Yi after a color switch");
+assert(nonoka.hand.length === nonokaHandBefore, "Idol Star must no longer draw for Nonoka");
 HoshinoSkills.endTurn(yiState, yi);
 assert(yi.hoshinoLastColor == null && yi.hoshinoLastSuit == null, "Idol Star must clear its previous card at Yi's turn end");
 assert(yi.hoshinoSuitSet.length === 0, "Dome Performance must clear its suit set at Yi's turn end");
@@ -143,7 +144,7 @@ assert(yi.hoshinoSuitSet.length === 2 && yi.hand.length === yiHandAfterIdolEnd +
 HoshinoSkills.afterCardPlayed(yiState, yi, enemy, card("红桃", "tactic", { suit: "♥" }), { draw, damage() {} });
 HoshinoSkills.afterCardPlayed(yiState, yi, enemy, card("黑桃", "tactic", { suit: "♠" }), { draw, damage() {} });
 assert(yi.hoshinoSuitSet.length === 0 && yi.hand.length === yiHandAfterIdolEnd + 3, "Dome Performance must trigger after four suits in the same turn");
-assert(nonoka.hand.length === nonokaHandAfterIdolEnd + 3, "Idol Star must draw for Nonoka on each same-turn color switch");
+assert(nonoka.hand.length === nonokaHandAfterIdolEnd, "Idol Star must stay off Nonoka across later color switches");
 const missionCardsBeforeRepeat = yi.hoshinoMissionCards;
 const suitsBeforeRepeat = [...yi.hoshinoSuitSet];
 HoshinoSkills.afterCardPlayed(yiState, yi, enemy, card("克罗研究记录重复牌", "tactic", { suit: "♥", _repeat: true }), { draw, damage() {} });

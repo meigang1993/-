@@ -89,6 +89,7 @@ window.BattleLineData = (() => {
     mieryula: "本公主是普雷希与艾伦格的女儿，血，就是我的力量。",
     sonia: "父亲大人，小心我们其他姐妹找你麻烦，嘿嘿。",
     chiyo: "为了复仇，我要继续前进",
+    abe_karuna: "能帮助我追逐梦想吗？魅魔小弟弟",
   };
   const followLines = {
     wendy: { "飘浮掩体": target => target?.ref === "cadicis" ? { unit: target, text: "（脸红）别这样，母亲，正经点，不要这么恶心我，我跟其他魅魔不一样！" } : null, "解答迷惑": target => target?.ref === "flora" ? { unit: target, text: "真拿你没办法，书呆子姐姐。" } : null },

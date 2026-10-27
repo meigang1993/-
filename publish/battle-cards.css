@@ -118,7 +118,11 @@
 .karuna-bubble-cards { display: flex; align-items: center; gap: 4px; min-height: 160px; }
 /* 槽位必须是 flex 容器：.play-card 的 flex 尺寸只在 flex 父级下生效，
    若用 inline-block 会被内容撑宽（实测 187px），牌面比例横向拉伸变形。 */
-.karuna-bubble-slot { display: inline-flex; cursor: pointer; transition: transform .16s ease-out; }
+/* 泡泡区与手牌区并排，槽位顶部距 .hand-body 上沿仅约 13px；若沿用手牌区 18px
+   的选中上移量，卡片顶部会被 .hand-body 的 overflow 裁掉，看起来像「没有上移」。
+   这里下移整个泡泡区腾出抬升空间，并把上移量收窄到 10px，保证抬升可见且不越界。 */
+.karuna-bubble-zone { margin-top: 16px; }
+.karuna-bubble-slot { display: inline-flex; cursor: pointer; transition: transform .16s ease-out; --hand-card-lift: 10px; }
 .karuna-bubble-slot .play-card { flex: 0 0 104px; width: 104px; min-height: 160px; }
 .karuna-bubble-slot:hover { transform: translate3d(0, -8px, 0); }
 .karuna-bubble-empty { font-size: clamp(9px, 1.6vw, 12px); color: rgba(220, 240, 255, .5); }

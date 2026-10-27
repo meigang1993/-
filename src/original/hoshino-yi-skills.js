@@ -6,20 +6,22 @@ window.HoshinoYiSkills = (() => {
   const stat = (unit, key) => (unit.stats?.[key] || 0) + (key === "attack" ? (unit.tempAttack || 0) : key === "magic" ? (unit.tempMagic || 0) : 0);
   const color = suit => ["♥", "♦"].includes(suit) ? "red" : ["♠", "♣"].includes(suit) ? "black" : "";
 
+  // 实体牌判定统一走 CardUtils.isEntityCard（单一来源），与卡露娜【同频歌姬】同口径：
+  // 技能牌/虚拟牌不再参与颜色记录、花色记录与使命计数。
+  const isEntityCard = card => !!window.CardUtils?.isEntityCard?.(card);
+
   function afterCardPlayed(state, actor, target, card, deps) {
     if (card?._repeat || !alive(actor) || actor.ref !== "hoshino_yi") return;
+    if (!isEntityCard(card)) return;
     if (!actor.hoshinoMissionResult) actor.hoshinoMissionCards = (actor.hoshinoMissionCards || 0) + 1;
     const currentColor = color(card.suit), previousColor = actor.hoshinoLastColor;
     const previousSuit = actor.hoshinoLastSuit;
     if (currentColor && previousColor && currentColor !== previousColor && hasSkill(actor, "偶像之星")) {
-      const entries = [{ unit: actor, cards: deps.draw(actor, 1, state.battle) }];
-      const nonoka = state.battle.allies.find(unit => unit.ref === "nonoka" && alive(unit));
-      if (nonoka) entries.push({ unit: nonoka, cards: deps.draw(nonoka, 1, state.battle) });
-      window.BattleLines?.skill(state, actor, "偶像之星", nonoka);
-      const result = nonoka
-        ? window.BattleDrawFeedback.team(entries, 1, "双方")
-        : `${actor.name}${window.BattleDrawFeedback.action(actor, 1, entries[0].cards)}`;
-      window.BattleLog.add(state, `${actor.name}交替使用不同颜色的牌，${result}。`);
+      // 仅星野依本人摸牌：此前诺诺卡在场时也摸一张，已按需求移除。
+      const cards = deps.draw(actor, 1, state.battle);
+      window.BattleLines?.skill(state, actor, "偶像之星");
+      window.BattleLog.add(state, `${actor.name}交替使用不同颜色的牌，`
+        + `${window.BattleDrawFeedback.action(actor, 1, cards)}。`);
     }
     if (currentColor) actor.hoshinoLastColor = currentColor;
     if (suits.includes(card.suit)) {

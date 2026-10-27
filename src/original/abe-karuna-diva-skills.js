@@ -7,9 +7,14 @@ window.AbeKarunaDivaSkills = (() => {
   const colorOf = suit => ["♥", "♦"].includes(suit) ? "red"
     : ["♠", "♣"].includes(suit) ? "black" : "";
 
+  // 实体牌判定统一走 CardUtils.isEntityCard（单一来源），与记忆泡泡同口径。
+  const isEntityCard = card => !!window.CardUtils?.isEntityCard?.(card);
+
   function afterCardPlayed(state, actor, card, deps) {
     if (!alive(actor) || actor.ref !== "abe_karuna" || !card) return;
     if (card._repeat || !hasSkill(actor, "同频歌姬")) return;
+    // 仅实体牌参与同频判定：技能牌/虚拟牌既不记录花色，也不触发摸牌。
+    if (!isEntityCard(card)) return;
     // 标准花色才参与记录：无花色牌（如部分技能牌/虚拟牌）不打断同色连唱，
     // 也不进入头像显示，避免玩家误以为下次出无花色牌能接续。
     if (SUITS.includes(card.suit)) actor.karunaLastSuit = card.suit;

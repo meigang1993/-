@@ -49,7 +49,21 @@ window.bindBattleActionButtons = function bindBattleActionButtons() {
   document.querySelector("[data-cancel-hammer]")?.addEventListener("click", e => BattleActionGuard.run("取消雷神之锤失败", async ({ state: actionState, isCurrent }) => { await BattleSystem.cancelThunderHammer(actionState, render); if (!isCurrent()) return false; render(); persist({ battleOperation: true }); }, { control: e.currentTarget }));
   document.querySelector("[data-karuna-bubble-store]")?.addEventListener("click", e => BattleActionGuard.run("记忆泡泡存入失败", async ({ state: actionState, isCurrent }) => { BattleSystem.storeKarunaBubble(actionState, render); if (!isCurrent()) return false; render(); persist({ battleOperation: true }); }, { control: e.currentTarget }));
   document.querySelector("[data-karuna-bubble-skip]")?.addEventListener("click", e => BattleActionGuard.run("放弃记忆泡泡失败", async ({ state: actionState, isCurrent }) => { BattleSystem.skipKarunaBubble(actionState, render); if (!isCurrent()) return false; render(); persist({ battleOperation: true }); }, { control: e.currentTarget }));
-  document.querySelectorAll("[data-bubble-index]").forEach(b => b.onclick = e => { e.stopPropagation(); BattleActionGuard.run("使用泡泡手牌失败", async ({ state: actionState, isCurrent }) => { BattleSystem.selectKarunaBubble(actionState, Number(b.dataset.bubbleIndex), render); if (!isCurrent()) return false; render(); persist({ battleOperation: true }); }, { control: b }); });
+  document.querySelectorAll("[data-bubble-index]").forEach(b => b.onclick = e => { e.stopPropagation(); BattleActionGuard.run("使用泡泡手牌失败", async ({ state: actionState, isCurrent }) => {
+    const bubbleIndex = Number(b.dataset.bubbleIndex);
+    // 已选中同一张且该牌无需指定目标 → 再次点击即直接打出，与手牌区一致
+    // （此前必须再点「确定」按钮，操作多一步）。需要选目标的牌仍点敌人。
+    if (window.AbeKarunaBubbleSkills?.isPicked?.(actionState, bubbleIndex)) {
+      await window.BattleEffects?.play?.(actionState, () => {
+        const played = window.BattleSystem.playSelectedCard(actionState);
+        if (played) render();
+        return played;
+      });
+    } else {
+      BattleSystem.selectKarunaBubble(actionState, bubbleIndex, render);
+    }
+    if (!isCurrent()) return false; render(); persist({ battleOperation: true });
+  }, { control: b }); });
   document.querySelectorAll("[data-manual-dodge-pick]").forEach(b => b.onclick = e => { e.stopPropagation(); if (state.battle?.manualDodge) state.battle.manualDodge.selectedIndex = Number(b.dataset.manualDodgePick); render(); });
   document.querySelector("[data-manual-dodge-use]")?.addEventListener("click", e => { e.stopPropagation(); BattleActionGuard.run("手动闪避处理失败", async ({ state: actionState, isCurrent }) => { await BattleSystem.resolveManualDodge(actionState, true, actionState.battle?.manualDodge?.selectedIndex || 0, render); if (!isCurrent()) return false; render(); persist({ battleOperation: true }); }, { control: e.currentTarget }); });
   document.querySelectorAll("[data-deflect-choice]").forEach(b => b.onclick = e => { e.stopPropagation(); runStagedAction("弹反处理失败", async ({ state: actionState, isCurrent }) => { await BattleSystem.resolveManualDodge(actionState, true, actionState.battle?.manualDodge?.selectedIndex || 0, render, b.dataset.deflectChoice); if (!isCurrent()) return false; persist({ battleOperation: true }); }, b); });
