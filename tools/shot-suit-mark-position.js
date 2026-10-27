@@ -33,7 +33,7 @@ const setupTpl = `(() => {
 (async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
-  collectErrors(page);
+  const errList = collectErrors(page);
   await openGame(page);
   await startRegressionBattle(page);
   await page.evaluate(setupTpl);
@@ -90,7 +90,7 @@ const setupTpl = `(() => {
     });
   }
 
-  const errs = relevantErrors(page);
+  const errs = relevantErrors(errList);
   console.log("页面错误:", errs.length, JSON.stringify(errs.slice(0, 3)));
   await browser.close();
 })().catch(e => { console.error("FATAL", e.message); process.exit(1); });
