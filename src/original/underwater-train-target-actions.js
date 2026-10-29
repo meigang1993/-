@@ -39,7 +39,7 @@ window.UnderwaterTrainTargetActions = ({
     }
     if (actor.ai === "shark_pirate_raider"
       && target.side === "ally" && singleSlash(card)) steal(state, actor, target);
-    if (actor.ai === "shark_pirate_submarine" && black(card) && isSlash(card)) {
+    if (actor.ai === "shark_pirate_submarine" && black(card) && singleSlash(card)) {
       if (!card.ignoreResponse) card._tempIgnoreResponse = true;
       card.ignoreResponse = true;
       card.sharkTorpedo = true;

@@ -166,13 +166,13 @@
 .hand-reveal-shown .play-card { box-shadow: 0 0 0 2px rgba(255,216,141,.9), 0 0 26px rgba(255,92,171,.45); }
 .hand-reveal-cards { --hand-reveal-card-width: 104px; --hand-reveal-card-height: 160px; width: 100%; display: flex; gap: 12px; justify-content: center; overflow-x: auto; overscroll-behavior: contain; padding: 4px 4px 10px; }
 .hand-reveal-card {
-  flex: 0 0 var(--hand-reveal-card-width);
-  width: var(--hand-reveal-card-width);
-  height: var(--hand-reveal-card-height);
-  min-width: var(--hand-reveal-card-width);
-  min-height: var(--hand-reveal-card-height);
-  max-width: var(--hand-reveal-card-width);
-  max-height: var(--hand-reveal-card-height);
+  flex: 0 0 var(--hand-reveal-card-width, 104px);
+  width: var(--hand-reveal-card-width, 104px);
+  height: var(--hand-reveal-card-height, 160px);
+  min-width: var(--hand-reveal-card-width, 104px);
+  min-height: var(--hand-reveal-card-height, 160px);
+  max-width: var(--hand-reveal-card-width, 104px);
+  max-height: var(--hand-reveal-card-height, 160px);
   padding: 0;
   border: 0;
   background: transparent;

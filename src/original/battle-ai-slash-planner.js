@@ -8,7 +8,10 @@ window.BattleAISlashPlanner = (() => {
     const slashes = hand.filter(isKill);
     const score = card => slashScore(actor, card, target);
     if (actor.ai === "shark_pirate_submarine") {
-      return topBy(slashes.filter(card => card.suit === "♠" || card.suit === "♣"), score)
+      // 鲨影鱼雷只对单体黑色【杀】生效，优先挑能触发的牌
+      const blacks = slashes.filter(card => card.suit === "♠" || card.suit === "♣");
+      return topBy(blacks.filter(singleKill), score)
+        || topBy(blacks, score)
         || topBy(slashes, score);
     }
     return topBy(slashes, score);

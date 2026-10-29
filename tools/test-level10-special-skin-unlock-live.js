@@ -22,7 +22,11 @@ const CASES = [
   { id: "artina", name: "亚缇娜", skin: "artina_level_10_special" },
   { id: "miller", name: "米勒", skin: "miller_level_10_special" },
   { id: "maria", name: "玛利亚", skin: "maria_level_10_special" },
+  { id: "sonia", name: "索尼娅", skin: "sonia_level_10_special" },
+  { id: "carlos", name: "卡洛斯", skin: "carlos_level_10_special" },
 ];
+const ONLY = (process.env.L10_ONLY || "").split(",").filter(Boolean);
+const ACTIVE = ONLY.length ? CASES.filter(c => ONLY.includes(c.id)) : CASES;
 
 // 设定角色状态（是否解锁 / 等级）并打开皮肤页，返回皮肤卡片的按钮与图片信息
 const setup = (id, skinId, locked, level) => `(() => {
@@ -81,7 +85,7 @@ const waitImg = (id, skinId) => `(() => new Promise(resolve => {
   let pass = 0, total = 0;
   const T = (n, c, x) => { total++; pass += check(n, c, x); };
 
-  for (const c of CASES) {
+  for (const c of ACTIVE) {
     console.log(`\n— ${c.name}（${c.id}）—`);
 
     // ① Lv.9 且角色已解锁：不应入库

@@ -45,7 +45,11 @@ window.GameSkinData = (() => {
     { id: "ophelia_default", charId: "ophelia", name: "默认", quality: "default", price: 0, art: "./assets/images/ophelia-portrait.10278309.webp", desc: "奥菲莉亚的初始外观。", initial: true },
     { id: "ophelia_level_10_special", charId: "ophelia", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/ophelia-level-10-special.d7766ef6.webp", desc: "奥菲莉亚达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "besta_default", charId: "besta", name: "默认", quality: "default", price: 0, art: "./assets/images/besta-portrait.3dca20b9.webp", desc: "贝丝妲的初始外观。", initial: true },
-    { id: "besta_level_10_special", charId: "besta", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/besta-level-10-special.45c81978.webp", desc: "贝丝妲达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "besta_level_10_special", charId: "besta", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/besta-level-10-special.1fcb8022.webp", desc: "贝丝妲达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "sonia_default", charId: "sonia", name: "默认", quality: "default", price: 0, art: "./assets/new-portraits/sonia.ded1c88c.webp", desc: "索尼娅的初始外观。", initial: true },
+    { id: "sonia_level_10_special", charId: "sonia", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/sonia-level-10-special.764720b3.webp", desc: "索尼娅达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "carlos_default", charId: "carlos", name: "默认", quality: "default", price: 0, art: "./assets/images/carlos-portrait.52b82e3d.webp", desc: "卡洛斯的初始外观。", initial: true },
+    { id: "carlos_level_10_special", charId: "carlos", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/carlos-level-10-special.45c81978.webp", desc: "卡洛斯达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "luka_default", charId: "luka", name: "默认", quality: "default", price: 0, art: "./assets/images/luka-portrait.c94e6540.webp", desc: "鲁卡的初始外观。", initial: true },
     { id: "luka_level_10_special", charId: "luka", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/luka-level-10-special.5f8ea6d3.webp", desc: "鲁卡达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "artina_default", charId: "artina", name: "默认", quality: "default", price: 0, art: "./assets/new-portraits/artina.088f5fa4.webp", desc: "亚缇娜的初始外观。", initial: true },
@@ -56,6 +60,13 @@ window.GameSkinData = (() => {
     { id: "maria_level_10_special", charId: "maria", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/maria-level-10-special.0aeba194.webp", desc: "玛利亚达到10级后自动解锁，可作为正式战斗立绘装备。" },
     { id: "abe_karuna_default", charId: "abe_karuna", name: "默认", quality: "default", price: 0, art: "./assets/new-portraits/abe-karuna.4cabcc12.webp", desc: "安倍卡露娜的初始外观。", initial: true },
     { id: "abe_karuna_level_10_special", charId: "abe_karuna", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/abe_karuna-level-10-special.47fac87e.webp", desc: "安倍卡露娜达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "loki_default", charId: "loki", name: "默认", quality: "default", price: 0, art: "./assets/images/loki-portrait.e4c2018a.webp", desc: "洛基的初始外观。", initial: true },
+    { id: "cadicis_default", charId: "cadicis", name: "默认", quality: "default", price: 0, art: "./assets/images/cadicis-portrait.0c2fa8f8.webp", desc: "卡迪西斯的初始外观。", initial: true },
+    { id: "gerlot_default", charId: "gerlot", name: "默认", quality: "default", price: 0, art: "./assets/images/gerlot-portrait.e6f7410f.webp", desc: "杰洛特的初始外观。", initial: true },
+    { id: "little_elrana_default", charId: "little_elrana", name: "默认", quality: "default", price: 0, art: "./assets/images/elrana-clone.990db014.webp", desc: "小艾尔拉娜的初始外观。", initial: true },
+    { id: "ace_default", charId: "ace", name: "默认", quality: "default", price: 0, art: "./assets/images/ace-portrait.115ef71b.webp", desc: "艾斯的初始外观。", initial: true },
+    { id: "aileng_default", charId: "aileng", name: "默认", quality: "default", price: 0, art: "./assets/images/aileng-portrait.5b5e628d.webp", desc: "艾伦格的初始外观。", initial: true },
+    { id: "hitwell_default", charId: "hitwell", name: "默认", quality: "default", price: 0, art: "./assets/images/hitwell-portrait.6af64b8e.webp", desc: "希特威的初始外观。", initial: true },
   ];
   return { quality, skins };
 })();
