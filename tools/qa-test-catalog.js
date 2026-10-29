@@ -294,6 +294,7 @@ const groups = Object.freeze({
     "test-preshi-pressure-full-live.js",
     "test-preshi-pressure-notrigger-live.js",
     "test-shark-torpedo-single-kill-live.js",
+    "test-shark-torpedo-splash-once-live.js",
     "test-aoe-death-anim-no-stall-live.js",
     "test-battle-render-perf-live.js",
     "test-card-transfer-anim-live.js",

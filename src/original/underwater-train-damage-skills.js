@@ -12,9 +12,13 @@ window.UnderwaterTrainDamageSkills = ({ alive, singleSlash, visible }) => {
       && singleSlash(card) && target?.side === "ally") {
       actor.anchorGun = { uid: target.uid, amount: hpLoss };
     }
-    if (actor?.ai === "shark_pirate_submarine" && hpLoss
-      && card?.sharkTorpedo && !card._torpedoSplash) {
-      splash(state, actor, hpLoss, damage);
+    if (actor?.ai === "shark_pirate_submarine" && hpLoss && card?.sharkTorpedo) {
+      // 多目标时每次传入的是牌的拷贝，标记须落在原始牌对象上才能跨目标生效
+      const src = card._entitySourceCard || card;
+      if (!src._torpedoSplash) {
+        src._torpedoSplash = true;
+        splash(state, actor, hpLoss, damage, target?.uid);
+      }
     }
     if (actor?.ai === "shark_captain_mordio" && hpLoss
       && singleSlash(card) && target?.side === "ally") crushHand(state, actor, target);
@@ -54,8 +58,11 @@ window.UnderwaterTrainDamageSkills = ({ alive, singleSlash, visible }) => {
       `${mordio.name} 的狂鲨之怒触发，杀意上限+1。`);
   }
 
-  function splash(state, actor, amount, damage) {
-    const targets = alive(state.battle.allies);
+  function splash(state, actor, amount, damage, excludeUid) {
+    // 主目标已吃下原牌伤害，溅射只打其他目标，避免重复结算
+    const targets = alive(state.battle.allies)
+      .filter(unit => unit.uid !== excludeUid);
+    if (!targets.length) return;
     const card = {
       name: "鲨影鱼雷",
       type: "slash",
