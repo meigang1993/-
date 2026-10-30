@@ -118,7 +118,19 @@ window.BattleCardSpecials = (deps, ctx) => {
     openHandReveal: interactions.openHandReveal,
   });
   function healBySyringe(state, actor, card) { const hpLoss = card.totalHpLoss || card.lastHpLoss || 0; if (!deps.isKillCard(card) || !hpLoss || !window.RelicSystem?.hasEquipped?.(state, actor, "艾尔拉娜大型注射器")) return; const team = ctx.sameSideUnits(state.battle, actor), target = team.filter(u => u.hp > 0 && u.hp < u.maxHp).sort((a, b) => a.hp - b.hp)[0]; if (!target) return; const v = window.EnemySkills?.beforeHeal?.(state, target, hpLoss, actor, card, ctx.damage) ?? Math.min(target.maxHp - target.hp, hpLoss); if (v > 0) { target.hp += v; window.BattleStats?.heal?.(state.battle, actor, v); ctx.pushFloat(state.battle, target.uid, "heal", v); clearHolyScar(state, target); window.EnemySkills?.onHeal?.(state, deps.draw); window.ElranaAceNanaliSkills?.afterHeal?.(state, target, deps, actor); window.HitwellSkills?.afterHeal?.(state, target, v, { pushFloat: ctx.pushFloat }); window.BertisGerlotSkills?.refreshArrogance?.(state); } log(state, `${actor.name} 的艾尔拉娜大型注射器触发，${target.name}恢复${v}点生命。`); }
-  function repeatTactic(state, actor, target, card) { if (state.battle?.locked || !card._playedFromHand || card._repeat || card._skill || card.type !== "tactic" || actor.usedKrowRecord || !window.RelicSystem?.hasEquipped?.(state, actor, "克罗研究记录")) return false; actor.usedKrowRecord = true; if (target?.hp <= 0) { log(state, `${actor.name} 的克罗研究记录触发，但目标已倒下，${card.name}不再额外结算。`); return false; } log(state, `${actor.name} 的克罗研究记录触发，${card.name}额外结算一次。`); ctx.useCard(state, actor, target, { ...card, _entitySourceCard: card._entitySourceCard || card, _skill: true, _repeat: true }); return true; }
+  // 额外结算被弹窗挂起时（如【半魅魔血】交牌窗置 battle.locked）先暂存：
+  // 此前 locked 就直接 return false，交牌窗解决后也没人会再来调一次，
+  // 于是这张战术牌的额外结算被整段吞掉（实测 krow 触发数 0、次数也未消耗）。
+  // 暂存后由 BattleManualContinuationResume 在挂起解除后补跑，与格林机枪/
+  // 疯狂刺刀等续跑同一口径。次数（usedKrowRecord）在真正补跑时才扣。
+  function pendRepeatTactic(state, actor, target, card) {
+    if (!state.battle) return false;
+    // 必须存快照而非原牌：出牌收尾的 battle-card-cleanup 会 delete card._playedFromHand，
+    // 等弹窗解决后原牌已失去该标记，补跑时会被 repeatTactic 的守卫挡掉（实测额外结算仍为 0）。
+    state.battle.krowRepeatResume = { actorUid: actor.uid, targetUid: target?.uid || null, card: Object.assign({}, card, { _playedFromHand: true }) };
+    return false;
+  }
+  function repeatTactic(state, actor, target, card) { if (!card._playedFromHand || card._repeat || card._skill || card.type !== "tactic" || actor.usedKrowRecord || !window.RelicSystem?.hasEquipped?.(state, actor, "克罗研究记录")) return false; if (state.battle?.locked) return pendRepeatTactic(state, actor, target, card); actor.usedKrowRecord = true; if (target?.hp <= 0) { log(state, `${actor.name} 的克罗研究记录触发，但目标已倒下，${card.name}不再额外结算。`); return false; } log(state, `${actor.name} 的克罗研究记录触发，${card.name}额外结算一次。`); ctx.useCard(state, actor, target, { ...card, _entitySourceCard: card._entitySourceCard || card, _skill: true, _repeat: true }); return true; }
   function queueBattleCourage(state, actor, target, card) { if (!actor || !target || !ctx.hasSkill(actor, "战斗之勇") || card.battleCourageDone || card.virtual) return; if (!deps.isKillCard(card) && card.name !== "与我一战") return; card.battleCourageDone = true; window.BattleLines?.skill(state, actor, "战斗之勇"); state.battle.animQueue?.push({ type: "battleCourage", uid: actor.uid, targetUid: target.uid, card }); }
   function triggerBattleCourage(state, evt) { const b = state.battle, owner = b?.allies.concat(b.enemies).find(u => u.uid === evt.uid), card = evt.card; if (!owner || !card) return null; const drawn = deps.draw(owner, 1, b) || [], hit = drawn.some(c => deps.isKillCard(c) || c.name === "与我一战"), before = owner.intent || 0; if (hit) owner.intent = Math.min(deps.intentMax(owner), before + 1); const restored = hit && owner.intent > before, result = drawn[0] ? `摸到${drawn[0].suit}${drawn[0].name}` : window.BattleDrawFeedback.action(owner, 1, drawn); log(state, `${owner.name} 触发战斗之勇，${result}${restored ? "，恢复1点杀意" : ""}。`); return { owner, restored }; }
   return {

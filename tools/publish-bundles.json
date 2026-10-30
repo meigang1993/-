@@ -271,6 +271,7 @@
     "battle-combat-attack-flow.js",
     "battle-combat-attack.js",
     "battle-combat-resolver.js",
+    "battle-combat-trail.js",
     "battle-combat.js",
     "battle-victory.js"
   ],

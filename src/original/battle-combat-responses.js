@@ -143,6 +143,9 @@ window.BattleCombatResponses = (api) => {
       window.BattleStatusCards?.triggerLandmine?.(state, picked.unit);
       if (picked.unit.ai === "guard_kelly") window.BattleLines?.skill(state, picked.unit, "突破重围", actor);
       if (target?.uid === picked.unit.uid) window.ElranaAceNanaliSkills?.afterResponse?.(state, picked.unit, actor, { damage });
+      // 与自动响应分支同口径：抵消的只是这一次结算，
+      // 【克罗研究记录】的额外结算仍应触发。
+      specials.repeatTactic(state, actor, target, p.card);
       b.comboPartnerUid = null;
       return true;
     }

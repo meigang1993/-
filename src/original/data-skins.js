@@ -67,6 +67,8 @@ window.GameSkinData = (() => {
     { id: "ace_default", charId: "ace", name: "默认", quality: "default", price: 0, art: "./assets/images/ace-portrait.115ef71b.webp", desc: "艾斯的初始外观。", initial: true },
     { id: "aileng_default", charId: "aileng", name: "默认", quality: "default", price: 0, art: "./assets/images/aileng-portrait.5b5e628d.webp", desc: "艾伦格的初始外观。", initial: true },
     { id: "hitwell_default", charId: "hitwell", name: "默认", quality: "default", price: 0, art: "./assets/images/hitwell-portrait.6af64b8e.webp", desc: "希特威的初始外观。", initial: true },
+    { id: "gerda_default", charId: "gerda", name: "默认", quality: "default", price: 0, art: "./assets/new-portraits/gerda.ddb6449d.webp", desc: "格尔达的初始外观。", initial: true },
+    { id: "gerda_level_10_special", charId: "gerda", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/gerda-level-10-special.8fe4f351.webp", desc: "格尔达达到10级后自动解锁，可作为正式战斗立绘装备。" },
   ];
   return { quality, skins };
 })();

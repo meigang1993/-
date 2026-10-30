@@ -16,30 +16,8 @@ window.BattleCombat = (deps) => {
   const isSingleSlash = card => window.CardUtils.isEntitySingleKill(card);
   const specialCtx = { allUnits, hasSkill, sameSideUnits, comboPartner, selectedCostCard, selectedHand, moveHand, putCard, putMany, holdVisual, visualOf, pushFloat, queueSlashText, queueSlashPlay, statOf, useCard };
   const specials = window.BattleCardSpecials(deps, specialCtx);
-  const repeatIfDone = (state, actor, target, card, done) => { if (done && !state.battle?.locked) specials.repeatTactic(state, actor, target, card); };
-  const trailSkillName = (card, actor) =>
-    window.UICommon?.activeSkillName?.(actor, card) || "";
-  function trailDestination(card, actor, battle) {
-    const owner = card?.stolenFromUid
-      && allUnits(battle).find(unit => unit.uid === card.stolenFromUid);
-    return {
-      pile: card?.type === "consume" || card?.copiedByEdis || card?.void
-        ? "consumed" : "discard",
-      side: owner?.side || actor?.side || "ally",
-    };
-  }
-  function trailSnapshot(card, actor, battle) {
-    const snapshot = { ...(window.CardUtils?.clean?.(card) || card) }, skillName = trailSkillName(card, actor);
-    const destination = trailDestination(card, actor, battle);
-    if (skillName) snapshot.skillName = skillName;
-    else delete snapshot.skillName;
-    snapshot._destinationPile = destination.pile;
-    snapshot._destinationSide = destination.side;
-    if (card?._cardResolutionId) {
-      snapshot._cardAnimationId = card._cardResolutionId;
-    }
-    return { ...snapshot, _playedByName: actor.name, _playedAction: window.CardUtils?.playVerb?.(card) || (card?._skill ? "发动了" : "使用了") };
-  }
+  const repeatIfDone = (state, actor, target, card, done) => { if (done) specials.repeatTactic(state, actor, target, card); };
+  const trailSnapshot = window.BattleCombatTrail({ allUnits }).snapshot;
   let resolver, cardResume;
 
   function useCard(state, actor, target, card) {
@@ -139,7 +117,13 @@ window.BattleCombat = (deps) => {
     card._countAsPlayed = true;
     window.BattleLog.add(state,`${actor.name} 使用${card.suit || ""}${card.name}。`);
     window.BattleLines?.skill(state, actor, card.name, target);
-    if (specials.counterTactic(state, actor, target, card)) return;
+    // 战术牌被【看破】/【后空翻】抵消的只是「这一次结算」。
+    // 【克罗研究记录】的额外结算是另一次使用，此前随 return 一起被吞掉，
+    // 导致持有该饰品时被响应牌一抵消就完全没有额外结算。
+    if (specials.counterTactic(state, actor, target, card)) {
+      specials.repeatTactic(state, actor, target, card);
+      return;
+    }
     resolver.continueAfterCounter(state, actor, target, card);
   }
   function discardDeadHands(state, b) {
@@ -188,5 +172,18 @@ window.BattleCombat = (deps) => {
   function resumeCardTail(state) { return cardResume.resume(state); }
   function recordDeferredHit(state, actor, target, card, result) { cardResume.recordHit(state, actor, target, card, result); }
   function resumeGroupHeal(state) { const b = state.battle; if (b) b._resumingCardTail = true; try { return specials.resumeTeamHeal?.(state); } finally { if (b) delete b._resumingCardTail; } }
-  return { selectCard, selectSkill, selectExtract, selectMimic, selectPrepareSkill, chooseTarget, cancelSelection, playSelectedCard, playActiveCard, canSelectHandCost, canPlay, checkDefeat, checkEnd, useCard, useVirtualKill, damage, directDamage, resolveThunderHammer, cancelThunderHammer, resolveManualDodge, storeKarunaBubble, skipKarunaBubble, selectKarunaBubble, confirmDeflectResult, resolveManualCounter, resolveCounterTrigger, resolveDimensionTransfer, resolveHandReveal, resumeGreenGatling, resumeComboAttack, resumeCardTail, recordDeferredHit, resumeGroupHeal, continueAfterCadicisResponsibility, resolveOpheliaGuard, holdVisual, pushFloat, triggerBattleCourage: specials.triggerBattleCourage };
+  // 补跑被弹窗挂起的【克罗研究记录】额外结算。先摘掉暂存再跑，避免补跑过程中
+  // 又挂起时把同一个 pending 反复写回；actor 已不在场则直接丢弃。
+  function resumeKrowRepeat(state) {
+    const pending = state.battle?.krowRepeatResume;
+    if (!pending) return false;
+    state.battle.krowRepeatResume = null;
+    const actor = allUnits(state.battle).find(unit => unit.uid === pending.actorUid);
+    if (!actor) return false;
+    const target = allUnits(state.battle).find(unit => unit.uid === pending.targetUid) || null;
+    const ok = specials.repeatTactic(state, actor, target, pending.card);
+    checkDefeat(state); checkEnd(state);
+    return ok;
+  }
+  return { selectCard, selectSkill, selectExtract, selectMimic, selectPrepareSkill, chooseTarget, cancelSelection, playSelectedCard, playActiveCard, canSelectHandCost, canPlay, checkDefeat, checkEnd, useCard, useVirtualKill, damage, directDamage, resolveThunderHammer, cancelThunderHammer, resolveManualDodge, storeKarunaBubble, skipKarunaBubble, selectKarunaBubble, confirmDeflectResult, resolveManualCounter, resolveCounterTrigger, resolveDimensionTransfer, resolveHandReveal, resumeGreenGatling, resumeComboAttack, resumeCardTail, recordDeferredHit, resumeGroupHeal, resumeKrowRepeat, continueAfterCadicisResponsibility, resolveOpheliaGuard, holdVisual, pushFloat, triggerBattleCourage: specials.triggerBattleCourage };
 };

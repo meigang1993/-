@@ -24,6 +24,7 @@ const CASES = [
   { id: "maria", name: "玛利亚", skin: "maria_level_10_special" },
   { id: "sonia", name: "索尼娅", skin: "sonia_level_10_special" },
   { id: "carlos", name: "卡洛斯", skin: "carlos_level_10_special" },
+  { id: "gerda", name: "格尔达", skin: "gerda_level_10_special" },
 ];
 const ONLY = (process.env.L10_ONLY || "").split(",").filter(Boolean);
 const ACTIVE = ONLY.length ? CASES.filter(c => ONLY.includes(c.id)) : CASES;

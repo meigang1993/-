@@ -10,7 +10,11 @@ window.BattleCombatAttackValues = api => {
     const bonus = statKey === "magic" ? magic
       : statKey === "attack" ? attack
         : card.virtual ? attack
-          : card._skill ? 0
+          // 【克罗研究记录】的额外结算复制牌带 _skill（用于跳过"从手牌移出"、
+          // 并阻止再次触发额外结算），但它结算的仍是原牌的效果，伤害加成必须照算。
+          // 此前一并落进 _skill 分支 → 加成被清零，【枪林弹雨】这类带攻击加成的
+          // 战术牌第二次结算只打出 card.power 的裸伤害（实测 6 → 1）。
+          : card._skill && !card._repeat ? 0
             : card.hybridAttack && card.type === "tactic" ? attack + magic
               : card.scale === "magic" ? magic
                 : card.type === "slash" ? attack : magic;

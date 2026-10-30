@@ -81,7 +81,15 @@ window.CardUtils = (() => {
   const isEntityOrVirtualCard = card =>
     !!card && (!!card.virtual || isEntityCard(card));
   const isSingleKillCard = card => isSingleKill(card) && !card._pendingDraw;
-  const isCounterableTactic = card => !!(card?.type === "tactic" && !card.ignoreResponse && (!card._skill || card.virtual || card.convertedFrom));
+  // _skill 豁免只针对「技能牌本身」：技能牌是技能的载体，不是玩家打出的战术牌，
+  // 不该被【看破】抵消。三个例外都是「本质是真正的战术牌」：
+  //   virtual       —— 技能生成的虚拟战术牌（军令状的虚拟【魔王军入侵】等）
+  //   convertedFrom —— 由实体牌转换而来（鬼王扑克转换出的【魔弹特攻】等）
+  //   _repeat       —— 【克罗研究记录】的额外结算。它带 _skill 只为标记为「生成牌」
+  //                    以避开再次触发额外结算，实质仍是一次真实的战术牌使用，
+  //                    必须照常可被【看破】/【后空翻】抵消，否则持有该饰品时对
+  //                    响应牌近乎免疫 —— 抵消第一次后额外结算必定生效。
+  const isCounterableTactic = card => !!(card?.type === "tactic" && !card.ignoreResponse && (!card._skill || card.virtual || card.convertedFrom || card._repeat));
   // 出牌文案口径：只有技能才是「发动」，战术牌与实体牌一律「使用」。
   // （响应 AOE/决斗打出的牌才记「打出」，由响应链显式标注，不在此处判定。）
   // 此前战术牌被误归入「发动」，且出牌区/战报两处各写一份导致口径分叉，
@@ -128,7 +136,10 @@ window.CardUtils = (() => {
         : card?.scale === "attack" || slash ? "attack" : "magic";
     }
     if (card?.virtual) return "attack";
-    if (card?._skill) return null;
+    // 【克罗研究记录】的额外结算复制牌带 _skill，但结算的是原牌效果：
+    // 若在此落到 null，attackAmount 会改走 hybridAttack 分支，加成口径与原牌不同
+    // （实测【枪林弹雨】首次 6、重复 11）。故为 _repeat 让路，按原牌牌面取键。
+    if (card?._skill && !card?._repeat) return null;
     return card?.scale === "magic" ? "magic" : card?.scale === "attack" || slash ? "attack" : "magic";
   }
   return {

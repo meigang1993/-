@@ -46,6 +46,12 @@ window.BattleCombatAttackFlow = (api, values) => {
         state, actor, target, card,
         values.slashTargetAmount(state, actor, target, card, amount));
     }
+    // 【克罗研究记录】：走攻击流程结算的战术牌（典型是带 sweep 的【枪林弹雨】）
+    // 此前完全不触发额外结算 —— effects.resolve 只覆盖带专属标记的牌，
+    // 没有专属标记、靠 power>0 走攻击流程的战术牌被整类漏掉。
+    // locked 时由 repeatTactic 自行暂存到 battle.krowRepeatResume，交牌弹窗
+    // 解决后由续跑链补跑，故这里照常调用、不提前 return。
+    specials.repeatTactic(state, actor, target, card);
     if (deferDamageTail?.(state, actor, target, card)) return;
     specials.healBySyringe(state, actor, card);
     specials.resolveGreenGatling(state, actor, target, card);

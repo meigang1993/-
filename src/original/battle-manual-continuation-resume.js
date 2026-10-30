@@ -40,6 +40,16 @@ window.BattleManualContinuationResume = deps => {
         if (!current() || !state.battle || state.battle.locked) return false;
         continue;
       }
+      // 【克罗研究记录】的额外结算若被弹窗挂起（典型：【半魅魔血】交牌窗），
+      // 交牌解决后必须补跑，否则这张战术牌的第二次结算被整段吞掉。
+      // 放在 cardTail 之后：先把这张牌自身被打断的剩余部分跑完，再跑额外结算。
+      if (battle.krowRepeatResume) {
+        combat.resumeKrowRepeat?.(state);
+        onStep?.();
+        await waitEffects();
+        if (!current() || !state.battle || state.battle.locked) return false;
+        continue;
+      }
       window.BakarSkills?.completeInvasion?.(state);
       if (battle.comboAttackResume) {
         await resumeComboAttack(state, onStep, current);

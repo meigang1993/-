@@ -91,9 +91,7 @@ window.BattleCombatCardEffects = api => {
       });
     }
     if (card.drawTeam) return run(() => specials.drawTeam(state, actor, card), () => specials.repeatTactic(state, actor, target, card));
-    if (card.demonInvasion) return run(() => specials.demonInvasion(state, actor, card), () => {
-      if (!state.battle?.locked) specials.repeatTactic(state, actor, target, card);
-    });
+    if (card.demonInvasion) return run(() => specials.demonInvasion(state, actor, card), () => specials.repeatTactic(state, actor, target, card));
     if (card.teamHealPct) return run(() => specials.healTeam(state, actor, card, target));
     if (card.discardTarget) return repeatAfterUnlocked(state, actor, target, card, specials.discardTarget(state, actor, target, card));
     if (card.stealCard) {
@@ -105,7 +103,7 @@ window.BattleCombatCardEffects = api => {
     }
     if (card.borrowSlash) {
       specials.borrowSlash(state, actor, target, card);
-      if (!state.battle?.locked) specials.repeatTactic(state, actor, target, card);
+      specials.repeatTactic(state, actor, target, card);
       state.battle.comboPartnerUid = null;
       return true;
     }
@@ -127,8 +125,11 @@ window.BattleCombatCardEffects = api => {
     return false;
   }
 
+  // 交牌/选牌类弹窗（【半魅魔血】等）会置 battle.locked，此时不能再直接丢掉
+  // 额外结算：改为照常调用，由 repeatTactic 自行暂存到 battle.krowRepeatResume，
+  // 弹窗解决后由续跑链补跑。此前「locked 就跳过」会让这张牌的第二次结算整段消失。
   function repeatAfterUnlocked(state, actor, target, card, completed, always = false) {
-    if ((always || completed) && !state.battle?.locked) specials.repeatTactic(state, actor, target, card);
+    if (always || completed) specials.repeatTactic(state, actor, target, card);
     return true;
   }
 
