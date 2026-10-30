@@ -128,8 +128,14 @@ const snapshot = () => `(() => {
     // 「抵消一次闪伤害」= 把响应牌名填进伤害来源，语义反了
     const badLabel = (r.snap?.log || []).filter(
       l => l.includes("闪伤害") || l.includes("杀伤害"));
-    const ok = actionOk && logOk && badLabel.length === 0;
+    // 战报条目由 BattleCombatTrail.snapshot 产出，必须带 _playedAction/_playedByName
+    const own = (r.snap?.played || []).filter(p => !(p.name || "").includes("闪"));
+    const trailOk = own.length > 0 && own.every(p => !!p.action && !!p.by);
+    const ok = actionOk && logOk && badLabel.length === 0 && trailOk;
     ok ? pass++ : fail++;
+    console.log(`      战报条目字段=${JSON.stringify(own.map(
+      p => ({ n: p.name, action: p.action ?? null, by: p.by ?? null })))}` +
+      (trailOk ? "" : "  ← 缺 action/by"));
     console.log(`  ${ok ? "✅" : "❌"} ${r.name}(${r.aoe ? "AOE" : "单体"})` +
       ` 期望出牌区=${r.verb} 期望日志=${r.logVerb}`);
     console.log(`      出牌区闪=${JSON.stringify(flash)}`);

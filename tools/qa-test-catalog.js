@@ -299,6 +299,7 @@ const groups = Object.freeze({
     "test-battle-render-perf-live.js",
     "test-card-transfer-anim-live.js",
     "test-trail-exit-once-live.js",
+    "test-trail-destination-side-live.js",
     "test-nanali-skills.js",
     "test-nanali-unlock-price-live.js",
     "test-witherer-skills.js",
