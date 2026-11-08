@@ -109,7 +109,7 @@ const attackFlow = BattleCombatAttackFlow({
         targetUids: [transformedTarget.uid], card: { ...card, aoeLineShown: true },
       });
     },
-    healBySyringe() {}, resolveGreenGatling() {},
+    healBySyringe() {}, repeatTactic() {}, resolveGreenGatling() {},
   },
   pushFloat() {}, checkDefeat: () => false, checkEnd() {},
   hasNoIntentCost: () => false, triggerWhiteLolita() {},

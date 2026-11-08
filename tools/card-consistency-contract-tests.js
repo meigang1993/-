@@ -7,7 +7,6 @@ module.exports = ({ assert, fs }) => {
     "guest-ophelia-guard.js",
     "sakura-risa-combat-skills.js",
     "battle-prepare-prompts.js",
-    "nonoka-loki-skills.js",
   ].forEach(file => {
     const source = fs.readFileSync(`./src/original/${file}`, "utf8");
     assert(source.includes("queueResponse"),
@@ -15,6 +14,18 @@ module.exports = ({ assert, fs }) => {
     assert(!/animQueue\??\.push\(\s*\{\s*type:\s*"response"/s.test(source),
       `${file} must not bypass response hand-count snapshots`);
   });
+
+  // 诺诺卡/洛基技能只暴露响应钩子，响应事件由调用方经共享队列排入。
+  // 这里同时盯住「钩子存在」与「主响应流程确实走共享队列」，避免契约空转。
+  const lokiSource = fs.readFileSync("./src/original/nonoka-loki-skills.js", "utf8");
+  assert(lokiSource.includes("afterCardResponded"),
+    "nonoka-loki-skills.js must expose the shared afterCardResponded hook");
+  assert(!/animQueue\??\.push\(/s.test(lokiSource),
+    "nonoka-loki-skills.js must never push response events itself");
+  const responsesSource = fs.readFileSync("./src/original/battle-combat-responses.js", "utf8");
+  assert(responsesSource.includes("queueResponse")
+    && responsesSource.includes("window.NonokaLokiSkills?.afterCardResponded"),
+    "Nonoka/Loki response hooks must be dispatched through the shared response queue");
 
   function codex(name) {
     const found = window.GameDataCards.cardCodex.find(item => item.name === name);

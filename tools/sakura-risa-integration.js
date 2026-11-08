@@ -25,7 +25,7 @@ async function runSakuraRisaIntegration(context) {
     const counterCard = { name: "看破", type: "response", counterTactic: true };
     const counterUnit = unit({ uid: "counter-unit", side: "ally", hand: [counterCard] });
     const counterState = { battle: { allies: [counterUnit], enemies: [resumeRisa], animQueue: [], locked: true, comboPartnerUid: "stale-partner", manualCounter: { actorUid: resumeRisa.uid, targetUid: counterUnit.uid, card: { ...armyOrderInvasion }, comboPartnerUid: "stale-partner" } } };
-    const responses = BattleCombatResponses({ allUnits: battle => battle.allies.concat(battle.enemies), putCard() {}, afterHandLost() {}, damage() {}, statOf() { return 0; }, specials: {}, checkDefeat() {}, checkEnd() {}, continueAfterCounter() {}, deps: { nextAnim: () => 1 }, pushFloat() {}, cardPower() { return 0; }, slashTargetAmount() { return 0; } });
+    const responses = BattleCombatResponses({ allUnits: battle => battle.allies.concat(battle.enemies), putCard() {}, afterHandLost() {}, damage() {}, statOf() { return 0; }, specials: { repeatTactic() {} }, checkDefeat() {}, checkEnd() {}, continueAfterCounter() {}, deps: { nextAnim: () => 1 }, pushFloat() {}, cardPower() { return 0; }, slashTargetAmount() { return 0; } });
     responses.resolveManualCounter(counterState, true);
     assert(!counterUnit.hand.length, "Manual Insight must be consumed when countering Army Order's virtual invasion");
     assert(counterState.battle.comboPartnerUid === null, "A completed manual counter must clear stale combo-partner state");

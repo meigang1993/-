@@ -36,9 +36,9 @@ async function runKaiichiStatusDamage() {
   window.EnemySkills.tickPoison(poisonState, poisonBlood, poisonCombat.damage);
   assert.strictEqual(poisonBlood.hp, 28, "Poison must deal its current stack as HP damage");
   assert.strictEqual(poisonBlood.poison, 2, "a Poison tick must not add another Poison stack");
-  assert.deepStrictEqual(poisonDraws, [{ uid: poisonBlood.uid, count: 2 }], "Poison HP loss must trigger one two-card draw");
-  assert(poisonState.battle.locked && poisonState.battle.kaiichiShare, "Poison HP loss must open one transfer picker");
-  await resumeKaiichiPrompt(poisonState, poisonCombat);
+  assert.deepStrictEqual(poisonDraws, [], "Poison is status damage and must not trigger Half-Succubus Blood");
+  assert(!poisonState.battle.locked && !poisonState.battle.kaiichiShare,
+    "Poison HP loss must not open a Half-Succubus Blood transfer picker");
   assert(!poisonState.battle.locked && !window.BattleReactionQueue.pending(poisonState.battle), "Poison settlement must clear its picker and queue");
 
   const burnDraws = [], burnCombat = trackedCombat(burnDraws);
@@ -52,9 +52,9 @@ async function runKaiichiStatusDamage() {
   window.state = burnState;
   window.BakarSkills.tickBurning(burnState, burnBlood, burnCombat.directDamage, burnCombat.damage);
   assert.strictEqual(burnBlood.hp, 29, "one Burning card must deal one HP damage");
-  assert.deepStrictEqual(burnDraws, [{ uid: burnBlood.uid, count: 2 }], "Burning HP loss must trigger one two-card draw");
-  assert(burnState.battle.locked && burnState.battle.kaiichiShare, "Burning HP loss must open one transfer picker");
-  await resumeKaiichiPrompt(burnState, burnCombat);
+  assert.deepStrictEqual(burnDraws, [], "Burning is status damage and must not trigger Half-Succubus Blood");
+  assert(!burnState.battle.locked && !burnState.battle.kaiichiShare,
+    "Burning HP loss must not open a Half-Succubus Blood transfer picker");
   assert(!burnState.battle.locked && !window.BattleReactionQueue.pending(burnState.battle), "Burning settlement must clear its picker and queue");
 
   const invasionDraws = [], invasionCombat = trackedCombat(invasionDraws);
@@ -72,7 +72,7 @@ async function runKaiichiStatusDamage() {
   assert.strictEqual(invasionState.battle.demonInvasionResume?.nextTargetIndex, 1, "Demon Army Invasion must preserve its next target before damage triggers");
   await resumeKaiichiPrompt(invasionState, invasionCombat);
   assert.strictEqual(invasionLater.hp, 29, "Demon Army Invasion must resume against later targets");
-  assert.deepStrictEqual(invasionDraws, [{ uid: invasionBlood.uid, count: 2 }], "only Kaiichi's invasion hit must draw cards");
+  assert.deepStrictEqual(invasionDraws, [{ uid: invasionBlood.uid, count: 3 }], "only Kaiichi's invasion hit must draw three cards");
   assert(!invasionState.battle.demonInvasionResume && !invasionState.battle.locked, "Demon Army Invasion must finish without stale continuation state");
 
   const spikeDraws = [], spikeCombat = trackedCombat(spikeDraws);
@@ -86,16 +86,12 @@ async function runKaiichiStatusDamage() {
   Object.assign(spikeState.battle, { allies: [spikeBlood, spikeLater], enemies: [striker], activeUid: striker.uid, phase: 4 });
   window.state = spikeState;
   spikeCombat.damage(spikeState, spikeBlood, 1, "测试伤害", striker, { name: "测试伤害", type: "skill", ignoreResponse: true });
-  assert.strictEqual(spikeBlood.hp, 29, "the triggering hit must settle before the Spike explosion");
-  assert.strictEqual(spikeLater.hp, 30, "Spike group damage must wait while the first picker is open");
+  assert.strictEqual(spikeBlood.hp, 24, "the skill hit and Spike explosion must settle without a picker");
+  assert.strictEqual(spikeLater.hp, 25, "Spike group damage must reach later allies without a picker");
   assert(!spikeBlood.spikeShell && !spikeBlood.statuses.includes("刺弹"), "Spike must be removed before queued explosion damage");
-  await resumeKaiichiPrompt(spikeState, spikeCombat);
-  assert.strictEqual(spikeBlood.hp, 24, "Spike explosion must damage Kaiichi after the triggering picker");
-  assert.strictEqual(spikeLater.hp, 30, "later Spike targets must wait for Kaiichi's explosion picker");
-  await resumeKaiichiPrompt(spikeState, spikeCombat);
-  assert.strictEqual(spikeLater.hp, 25, "Spike explosion must continue to other living same-side targets");
-  assert.deepStrictEqual(spikeDraws, [{ uid: spikeBlood.uid, count: 2 }, { uid: spikeBlood.uid, count: 2 }],
-    "the triggering hit and Spike explosion must each draw two cards");
+  assert(!spikeState.battle.kaiichiShare && !spikeState.battle.locked,
+    "skill-segment damage must not open a Half-Succubus Blood picker");
+  assert.deepStrictEqual(spikeDraws, [], "skill-segment damage must not trigger Half-Succubus Blood draws");
   assert(!spikeState.battle.locked && !window.BattleReactionQueue.pending(spikeState.battle), "Spike explosion must not recurse or leave stale reaction state");
 
   const queueActor = unit("queue-actor", "ally", []);

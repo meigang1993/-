@@ -217,6 +217,7 @@
     "battle-damage-response.js",
     "battle-damage-relics.js",
     "battle-damage-lifecycle.js",
+    "battle-white-lolita.js",
     "battle-damage-resolution.js",
     "battle-damage-hit.js",
     "battle-damage.js",
@@ -225,6 +226,7 @@
     "mieryula-time-stop.js",
     "mieryula-tactic-immunity.js",
     "mieryula-skills.js",
+    "battle-playability-registries.js",
     "battle-card-playability.js",
     "battle-combat-targeting.js",
     "green-hat.js",
@@ -272,6 +274,7 @@
     "battle-combat-attack.js",
     "battle-combat-resolver.js",
     "battle-combat-trail.js",
+    "battle-krow-repeat-resume.js",
     "battle-combat.js",
     "battle-victory.js"
   ],

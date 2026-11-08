@@ -89,9 +89,9 @@ function runKaiichiTeamPursuit() {
     assert(bloodLogs.every(text => text.includes("未摸到牌")),
       "the empty draw stub must retain accurate Half-Succubus Blood feedback");
     assert.deepStrictEqual(teamPursuitDraws, [
-      { uid: kaiichi.uid, count: 2 },
-      { uid: kaiichi.uid, count: 2 },
-    ], "Edis attacking a teammate must make both Berserk Chainsaw pursuits draw two cards for Kaiichi");
+      { uid: kaiichi.uid, count: 3 },
+      { uid: kaiichi.uid, count: 3 },
+    ], "Edis attacking a teammate must make both Berserk Chainsaw pursuits draw three cards for Kaiichi");
     assert.strictEqual(edis.hp, 30,
       "Edis must take no revenge damage now that Nanali's 复仇之刃 has been removed");
     assert.strictEqual(nanali.hp, 28,

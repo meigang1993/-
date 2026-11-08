@@ -29,7 +29,7 @@ function testSamuraiArmor() {
   window.EnemySkills = { beforeKillTargeted() {} };
   const resolver = BattleCombatResolver({
     deps: { isKillCard: CardUtils.isKillCard, tempAttack: () => 2 },
-    specials: { queueBattleCourage() {}, healBySyringe() {}, resolveGreenGatling() {} },
+    specials: { queueBattleCourage() {}, healBySyringe() {}, repeatTactic() {}, resolveGreenGatling() {} },
     damage: () => ({ hpLoss: 1 }), statOf: (holder, key) => holder.stats[key] || 0,
     pushFloat() {}, checkDefeat: () => false, checkEnd() {},
     cardPower: card => card.power || 1, isSingleSlash: () => true,
@@ -47,6 +47,7 @@ function testWhiteGothicLolita() {
   window.BattleDamageTriggers = () => ({ afterDamage() {}, afterDodged() {} });
   require("../src/original/battle-damage-relics.js");
   require("../src/original/battle-damage-lifecycle.js");
+  require("../src/original/battle-white-lolita.js");
   require("../src/original/battle-damage-resolution.js");
   require("../src/original/battle-damage-hit.js");
   require("../src/original/battle-damage.js");

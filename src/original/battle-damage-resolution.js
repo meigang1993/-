@@ -3,6 +3,8 @@ window.BattleDamageResolution = ({
   getResponseApi, getHitWithoutDodge,
 }) => {
   const { queueAttackAnim } = utils;
+  if (!window.BattleWhiteLolita) throw new Error("[battle-white-lolita] 模块未装配：battle-white-lolita.js 必须先于 battle-damage-resolution.js 加载");
+  const { triggerWhiteLolita } = window.BattleWhiteLolita({ deps });
 
   function resolveDamage(state, target, amount, source, actor, card) {
     triggerWhiteLolita(state, actor, target, card);
@@ -137,14 +139,19 @@ window.BattleDamageResolution = ({
         return { dodged: true, hpLoss: 0 };
       }
     }
-    // 神速之翼：对所有"需用【闪】抵消"的牌生效（含【杀】、机枪扫杀、
-    // 坦克炮弹等带 responseKind 的牌），与技能描述一致
+    // 神速之翼：对所有"需用【闪】抵消"的牌生效（含【杀】、机枪扫杀、坦克炮弹）。
+    // 双闪威胁若凑不齐 2 张响应资源，不要先转化第一张：dodgeAsFlash 会立刻把源牌
+    // 移出手牌并播日志，随后 autoDodge 凑不齐第二张 → 抵消失败却白丢一张牌。
+    const wingCanUse = c => !target.noResponse && canDodge(effectiveCard, c);
+    const needTwoDodges = !!(effectiveCard?.krowFemaleTarget || effectiveCard?.twoDodgesRequired);
+    const wingPool = (target.hand || []).filter(item => wingCanUse({ ...item, name: "闪", type: "response" })).length;
     if (!response && !(effectiveCard?.ignoreResponse || preshiNoResponse || timeStopNoResponse)
-      && needsResponse(effectiveCard)) {
+      && needsResponse(effectiveCard)
+      && (!needTwoDodges || wingPool >= 2)) {
       response = window.FloraCarlosSkills?.dodgeAsFlash?.(
         state, target, actor, effectiveCard,
         { ...deps, afterCardResponded: window.NonokaLokiSkills?.afterCardResponded },
-        [], candidate => !target.noResponse && canDodge(effectiveCard, candidate));
+        [], wingCanUse);
     }
     if (response && response.name !== "闪"
       && !window.RuinsRelicEffects?.missileLauncherBlock?.(state, actor, target, effectiveCard, responseCards, response)) {
@@ -168,22 +175,6 @@ window.BattleDamageResolution = ({
     if (state.battle?.locked) return { dodged: false, hpLoss: 0 };
     return getHitWithoutDodge()(
       state, actor, target, amount, source, effectiveCard);
-  }
-
-  function triggerWhiteLolita(state, actor, target, card) {
-    if (!deps.isKillCard(card) || actor.side === target.side
-      || !window.RelicSystem?.hasEquipped?.(
-        state, target, "白色哥特洛丽塔")) return;
-    const root = card._entitySourceCard || card;
-    const targets =
-      card._whiteLolitaTargetUids || root._whiteLolitaTargetUids || [];
-    card._whiteLolitaTargetUids = targets;
-    root._whiteLolitaTargetUids = targets;
-    if (targets.includes(target.uid)) return;
-    targets.push(target.uid);
-    const drawn = deps.draw(target, 1, state.battle);
-    window.BattleLog.add(state,
-      `${target.name} 的白色哥特洛丽塔触发，${window.BattleDrawFeedback.action(target, 1, drawn)}。`);
   }
 
   return { resolveDamage, triggerWhiteLolita };

@@ -22,7 +22,7 @@ async function runKaiichiGenericResume() {
   armorCombat.useCard(armorState, armorAttacker, armorBlood, armorSlash);
   assert.strictEqual(armorBlood.block, 0, "the first Double Slash hit must consume armor");
   assert.strictEqual(armorBlood.hp, 28, "only the second Double Slash hit must reduce HP");
-  assert.deepStrictEqual(armorDraws, [{ uid: armorBlood.uid, count: 2 }], "an armor-only hit must not trigger Half-Succubus Blood");
+  assert.deepStrictEqual(armorDraws, [{ uid: armorBlood.uid, count: 3 }], "only the real HP-loss hit may trigger Half-Succubus Blood, drawing three cards");
   assert.strictEqual(armorState.log.filter(text => text.includes("半魅魔血令其未摸到牌")).length, 1, "only the actual HP-loss hit must create a skill log");
   assert(armorState.battle.locked && armorState.battle.kaiichiShare, "the later HP-loss hit must still open its transfer picker");
   await resumeKaiichiPrompt(armorState, armorCombat);
@@ -41,16 +41,13 @@ async function runKaiichiGenericResume() {
   shockCombat.useCard(shockState, shockAttacker, shockBlood, thunderSlash);
   assert.strictEqual(shockBlood.hp, 26, "Thunder Slash and its two-layer Shock bonus must both settle before the picker");
   assert.strictEqual(shockBlood.shock, 3, "Thunder Slash must add one Shock layer after the preloaded bonus resolves");
-  assert.deepStrictEqual(shockDraws, [{ uid: shockBlood.uid, count: 2 }, { uid: shockBlood.uid, count: 2 }],
-    "base damage and Shock bonus damage must each trigger one two-card draw");
-  assert(shockState.battle.kaiichiShare && shockState.battle.kaiichiShareQueue?.length === 1,
-    "Shock bonus damage must keep one active and one queued Half-Succubus Blood picker");
-  await resumeKaiichiPrompt(shockState, shockCombat);
-  assert(shockState.battle.locked && shockState.battle.kaiichiShare,
-    "resolving the first Shock-related picker must activate the queued picker");
+  assert.deepStrictEqual(shockDraws, [{ uid: shockBlood.uid, count: 3 }],
+    "only the card hit triggers Half-Succubus Blood; the Shock bonus is a skill segment and must not");
+  assert(shockState.battle.kaiichiShare && !shockState.battle.kaiichiShareQueue?.length,
+    "Shock bonus damage must not queue a second Half-Succubus Blood picker");
   await resumeKaiichiPrompt(shockState, shockCombat);
   assert(!shockState.battle.locked && !window.BattleReactionQueue.pending(shockState.battle),
-    "both Shock-related pickers must finish without stale lock or reaction state");
+    "the single Shock-related picker must finish without stale lock or reaction state");
 
   const doubleSlash = card("双重打杀");
   const attacker = unit("double-attacker", "enemy", [doubleSlash]);

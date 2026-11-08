@@ -58,6 +58,24 @@ const ORDER_DEPENDENCIES = [
     file: "abe-karuna-bubble-zone.js",
     consumers: ["abe-karuna-bubble-skills.js"],
   },
+  // 2026-11-08 行收紧所拆出的 4 个子模块：同样「缺文件即抛错」，
+  // 必须参与顺序校验，且任何 node 夹具手工加载消费方时都要顺带加载。
+  {
+    file: "battle-playability-registries.js",
+    consumers: ["battle-card-playability.js"],
+  },
+  {
+    file: "battle-white-lolita.js",
+    consumers: ["battle-damage-resolution.js"],
+  },
+  {
+    file: "battle-combat-trail.js",
+    consumers: ["battle-combat.js"],
+  },
+  {
+    file: "battle-krow-repeat-resume.js",
+    consumers: ["battle-combat.js"],
+  },
 ];
 
 const sharedFileNames = SHARED_SOURCES.map(entry => entry.file);

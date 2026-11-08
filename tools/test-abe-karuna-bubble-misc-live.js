@@ -175,7 +175,7 @@ const KILL = { name: "泡泡杀", type: "attack", suit: "♣", text: "", targetl
   if (want("B")) {
     console.log("\n--- B 段：被回收的泡泡牌再次打出时的行为 ---");
     await evalT(page, setupTpl([TACTIC]), 20000, "setupB");
-    let s = await playAndWait(page, "泡泡战术牌");
+    await playAndWait(page, "泡泡战术牌");
     await clickBubbleBtn(page, "[data-karuna-bubble-store]");
     await evalT(page, useBubbleTpl, 15000, "useBubbleB");
     await page.waitForTimeout(700);
@@ -210,9 +210,9 @@ const KILL = { name: "泡泡杀", type: "attack", suit: "♣", text: "", targetl
     console.log("\n--- C 段：【杀】免杀意残留（intent 是否被错误扣减）---");
     const infoC = await evalT(page, setupTpl([KILL]), 20000, "setupC");
     const foeUid = infoC?.foeUid;
-    let s = await playAndWait(page, "泡泡杀");
+    await playAndWait(page, "泡泡杀");
     await clickBubbleBtn(page, "[data-karuna-bubble-store]");
-    s = await evalT(page, snapTpl, 15000, "snapC1");
+    let s = await evalT(page, snapTpl, 15000, "snapC1");
     const beforeIntent = s.intent;
     T("C1 泡泡区已存入【杀】", s.bubble.includes("泡泡杀"), { bubble: s.bubble });
 
@@ -268,9 +268,9 @@ const KILL = { name: "泡泡杀", type: "attack", suit: "♣", text: "", targetl
     // 先让卡露娜自己回合存入一张
     await evalT(page, "window.state.battle.activeUid = window.state.battle.allies[0].uid",
       15000, "backToKaruna");
-    let s = await playAndWait(page, "泡泡战术牌");
+    await playAndWait(page, "泡泡战术牌");
     await clickBubbleBtn(page, "[data-karuna-bubble-store]");
-    s = await evalT(page, snapTpl, 15000, "snapD0");
+    let s = await evalT(page, snapTpl, 15000, "snapD0");
     T("D0 已存入 1 张", s.bubbleLen === 1, { bubble: s.bubble });
 
     // 切到队友回合（phase 仍为 4）
@@ -327,9 +327,9 @@ const KILL = { name: "泡泡杀", type: "attack", suit: "♣", text: "", targetl
   if (want("E")) {
     console.log("\n--- E 段：卡露娜阵亡后 ---");
     await evalT(page, setupTpl([TACTIC, TACTIC2]), 20000, "setupE");
-    let s = await playAndWait(page, "泡泡战术牌");
+    await playAndWait(page, "泡泡战术牌");
     await clickBubbleBtn(page, "[data-karuna-bubble-store]");
-    s = await evalT(page, snapTpl, 15000, "snapE1");
+    let s = await evalT(page, snapTpl, 15000, "snapE1");
     T("E1 存活时可存入", s.bubbleLen === 1, { bubble: s.bubble });
 
     // 注意：设 hp=0 后**不能**调 window.render()，否则状态同步会把 hp 冲回
@@ -384,9 +384,9 @@ const KILL = { name: "泡泡杀", type: "attack", suit: "♣", text: "", targetl
   if (want("F")) {
     console.log("\n--- F 段：取消选择后再次点击 ---");
     await evalT(page, setupTpl([TACTIC]), 20000, "setupF");
-    let s = await playAndWait(page, "泡泡战术牌");
+    await playAndWait(page, "泡泡战术牌");
     await clickBubbleBtn(page, "[data-karuna-bubble-store]");
-    s = await evalT(page, snapTpl, 15000, "snapF1");
+    let s = await evalT(page, snapTpl, 15000, "snapF1");
     T("F1 已存入", s.bubbleLen === 1, { bubble: s.bubble });
 
     const r1 = await evalT(page, `(() => {

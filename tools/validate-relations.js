@@ -145,10 +145,10 @@ context.RelicSystem.all({ resources: { relics: [] }, equipment: {} }).forEach(da
 });
 const dependencies = [
   ["economy-config.js", "data-cards.js", "card-utils.js"],
-  ["skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-skills.js", "battle-card-playability.js", "battle-combat-targeting.js", "battle-combat.js", "ruins-enemy-skills.js"],
+  ["skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-skills.js", "battle-playability-registries.js", "battle-card-playability.js", "battle-combat-targeting.js", "battle-combat.js", "ruins-enemy-skills.js"],
   ["ruins-witherer-common.js", "ruins-witherer-skills.js"],
   ["ui-selection-tip.js", "ui-hand-view.js"],
-  ["battle-card-cleanup.js", "battle-combat-card-effects.js", "battle-combat-attack-values.js", "battle-combat-attack-flow.js", "battle-combat-attack.js", "battle-combat-resolver.js", "battle-combat-trail.js", "battle-combat.js"],
+  ["battle-card-cleanup.js", "battle-combat-card-effects.js", "battle-combat-attack-values.js", "battle-combat-attack-flow.js", "battle-combat-attack.js", "battle-combat-resolver.js", "battle-combat-trail.js", "battle-krow-repeat-resume.js", "battle-combat.js"],
   ["data-characters-core.js", "data-characters.js"],
   ["data-machine-factory-enemies.js", "data-world.js"],
   ["data-underwater-train-enemies.js", "data-world.js"],
@@ -159,8 +159,8 @@ const dependencies = [
   ["battle-turn-state.js", "battle-runtime-helpers.js", "battle-relic-turns.js", "battle-share-flow.js", "battle-session-settlement.js", "battle-session.js", "battle-auto-enemy.js", "battle-turn-start.js", "battle-turn-input.js", "battle-turn-preparation.js", "battle-turn-completion.js", "battle-turn-flow.js", "battle-resolution-actions.js", "battle.js"],
   ["battle-ai-skill-helpers.js", "battle-ai-skill-evaluation.js", "battle-ai-skill-moves.js", "battle-ai-skill-planner.js", "battle-ai.js"],
   ["battle-card-hand-interactions.js", "battle-card-counter-interactions.js", "battle-card-interactions.js", "battle-card-specials.js"],
-  ["battle-damage-relics.js", "battle-damage-lifecycle.js", "battle-damage-resolution.js", "battle-damage-hit.js", "battle-damage.js"],
-  ["battle-card-resume-state.js", "battle-card-resume-hooks.js", "battle-card-resume-flow.js", "battle-card-resume.js", "battle-combat.js"],
+  ["battle-damage-relics.js", "battle-damage-lifecycle.js", "battle-white-lolita.js", "battle-damage-resolution.js", "battle-damage-hit.js", "battle-damage.js"],
+  ["battle-card-resume-state.js", "battle-card-resume-hooks.js", "battle-card-resume-flow.js", "battle-card-resume.js", "battle-combat-trail.js", "battle-krow-repeat-resume.js", "battle-combat.js"],
   ["machine-factory-skills.js", "enemy-status-effects.js", "enemy-kill-hooks.js", "enemy-damage-hooks.js", "enemy-combat-hooks.js", "enemy-tactical-skills.js", "enemy-skills.js"],
   ["underwater-train-target-counters.js", "underwater-train-target-actions.js", "underwater-train-target-skills.js", "underwater-train-combat-skills.js"],
   ["orc-drone-skills.js", "orc-combat-skills.js", "orc-dungeon-skills.js"],

@@ -28,6 +28,19 @@ const SPLITS = [
     main: "battle-reaction-queue.js",
     deps: ["BattleReactionQueueStore", "BattleReactionQueueRun"],
   },
+  // 2026-11-08 收紧到 189 行后拆出的 3 组：装配点同样必须是显式抛错。
+  {
+    main: "battle-combat.js",
+    deps: ["BattleKrowRepeatResume"],
+  },
+  {
+    main: "battle-card-playability.js",
+    deps: ["BattlePlayabilityRegistries"],
+  },
+  {
+    main: "battle-damage-resolution.js",
+    deps: ["BattleWhiteLolita"],
+  },
 ];
 
 const failures = [];
@@ -83,6 +96,12 @@ if (!fs.existsSync(bundlesPath)) {
       "skill-once-per-turn.js",
       "mieryula-time-stop.js",
       "mieryula-skills.js",
+      "battle-playability-registries.js",
+    ],
+    "battle-damage-resolution.js": ["battle-white-lolita.js"],
+    "battle-combat.js": [
+      "battle-combat-trail.js",
+      "battle-krow-repeat-resume.js",
     ],
     "ruins-enemy-skills.js": ["skill-once-per-turn.js"],
     "mieryula-skills.js": ["mieryula-time-stop.js"],
@@ -127,4 +146,4 @@ if (failures.length) {
   failures.forEach((f) => console.log("  - " + f));
   process.exit(1);
 }
-console.log("[PASS] split assembly (3 splits, 显式报错 + 顺序)");
+console.log("[PASS] split assembly (显式报错 + 装配顺序)");

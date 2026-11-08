@@ -106,8 +106,9 @@ check(/oncePerTurnRegistry\(\)\.blocked/.test(read("battle-card-playability.js")
 // 缺文件时必须抛错，不能静默放行（静默=用过了还能用且无报错）
 check(/skill-once-per-turn\.js 必须先于 ruins-enemy-skills\.js 加载/.test(ruins),
   "二次使用守卫：缺登记表时抛错");
+// 校验文案随 oncePerTurnRegistry() 一并搬到 battle-playability-registries.js。
 check(/skill-once-per-turn\.js 必须先于 battle-card-playability\.js 加载/
-  .test(read("battle-card-playability.js")), "置灰判据：缺登记表时抛错");
+  .test(read("battle-playability-registries.js")), "置灰判据：缺登记表时抛错");
 
 // ── 六、AI 决策入口必须尊重「已使用」标记（否则会每回合反复尝试同一技能）──
 const aiRespects = [
@@ -172,6 +173,9 @@ for (const [name, re, file] of aiRespects) {
   const sandbox = { console };
   sandbox.window = sandbox;
   vm.createContext(sandbox);
+  // 先装配登记表层（但不装 skill-once-per-turn.js），才能走到
+  // oncePerTurnRegistry() 内部那条「缺登记表」显式抛错。
+  vm.runInContext(read("battle-playability-registries.js"), sandbox);
   vm.runInContext(read("battle-card-playability.js"), sandbox);
   const actor = { side: "ally", hp: 100, ref: "nanali", hand: [{ name: "杀" }] };
   const battle = { allies: [actor], enemies: [], phase: 1 };

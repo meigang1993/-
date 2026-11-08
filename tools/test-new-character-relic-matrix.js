@@ -70,7 +70,16 @@ assert(BakarRelicSkills.useArmyOrder(yiState, yi, { _bagIndexes: [0, 1] }, (_sta
   HoshinoSkills.afterCardPlayed(yiState, actor, target, used, { draw() {}, damage() {} });
 }), "Yi must activate Army Order");
 assert(invasion?.suit === "♦", "Army Order invasion must inherit its paid suit");
-assert(yi.hoshinoMissionCards === 1 && yi.hoshinoLastSuit === "♦", "Army Order must count once and record one suit");
+assert(invasion.virtual && invasion._skill, "Army Order invasion must stay a virtual skill card");
+assert(yi.hoshinoMissionCards == null && yi.hoshinoLastSuit == null,
+  "Army Order's virtual invasion must not count toward Yi's entity-card mission or suit");
+
+// 对照：实体牌仍应计入使命与花色，证明上面不是技能整体失效。
+const entityYi = unitFromCharacter(yiData, "yi-entity");
+const entityState = battleState([entityYi], [{ uid: "entity-target", side: "enemy", hp: 20 }]);
+HoshinoSkills.afterCardPlayed(entityState, entityYi, entityYi, card("实体战术", "tactic", { suit: "♦" }), { draw() {}, damage() {} });
+assert(entityYi.hoshinoMissionCards === 1 && entityYi.hoshinoLastSuit === "♦",
+  "a real entity card must still count toward Yi's mission and record its suit");
 
 const repeated = unitFromCharacter(yiData, "yi-repeat");
 const repeatedState = battleState([repeated]);
@@ -95,7 +104,11 @@ const resolver = BattleCombatResolver({
 });
 resolver.continueAfterCounter(tongueState, tongueYi, tongueTarget, tongueCard);
 if (!tongueCard.skipAfterCardPlayed) HoshinoSkills.afterCardPlayed(tongueState, tongueYi, tongueTarget, tongueCard, { draw() {}, damage() {} });
-assert(tongueYi.hoshinoMissionCards === 1, "Witherer Tongue must count only its generated kill");
+assert(tongueYi.hoshinoMissionCards == null && tongueYi.hoshinoLastSuit == null,
+  "Witherer Tongue's virtual generated kill must not count toward Yi's entity-card mission");
+HoshinoSkills.afterCardPlayed(tongueState, tongueYi, tongueTarget, card("舌头对照实体牌", "tactic", { suit: "♣" }), { draw() {}, damage() {} });
+assert(tongueYi.hoshinoMissionCards === 1 && tongueYi.hoshinoLastSuit === "♣",
+  "a real entity card must still count after Witherer Tongue activation");
 assert(tongueCard.skipAfterCardPlayed && tongueCard.skipMvpCardCount, "Witherer Tongue activation must suppress duplicate card-use hooks");
 
 const kaiichi = unitFromCharacter(characters[2], "kaiichi-share");

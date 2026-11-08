@@ -172,18 +172,7 @@ window.BattleCombat = (deps) => {
   function resumeCardTail(state) { return cardResume.resume(state); }
   function recordDeferredHit(state, actor, target, card, result) { cardResume.recordHit(state, actor, target, card, result); }
   function resumeGroupHeal(state) { const b = state.battle; if (b) b._resumingCardTail = true; try { return specials.resumeTeamHeal?.(state); } finally { if (b) delete b._resumingCardTail; } }
-  // 补跑被弹窗挂起的【克罗研究记录】额外结算。先摘掉暂存再跑，避免补跑过程中
-  // 又挂起时把同一个 pending 反复写回；actor 已不在场则直接丢弃。
-  function resumeKrowRepeat(state) {
-    const pending = state.battle?.krowRepeatResume;
-    if (!pending) return false;
-    state.battle.krowRepeatResume = null;
-    const actor = allUnits(state.battle).find(unit => unit.uid === pending.actorUid);
-    if (!actor) return false;
-    const target = allUnits(state.battle).find(unit => unit.uid === pending.targetUid) || null;
-    const ok = specials.repeatTactic(state, actor, target, pending.card);
-    checkDefeat(state); checkEnd(state);
-    return ok;
-  }
+  if (!window.BattleKrowRepeatResume) throw new Error("[battle-krow-repeat-resume] 模块未装配：battle-krow-repeat-resume.js 必须先于 battle-combat.js 加载");
+  const { resumeKrowRepeat } = window.BattleKrowRepeatResume({ specials, allUnits, checkDefeat, checkEnd });
   return { selectCard, selectSkill, selectExtract, selectMimic, selectPrepareSkill, chooseTarget, cancelSelection, playSelectedCard, playActiveCard, canSelectHandCost, canPlay, checkDefeat, checkEnd, useCard, useVirtualKill, damage, directDamage, resolveThunderHammer, cancelThunderHammer, resolveManualDodge, storeKarunaBubble, skipKarunaBubble, selectKarunaBubble, confirmDeflectResult, resolveManualCounter, resolveCounterTrigger, resolveDimensionTransfer, resolveHandReveal, resumeGreenGatling, resumeComboAttack, resumeCardTail, recordDeferredHit, resumeGroupHeal, resumeKrowRepeat, continueAfterCadicisResponsibility, resolveOpheliaGuard, holdVisual, pushFloat, triggerBattleCourage: specials.triggerBattleCourage };
 };

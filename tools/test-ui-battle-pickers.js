@@ -22,6 +22,7 @@ vm.runInThisContext(fs.readFileSync("src/original/skill-once-per-turn.js", "utf8
 vm.runInThisContext(fs.readFileSync("src/original/mieryula-time-stop.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/mieryula-tactic-immunity.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/mieryula-skills.js", "utf8"));
+vm.runInThisContext(fs.readFileSync("src/original/battle-playability-registries.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/battle-card-playability.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/wendy-skills.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/cadicis-skill-utils.js", "utf8"));

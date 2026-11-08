@@ -35,7 +35,7 @@ window.RuinsRelicEffects = { missileLauncherBlock: () => true };
   "battle-ai-skill-moves.js", "battle-ai-skill-planner.js", "battle-ai.js",
   "battle-status-card-registry.js", "battle-status-card-storage.js", "battle-status-card-triggers.js", "battle-status-cards.js",
   "battle-draw-feedback.js", "battle-turn-state.js", "battle-combat-visuals.js",
-  "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-tactic-immunity.js", "mieryula-skills.js", "battle-card-playability.js", "battle-combat-targeting.js",
+  "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-tactic-immunity.js", "mieryula-skills.js", "battle-playability-registries.js", "battle-card-playability.js", "battle-combat-targeting.js",
   "battle-reaction-queue-store.js",
   "battle-reaction-queue-run.js",
   "battle-reaction-queue.js",
@@ -50,12 +50,12 @@ window.RuinsRelicEffects = { missileLauncherBlock: () => true };
   "battle-dodge-cards.js", "battle-dodge-resume.js", "battle-dodge-deflect.js",
   "battle-dodge-response.js",
   "battle-damage-response.js", "battle-damage-relics.js",
-  "battle-damage-lifecycle.js", "battle-damage-resolution.js",
+  "battle-damage-lifecycle.js", "battle-white-lolita.js", "battle-damage-resolution.js",
   "battle-damage-hit.js", "battle-damage.js",
   "battle-combat-responses.js", "battle-card-cleanup.js", "battle-combat-card-effects.js",
   "battle-combat-attack-values.js", "battle-combat-attack-flow.js",
   "battle-combat-attack.js", "battle-combat-resolver.js",
-  "battle-combat.js",
+  "battle-combat-trail.js", "battle-krow-repeat-resume.js", "battle-combat.js",
 ].forEach(file => require(`../src/original/${file}`));
 window.GameData = { cardCodex: window.GameDataCards.cardCodex };
 

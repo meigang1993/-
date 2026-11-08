@@ -6,7 +6,8 @@ const manifest = require("./publish-bundles.json");
 const root = path.resolve(__dirname, "..");
 const sourceDir = path.join(root, "src", "original");
 const publish = path.join(root, "publish");
-const maxJsLines = 200;
+// 190 行及以上的运行时源码一律拆分成独立模块，留出 1 行余量。
+const maxJsLines = 189;
 const failures = [];
 
 function walk(dir, out = []) {

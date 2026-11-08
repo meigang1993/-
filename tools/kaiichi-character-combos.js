@@ -55,7 +55,7 @@ async function runKaiichiCharacterCombos() {
   assert(edisState.battle.kaiichiShare, "Edis Chainsaw Sword's second hit must open another picker");
   await resumeKaiichiPrompt(edisState, edisCombat);
   assert.strictEqual(edisHelper.hp, 29, "Edis's queued Berserk Chainsaw pursuit must resume after both direct hits");
-  assert.strictEqual(edisDraws.length, 2, "Edis's two direct HP-loss hits must each draw two cards");
+  assert.strictEqual(edisDraws.length, 2, "Edis's two direct HP-loss hits must each draw three cards");
   assert.strictEqual(edisState.log.filter(text => text.includes("半魅魔血令其未摸到牌")).length, 2,
   "Edis's two direct HP-loss hits must create two independent skill logs");
   assert(!edisState.battle.locked && !window.BattleReactionQueue.pending(edisState.battle),
@@ -103,9 +103,9 @@ async function runKaiichiCharacterCombos() {
   assert.strictEqual(chiyoBlood.hp, 27, "Chiyo's final hit must resume after the second picker");
   assert(chiyoState.battle.kaiichiShare, "Chiyo's final HP-loss hit must open its own picker");
   await resumeKaiichiPrompt(chiyoState, chiyoCombat);
-  assert.strictEqual(chiyoDraws.length, 3, "Chiyo's three HP-loss hits must each draw two cards");
-  assert(chiyoDraws.every(event => event.uid === chiyoBlood.uid && event.count === 2),
-  "every Chiyo hit must give Kaiichi exactly two cards");
+  assert.strictEqual(chiyoDraws.length, 3, "Chiyo's three HP-loss hits must each draw three cards");
+  assert(chiyoDraws.every(event => event.uid === chiyoBlood.uid && event.count === 3),
+  "every Chiyo hit must give Kaiichi exactly three cards");
   assert.strictEqual(chiyoState.log.filter(text => text.includes("半魅魔血令其未摸到牌")).length, 3,
   "Chiyo's three HP-loss hits must create three independent skill logs");
   assert.strictEqual(chiyoState.log.filter(text => text.includes("红缨连鬼斩判定")).length, 3,
@@ -128,14 +128,14 @@ async function runKaiichiCharacterCombos() {
   window.state = tripleState;
   tripleCombat.useCard(tripleState, tripleAttacker, tripleBlood, tripleSlash);
   assert.strictEqual(tripleBlood.hp, 28, "a three-hit Slash must pause after the first HP-loss event");
-  assert.deepStrictEqual(tripleDraws, [{ uid: tripleBlood.uid, count: 2 }], "the first hit must trigger exactly one two-card draw");
+  assert.deepStrictEqual(tripleDraws, [{ uid: tripleBlood.uid, count: 3 }], "the first hit must trigger exactly one three-card draw");
   await resumeKaiichiPrompt(tripleState, tripleCombat);
   assert.strictEqual(tripleBlood.hp, 26, "the second hit must resume after the first picker");
   assert.strictEqual(tripleDraws.length, 2, "the second HP-loss event must trigger a second draw");
   await resumeKaiichiPrompt(tripleState, tripleCombat);
   assert.strictEqual(tripleBlood.hp, 24, "the third hit must resume after the second picker");
   assert.strictEqual(tripleDraws.length, 3, "three HP-loss events must trigger exactly three draws");
-  assert(tripleDraws.every(event => event.uid === tripleBlood.uid && event.count === 2), "every Half-Succubus Blood draw must give Kaiichi exactly two cards");
+  assert(tripleDraws.every(event => event.uid === tripleBlood.uid && event.count === 3), "every Half-Succubus Blood draw must give Kaiichi exactly three cards");
   assert.strictEqual(tripleState.log.filter(text => text.includes("半魅魔血令其未摸到牌")).length, 3, "three HP-loss events must create three independent skill logs");
   await resumeKaiichiPrompt(tripleState, tripleCombat);
   assert(!tripleState.battle.locked && !window.BattleReactionQueue.pending(tripleState.battle), "the three-hit chain must leave no stale picker or reaction");

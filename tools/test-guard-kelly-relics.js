@@ -110,6 +110,7 @@ window.NonokaLokiSkills = {
 window.BondiSkills = {};
 require("../src/original/battle-damage-relics.js");
 require("../src/original/battle-damage-lifecycle.js");
+require("../src/original/battle-white-lolita.js");
 require("../src/original/battle-damage-resolution.js");
 require("../src/original/battle-damage-hit.js");
 require("../src/original/battle-damage.js");

@@ -142,6 +142,7 @@ module.exports = ({
     specials: {
       sweepDamage: (_state, _actor, _amount, used) => { flamerSweep = used; },
       healBySyringe() {},
+      repeatTactic() {},
       resolveGreenGatling() {},
       queueBattleCourage() {},
     },

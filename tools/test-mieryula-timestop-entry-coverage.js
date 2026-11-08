@@ -97,7 +97,8 @@ for (const [file, desc] of DISPATCHERS) {
 
 // ── 四、置灰判据不得用可选链静默放行（缺模块必须抛错）───────────────────
 {
-  const play = read("battle-card-playability.js");
+  // 三条登记表的显式抛错随函数一并拆到 battle-playability-registries.js。
+  const play = read("battle-playability-registries.js");
   check(!/window\.MieryulaSkills\?\./.test(play),
     "置灰判据：米尔尤拉技能模块取值不得用可选链静默放行", {});
   check(/\[mieryula-skills\] 米尔尤拉技能模块未装配/.test(play),
