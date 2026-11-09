@@ -78,7 +78,7 @@ window.BattleShareFlow = deps => {
       if (done && state.battle && !state.battle.locked) await advanceToInput(state, onStep, current);
       return;
     }
-    battle.phase = 4;
+    if (!window.NoaCharmSkills?.enterPlayPhase?.(state, unit, draw, onStep)) return;
     window.SakuraRisaSkills?.playPhaseStart?.(state, unit); window.RuinsEnemySkills?.landmineRps?.playPhaseStart?.(state, unit);
     record(state, `${unit.name} 可以出牌。`);
     if (onStep) onStep();

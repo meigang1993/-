@@ -27,7 +27,9 @@ window.NoaSideEffectSkills = (() => {
     if (!b || !isNoa(unit) || !hasSkill(unit, "改造副作用")) return true;
     const males = malesOf(b).filter(target => target.uid !== unit.uid);
     if (!males.length) return true;
-    const amount = (unit.stats?.attack || 0) + (unit.tempAttack || 0);
+    // 攻击力不能为负：tempAttack 可能被减益压成负数，直接传给 damage 管线
+    // 会经 Math.max(0, target.hp - hpLoss) 变成回血，故在此夹到 0。
+    const amount = Math.max(0, (unit.stats?.attack || 0) + (unit.tempAttack || 0));
     window.BattleLines?.skill?.(state, unit, "改造副作用");
     window.BattleLog?.add?.(state,
       `${unit.name}的改造副作用发作，对我方其他存活男性角色各造成${amount}点伤害。`);

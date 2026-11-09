@@ -16,10 +16,11 @@ window.BattleDiscardFlow = (deps) => {
   function selectedDiscardIndexes(b, unit) { return [...new Set(b.discardPick?.indexes || [])].filter(i => canDiscardCard(unit, unit?.hand?.[i])).sort((a, z) => z - a); }
   function toggleDiscardPick(state, unit, cardIndex) {
     const b = state.battle, card = unit?.hand[cardIndex];
-    if (!b || b.locked || b.phase !== 5 || unit?.side !== "ally" || !canDiscardCard(unit, card)) return false;
+    const charm = b?.noaCharmDiscard?.unitUid === unit?.uid ? b.noaCharmDiscard : null;
+    if (!b || b.locked || (b.phase !== 5 && !charm) || unit?.side !== "ally" || !canDiscardCard(unit, card)) return false;
     const p = b.discardPick ||= { unitUid: unit.uid, indexes: [] };
     if (p.unitUid !== unit.uid) p.indexes = [];
-    const picked = p.indexes.includes(cardIndex), need = discardNeed(unit);
+    const picked = p.indexes.includes(cardIndex), need = charm ? charm.need : discardNeed(unit);
     if (!picked && p.indexes.filter(i => canDiscardCard(unit, unit.hand[i])).length >= need) return false;
     p.unitUid = unit.uid; p.indexes = picked ? p.indexes.filter(i => i !== cardIndex) : [...p.indexes, cardIndex];
     return true;
@@ -44,7 +45,22 @@ window.BattleDiscardFlow = (deps) => {
   }
   async function confirmDiscard(state, onStep) {
     const b = state.battle, unit = active(b), indexes = selectedDiscardIndexes(b, active(b));
-    if (!b || b.locked || b.phase !== 5 || unit?.side !== "ally") return false;
+    const charm = b?.noaCharmDiscard?.unitUid === unit?.uid ? b.noaCharmDiscard : null;
+    if (!b || b.locked || (b.phase !== 5 && !charm) || unit?.side !== "ally") return false;
+    // 【魅力改造】出牌阶段内的溢出弃牌：与弃牌阶段同一套「选够 N 张 → 确认 →
+    // discardCards 一次性结算」，但不进结束阶段，清标记后继续本回合出牌。
+    if (charm) {
+      if (indexes.length < charm.need) { record(state, `还需选择${charm.need - indexes.length}张弃牌。`); if (onStep) onStep(); return true; }
+      const cards = [];
+      indexes.slice(0, charm.need).forEach(i => { const card = unit.hand[i]; if (canDiscardCard(unit, card)) cards.unshift(unit.hand.splice(i, 1)[0]); });
+      if (cards.length < charm.need) { b.discardPick = null; record(state, `可弃手牌发生变化，请重新选择弃牌。`); if (onStep) onStep(); return true; }
+      discardCards(state, unit, cards);
+      b.noaCharmDiscard = null;
+      b.discardPick = null;
+      window.NoaCharmSkills?.balanceHand?.(state, unit, draw);
+      if (onStep) onStep();
+      return true;
+    }
     const need = discardNeed(unit);
     if (need <= 0) { const done = completeDiscardPhase(state, unit); if (onStep) onStep(); if (done && state.battle && !state.battle.locked) await advanceToInput(state, onStep); return true; }
     if (indexes.length < need) { record(state, `还需选择${need - indexes.length}张弃牌。`); if (onStep) onStep(); return true; }
@@ -57,9 +73,10 @@ window.BattleDiscardFlow = (deps) => {
   }
   async function discardCard(state, cardIndex, onStep) {
     const b = state.battle, unit = active(b);
+    const charm = b?.noaCharmDiscard?.unitUid === unit?.uid ? b.noaCharmDiscard : null;
     if (b?.thunderHammer) return manualFlow.resolveThunderHammer(state, cardIndex, onStep);
-    if (!b || b.locked || b.phase !== 5 || unit?.side !== "ally") return false;
-    if (visibleHand(unit) > handLimit(unit) && !canDiscardAny(unit)) { const done = completeDiscardPhase(state, unit); if (onStep) onStep(); if (done) await advanceToInput(state, onStep); return true; }
+    if (!b || b.locked || (b.phase !== 5 && !charm) || unit?.side !== "ally") return false;
+    if (!charm && visibleHand(unit) > handLimit(unit) && !canDiscardAny(unit)) { const done = completeDiscardPhase(state, unit); if (onStep) onStep(); if (done) await advanceToInput(state, onStep); return true; }
     if (window.MillerSkills?.offerShare?.(state, unit, cardIndex, { canDiscardCard, maxCount: discardNeed(unit) })) { b.discardPick = null; if (onStep) onStep(); return true; }
     const ok = toggleDiscardPick(state, unit, cardIndex);
     if (ok && onStep) onStep();

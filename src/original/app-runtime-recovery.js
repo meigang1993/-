@@ -6,7 +6,7 @@ window.AppRuntimeRecovery = (() => {
     "cadicisResponsibility", "wendyTutorPicker", "ailengDrillPicker", "catherineStealPicker",
     "mieryulaBloodthirstPicker",
     "mannyArmoryPicker", "gerdaComfort", "kaiichiShare", "newMoonShare",
-    "millerShare", "discardPick", "pendingVictory", "pendingDefeat",
+    "millerShare", "discardPick", "noaCharmDiscard", "pendingVictory", "pendingDefeat",
     "victoryScreen", "defeat", "testComplete",
   ];
   const preparePromptKeys = [

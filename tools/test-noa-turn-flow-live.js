@@ -58,6 +58,42 @@ const forceAdvance = (page, isNoa) => page.evaluate(flag => {
   return null;
 }, isNoa);
 
+// 魅力改造溢出弃牌：先按 need 真实点选手牌，再真实点「确认弃置」清挂起。
+// 两级兜底只用于推进辅助（不改产品逻辑），避免任何一拍没点中就把回合卡死。
+const settleCharmDiscard = async page => {
+  const need = await page.evaluate(() =>
+    Math.max(0, window.state?.battle?.noaCharmDiscard?.need || 0));
+  if (!need) {
+    await page.evaluate(() => {
+      const b = window.state?.battle;
+      if (b?.noaCharmDiscard) {
+        b.noaCharmDiscard = null; b.discardPick = null; window.render?.();
+      }
+    });
+    return;
+  }
+  for (let i = 0; i < need; i++) {
+    await page.locator(`[data-card-index="${i}"]`).first()
+      .click({ timeout: 4000 }).catch(() => {});
+  }
+  const btn = page.locator("[data-confirm-discard]");
+  if (await btn.count()) await btn.first().evaluate(el => el.click()).catch(() => {});
+  if (!(await page.evaluate(() => !!window.state?.battle?.noaCharmDiscard))) return;
+  await page.evaluate(() => {
+    const b = window.state?.battle, c = b?.noaCharmDiscard;
+    if (!c) return;
+    const owner = (b.allies || []).concat(b.enemies || []).find(u => u.uid === c.unitUid);
+    const visible = (owner?.hand || []).filter(card => !card._pendingDraw);
+    b.discardPick = { unitUid: owner.uid,
+      indexes: visible.slice(-c.need).map(card => (owner.hand || []).indexOf(card)) };
+    window.BattleSystem?.confirmDiscard?.(window.state, () => {});
+  });
+  await page.evaluate(() => {
+    const b = window.state?.battle;
+    if (b?.noaCharmDiscard) { b.noaCharmDiscard = null; b.discardPick = null; window.render?.(); }
+  });
+};
+
 let pass = 0, total = 0;
 const T = (name, cond, extra) => {
   total++;
@@ -148,6 +184,9 @@ async function waitNoaTurn(page, timeoutMs = 90000) {
         active: b?.activeUid, uid: n?.uid, phase: b?.phase,
         locked: b?.locked, battle: !!b,
         activeAlly: !!active && active.side === "ally",
+        // 魅力改造溢出弃牌挂起时 UI 只渲染「确认弃置」，不渲染「结束出牌」。
+        charm: !!b?.noaCharmDiscard,
+        charmNeed: b?.noaCharmDiscard?.need || 0,
         endBtn: !!document.querySelector("[data-end-play]"),
         confirmBtn: !!document.querySelector("[data-confirm-discard]"),
         skipBtn: [...document.querySelectorAll(
@@ -158,8 +197,10 @@ async function waitNoaTurn(page, timeoutMs = 90000) {
     });
     last = s;
     stall = stallOf(stall, JSON.stringify([s.active, s.phase, s.locked,
-      s.activeAlly, s.endBtn, s.confirmBtn, s.skipBtn]));
-    if (s.battle && s.active === s.uid && s.phase === 4 && !s.locked) return s;
+      s.activeAlly, s.endBtn, s.confirmBtn, s.skipBtn, s.charm]));
+    // 弃牌挂起未清时不能返回「可出牌」：此时没有 [data-end-play]，
+    // 直接点会等 30s 超时（ui-hand-view.js 的 modes.discard 分支）。
+    if (s.battle && s.active === s.uid && s.phase === 4 && !s.locked && !s.charm) return s;
     if (s.battle) await dismissSpeech(page);
     // 不能因为 activeUid 提前切到诺亚就返回：准备/判定/摸牌阶段点 endPlay 会被
     // 「phase !== 4」直接吞掉，导致结束阶段压根没跑。狂暴场景由 C 段独立循环处理。
@@ -172,7 +213,9 @@ async function waitNoaTurn(page, timeoutMs = 90000) {
         if (el) el.click();
       });
     }
-    if (s.battle && s.phase === 5 && s.confirmBtn) {
+    if (s.battle && s.charm) {
+      await settleCharmDiscard(page);
+    } else if (s.battle && s.phase === 5 && s.confirmBtn) {
       await page.locator("[data-confirm-discard]").evaluate(el => el.click()).catch(() => {});
     } else if (s.battle && s.activeAlly && s.phase === 4 && !s.locked && s.endBtn) {
       await page.locator("[data-end-play]").evaluate(el => el.click()).catch(() => {});
@@ -290,6 +333,7 @@ async function segB(browser) {
     const attack = before.noa?.attack;
     T("B0b 队伍含存活男性队友", !!male && male.hp > 0, { male, attack });
     // 真实点击「结束出牌」按钮，跑完 BattleSystem.endPlay → 结束阶段各钩子 → cleanupTurn。
+    await settleCharmDiscard(page);
     await page.locator("[data-end-play]").evaluate(el => el.click());
     // 伤害快照：等钩子执行且男性队友 hp 真的掉了再取，避免异步结算未落地就断言。
     let hurtSnap = null;
@@ -433,7 +477,7 @@ async function segD(browser) {
     const turn = await waitNoaTurn(page);
     T("D0 真实推进到诺亚出牌阶段", !!turn, turn);
     if (!turn) return;
-    const r = await page.evaluate(() => {
+    const r = await page.evaluate(async () => {
       const st = window.state, b = st.battle;
       const noa = b.allies.find(u => u.ref === "noa");
       const other = b.allies.find(u => u.ref !== "noa");
@@ -450,10 +494,16 @@ async function segD(browser) {
       const puts = [];
       const logTexts = [];
       const origPut = window.BattleCards?.put;
+      const origPutMany = window.BattleCards?.putMany;
       const origLogAdd = window.BattleLog?.add;
+      const capture = (unit, pile) => puts.push({ unit: unit?.ref, pile });
       if (origPut) window.BattleCards.put = function (...a) {
         puts.push({ unit: a[1]?.ref, pile: a[3] });
         return origPut.apply(this, a);
+      };
+      if (origPutMany) window.BattleCards.putMany = function (...a) {
+        (a[2] || []).forEach(() => capture(a[1], a[3]));
+        return origPutMany.apply(this, a);
       };
       if (origLogAdd) window.BattleLog.add = function (...a) {
         logTexts.push(a[1]);
@@ -461,7 +511,20 @@ async function segD(browser) {
       };
       // 模拟 battle-card-resume-hooks.js: actor 是别的角色。
       window.NoaCharmSkills.balanceHand(st, other, window.BattleSystem.draw);
+      // 【魅力改造】多于上限：不弹专用窗，开弃牌阶段同款挂起，
+      // 再走真实 confirmDiscard → discardCards 一次性结算（挑末尾正好弃掉 extra）。
+      const popup = b.noaCharmDiscard ? "noaCharmDiscard" : null;
+      const need = b.noaCharmDiscard?.need || 0;
+      const visible = noa.hand.filter(c => !c._pendingDraw);
+      if (need > 0) {
+        b.discardPick = {
+          unitUid: noa.uid,
+          indexes: visible.slice(-need).map(c => visible.indexOf(c)),
+        };
+        await window.BattleSystem.confirmDiscard(st, () => {});
+      }
       if (origPut) window.BattleCards.put = origPut;
+      if (origPutMany) window.BattleCards.putMany = origPutMany;
       if (origLogAdd) window.BattleLog.add = origLogAdd;
       const handAfter = (noa.hand || []).filter(c => !c._pendingDraw);
       const allPiles = (b.allies || []).concat(b.enemies || [])
@@ -477,10 +540,12 @@ async function segD(browser) {
         noaDiscardDelta: (noa.discard || []).length - noaDiscardBefore,
         duplicated, ownerWrong, puts, logs: logTexts,
         stillInHand: extra.filter(c => handAfter.includes(c)).length,
-        extraCount: extra.length,
+        extraCount: extra.length, popup, need,
       };
     });
     T("D1 构造出诺亚手牌超限", r.before > r.limit, r);
+    T("D1b 他人出牌后先开弃牌阶段同款挂起（不自动弃）",
+      r.popup === "noaCharmDiscard" && r.need === r.extraCount, { popup: r.popup, need: r.need });
     T("D2 他人出牌后诺亚手牌被弃至上限", r.after === r.limit, r);
     T("D3 弃出的牌不再留在诺亚手牌", r.stillInHand === 0, r);
     T("D4 弃牌进入诺亚自己的牌堆（归属正确）", r.ownerWrong === 0 && r.noaDiscardDelta === r.extraCount, r);
@@ -508,6 +573,7 @@ async function advance(page, stop, maxTicks = 220) {
         activeIsNoa: !!noa && active?.uid === noa.uid,
         activeAlly: !!active && active.side === "ally",
         phase: b?.phase, locked: b?.locked,
+        charm: !!b?.noaCharmDiscard, charmNeed: b?.noaCharmDiscard?.need || 0,
         endBtn: !!document.querySelector("[data-end-play]"),
         confirmBtn: !!document.querySelector("[data-confirm-discard]"),
         skipBtn: [...document.querySelectorAll(
@@ -517,8 +583,11 @@ async function advance(page, stop, maxTicks = 220) {
       };
     });
     stall = stallOf(stall, JSON.stringify([step.activeIsNoa, step.activeAlly,
-      step.phase, step.locked, step.endBtn, step.confirmBtn, step.skipBtn]));
+      step.phase, step.locked, step.endBtn, step.confirmBtn, step.skipBtn, step.charm]));
     if (step.activeIsNoa && step.phase === 4) sawPlay = true;
+    // 挂起未清时即使 sawPlay 为真也不能返回：UI 没有「结束出牌」，
+    // segE B 段会直接点 [data-end-play] 等 30s 超时。
+    if (step.charm) { await settleCharmDiscard(page); continue; }
     if (stop(snap, sawPlay, step)) break;
     await dismissSpeech(page);
     if (step.skipBtn) {
@@ -580,7 +649,10 @@ async function segE(browser) {
         const { sawPlay } = await advance(page, (_s, saw) => saw);
         const before = await stateOf(page);
         const male = before.allies.find(u => u.gender === "male");
-        if (sawPlay) await page.locator("[data-end-play]").evaluate(el => el.click());
+        if (sawPlay) {
+          await settleCharmDiscard(page);
+          await page.locator("[data-end-play]").evaluate(el => el.click());
+        }
         let snap = null;
         for (let i = 0; i < 40; i++) { snap = await stateOf(page); if (snap.turn !== before.turn) break; await page.waitForTimeout(120); }
         const maleAfter = snap?.allies.find(u => u.gender === "male");

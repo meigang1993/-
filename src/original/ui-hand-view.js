@@ -174,7 +174,7 @@ window.GameUIHandView = (() => {
     if (modes.cadicisShare) return "指挥官责任";
     if (modes.share) return "新月之歌";
     if (modes.millerShare) return "收获分享";
-    if (modes.discard) return "弃牌阶段";
+    if (modes.discard) return modes.charmDiscard ? "魅力改造弃牌" : "弃牌阶段";
     if (modes.extractStart || modes.mimicStart || modes.speedStart) return "准备阶段";
     return modes.playable ? "出牌阶段" : "自动推进";
   }

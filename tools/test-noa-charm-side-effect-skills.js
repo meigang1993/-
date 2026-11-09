@@ -57,7 +57,7 @@ const Charm = ctx.NoaCharmSkills, Side = ctx.NoaSideEffectSkills;
 // ---------- A 角色模板 ----------
 T("A1 角色栏含怪面诺亚且性别女", tpl?.name === "怪面诺亚" && tpl?.gender === "female", tpl?.name);
 T("A2 身份为魅力改造者", tpl?.role === "魅力改造者", tpl?.role);
-T("A3 0级属性正确", JSON.stringify(tpl?.stats) === JSON.stringify({ attack: 3, magic: 2, speed: 4, maxHp: 65, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 }), tpl?.stats);
+T("A3 0级属性正确（203版全角色翻倍后）", JSON.stringify(tpl?.stats) === JSON.stringify({ attack: 6, magic: 4, speed: 8, maxHp: 130, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 }), tpl?.stats);
 T("A4 每回合摸牌=基础2+1、初始摸牌=基础4+1", tpl?.stats?.drawPerTurn === 1 && tpl?.stats?.initialDraw === 1, tpl?.stats);
 T("A5 锁定且殿堂价100、解锁旗标正确", tpl?.locked === true && tpl?.unlockCost === 100 && tpl?.unlockFlag === "noaNurseryUnlocked", tpl);
 T("A6 两个技能描述与设定一致", tpl?.skills?.length === 2 && tpl.skills[0].text === noaSkills[0].text && tpl.skills[1].text === noaSkills[1].text, tpl?.skills?.map(s => s.name));
@@ -70,40 +70,107 @@ T("B1 使用杀台词", sl["使用杀"] === "杀！杀杀杀杀！！！", sl);
 T("B2 对男性造成伤害台词", sl["改造副作用"] === "全部！全部进来！！", sl);
 T("B3 登场台词进入 allyIntroLines", ctx.BattleLineData.allyIntroLines.noa === tpl.entrance, ctx.BattleLineData.allyIntroLines.noa);
 
-// ---------- C 魅力改造 ----------
+// ---------- C 魅力改造（仅出牌阶段生效 + 玩家弃置任意张） ----------
 const noa = (hand = [], extra = {}) => unit("noa", "female", 50, { skills: noaSkills, hand, ...extra });
 const slash = { name: "杀（普攻）", type: "slash" }, tactic = { name: "拆解", type: "tactic" };
-T("C1 诺亚的杀牌免杀意", Charm.noIntentCost(noa(), slash) === true);
-T("C2 诺亚的非杀牌不免杀意", Charm.noIntentCost(noa(), tactic) === false);
-T("C3 别人打杀不免杀意", Charm.noIntentCost(unit("lokar", "male", 50, { skills: noaSkills }), slash) === false);
-T("C4 没学过技能不免杀意", Charm.noIntentCost(unit("noa", "female", 50, { skills: [] }), slash) === false);
-lines.length = 0;
-Charm.playKillLine({}, noa(), slash);
-T("C5 使用杀台词在出杀时播放", lines.length === 1 && lines[0].name === "使用杀", lines);
-lines.length = 0;
-Charm.playKillLine({}, noa(), tactic);
-T("C6 非杀牌不播使用杀台词", lines.length === 0, lines);
-
+const battleOf = (allies, phase = 4) => ({ allies, enemies: [], turn: 1, phase });
+const inPhase = (allies, phase = 4) => { ctx.state = { battle: battleOf(allies, phase) }; return ctx.state.battle; };
 let drawn = 0;
 const draw = (u, n) => { drawn += n; for (let i = 0; i < n; i++) u.hand.push({ name: "摸" + i, type: "tactic" }); };
-const battleOf = allies => ({ allies, enemies: [], turn: 1 });
+
+inPhase([noa()]);
+T("C1 出牌阶段：诺亚的杀牌免杀意", Charm.noIntentCost(noa(), slash) === true);
+T("C2 出牌阶段：诺亚的非杀牌不免杀意", Charm.noIntentCost(noa(), tactic) === false);
+T("C3 出牌阶段：别人打杀不免杀意", Charm.noIntentCost(unit("lokar", "male", 50, { skills: noaSkills }), slash) === false);
+T("C4 出牌阶段：没学过技能不免杀意", Charm.noIntentCost(unit("noa", "female", 50, { skills: [] }), slash) === false);
+lines.length = 0;
+Charm.playKillLine(ctx.state, noa(), slash);
+T("C5 出牌阶段：使用杀台词在出杀时播放", lines.length === 1 && lines[0].name === "使用杀", lines);
+lines.length = 0;
+Charm.playKillLine(ctx.state, noa(), tactic);
+T("C6 出牌阶段：非杀牌不播使用杀台词", lines.length === 0, lines);
+
+// 非出牌阶段（准备/判定/摸牌/弃牌/结束）三项一律不生效。
+[1, 2, 3, 5, 6].forEach((phase, idx) => {
+  inPhase([noa()], phase);
+  const free = Charm.noIntentCost(noa(), slash);
+  lines.length = 0; Charm.playKillLine(ctx.state, noa(), slash);
+  const n = noa([{ name: "1", type: "tactic" }]);
+  ctx.state = { battle: battleOf([n], phase) };
+  drawn = 0; discarded.length = 0;
+  const changed = Charm.balanceHand(ctx.state, n, draw);
+  T(`C7.${idx + 1} 阶段${phase}不生效（免杀意/台词/补牌全停）`,
+    free === false && lines.length === 0 && changed === 0 && drawn === 0 && n.hand.length === 1,
+    { phase, free, lines: lines.length, changed, drawn, hand: n.hand.length });
+});
+
+// 出牌阶段：少于上限摸至上限。
 let n1 = noa([{ name: "1", type: "tactic" }]);
 ctx.state = { battle: battleOf([n1]) };
 drawn = 0; Charm.balanceHand(ctx.state, n1, draw);
-T("C7 少于上限摸至上限（4）", drawn === 3 && n1.hand.length === 4, { drawn, hand: n1.hand.length });
+T("C8 出牌阶段：少于上限摸至上限（4）", drawn === 3 && n1.hand.length === 4, { drawn, hand: n1.hand.length });
+
+// 出牌阶段：多于上限 → 开「弃牌阶段同款」挂起，绝不替玩家自动弃、也不弹专用选牌窗。
 let n2 = noa(Array.from({ length: 6 }, (_, i) => ({ name: "c" + i, type: "tactic" })));
-ctx.state = { battle: battleOf([n2]) };
-discarded.length = 0; drawn = 0; Charm.balanceHand(ctx.state, n2, draw);
-T("C8 多于上限弃至上限（4）", drawn === 0 && n2.hand.length === 4 && discarded.length === 2, { hand: n2.hand.length, discarded: discarded.length });
+const charmB = battleOf([n2]);
+charmB.activeUid = n2.uid;   // 玩家弃牌选择只在诺亚自己的出牌阶段开启
+ctx.state = { battle: charmB };
+discarded.length = 0; drawn = 0;
+const r2 = Charm.balanceHand(ctx.state, n2, draw);
+T("C9 多于上限：不自动弃牌", discarded.length === 0 && n2.hand.length === 6 && r2 === 0, { hand: n2.hand.length, discarded: discarded.length });
+T("C10 多于上限：只挂 noaCharmDiscard（无弹窗、不锁战斗）",
+  charmB.noaCharmDiscard?.need === 2 && charmB.noaCharmDiscard?.unitUid === n2.uid
+  && !charmB.handReveal && !charmB.locked, { charm: charmB.noaCharmDiscard, locked: charmB.locked });
+T("C11 挂起只记张数、不限定选哪张（玩家可弃任意张）",
+  charmB.noaCharmDiscard?.validIndexes === undefined
+  && charmB.noaCharmDiscard?.indexes === undefined
+  && charmB.discardPick === null, charmB.noaCharmDiscard);
+// 挂起期间重复调用保持幂等：不补牌、不弃牌、不再挂起。
+const r2b = Charm.balanceHand(ctx.state, n2, draw);
+T("C12 挂起期间重复调用幂等（不重复摸牌/弃牌）",
+  r2b === 0 && drawn === 0 && discarded.length === 0 && charmB.noaCharmDiscard?.need === 2,
+  { r2b, drawn, discarded: discarded.length });
+// 模拟标准弃牌流程（selectDiscardIndexes → confirmDiscard → discardCards 一次性结算）：
+// 玩家故意挑第 0 张、再挑中间第 2 张，证明不是固定弃末尾。
+const picked = [n2.hand.splice(0, 1)[0], n2.hand.splice(2, 1)[0]];
+picked.forEach(card => discarded.push({ u: n2.ref, card: card.name, pile: "discard" }));
+charmB.noaCharmDiscard = null;
+charmB.discardPick = null;
+const r3 = Charm.balanceHand(ctx.state, n2, draw);
+T("C13 确认弃置后手牌回到上限、挂起清除、不补牌",
+  r3 === 0 && n2.hand.length === 4 && !charmB.noaCharmDiscard && drawn === 0,
+  { r3, hand: n2.hand.length, drawn });
+T("C14 弃的是玩家挑的任意两张（c0、c3，不是末尾两张）",
+  discarded.map(d => d.card).join(",") === "c0,c3", discarded.map(d => d.card));
+
 let n3 = noa(Array.from({ length: 4 }, (_, i) => ({ name: "c" + i, type: "tactic" })));
 ctx.state = { battle: battleOf([n3]) };
-drawn = 0; discarded.length = 0; Charm.balanceHand(ctx.state, n3, draw);
-T("C9 恰好等于上限时不动", drawn === 0 && discarded.length === 0 && n3.hand.length === 4);
+drawn = 0; discarded.length = 0;
+T("C15 恰好等于上限时不动", Charm.balanceHand(ctx.state, n3, draw) === 0 && drawn === 0 && discarded.length === 0 && n3.hand.length === 4);
+
+// 出牌阶段内他人出牌仍会把诺亚补到上限（onlySelf 只用于「阶段开始」那一处）。
 let n4 = noa([{ name: "1", type: "tactic" }]);
 const other = unit("loki", "female", 50, { hand: [{ name: "x", type: "tactic" }] });
 ctx.state = { battle: battleOf([other, n4]) };
 drawn = 0; Charm.balanceHand(ctx.state, other, draw);
-T("C10 他人出牌也能把诺亚补到上限", drawn === 3 && n4.hand.length === 4, { drawn, hand: n4.hand.length });
+T("C16 出牌阶段内他人出牌也能把诺亚补到上限", drawn === 3 && n4.hand.length === 4, { drawn, hand: n4.hand.length });
+n4.hand = Array.from({ length: 6 }, (_, i) => ({ name: "z" + i, type: "tactic" }));
+ctx.state = { battle: battleOf([other, n4]) };
+const selfOnly = Charm.balanceHand(ctx.state, other, draw, { onlySelf: true });
+T("C17 onlySelf：别家回合不替诺亚开弃牌选择", selfOnly === 0 && !ctx.state.battle.locked
+  && !ctx.state.battle.handReveal && !ctx.state.battle.noaCharmDiscard,
+  { selfOnly, locked: ctx.state.battle.locked, charm: ctx.state.battle.noaCharmDiscard });
+
+// 可见牌不足 need 时走自动弃兜底，避免弹窗里选不完导致回合挂死。
+let n5 = noa([{ name: "v0", type: "tactic" }]
+  .concat(Array.from({ length: 5 }, (_, i) => ({ name: "p" + i, type: "tactic", _pendingDraw: true }))));
+ctx.state = { battle: battleOf([n5]) };
+discarded.length = 0;
+Charm.balanceHand(ctx.state, n5, draw);
+T("C18 可见牌不足时自动弃兜底、不会卡住回合",
+  discarded.length === 2 && n5.hand.length === 4 && !ctx.state.battle.locked
+  && !ctx.state.battle.noaCharmDiscard,
+  { discarded: discarded.length, hand: n5.hand.length, locked: !!ctx.state.battle.locked });
 
 // ---------- D 改造副作用 ----------
 const male = (uid, hp = 50) => unit(uid, "male", hp);
@@ -164,7 +231,33 @@ T("E7 皮肤含默认与10级特殊", skins.includes("noa_default") && skins.inc
 T("E8 两个技能文件已进构建清单", bundles.includes("noa-charm-skills.js") && bundles.includes("noa-side-effect-skills.js"));
 T("E9 管家手册清单已同步", fs.readFileSync(path.join(__dirname, "test-butler-manual-goals-live.js"), "utf8").includes('"怪面诺亚"'));
 T("E10 免杀意/使用杀台词挂接入主流程", read("battle-card-playability.js").includes("NoaCharmSkills?.noIntentCost") && read("battle-combat.js").includes("NoaCharmSkills?.playKillLine"));
-T("E11 手牌平衡挂接三个时机", read("battle-turn-start.js").includes("NoaCharmSkills?.balanceHand") && read("battle-card-resume-hooks.js").includes("NoaCharmSkills?.balanceHand") && read("battle-end-phase.js").includes("NoaCharmSkills?.balanceHand"));
+T("E11 手牌平衡只在出牌阶段生效（统一入口 + 出牌后钩子）",
+  read("battle-turn-input.js").includes("NoaCharmSkills?.enterPlayPhase")
+  && read("noa-charm-skills.js").includes("function enterPlayPhase")
+  && read("noa-charm-skills.js").includes("balanceHand(state, unit, draw || window.BattleSystem?.draw, { onlySelf: true })")
+  && read("battle-card-resume-hooks.js").includes("NoaCharmSkills?.balanceHand")
+  && !read("battle-turn-start.js").includes("NoaCharmSkills?.balanceHand")
+  && !read("battle-end-phase.js").includes("NoaCharmSkills?.balanceHand"));
+T("E14 出牌阶段开始以 onlySelf 调用且 draw 已装配",
+  read("noa-charm-skills.js").includes("{ onlySelf: true }")
+  && read("noa-charm-skills.js").includes("draw || window.BattleSystem?.draw")
+  && read("battle-turn-preparation.js").includes("combat, draw, record")
+  && read("noa-charm-skills.js").includes("opts?.onlySelf"));
+T("E15 溢出弃牌复用弃牌阶段同款（手牌区选牌 + confirmDiscard → discardCards）",
+  read("ui-hand-state.js").includes("modes.charmDiscard")
+  && read("battle-action-hand-bindings.js").includes("noaCharmDiscard")
+  && read("battle-discard-flow.js").includes("if (charm)")
+  && read("battle-discard-flow.js").includes("discardCards(state, unit, cards)")
+  && read("battle-discard-flow.js").includes("NoaCharmSkills?.balanceHand"));
+T("E16 不再有专用弹窗/强制模式，也不再锁战斗",
+  !read("battle-response-ui.js").includes('"noaCharmDiscard"')
+  && !read("battle-action-special-bindings.js").includes('"noaCharmDiscard"')
+  && !read("battle-combat-responses.js").includes('p.mode === "noaCharmDiscard"')
+  && read("noa-charm-skills.js").includes("b.noaCharmDiscard = { unitUid: owner.uid, need }"));
+T("E17 三个生效判据都带出牌阶段守卫",
+  read("noa-charm-skills.js").includes("const PLAY_PHASE = 4")
+  && read("noa-charm-skills.js").includes("inPlayPhase")
+  && read("noa-charm-skills.js").includes("b.phase !== PLAY_PHASE"));
 T("E12 结束阶段与狂暴挂接入主流程", read("battle-end-phase.js").includes("NoaSideEffectSkills?.endTurn") && read("battle-turn-start.js").includes("NoaSideEffectSkills?.beginPlayPhase"));
 T("E13 动态手牌上限被三处消费", ["ui-common.js", "battle-runtime-helpers.js", "battle-ai-helpers.js"].every(f => read(f).includes("NoaSideEffectSkills?.handLimit")));
 

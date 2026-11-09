@@ -22,7 +22,7 @@ window.BattleTurnPreparation = ({
     tempAttack, turnDrawCount, record, waitEffects, getFinishTurn, advanceToInput,
   });
   input = window.BattleTurnInput({
-    combat, record, waitEffects, isCurrentState, runEnemyPlayPhase,
+    combat, draw, record, waitEffects, isCurrentState, runEnemyPlayPhase,
     getFinishTurn, beginTurn: start.beginTurn,
   });
   return {

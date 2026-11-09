@@ -2,7 +2,7 @@ window.BattleSaveCheckpointValidation = (() => {
   const blockingKeys = [
     "selectedCardIndex", "selectedCostCardIndex", "selectedSkillCard",
     "selectedBagIndexes", "pendingTargetUid", "pendingTargetUids",
-    "comboPartnerUid", "discardPick", "handReveal", "mannyArmoryPicker",
+    "comboPartnerUid", "discardPick", "noaCharmDiscard", "handReveal", "mannyArmoryPicker",
     "wendyTutorPicker", "ailengDrillPicker", "catherineStealPicker", "cadicisResponsibility",
     "mieryulaBloodthirstPicker",
     "cadicisResponsibilityResume", "manualDodge", "manualDodgeResume",

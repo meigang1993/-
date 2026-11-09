@@ -17,6 +17,12 @@ const timeouts = Object.freeze({
   "test-reaction-queue-guards-live.js": 300,
   // 诺亚回合流 A~E 共 5 段各自 boot 一次浏览器，E 段还要逐项禁用技能重跑
   "test-noa-turn-flow-live.js": 420,
+  // 魅力改造出牌阶段 3 段各自 boot 一次，含逐张真实点击弹窗
+  "test-noa-charm-play-phase-live.js": 240,
+  // 魅力改造弃牌 A~D 四段各自 boot 一次浏览器，逐张真实鼠标点击
+  "test-noa-charm-discard-click-live.js": 240,
+  // 单人战斗 A/C 两段各 boot 一次浏览器，A 段要驱动 12 个完整回合
+  "test-noa-solo-battle-live.js": 420,
 });
 
 const timeoutFor = (file, fallback) => timeouts[file] || fallback;
@@ -261,9 +267,16 @@ const groups = Object.freeze({
   ],
   characters: [
     "test-noa-charm-side-effect-skills.js",
+    "test-noa-charm-play-phase-live.js",
+    "test-noa-charm-discard-click-live.js",
+    "test-noa-charm-intent-cleanup-live.js",
+    "test-noa-skill-linkage.js",
+    "test-noa-side-effect-gender-matrix.js",
     "test-noa-integration-live.js",
     "test-noa-turn-flow-live.js",
     "test-noa-manual-maxed-unlock-click-live.js",
+    "test-noa-solo-battle-live.js",
+    "test-noa-skill-edges.js",
     "test-hitwell-skills-strict-live.js",
     "test-preshi-skills-live.js",
     "test-mieryula-skills-live.js",

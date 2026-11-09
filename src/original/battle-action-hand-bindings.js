@@ -86,7 +86,7 @@ window.BattleActionHandBindings = (() => {
     const actor = BattleSystem.active(battle);
     const picked = battleCardView(actor, actor?.hand[index]);
     // 点击手牌区的【地雷】状态牌 → 发起猜拳（赢了拆除 / 输了掉血并消耗）
-    if (battle?.phase === 4
+    if (battle?.phase === 4 && !battle.noaCharmDiscard
       && window.BattleStatusCards?.keyOf?.(actor?.hand?.[index]) === "landmine") {
       return BattleActionGuard.run("地雷猜拳发起失败", async ({ state: actionState, isCurrent }) => {
         const holder = BattleSystem.active(actionState.battle);
@@ -96,7 +96,7 @@ window.BattleActionHandBindings = (() => {
         return true;
       }, { control: cardNode });
     }
-    if (battle?.phase === 5 || wasHammer) {
+    if (battle?.phase === 5 || wasHammer || battle?.noaCharmDiscard?.unitUid === actor?.uid) {
       return BattleActionGuard.run("战斗弃牌失败", async ({ state: actionState, isCurrent }) => {
         const ok = await BattleSystem.discardCard(actionState, index, render);
         if (!isCurrent()) return false;

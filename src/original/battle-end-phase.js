@@ -24,7 +24,7 @@ window.BattleEndPhase = deps => {
       () => window.AbeKarunaBubbleSkills?.endTurn?.(state, unit),
       () => window.AngelicaLukaSkills?.endTurn?.(state, unit),
       () => window.NoaSideEffectSkills?.endTurn?.(state, unit, { damage: combat.damage, pushFloat: combat.pushFloat }),
-      () => window.NoaCharmSkills?.balanceHand?.(state, unit, draw),
+      // 【魅力改造】只在出牌阶段（phase 4）生效，结束阶段不补牌/不弃牌。
       () => window.RuinsCardSkills?.clearVulnerable?.(state, unit),
       () => promptSpeedAssault(state, unit),
     ];

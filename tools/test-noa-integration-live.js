@@ -192,6 +192,21 @@ const INTRO = "啊啊……身体好热";
       line: (introDebug?.line || "").slice(0, 60),
     });
 
+    // 【魅力改造】只在出牌阶段（phase 4）生效，免杀意判据还读 window.state。
+    // 串行跑时战斗可能仍停在登场字幕等待态；先解字幕锁、把行动权交给诺亚、
+    // 进入出牌阶段并清掉溢出弃牌挂起，再采集 E4~E6 的快照。
+    await page.evaluate(() => {
+      const b = window.state?.battle;
+      const noa = (b?.allies || []).find(u => u.ref === "noa");
+      if (b && noa) {
+        b.activeUid = noa.uid; b.locked = false; b.phase = 4;
+        b.noaCharmDiscard = null; b.discardPick = null;
+      }
+      if (window.BattleLines?.dismiss) window.BattleLines.dismiss(window.state);
+      window.render?.();
+    });
+    await page.waitForTimeout(150);
+
     const battle = await page.evaluate(() => {
       const b = window.state?.battle;
       const noa = (b?.allies || []).find(u => u.ref === "noa");
@@ -228,7 +243,9 @@ const INTRO = "啊啊……身体好热";
     T("E5 魅力改造令手牌恒等于上限", handState.hand === handState.limit, handState);
     // 开局恰好摸满不等于技能生效，主动制造缺口再验「摸至上限」。
     const charmProof = await page.evaluate(() => {
-      const st = window.state, n = st.battle.allies.find(u => u.ref === "noa");
+      const st = window.state, b = st.battle, n = b.allies.find(u => u.ref === "noa");
+      // 后台 prepare 队列可能把 phase 改回 3；这里是隔离构造，钉死出牌阶段。
+      b.phase = 4; b.activeUid = n.uid; b.locked = false; b.noaCharmDiscard = null;
       const limit = window.UICommon.handLimit(n);
       n.hand = n.hand.filter(c => !c._pendingDraw).slice(0, Math.max(0, limit - 2));
       const before = n.hand.length;
@@ -251,7 +268,13 @@ const INTRO = "啊啊……身体好热";
       return { before, after, limit };
     });
     T("E5c 反向：禁用平衡后不会补齐", revert.after === revert.before && revert.after < revert.limit, revert);
-    T("E6 杀牌免杀意判据已装配", battle.free === true, battle);
+    // free 是开场快照；魅力改造只认出牌阶段，实时钉状态后再判才不是恒假断言。
+    const freeNow = await page.evaluate(() => {
+      const b = window.state.battle, noa = b.allies.find(u => u.ref === "noa");
+      b.phase = 4; b.activeUid = noa.uid; b.locked = false;
+      return !!window.NoaCharmSkills?.noIntentCost?.(noa, { name: "杀（普攻）", type: "slash" });
+    });
+    T("E6 杀牌免杀意判据已装配", freeNow === true, { ...battle, freeNow });
     // 串行跑时战斗可能仍停在登场字幕/等待态（行头像区没渲染完，DOM 里只有 3 张
     // img），单跑恰好已推进才过。先解除字幕锁、把行动权交给诺亚并重新渲染，
     // 再在整页找立绘 img 且要求真实解码；不装皮肤时仍必须找不到（反向验证）。

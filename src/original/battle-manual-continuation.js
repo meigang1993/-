@@ -51,7 +51,7 @@ window.BattleManualContinuation = deps => {
       await finishSkippedPlayPhase(state, unit, onStep, current);
       return false;
     }
-    state.battle.phase = 4;
+    if (!window.NoaCharmSkills?.enterPlayPhase?.(state, unit, undefined, onStep)) return false;
     window.SakuraRisaSkills?.playPhaseStart?.(state, unit); window.RuinsEnemySkills?.landmineRps?.playPhaseStart?.(state, unit);
     record(state, `${unit.name} 可以出牌。`);
     onStep?.();
