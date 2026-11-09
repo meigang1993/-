@@ -19,13 +19,13 @@ const T = (name, cond, extra) => {
   return !!cond;
 };
 
-// 期望：冒险级及以上整体 +20%（普通级不变）
+// 期望：四档线性加成（冒险 +40/+30/+20，逐档 +40/+30/+20 个百分点），普通级不变
 const EXPECT = {
   "普通级": null,
-  "冒险级": { hp: 150, power: 144, speed: 134 },
-  "勇士级": { hp: 186, power: 170, speed: 151 },
-  "王者级": { hp: 234, power: 202, speed: 170 },
-  "英雄级": { hp: 294, power: 238, speed: 190 },
+  "冒险级": { hp: 140, power: 130, speed: 120 },
+  "勇士级": { hp: 180, power: 160, speed: 140 },
+  "王者级": { hp: 220, power: 190, speed: 160 },
+  "英雄级": { hp: 260, power: 220, speed: 180 },
 };
 
 (async () => {

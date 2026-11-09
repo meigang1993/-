@@ -30,6 +30,8 @@ window.BattleCardResumeHooks = (api, stateApi) => {
         window.CatherineSkills?.afterCardPlayed?.(state, actor, card),
       (state, actor, target, card) =>
         window.HitwellSkills?.afterCardPlayed?.(state, actor, card, api),
+      (state, actor, target, card) =>
+        window.NoaCharmSkills?.balanceHand?.(state, actor, deps.draw),
       // 卡露娜两个技能都排在最后：记忆泡泡会挂起战斗等待玩家选择，
       // 放前面会让后续角色的钩子被 paused 判定跳过。
       (state, actor, target, card) =>

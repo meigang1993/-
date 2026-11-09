@@ -356,7 +356,9 @@
     "mieryula-skills.js",
     "abe-karuna-diva-skills.js",
     "abe-karuna-bubble-zone.js",
-    "abe-karuna-bubble-skills.js"
+    "abe-karuna-bubble-skills.js",
+    "noa-charm-skills.js",
+    "noa-side-effect-skills.js"
   ],
   "battle-flow": [
     "battle-counter-triggers.js",

@@ -110,8 +110,8 @@ const progSrc = fs.readFileSync("src/original/character-progression.js", "utf8")
 const gm = progSrc.match(/mieryula:\s*\{([^}]*)\}/);
 const gv = gm ? Object.fromEntries(gm[1].split(",").map(s => s.split(":")
   .map(x => x.trim())).filter(p => p.length === 2).map(([k, v]) => [k, Number(v)])) : null;
-T("米尔尤拉：高阶成长表落在统一档位网格上（20级总量 198.63/41.2/20.41/40.13）",
-  !!gv && gv.maxHp === 198.63 && gv.attack === 41.2 && gv.magic === 20.41 && gv.speed === 40.13, { gv });
+T("米尔尤拉：高阶成长表落在统一档位网格上（全属性翻倍后 397.26/82.4/40.82/80.26）",
+  !!gv && gv.maxHp === 397.26 && gv.attack === 82.4 && gv.magic === 40.82 && gv.speed === 80.26, { gv });
 // 所有可解锁角色都应有专属成长表，否则会静默走 fallback
 for (const cid of Object.values(targetChar)) {
   T(`${cid}：在 character-progression 中有专属成长表`,

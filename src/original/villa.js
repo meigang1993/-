@@ -38,7 +38,8 @@ window.VillaUI = (() => {
       relics: state => collectionUI().relics(state), skins: state => collectionUI().skins(state), testBattle: test.testBattle,
       updates: () => window.UpdateNotice?.render?.() || "",
       deleteDeck: state => collectionUI().deleteDeck(state), firstDefeat: window.VillaEvents.firstDefeat,
-      secondDefeat: window.VillaEvents.secondDefeat, millerUnlock: window.VillaEvents.millerUnlock,
+      secondDefeat: window.VillaEvents.secondDefeat, thirdDefeat: window.VillaEvents.thirdDefeat,
+      millerUnlock: window.VillaEvents.millerUnlock,
       gerlotUnlock: window.VillaEvents.gerlotUnlock, cadicisUnlock: window.VillaEvents.cadicisUnlock,
       lukaUnlock: window.VillaEvents.lukaUnlock,
       littleElranaUnlock: state => window.ExtraUnlockEvents?.littleElranaUnlock?.(state) || "",
@@ -62,7 +63,7 @@ window.VillaUI = (() => {
     if (!map[state.hallModal]) { state.hallModal = null; return ""; }
     const close = state.hallModal === "teamRoster" ? `data-open-modal="team" title="返回准备启程"` : `data-close-modal="1"`;
     const eventModals = new Set([
-      "firstDefeat", "secondDefeat", "millerUnlock", "gerlotUnlock", "cadicisUnlock",
+      "firstDefeat", "secondDefeat", "thirdDefeat", "millerUnlock", "gerlotUnlock", "cadicisUnlock",
       "lukaUnlock", "littleElranaUnlock", "abeKarunaUnlock", "aceUnlock", "underwaterTrainUnlock",
       "opheliaUnlock", "bestaNurseryUnlock", "orcDungeonUnlock", "soniaNurseryUnlock",
       "chiyoRecruitUnlock", "gerdaNurseryUnlock", "hoshinoFamilyUnlock",

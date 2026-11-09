@@ -48,6 +48,7 @@ window.AppHallBindings = (() => {
     });
     bind("[data-first-defeat-complete]", () => window.HallUnlockEvents?.complete("firstDefeat"));
     bind("[data-second-defeat-complete]", () => window.HallUnlockEvents?.complete("secondDefeat"));
+    bind("[data-third-defeat-complete]", () => window.HallUnlockEvents?.complete("thirdDefeat"));
     bind("[data-miller-unlock-complete]", () => window.HallUnlockEvents?.complete("millerUnlock"));
     bind("[data-gerlot-unlock-complete]", () => window.HallUnlockEvents?.complete("gerlotUnlock"));
     bind("[data-cadicis-unlock-complete]", () => window.HallUnlockEvents?.complete("cadicisUnlock"));

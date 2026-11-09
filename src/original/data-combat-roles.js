@@ -36,6 +36,7 @@ window.GameCombatRoles = (() => {
     artina: ["输出"],
     maria: ["辅助/续航"],
     abe_karuna: ["辅助/续航"],
+    noa: ["输出"],
     catherine: ["控制"],
     hitwell: ["辅助/续航"],
     preshi: ["输出"],

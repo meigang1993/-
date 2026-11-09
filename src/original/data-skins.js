@@ -69,6 +69,8 @@ window.GameSkinData = (() => {
     { id: "hitwell_default", charId: "hitwell", name: "默认", quality: "default", price: 0, art: "./assets/images/hitwell-portrait.6af64b8e.webp", desc: "希特威的初始外观。", initial: true },
     { id: "gerda_default", charId: "gerda", name: "默认", quality: "default", price: 0, art: "./assets/new-portraits/gerda.ddb6449d.webp", desc: "格尔达的初始外观。", initial: true },
     { id: "gerda_level_10_special", charId: "gerda", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/gerda-level-10-special.8fe4f351.webp", desc: "格尔达达到10级后自动解锁，可作为正式战斗立绘装备。" },
+    { id: "noa_default", charId: "noa", name: "默认", quality: "default", price: 0, art: "./assets/new-portraits/noa.470b1881.webp", desc: "怪面诺亚的初始外观。", initial: true },
+    { id: "noa_level_10_special", charId: "noa", name: "特殊立绘", quality: "special", price: 0, unlockLevel: 10, specialIllustration: true, art: "./assets/generated/noa-level-10-special.e3c6be5c.webp", desc: "怪面诺亚达到10级后自动解锁，可作为正式战斗立绘装备。" },
   ];
   return { quality, skins };
 })();

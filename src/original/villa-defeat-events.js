@@ -100,5 +100,29 @@ window.VillaDefeatEvents = (() => {
     });
   }
 
-  return { firstDefeat, secondDefeat, millerUnlock };
+  function thirdDefeat(state) {
+    const lines = [
+      ["贝丝妲", "罗卡尔，你又失败了。"],
+      ["罗卡尔", "对不起，妈妈，遇到了强敌。"],
+      ["贝丝妲", "没办法，看来只能去地下室，把那个解除了。"],
+      ["罗卡尔", "地下室？妈妈你打算做什么？"],
+      ["贝丝妲", "地下室封印着强大的魅力改造者，把那家伙唤醒说不定能帮上忙……"],
+      ["罗卡尔", "魅力改造？好像在哪听说过？"],
+      ["贝丝妲", "你去收集足够宝珠把她唤醒，能帮助你对付强大的敌人。记住，多给她男人，不然她会发狂的。"],
+      ["罗卡尔", "好的，妈妈，有了我会试试。"],
+    ];
+    return renderer.render({
+      key: "thirdDefeat", title: "第三次全军覆没",
+      cast: [
+        { character: character(state, "lokar"), className: "vn-loki" },
+        { character: renderer.besta, className: "vn-besta" },
+      ],
+      lines,
+      note: "事件结束后，怪面诺亚将在孕育殿堂开放兑换，价格100精华宝珠。本次探索获得的资源和卡牌已全部丢失，出战角色已恢复满血。",
+      buttonAttribute: "data-third-defeat-complete",
+      buttonText: "结束剧情，开放怪面诺亚兑换",
+    });
+  }
+
+  return { firstDefeat, secondDefeat, thirdDefeat, millerUnlock };
 })();

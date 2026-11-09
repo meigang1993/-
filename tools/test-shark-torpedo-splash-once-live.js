@@ -91,10 +91,10 @@ const runFn = ({ n, spec }) => {
         r.hits === n - 1, r);
       const others = r.losses.slice(1);
       ok(`A${n} 非主目标各受1次溅射`,
-        others.length === n - 1 && others.every(v => v === 4), r);
-      ok(`A${n} 主目标只吃杀伤(4，不是8)`, r.losses[0] === 4, r);
+        others.length === n - 1 && others.every(v => v === 8), r);
+      ok(`A${n} 主目标只吃杀伤(8，不是16)`, r.losses[0] === 8, r);
       ok(`A${n} 全员等量受伤`,
-        r.losses.length === n && r.losses.every(v => v === 4), r);
+        r.losses.length === n && r.losses.every(v => v === 8), r);
     }
   }
 
@@ -107,9 +107,9 @@ const runFn = ({ n, spec }) => {
       ok(`B${n} 溅射仅1次（不是${n}次）`, r.splash === 1, r);
       ok(`B${n} 溅射条数=${n - 1}（不是${n * n}）`, r.hits === n - 1, r);
       const rest = r.losses.slice(1);
-      ok(`B${n} 触发目标只吃杀伤(4，不是${n * 4})`, r.losses[0] === 4, r);
-      ok(`B${n} 其余目标=杀伤+溅射(8)`,
-        rest.length === n - 1 && rest.every(v => v === 8), r);
+      ok(`B${n} 触发目标只吃杀伤(8，不是${n * 8})`, r.losses[0] === 8, r);
+      ok(`B${n} 其余目标=杀伤+溅射(16)`,
+        rest.length === n - 1 && rest.every(v => v === 16), r);
     }
   }
 
@@ -129,8 +129,8 @@ const runFn = ({ n, spec }) => {
     const r = await page.evaluate(runFn, { n: 3, spec: {} });
     await page.waitForTimeout(150);
     const total = r.losses.reduce((s, v) => s + v, 0);
-    ok("D1 总伤害=杀伤4+溅射2×4=12（主目标不再重复吃）",
-      total === 12, { total, losses: r.losses });
+    ok("D1 总伤害=杀伤8+溅射2×8=24（主目标不再重复吃）",
+      total === 24, { total, losses: r.losses });
   }
 
   const errs = relevantErrors(errList);

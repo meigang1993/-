@@ -15,6 +15,8 @@ const timeouts = Object.freeze({
   "test-double-and-chain-slash-live.js": 300,
   "test-chain-slash-dodge-live.js": 300,
   "test-reaction-queue-guards-live.js": 300,
+  // 诺亚回合流 A~E 共 5 段各自 boot 一次浏览器，E 段还要逐项禁用技能重跑
+  "test-noa-turn-flow-live.js": 420,
 });
 
 const timeoutFor = (file, fallback) => timeouts[file] || fallback;
@@ -258,6 +260,10 @@ const groups = Object.freeze({
     "test-witherer1312-live.js",
   ],
   characters: [
+    "test-noa-charm-side-effect-skills.js",
+    "test-noa-integration-live.js",
+    "test-noa-turn-flow-live.js",
+    "test-noa-manual-maxed-unlock-click-live.js",
     "test-hitwell-skills-strict-live.js",
     "test-preshi-skills-live.js",
     "test-mieryula-skills-live.js",

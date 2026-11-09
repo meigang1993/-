@@ -46,7 +46,8 @@ window.BattleCardPlayability = deps => {
     || window.OrcDungeonSkills?.suppressionFreeIntent?.(actor, card)
     || window.WithererSkills?.noIntentCost?.(actor, card)
     // 记忆泡泡：从泡泡手牌区直接使用的牌不消耗杀意。
-    || window.AbeKarunaBubbleSkills?.isIntentFree?.(card));
+    || window.AbeKarunaBubbleSkills?.isIntentFree?.(card)
+    || window.NoaCharmSkills?.noIntentCost?.(actor, card));
   const canComboAttack = (battle, actor, card) => !card?.comboAttack || !!(battle
     && sameSideUnits(battle, actor).some(unit => unit.uid !== actor?.uid && unit.hp > 0)
     && opposingUnits(battle, actor).some(unit => unit.hp > 0));

@@ -14,7 +14,7 @@ window.BattleRuntimeHelpers = () => {
   const initialDrawCount = unit => Math.max(0, 4 + (unit.stats.initialDraw || 0));
   const turnDrawCount = unit => Math.max(0, 2 + (unit.stats.drawPerTurn || 0));
   const visibleHand = unit => window.GuestCharacterSkills?.visibleHandCount?.(unit) ?? unit.hand.filter(card => !card._pendingDraw).length;
-  const handLimit = unit => Math.max(0, unit.stats.handLimit || 0);
+  const handLimit = unit => window.NoaSideEffectSkills?.handLimit?.(unit) ?? Math.max(0, unit.stats.handLimit || 0);
   const countsForLimit = (unit, card) => window.GuestCharacterSkills?.countsForLimit?.(unit, card) ?? true;
   const canDiscardCard = (unit, card) => !!(card && !card._pendingDraw && countsForLimit(unit, card) && window.UnderwaterTrainSkills?.canDiscard?.(unit, card));
   const discardableCount = unit => unit.hand.filter(card => canDiscardCard(unit, card)).length;

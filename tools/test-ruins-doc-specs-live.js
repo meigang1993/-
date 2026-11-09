@@ -62,9 +62,9 @@ const check = (name, cond, info) => {
     { 角色数: growth.roles, 数值总数: growth.total, 异常项: growth.bad.length });
   const A = growth.avg;
   const inRange = (v, target, tol) => Math.abs(v - target) <= tol;
-  check("30 角色满级平均属性落在设计区间",
-    inRange(A.maxHp, 218.5, 3) && inRange(A.attack, 26.92, 1.5)
-      && inRange(A.magic, 26.6, 1.5) && inRange(A.speed, 22.68, 1.5),
+  check("34 角色满级平均属性落在设计区间（全属性翻倍后重定）",
+    inRange(A.maxHp, 433.65, 6) && inRange(A.attack, 55.60, 3)
+      && inRange(A.magic, 53.23, 3) && inRange(A.speed, 47.28, 3),
     { 生命: A.maxHp?.toFixed(2), 攻击: A.attack?.toFixed(2), 魔力: A.magic?.toFixed(2), 速度: A.speed?.toFixed(2) });
 
   // 实际取一个角色，看 0 级 → 20 级的属性增量是否等于成长表

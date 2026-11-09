@@ -117,6 +117,7 @@ window.BattleCombat = (deps) => {
     card._countAsPlayed = true;
     window.BattleLog.add(state,`${actor.name} 使用${card.suit || ""}${card.name}。`);
     window.BattleLines?.skill(state, actor, card.name, target);
+    window.NoaCharmSkills?.playKillLine?.(state, actor, card);
     // 战术牌被【看破】/【后空翻】抵消的只是「这一次结算」。
     // 【克罗研究记录】的额外结算是另一次使用，此前随 return 一起被吞掉，
     // 导致持有该饰品时被响应牌一抵消就完全没有额外结算。

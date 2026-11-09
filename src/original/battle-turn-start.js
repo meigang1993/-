@@ -47,6 +47,8 @@ window.BattleTurnStart = ({
     if (unit.skipDrawPhase) record(state, `${unit.name} 因封魔跳过摸牌阶段。`);
     else draw(unit, turnDrawCount(unit), battle);
     window.CatherineSkills?.syncMagic?.(state, unit);
+    window.NoaCharmSkills?.balanceHand?.(state, unit, draw);
+    window.NoaSideEffectSkills?.beginPlayPhase?.(state, unit);
   }
 
   const finishTurn = (...args) => getFinishTurn()(...args);

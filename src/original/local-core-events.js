@@ -25,6 +25,7 @@ window.LocalCoreEventOps = (() => {
       sonia_nursery: () => flags.soniaNurseryUnlocked,
       chiyo_recruit: () => flags.chiyoRecruitUnlockSeen && unlocked(core, "chiyo"),
       gerda_nursery: () => flags.gerdaNurseryUnlocked,
+      noa_nursery: () => flags.noaNurseryUnlocked,
       hoshino_family: () => flags.hoshinoFamilyUnlockSeen && unlocked(core, "hoshino_yi") && unlocked(core, "hoshino_kaiichi"),
       ruins_sand_city: () => flags.ruinsSandCityUnlocked,
       hitwell: () => flags.hitwellUnlockSeen && unlocked(core, "hitwell"),
@@ -72,6 +73,7 @@ window.LocalCoreEventOps = (() => {
     else if (id === "sonia_nursery" && core.defeatedElites?.includes("xx_witherer_1124") && character(core, "sonia")) { setFlag("soniaNurseryUnlockSeen"); setFlag("soniaNurseryUnlocked"); }
     else if (id === "chiyo_recruit" && core.defeatedElites?.includes("mechanical_bull_king") && character(core, "chiyo")) { setFlag("chiyoRecruitUnlockSeen"); unlock("chiyo"); }
     else if (id === "gerda_nursery" && core.defeatedElites?.includes("demon_king_bakaar") && character(core, "gerda")) { setFlag("gerdaNurseryUnlockSeen"); setFlag("gerdaNurseryUnlocked"); }
+    else if (id === "noa_nursery" && core.flags.thirdDefeatSeen && character(core, "noa")) { setFlag("noaNurseryUnlockSeen"); setFlag("noaNurseryUnlocked"); }
     else if (id === "hoshino_family" && core.flags.hoshinoFamilyUnlockPending && character(core, "hoshino_yi") && character(core, "hoshino_kaiichi")) { setFlag("hoshinoFamilyUnlockSeen"); clearFlag("hoshinoFamilyUnlockPending"); unlock("hoshino_yi"); unlock("hoshino_kaiichi"); }
     else if (id === "ruins_sand_city" && core.flags.ruinsSandCityUnlockPending && character(core, "artina") && character(core, "maria")) { setFlag("ruinsSandCityUnlockSeen"); setFlag("ruinsSandCityUnlocked"); clearFlag("ruinsSandCityUnlockPending"); unlock("artina"); unlock("maria"); }
     else if (id === "hitwell" && core.defeatedElites?.includes("pursuer_edis") && character(core, "hitwell")) { setFlag("hitwellUnlockSeen"); unlock("hitwell"); }

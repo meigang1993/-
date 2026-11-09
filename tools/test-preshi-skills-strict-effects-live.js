@@ -209,7 +209,7 @@ const lineHookTpl = `(() => {
   await dismissOpeningStory(page);
 
   const d = await page.evaluate(dataTpl);
-  T("① 生命值 56", d.maxHp === 56, d);
+  T("① 生命值 112（全属性翻倍后）", d.maxHp === 112, d);
   T("① 杀意上限 1", d.bloodlust === 1, d);
   T("① 手牌上限 4", d.handLimit === 4, d);
   T("① 每回合摸牌 基础2+1 = 3", d.turnDraw === 3, d);

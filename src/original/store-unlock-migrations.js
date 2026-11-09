@@ -18,7 +18,8 @@ window.StoreUnlockMigrations = (() => {
     const count = Number.isSafeInteger(rawCount) && rawCount > 0 ? rawCount : 0;
     const loki = character(state, "loki");
     const carlos = character(state, "carlos");
-    const second = state.flags.secondDefeatSeen || done(state, "second_defeat")
+    const third = state.flags.thirdDefeatSeen || done(state, "noa_nursery") || count >= 3;
+    const second = third || state.flags.secondDefeatSeen || done(state, "second_defeat")
       || (!!carlos && !carlos.locked) || count >= 2;
     const first = second || state.flags.firstDefeatSeen || done(state, "first_defeat")
       || (!!loki && !loki.locked) || count >= 1;
@@ -30,6 +31,10 @@ window.StoreUnlockMigrations = (() => {
     if (second) {
       state.flags.secondDefeatSeen = true;
       state.flags.defeatCount = Math.max(2, state.flags.defeatCount);
+    }
+    if (third) {
+      state.flags.thirdDefeatSeen = true;
+      state.flags.defeatCount = Math.max(3, state.flags.defeatCount);
     }
   }
   function unlockFirstDefeatLoki(state) {

@@ -34,10 +34,10 @@ const grunts = ruins.filter(e => GRUNTS.includes(e.id));
 
 // 期望基础值（2026-10-01 普通难度重平衡后）
 const BASE = {
-  noble_soldier: { hp: 68, attack: 10, magic: 8, speed: 15, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
-  noble_sniper:  { hp: 60, attack: 11, magic: 8, speed: 18, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
-  merca_tank:    { hp: 92, attack: 10, magic: 10, speed: 14, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
-  attack_drone:  { hp: 52, attack: 10, magic: 10, speed: 20, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
+  noble_soldier: { hp: 136, attack: 20, magic: 16, speed: 30, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+  noble_sniper:  { hp: 120, attack: 22, magic: 16, speed: 36, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
+  merca_tank:    { hp: 184, attack: 20, magic: 20, speed: 28, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+  attack_drone:  { hp: 104, attack: 20, magic: 20, speed: 40, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
 };
 
 console.log("=== 基础值核对 ===");
@@ -79,12 +79,12 @@ GRUNTS.forEach(id => {
 });
 
 // 2. 平均值符合设计
-T("四项平均值符合设计（HP68 攻10.25 魔9 速16.75）", () => {
+T("四项平均值符合设计（全属性翻倍后 HP136 攻20.5 魔18 速33.5）", () => {
   const avg = k => grunts.reduce((s, e) => s + e[k], 0) / grunts.length;
-  assert.strictEqual(avg("hp"), 68, `HP 均值 ${avg("hp")}`);
-  assert.strictEqual(avg("attack"), 10.25, `攻击均值 ${avg("attack")}`);
-  assert.strictEqual(avg("magic"), 9, `魔力均值 ${avg("magic")}`);
-  assert.strictEqual(avg("speed"), 16.75, `速度均值 ${avg("speed")}`);
+  assert.strictEqual(avg("hp"), 136, `HP 均值 ${avg("hp")}`);
+  assert.strictEqual(avg("attack"), 20.5, `攻击均值 ${avg("attack")}`);
+  assert.strictEqual(avg("magic"), 18, `魔力均值 ${avg("magic")}`);
+  assert.strictEqual(avg("speed"), 33.5, `速度均值 ${avg("speed")}`);
 });
 
 // 3. 缩放公式逐难度验证（hp=ceil, 攻魔速=round）
@@ -125,14 +125,14 @@ T("HP 随难度严格递增（普通→英雄）", () => {
 });
 
 // 6. 坦克炮弹 = 攻击力 2 倍，各难度每人伤害
-T("坦克炮弹伤害 = 攻击力×2（普通级每人 20）", () => {
+T("坦克炮弹伤害 = 攻击力×2（全属性翻倍后普通级每人 40）", () => {
   const tank = grunts.find(e => e.id === "merca_tank");
   const normal = W.scaleEnemyStats(tank, diffs.normal, "normal");
-  assert.strictEqual(normal.attack * 2, 20, `普通级炮弹 ${normal.attack * 2}≠20`);
+  assert.strictEqual(normal.attack * 2, 40, `普通级炮弹 ${normal.attack * 2}≠40`);
   const hell = W.scaleEnemyStats(tank, diffs.hell, "normal");
   console.log(`\n   坦克炮弹：普通级每人 ${normal.attack * 2}，英雄级每人 ${hell.attack * 2}`);
   console.log(`   四坦克齐射：普通级每人 ${normal.attack * 2 * 4}，英雄级每人 ${hell.attack * 2 * 4}`);
-  assert.strictEqual(normal.attack * 2 * 4, 80, `四坦克齐射 ${normal.attack * 2 * 4}≠80`);
+  assert.strictEqual(normal.attack * 2 * 4, 160, `四坦克齐射 ${normal.attack * 2 * 4}≠160`);
 });
 
 // 7. 无人机杀意降为 1（限制同回合连施毒+麻痹）
@@ -166,7 +166,7 @@ T("废墟普通怪 HP 均低于同副本精英与 Boss", () => {
   });
 });
 
-// 10. 对照：其他副本普通怪不应被本次改动影响
+// 10. 对照：其他副本普通怪不应混入废墟怪（全副本基础属性已同步翻倍）
 const OTHER = ["machine_factory", "underwater_train"];
 T("其他副本普通怪属性未被本次改动影响", () => {
   OTHER.forEach(key => {
@@ -180,8 +180,8 @@ T("其他副本普通怪属性未被本次改动影响", () => {
   });
 });
 
-// 11. 废墟沙城全部敌人基础属性快照（本次只改难度倍率，不得改动基础属性）
-T("废墟沙城敌人基础属性未被本次改动影响", () => {
+// 11. 废墟沙城全部敌人基础属性快照（全属性翻倍后重定基线）
+T("废墟沙城敌人基础属性与翻倍后基线一致", () => {
   const crypto = require("crypto");
   const rows = ruins.map(e => [
     e.id, e.type, e.hp, e.attack, e.magic, e.speed,
@@ -189,8 +189,8 @@ T("废墟沙城敌人基础属性未被本次改动影响", () => {
   ].join("/")).sort();
   const digest = crypto.createHash("sha256").update(rows.join("\n")).digest("hex");
   assert.strictEqual(digest,
-    "daaec18df32a93e6b34b776a1d186e3b8db4dd759cf90d0e2d153269130b4e88",
-    "废墟沙城敌人基础属性被改动（快照不匹配）");
+    "d2a9bd3929aa9152a446a10e84f15666813a3ec193a2257736b83dda5ff8868f",
+    "废墟沙城敌人基础属性与翻倍后基线不符（快照不匹配）");
 });
 
 // 12. 定位校验：废墟普通怪应强于前置副本普通怪（后期副本耐久）

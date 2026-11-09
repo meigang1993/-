@@ -6,7 +6,7 @@ window.BattleAIHelpers = (() => {
   const stat = (u, k) => (u.stats?.[k] || 0) + (k === "attack" ? (u.tempAttack || 0) : k === "magic" ? (u.tempMagic || 0) : 0);
   const hpPct = (u) => u.hp / Math.max(1, u.maxHp || u.stats?.maxHp || 1);
   const visible = (u) => window.GuestCharacterSkills?.visibleHandCount?.(u) ?? (u.hand || []).filter(c => !c._pendingDraw).length;
-  const handLimit = (u) => u.stats?.handLimit || 5;
+  const handLimit = (u) => window.NoaSideEffectSkills?.handLimit?.(u) ?? (u.stats?.handLimit || 5);
   const hasDodge = (u) => (u?.hand || []).some(c => c.name === "闪" && !c._pendingDraw);
   const hasKill = (u) => (u?.hand || []).some(c => isKill(c) && !c._pendingDraw);
   const singleKill = c => window.CardUtils.isSingleKillCard(c);

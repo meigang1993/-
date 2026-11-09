@@ -7,6 +7,7 @@ window.LocalCoreCharacterOps = (() => {
     if (id === "besta" && !core.flags.bestaNurseryUnlocked) return outcomes.rejected;
     if (id === "sonia" && !core.flags.soniaNurseryUnlocked) return outcomes.rejected;
     if (id === "gerda" && !core.flags.gerdaNurseryUnlocked) return outcomes.rejected;
+    if (id === "noa" && !core.flags.noaNurseryUnlocked) return outcomes.rejected;
     core.resources.essence -= cost;
     c.locked = false;
     c.hp = c.stats?.maxHp || c.hp;

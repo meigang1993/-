@@ -260,15 +260,29 @@ const SWEEP = "枪林弹雨";   // 群体战术牌：sweep + targetless + power 
       await ep.waitForTimeout(120);
     }
     T("E0 半魅魔血已挂起（交牌提示出现）", share === true, { share });
+    // 「不交」按钮只在「当前行动角色=星野海一」且摸牌动画结算后才渲染
+    // （ui-hand-state.js 的 modes.kaiichiShare）。battle.kaiichiShare 已挂起
+    // 不等于 DOM 已经出来，必须轮询等待；否则 E1 空红并连带 E2~E4。
     let clicked = false;
-    if (share) {
+    for (let i = 0; i < 60 && share; i++) {
       const skip = ep.locator("[data-kaiichi-share-skip]").first();
       if (await skip.count() && await skip.isVisible().catch(() => false)) {
         await skip.click();
         clicked = true;
+        break;
       }
+      await ep.waitForTimeout(150);
     }
-    T("E1 「不交」按钮存在且已点击", clicked === true, { clicked });
+    const eDiag = await evalT(ep, `(() => {
+      const b = window.state.battle;
+      return {
+        activeUid: b.activeUid, shareUid: b.kaiichiShare?.unitUid,
+        skipNodes: document.querySelectorAll("[data-kaiichi-share-skip]").length,
+        cardNodes: document.querySelectorAll("[data-card-index]").length,
+        prompt: document.querySelector(".discard-prompt")?.textContent?.slice(0, 60) || null,
+      };
+    })()`, 10000, "diagE");
+    T("E1 「不交」按钮存在且已点击", clicked === true, { clicked, diag: eDiag });
     // 补跑链是异步的：解锁后再多等几拍，确认 krowRepeatResume 被真正消费掉
     for (let i = 0; i < 60; i++) {
       const done = await ep.evaluate(
@@ -426,7 +440,9 @@ const SWEEP = "枪林弹雨";   // 群体战术牌：sweep + targetless + power 
       };
     })()`, 15000, "snapF");
     T("F3 牌确实交出去了（队友手牌增加）", s.mateHand === before.mateHand + 1,
-      { before: before.mateHand, after: s.mateHand });
+      { before: before.mateHand, after: s.mateHand, kaiHand: s.kaiHand,
+        gaveLog: /将\d+张手牌交给/.test(s.logs), shareUid: s.shareUid,
+        logsTail: s.logs.slice(-180) });
     T("F4 交牌后额外结算被补跑", s.krow >= 1, { krow: s.krow, logs: s.logs });
     T("F5 未残留挂起", s.pending === false, { pending: s.pending });
     T("F6 战斗未残留锁定", s.locked === false, { locked: s.locked });

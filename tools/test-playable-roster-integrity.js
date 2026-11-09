@@ -24,6 +24,8 @@ const eventIds = [
   "mieryula",
   // 安倍卡露娜：艾尔拉娜在队伍中首次对战鱼人武士安倍麦克时强制结束战斗回大厅触发事件解锁
   "abe_karuna",
+  // 怪面诺亚：第三次全军覆没后触发别墅剧情，随后在孕育殿堂消耗 100 精华宝珠唤醒
+  "noa",
 ];
 // 前置角色解锁后自动加入，无独立解锁入口（凯瑟琳：曼妮解锁后自动加入）
 const autoIds = ["catherine"];
@@ -31,9 +33,9 @@ const autoIds = ["catherine"];
 function assertRosterPartition() {
   const ids = GameData.characters.map(character => character.id);
   const routes = [...initialIds, ...nurseryIds, ...eventIds, ...autoIds];
-  assert(ids.length === 33 && new Set(ids).size === 33,
-    "the playable roster must contain 33 unique characters");
-  assert(routes.length === 33 && new Set(routes).size === 33,
+  assert(ids.length === 34 && new Set(ids).size === 34,
+    "the playable roster must contain 34 unique characters");
+  assert(routes.length === 34 && new Set(routes).size === 34,
     "every playable character must have exactly one unlock route");
   assert([...routes].sort().join(",") === [...ids].sort().join(","),
     "the unlock-route matrix must cover the complete playable roster");
@@ -92,6 +94,14 @@ async function testAllCharactersUnlock() {
     const event = await ServerCore.call("unlockEvent", { id }, state);
     assert(defeat.ok && event.changed, `${id} must unlock after its defeat`);
   }
+  // 第三次全军覆没只开放怪面诺亚的殿堂兑换，不直接入栏
+  const thirdDefeat = await ServerCore.call(
+    "settleDefeat", { defeatId: "defeat:3" }, state,
+  );
+  const noaEvent = await ServerCore.call("unlockEvent", { id: "noa_nursery" }, state);
+  const noaUnlock = await ServerCore.call("unlockChar", { id: "noa" }, state);
+  assert(thirdDefeat.ok && noaEvent.changed && noaUnlock.changed,
+    "noa must open its nursery route on the third defeat and unlock via the hall");
   assert(state.chars.every(character => !character.locked),
     `all playable characters must unlock; locked: ${state.chars
       .filter(character => character.locked).map(character => character.id).join(",")}`);

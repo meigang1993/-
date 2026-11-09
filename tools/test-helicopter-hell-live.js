@@ -2,7 +2,7 @@
 //   与 test-helicopter-skills-live.js 的区别：
 //   那里把敌人属性硬编码成普通级（9/8/12/210），这里走真实难度缩放路径
 //   （DungeonEnemyGroups.fromIds + GameData.scaleEnemyStats），验证在英雄级
-//   （生命245%/输出198%/速度158%，且精英与BOSS携带掉落饰品）下：
+//   （生命260%/输出220%/速度180%，且精英与BOSS携带掉落饰品）下：
 //     1. 缩放后的属性是否正确
 //     2. 英雄级是否自动携带两个掉落饰品（螺旋桨 / 导弹发射器）
 //     3. 三个技能与两个饰品在该难度下是否都能真正发动
@@ -178,15 +178,15 @@ const missileTpl = (targetHand) => `(() => {
     `速度=${s.speed} 手牌上限=${s.handLimit} 杀意=${s.bloodlust} ` +
     `每回合摸牌=${s.drawPerTurn} 初始摸牌=${s.initialDraw}`);
   console.log(`[英雄级饰品] ${JSON.stringify(s.relics)}`);
-  // 期望值随「冒险级及以上难度属性 +20%」更新：英雄级倍率由
-  // hp 2.45 / power 1.98 / speed 1.58 提升为 2.94 / 2.38 / 1.90。
-  T("英雄级：生命值 = ceil(240 × 2.94) = 706", s.hp === 706, s);
-  T("英雄级：攻击力 = round(11 × 2.38) = 26", s.attack === 26, s);
-  T("英雄级：魔力 = round(10 × 2.38) = 24", s.magic === 24, s);
-  T("英雄级：速度 = round(14 × 1.90) = 27", s.speed === 27, s);
+  // 期望值随「全属性翻倍 + 线性难度倍率」更新：直升机基础 480/22/20/28，
+  // 英雄级倍率 hp 2.6 / power 2.2 / speed 1.8。
+  T("英雄级：生命值 = ceil(480 × 2.6) = 1248", s.hp === 1248, s);
+  T("英雄级：攻击力 = round(22 × 2.2) = 48", s.attack === 48, s);
+  T("英雄级：魔力 = round(20 × 2.2) = 44", s.magic === 44, s);
+  T("英雄级：速度 = round(28 × 1.8) = 50", s.speed === 50, s);
   T("英雄级：手牌上限不参与缩放，仍为 5", s.handLimit === 5, s);
   T("英雄级：杀意上限不参与缩放，仍为 1", s.bloodlust === 1, s);
-  T("英雄级：stats.attack 已同步为 26（伤害实际读取的字段）", s.statsAttack === 26, s);
+  T("英雄级：stats.attack 已同步为 48（伤害实际读取的字段）", s.statsAttack === 48, s);
   T("英雄级：每回合摸牌加值不参与缩放，仍为 3", s.drawPerTurn === 3, s);
   T("英雄级：初始摸牌加值不参与缩放，仍为 2", s.initialDraw === 2, s);
   T("英雄级：实际每回合摸牌 = 2 + 3 = 5", s.realTurnDraw === 5, s);
@@ -207,7 +207,7 @@ const missileTpl = (targetHand) => `(() => {
   T("战场扫射（英雄级）：消耗 2 张同花色手牌", mv.handBefore - mv.handAfter === 2, mv);
   T("战场扫射（英雄级）：不消耗杀意", mv.noIntent === true, mv);
 
-  // ===== 战场扫射端到端：伤害应等于英雄级攻击力 22 =====
+  // ===== 战场扫射端到端：伤害应等于英雄级攻击力 48 =====
   await page.evaluate(setupTpl({}));
   const play = await page.evaluate(playTpl);
   await page.waitForTimeout(1200);
@@ -215,12 +215,12 @@ const missileTpl = (targetHand) => `(() => {
   console.log(`  日志: ${JSON.stringify((play.logs || []).slice(-3))}`);
   T("战场扫射（英雄级）：对所有我方角色造成伤害",
     Array.isArray(play.dealt) && play.dealt.length >= 2 && play.dealt.every(d => d > 0), play);
-  // 不能写死 14：断言应验证「伤害随难度缩放」，否则难度写错时 all() 对空结果恒真
+  // 不能写死 22：断言应验证「伤害随难度缩放」，否则难度写错时 all() 对空结果恒真
   const dealtNonZero = (play.dealt || []).filter(d => d > 0);
   T("战场扫射（英雄级）：伤害量等于该难度下的攻击力（随缩放变化）",
     dealtNonZero.length === (play.dealt || []).length
     && dealtNonZero.every(d => d === play.attack), play);
-  T("战场扫射（英雄级）：英雄级攻击力为 26（非普通级 11）", play.attack === 26, play);
+  T("战场扫射（英雄级）：英雄级攻击力为 48（非普通级 22）", play.attack === 48, play);
 
   // ===== 战场扫射：英雄级也不受限次 =====
   await page.evaluate(setupTpl({}));
@@ -250,7 +250,7 @@ const missileTpl = (targetHand) => `(() => {
   const propNonZero = (propE.dealt || []).filter(d => d > 0);
   T("螺旋桨（英雄级敌方）：伤害等于该难度下的攻击力（随缩放变化）",
     propNonZero.length === 1 && propNonZero.every(d => d === propE.attack), propE);
-  T("螺旋桨（英雄级敌方）：英雄级攻击力为 26（非普通级 11）", propE.attack === 26, propE);
+  T("螺旋桨（英雄级敌方）：英雄级攻击力为 48（非普通级 22）", propE.attack === 48, propE);
 
   // ===== 导弹发射器：英雄级敌人携带 =====
   await page.evaluate(setupTpl({}));

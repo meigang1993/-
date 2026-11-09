@@ -23,6 +23,8 @@ window.BattleEndPhase = deps => {
       () => window.AbeKarunaDivaSkills?.endTurn?.(state, unit),
       () => window.AbeKarunaBubbleSkills?.endTurn?.(state, unit),
       () => window.AngelicaLukaSkills?.endTurn?.(state, unit),
+      () => window.NoaSideEffectSkills?.endTurn?.(state, unit, { damage: combat.damage, pushFloat: combat.pushFloat }),
+      () => window.NoaCharmSkills?.balanceHand?.(state, unit, draw),
       () => window.RuinsCardSkills?.clearVulnerable?.(state, unit),
       () => promptSpeedAssault(state, unit),
     ];

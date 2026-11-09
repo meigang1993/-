@@ -8,9 +8,11 @@ window.HallUnlockEvents = (() => {
   const completions = {
     firstDefeat: { target: "loki", flag: "firstDefeatSeen", log: "洛基加入角色栏。首次全军覆没事件已完成。" },
     secondDefeat: { target: "carlos", flag: "secondDefeatSeen", log: "卡洛斯加入角色栏。第二次全军覆没事件已完成。" },
+    // 第三次全军覆没只开放殿堂兑换，不直接把怪面诺亚加入角色栏。
+    thirdDefeat: { noUnlock: true, flag: "noaNurseryUnlocked", log: "怪面诺亚已在孕育殿堂开放兑换（100精华宝珠）。第三次全军覆没事件已完成。" },
     ...unlocks
   };
-  const eventIds = { firstDefeat:"first_defeat", secondDefeat:"second_defeat", millerUnlock:"miller", gerlotUnlock:"gerlot", cadicisUnlock:"cadicis", lukaUnlock:"luka" };
+  const eventIds = { firstDefeat:"first_defeat", secondDefeat:"second_defeat", thirdDefeat:"noa_nursery", millerUnlock:"miller", gerlotUnlock:"gerlot", cadicisUnlock:"cadicis", lukaUnlock:"luka" };
   const character = id => state.chars.find(x => x.id === id);
   function trigger(key) {
     const e = unlocks[key]; if (!e) return false;
@@ -31,14 +33,14 @@ window.HallUnlockEvents = (() => {
   }
   async function complete(key) {
     const e = completions[key]; if (!e) return false;
-    const wasLocked = !!character(e.target)?.locked;
+    const wasLocked = !e.noUnlock && !!character(e.target)?.locked;
     const ok = await window.ServerCore.call("unlockEvent", { id: eventIds[key] || key }, state);
     if (ok.stale) return false;
     if (!ok.ok) { state.log.unshift("剧情解锁失败，请重试。"); render(); persist(); return false; }
     state.flags = state.flags || {}; state.flags[e.flag] = true;
-    const target = character(e.target);
+    const target = e.noUnlock ? null : character(e.target);
     if (target?.locked) { target.locked = false; target.hp = target.stats.maxHp; }
-    if (wasLocked) log(e.log);
+    if (wasLocked || e.noUnlock) log(e.log);
     state.hallModal = null;
     const saved = await persist({ flush: true });
     render();

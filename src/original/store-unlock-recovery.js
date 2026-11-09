@@ -10,6 +10,8 @@ window.StoreUnlockRecovery = (() => {
       state.hallModal = "firstDefeat";
     } else if (state.flags.secondDefeatSeen && !done(state, "second_defeat")) {
       state.hallModal = "secondDefeat";
+    } else if (state.flags.thirdDefeatSeen && !done(state, "noa_nursery")) {
+      state.hallModal = "thirdDefeat";
     }
     return !!state.hallModal;
   }

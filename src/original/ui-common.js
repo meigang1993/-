@@ -31,7 +31,7 @@ window.UICommon = (() => {
       ? `<div class="stat"><span>防御系统</span><b>${character.defenseSystem}</b></div>` : "")
     + ((character.shock || 0) > 0
       ? `<div class="stat"><span>感电</span><b>${character.shock}层</b></div>` : "");
-  const handLimit = unit => unit.stats?.handLimit || 5;
+  const handLimit = unit => window.NoaSideEffectSkills?.handLimit?.(unit) ?? (unit.stats?.handLimit || 5);
   const handCount = unit => unit.visualHandCount
     ?? window.GuestCharacterSkills?.visibleHandCount?.(unit)
     ?? (unit.hand || []).filter(card => !card._pendingDraw).length;

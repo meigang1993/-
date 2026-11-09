@@ -1,4 +1,4 @@
-// 4 张 10 级特殊立绘解锁实机验证：凯瑟琳 / 奥菲莉亚 / 贝丝妲 / 鲁卡
+// 11 名角色的 10 级特殊立绘解锁实机验证（含怪面诺亚）
 //   覆盖：Lv.9 时不解锁（负向对照）、Lv.10 时自动入库、收藏页按钮由「Lv.10 解锁」变「装备」、
 //   真实鼠标点击装备生效、立绘图片真实加载（naturalWidth）、applyToChar 换图、
 //   角色未解锁时即便满级也不入库、全程无 JS 错误。
@@ -25,6 +25,7 @@ const CASES = [
   { id: "sonia", name: "索尼娅", skin: "sonia_level_10_special" },
   { id: "carlos", name: "卡洛斯", skin: "carlos_level_10_special" },
   { id: "gerda", name: "格尔达", skin: "gerda_level_10_special" },
+  { id: "noa", name: "怪面诺亚", skin: "noa_level_10_special" },
 ];
 const ONLY = (process.env.L10_ONLY || "").split(",").filter(Boolean);
 const ACTIVE = ONLY.length ? CASES.filter(c => ONLY.includes(c.id)) : CASES;

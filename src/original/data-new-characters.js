@@ -1,5 +1,25 @@
 window.GameDataNewCharacters = [
   {
+    id: "noa",
+    name: "怪面诺亚",
+    gender: "female",
+    face: "诺",
+    art: "./assets/new-portraits/noa.470b1881.webp",
+    avatar: "./assets/new-portraits/noa.470b1881.webp",
+    role: "魅力改造者",
+    combatRoles: ["输出"],
+    locked: true,
+    unlockCost: 100,
+    unlockFlag: "noaNurseryUnlocked",
+    entrance: "啊啊……身体好热！杀光敌人！别忘了……给我……雄性……淫气改造把我变成了淫荡的怪物！！！",
+    stats: { attack: 6, magic: 4, speed: 8, maxHp: 130, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
+    evaluation: "手牌恒等与杀牌免杀意核心。魅力改造令手牌数始终等于手牌上限、使用【杀】不消耗杀意；改造副作用按存活男性队友数提升手牌上限，结束阶段对其他存活男性队友各造成等同于攻击力的伤害，队中无存活男性时改为随机虚拟【咬杀】并跳过出牌阶段。",
+    skills: [
+      { name: "魅力改造", type: "passive", icon: "⭐", text: "锁定技，你的手牌数始终等于你的手牌上限（少于则摸至上限，多于则弃至上限）。你使用【杀】牌不消耗杀意。" },
+      { name: "改造副作用", type: "passive", icon: "⭐", text: "锁定技，结束阶段，你对我方其他所有存活男性角色各造成等同于你攻击力的伤害。队伍里每有一名男性角色，你的手牌上限+1。若队伍中没有存活的男性角色，出牌阶段开始时，你随机对一名角色（不分敌我）视为使用一张虚拟【咬杀】，之后跳过本回合的出牌阶段。" },
+    ],
+  },
+  {
     id: "gerda",
     name: "格尔达",
     gender: "female",
@@ -13,7 +33,7 @@ window.GameDataNewCharacters = [
     grandfather: "兽人王邦迪",
     sourceDungeon: "兽人地下城",
     entrance: "兽人公主格尔达，来帮你们打赢这一战！",
-    stats: { attack: 4.8, magic: 5, speed: 6.7, maxHp: 69, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
+    stats: { attack: 9.6, magic: 10, speed: 13.4, maxHp: 138, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
     evaluation: "队友摸牌支援与杀牌防御核心。结束阶段可与一名其他队友各摸2张牌；敌方使用【杀】指定她时，必须额外弃置1张响应牌，否则该【杀】无效。",
     skills: [
       { name: "萌虎慰劳", type: "trigger", icon: "🔵", text: "结束阶段，你可以指定一名其他友方角色，你与该角色各摸2张牌。" },
@@ -32,7 +52,7 @@ window.GameDataNewCharacters = [
     mother: "混沌女神",
     sourceDungeon: "兽人地下城",
     entrance: "晚上好，我是A小町，星野依，天才般偶像，今天演唱新曲。",
-    stats: { attack: 4.8, magic: 5, speed: 5.5, maxHp: 59, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
+    stats: { attack: 9.6, magic: 10, speed: 11.0, maxHp: 118, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "颜色切换补牌与花色循环输出核心。偶像之星在颜色变化时为星野依补牌；巨蛋演出集齐四种花色后对敌方全体造成攻击力与魔力复合伤害；梦想真理在三回合内完成20张用牌后获得花色成长，否则令敌方全体弃牌。",
     skills: [
       { name: "偶像之星", type: "passive", icon: "⭐", text: "锁定技，当你使用的实体牌与上一次使用的实体牌颜色不同时，你摸一张牌。" },
@@ -53,7 +73,7 @@ window.GameDataNewCharacters = [
     father: "艾伦格",
     sourceDungeon: "兽人地下城",
     entrance: "我会把大家的魔力连接起来，一起战斗。",
-    stats: { attack: 2.4, magic: 5, speed: 4.4, maxHp: 79, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+    stats: { attack: 4.8, magic: 10, speed: 8.8, maxHp: 158, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
     evaluation: "受伤补牌与队友充能核心。生命值受损后摸牌并可分牌，星野依在场时获得治疗；每回合可承受一名女性队友的魔法伤害，令其按自己的每回合摸牌数补牌。",
     skills: [
       { name: "半魅魔血", type: "trigger", icon: "🔵", text: "当你受到实体牌或虚拟牌造成的伤害后（同一张牌的多段或连击伤害逐段结算），你摸3张牌，然后可以选择至多3张手牌并将这些牌交给一名其他友方角色。若星野依在队伍中且存活，星野依令你恢复等同于其魔力值的生命值。技能造成的追加伤害不触发此技。" },
@@ -62,7 +82,7 @@ window.GameDataNewCharacters = [
   },
   {
     id: "artina", name: "亚缇娜", gender: "female", face: "亚", art: "./assets/new-portraits/artina.088f5fa4.webp", avatar: "./assets/new-portraits/artina.088f5fa4.webp", role: "魅影突击队狙击手", locked: true, unlockFlag: "ruinsSandCityUnlocked",
-    stats: { attack: 4.8, magic: 3.7, speed: 6.7, maxHp: 62, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+    stats: { attack: 9.6, magic: 7.4, speed: 13.4, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
     evaluation: "花色记录与单体狙击核心。每回合记录首次使用的花色，蓄力子弹强化下一张实体单体【杀】。",
     skills: [
       { name: "狙击目标", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以选择一名敌方角色，展示其一张手牌。若你手牌中与此牌花色相同的牌数多于该角色（即取得优势），则其被锁定，你对其使用的下一张实体单体【杀】不可被响应；未取得优势时锁定不生效。", card: { name: "狙击目标", type: "tactic", artinaSniper: true, enemyTarget: true, artName: "狙击目标", icon: "⚔️", text: "选择一名敌方角色，展示其一张手牌。" } },
@@ -71,7 +91,7 @@ window.GameDataNewCharacters = [
   },
   {
     id: "maria", name: "玛利亚", gender: "female", face: "玛", art: "./assets/new-portraits/maria.dc753ea7.webp", avatar: "./assets/new-portraits/maria.dc753ea7.webp", role: "魅影突击队支援兵", locked: true, unlockFlag: "ruinsSandCityUnlocked",
-    stats: { attack: 4.8, magic: 5, speed: 6.7, maxHp: 65, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
+    stats: { attack: 9.6, magic: 10, speed: 13.4, maxHp: 130, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
     evaluation: "标记成长与全队祝福支援核心。按出牌数触发神数摸牌，并以不同花色弃牌换取全队属性提升。",
     skills: [
       { name: "神数咒语", type: "passive", icon: "⭐", text: "锁定技，出牌阶段，你每使用一张牌，便获得1枚“神数”标记，且你的攻击力与魔力各+X（X为你“神数”标记的数量）。当你本阶段使用的牌数达到目标数时，你摸与目标数等量的牌，然后将已使用的牌数清零、弃去所有“神数”标记，并令目标数+1。目标数初始为1。回合结束时，你弃去所有“神数”标记。" },
@@ -80,7 +100,7 @@ window.GameDataNewCharacters = [
   },
   {
     id: "abe_karuna", name: "安倍卡露娜", gender: "female", face: "卡", art: "./assets/new-portraits/abe-karuna.4cabcc12.webp", avatar: "./assets/new-portraits/abe-karuna.4cabcc12.webp", role: "追梦人鱼少女", locked: true,
-    stats: { attack: 2, magic: 4, speed: 3, maxHp: 50, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 1 },
+    stats: { attack: 4, magic: 8, speed: 6, maxHp: 100, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 1 },
     evaluation: "同色连唱补牌与战斗收尾经验增益辅助。同频歌姬在使用与上张同色的牌时补牌，记忆泡泡把已结算的牌暂存为可复用资源，幸运海螺在存活收场时令全队经验翻倍。",
     skills: [
       { name: "同频歌姬", type: "passive", icon: "⭐", text: "锁定技，当你使用的实体牌与上一次使用的实体牌颜色相同时，你摸一张牌。" },

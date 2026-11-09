@@ -1,7 +1,11 @@
-// 验证「冒险级及以上难度，敌人属性倍率整体 +20%」。
+// 验证「全角色/全怪物基础属性翻倍后，难度倍率改为线性加成」。
+//
+// 规格：冒险 +40%/+30%/+20%（生命/输出/速度），其后逐档 +40/+30/+20 个百分点，
+// 即 hp 1.4→1.8→2.2→2.6、power 1.3→1.6→1.9→2.2、speed 1.2→1.4→1.6→1.8，
+// 普通级保持 1.00。精英与首领使用同一套倍率。
 //
 // 关键点：不能只核对配置数字，必须走 GameData.scaleEnemyStats 算出
-// 真实敌人的 hp/attack/magic/speed，确认提升真的落地到数值上；
+// 真实敌人的 hp/attack/magic/speed，确认倍率真的落地到数值上；
 // 同时核对界面 attrText 文案与实际倍率一致（不能改了数值忘了改文案）。
 
 const fs = require("fs");
@@ -28,81 +32,76 @@ function load(file) {
 
 const D = window.GameData.difficulties;
 
-// 本次调整前的原始倍率（改动前 data-world.js 的值）
-const OLD = {
-  normal:    { hp: 1,    power: 1,    speed: 1 },
-  adventure: { hp: 1.25, power: 1.20, speed: 1.12 },
-  warrior:   { hp: 1.55, power: 1.42, speed: 1.26 },
-  king:      { hp: 1.95, power: 1.68, speed: 1.42 },
-  hell:      { hp: 2.45, power: 1.98, speed: 1.58 },
+// 新规格：生命/输出/速度逐档线性加成（普通级不动）
+const SPEC = {
+  normal:    { hp: 1,   power: 1,   speed: 1 },
+  adventure: { hp: 1.4, power: 1.3, speed: 1.2 },
+  warrior:   { hp: 1.8, power: 1.6, speed: 1.4 },
+  king:      { hp: 2.2, power: 1.9, speed: 1.6 },
+  hell:      { hp: 2.6, power: 2.2, speed: 1.8 },
 };
+const TIERS = ["adventure", "warrior", "king", "hell"];
+const STEP = { hp: 0.4, power: 0.3, speed: 0.2 };
 
 let pass = 0, fail = 0;
 function ok(cond, name, extra) {
   if (cond) { pass++; console.log(`  ✅ ${name}`); }
   else { fail++; console.log(`  ❌ ${name}${extra !== undefined ? "  ← " + JSON.stringify(extra) : ""}`); }
 }
-// speed 保留两位小数，允许 0.6% 舍入误差；hp/power 精确
-function near(a, b, tol) { return Math.abs(a / b - 1) <= tol; }
 
-console.log("=== A. 倍率表：冒险级及以上各 +20%，普通级不动 ===");
-for (const id of ["normal", "adventure", "warrior", "king", "hell"]) {
+console.log("=== A. 倍率表：四档线性加成，普通级不动 ===");
+for (const id of ["normal", ...TIERS]) {
   for (const type of ["normal", "elite", "boss"]) {
     const cur = D[id].enemy[type];
-    const old = OLD[id];
-    if (id === "normal") {
-      ok(cur.hp === 1 && cur.power === 1 && cur.speed === 1,
-        `普通级/${type} 保持基础倍率 1`, cur);
-    } else {
-      ok(near(cur.hp, old.hp * 1.2, 0.006), `${id}/${type} hp 提升 20%`, { cur: cur.hp, expect: +(old.hp * 1.2).toFixed(4) });
-      ok(near(cur.power, old.power * 1.2, 0.006), `${id}/${type} power 提升 20%`, { cur: cur.power, expect: +(old.power * 1.2).toFixed(4) });
-      ok(near(cur.speed, old.speed * 1.2, 0.006), `${id}/${type} speed 提升 20%`, { cur: cur.speed, expect: +(old.speed * 1.2).toFixed(4) });
-    }
+    const exp = SPEC[id];
+    ok(cur.hp === exp.hp && cur.power === exp.power && cur.speed === exp.speed,
+      `${id}/${type} 倍率 = ${exp.hp}/${exp.power}/${exp.speed}`, cur);
   }
+}
+// 线性步长：每档比上一档恰好 +0.4 / +0.3 / +0.2
+for (const k of Object.keys(STEP)) {
+  const seq = [D.normal.enemy.normal[k], ...TIERS.map(id => D[id].enemy.normal[k])];
+  ok(seq.every((v, i) => i === 0 || Math.abs(v - seq[i - 1] - STEP[k]) < 1e-9),
+    `${k} 逐档步长 = ${STEP[k]}`, seq);
 }
 
 console.log("=== B. 同一难度内 normal/elite/boss 倍率一致 ===");
-for (const id of ["adventure", "warrior", "king", "hell"]) {
+for (const id of TIERS) {
   const { normal: n, elite: e, boss: b } = D[id].enemy;
   ok(n.hp === e.hp && e.hp === b.hp && n.power === e.power && e.power === b.power && n.speed === e.speed && e.speed === b.speed,
     `${id} 三种敌人类型倍率一致`, { n, e, b });
 }
 
-console.log("=== C. 真实敌人属性：+20% 真的落到数值上 ===");
-// 机械工厂真实精英：hp 90 / attack 7 / magic 8 / speed 9
+console.log("=== C. 真实敌人属性：倍率确实落到数值上 ===");
+// 机械工厂真实精英（基础属性已翻倍：hp 180 / attack 14 / magic 16 / speed 18）
 const base = (window.GameData.enemies.machine_factory || []).find(e => e.id === "elrana_clone")
-  || { hp: 90, attack: 7, magic: 8, speed: 9, bloodlust: 3, handLimit: 3, drawPerTurn: 2 };
+  || { hp: 180, attack: 14, magic: 16, speed: 18, bloodlust: 3, handLimit: 3, drawPerTurn: 2 };
 console.log(`  基准敌人 hp=${base.hp} attack=${base.attack} magic=${base.magic} speed=${base.speed}`);
-// 说明：hp 走 ceil、attack/magic/speed 走 round，小基数取整会放大实际比值。
-// 例：magic=8 时 round(8×1.42)=11 → round(8×1.704)=14，比值 1.273。
-// 所以 hp（基数大）断言比例贴近 1.2，其余只断言“确有提升且幅度合理”。
-const TIGHT = ["hp"], LOOSE = ["attack", "magic", "speed"];
-for (const id of ["adventure", "warrior", "king", "hell"]) {
+const KEYS = ["hp", "attack", "magic", "speed"];
+for (const id of TIERS) {
   for (const type of ["normal", "elite", "boss"]) {
-    const oldStats = window.GameData.scaleEnemyStats(base, { enemy: { [type]: OLD[id] } }, type);
-    const newStats = window.GameData.scaleEnemyStats(base, D[id], type);
-    for (const k of [...TIGHT, ...LOOSE]) {
-      if (!Number.isFinite(oldStats[k]) || !Number.isFinite(newStats[k])) continue;
-      const r = newStats[k] / oldStats[k];
-      const [lo, hi] = TIGHT.includes(k) ? [1.18, 1.22] : [1.05, 1.35];
-      ok(r > 1.0 && r >= lo && r <= hi,
-        `${id}/${type} ${k}: ${oldStats[k]} → ${newStats[k]}（比值 ${r.toFixed(3)}）`, { old: oldStats[k], now: newStats[k] });
+    const scaled = window.GameData.scaleEnemyStats(base, D[id], type);
+    const mult = SPEC[id];
+    for (const k of KEYS) {
+      const factor = k === "hp" ? mult.hp : (k === "speed" ? mult.speed : mult.power);
+      const expected = k === "hp" ? Math.ceil(base[k] * factor) : Math.round(base[k] * factor);
+      ok(scaled[k] === expected,
+        `${id}/${type} ${k}: ${base[k]} × ${factor} → ${scaled[k]}`, { scaled: scaled[k], expected });
     }
   }
 }
 
-console.log("=== C2. 大基数 BOSS：hp 比例应精准贴近 1.2 ===");
+console.log("=== C2. 大基数 BOSS：hp 比值贴近难度倍率 ===");
 const boss = (window.GameData.enemies.machine_factory || []).find(e => e.id === "pursuer_edis")
-  || { hp: 220, attack: 6, magic: 5, speed: 10 };
+  || { hp: 440, attack: 12, magic: 10, speed: 20 };
 console.log(`  基准 BOSS hp=${boss.hp}`);
-for (const id of ["adventure", "warrior", "king", "hell"]) {
-  const o = window.GameData.scaleEnemyStats(boss, { enemy: { boss: OLD[id] } }, "boss");
+for (const id of TIERS) {
   const n = window.GameData.scaleEnemyStats(boss, D[id], "boss");
-  const r = n.hp / o.hp;
-  ok(Math.abs(r - 1.2) <= 0.01, `${id} BOSS hp: ${o.hp} → ${n.hp}（比值 ${r.toFixed(4)}）`, { old: o.hp, now: n.hp });
+  const r = n.hp / boss.hp;
+  ok(Math.abs(r - SPEC[id].hp) <= 0.01, `${id} BOSS hp: ${boss.hp} → ${n.hp}（比值 ${r.toFixed(4)}）`, { now: n.hp, expect: SPEC[id].hp });
 }
 
-console.log("=== C3. 四个副本的敌人全部生效（倍率是全局表，逐副本实测）===");
+console.log("=== C3. 四个副本的敌人全部生效（逐副本实测且随难度递增）===");
 const MISSIONS = Object.keys(window.GameData.enemies || {});
 console.log(`  副本: ${MISSIONS.join(", ")}`);
 let covered = 0;
@@ -110,19 +109,16 @@ for (const mid of MISSIONS) {
   const pool = window.GameData.enemies[mid] || [];
   if (!pool.length) continue;
   const e = pool[0];
-  for (const id of ["adventure", "warrior", "king", "hell"]) {
-    const o = window.GameData.scaleEnemyStats(e, { enemy: { normal: OLD[id] } }, "normal");
-    const n = window.GameData.scaleEnemyStats(e, D[id], "normal");
-    covered++;
-    ok(n.hp > o.hp && n.attack >= o.attack && n.speed >= o.speed,
-      `${mid}/${id} ${e.name || e.id}: hp ${o.hp}→${n.hp} atk ${o.attack}→${n.attack} spd ${o.speed}→${n.speed}`,
-      { old: o, now: n });
-  }
+  const seq = ["normal", ...TIERS].map(id => window.GameData.scaleEnemyStats(e, D[id], "normal"));
+  covered++;
+  ok(KEYS.every(k => seq.every((s, i) => i === 0 || s[k] > seq[i - 1][k])),
+    `${mid} ${e.name || e.id}: ${KEYS.map(k => seq.map(s => s[k]).join("→")).join(" | ")}`,
+    seq.map(s => ({ hp: s.hp, attack: s.attack, speed: s.speed })));
 }
-ok(covered >= 16, `至少覆盖 16 组（4 副本 × 4 难度）`, covered);
+ok(covered >= 4, `至少覆盖 4 个副本`, covered);
 
 console.log("=== D. 界面 attrText 与实际倍率一致（文案不骗人）===");
-for (const id of ["adventure", "warrior", "king", "hell"]) {
+for (const id of TIERS) {
   const m = String(D[id].attrText).match(/生命(\d+)%/);
   const p = String(D[id].attrText).match(/输出(\d+)%/);
   const s = String(D[id].attrText).match(/速度(\d+)%/);

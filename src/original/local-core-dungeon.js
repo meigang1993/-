@@ -168,6 +168,8 @@ window.LocalCoreDungeonOps = (() => {
       core.flags.secondDefeatSeen = true;
       const c = char(core, "carlos");
       if (c) c.locked = false;
+    } else if (!core.flags.thirdDefeatSeen && core.flags.defeatCount >= 3) {
+      core.flags.thirdDefeatSeen = true;
     }
     core.lastDefeatId = defeatId;
     return outcomes.changed;
