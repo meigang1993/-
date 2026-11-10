@@ -34,12 +34,13 @@ window.BattleAISlashPlanner = (() => {
     const relicBonus = heroic(actor)
       ? (hasRelic(actor, "伊迪斯电锯剑") && !card.sweep ? 18 : 0)
         + (hasRelic(actor, "格林机枪") && !actor.usedGreenGatling && !card.sweep ? 16 : 0)
-        + (hasRelic(actor, "圣鹰剑") && hasDodge(actor) ? 14 : 0)
+        // 【圣鹰剑】重做后不再依赖「手握闪」，改为对已造成过伤害的同一目标加成。
+      + (window.HolyEagleSwordSkills?.marked?.(window.state, actor, target) ? 14 : 0)
         + (actor.shockHandCannonReady && !card.sweep ? 20 : 0)
       : 0;
     const dodgeBonus = hasDodge(target)
       && (card.ignoreResponse || actor.ai === "minotaur"
-        || actor.ai === "invader_chiyo" || hasRelic(actor, "圣鹰剑"))
+        || actor.ai === "invader_chiyo")
       ? 14 : 0;
     const traitBonus = (card.poison ? 4 : 0)
       + (card.shock ? 4 + (target?.shock || 0) : 0)

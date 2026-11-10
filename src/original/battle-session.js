@@ -26,9 +26,24 @@ window.BattleSession = ({
     queue.push({ id: `db${nextAnim()}`, ...event });
   }
 
+  // 给 draw() 的返回数组挂一个非枚举的可判定信号：牌堆（含重洗）是否真的
+  // 耗尽、是否被封魔、有多少张被吸魔邪眼转交出去。现有调用方一律把返回值
+  // 当数组用（.length / [0] / .some），非枚举属性不会干扰它们。
+  function withSignal(cards, info) {
+    Object.defineProperty(cards, "drawSignal", {
+      value: { ...info }, enumerable: false, configurable: true, writable: true,
+    });
+    return cards;
+  }
+
   function draw(unit, count, battle, eventCollector = null) {
-    if (unit?.drawLockedThisTurn) return [];
+    if (unit?.drawLockedThisTurn) {
+      return withSignal([], {
+        requested: count, drawn: 0, exhausted: true, locked: true, redirected: 0,
+      });
+    }
     const cards = [];
+    let redirected = 0;
     const batches = new Map();
     for (let index = 0; index < count; index += 1) {
       window.BattlePileStats?.reshuffle(unit, setup.shuffle);
@@ -38,6 +53,7 @@ window.BattleSession = ({
       // 吸魔邪眼会把摸到的牌转交给另一名角色；跨阵营转交必须记原主，
       // 否则弃置时会落进接收方牌库，等于永久占有对方阵营的牌。
       if (recipient !== unit && !card.stolenFromUid) card.stolenFromUid = unit.uid;
+      if (recipient !== unit) redirected += 1;
       if (battle?.animQueue) card._pendingDraw = true;
       recipient.hand.push(card);
       cards.push(card);
@@ -65,7 +81,10 @@ window.BattleSession = ({
     window.RuinsRelicEffects?.afterDraw?.(
       window.state?.battle === battle ? window.state : { battle },
       unit, cards, draw, { getCombat });
-    return cards;
+    return withSignal(cards, {
+      requested: count, drawn: cards.length, exhausted: cards.length === 0,
+      locked: false, redirected,
+    });
   }
 
   const finishBattle = window.BattleSessionSettlement({

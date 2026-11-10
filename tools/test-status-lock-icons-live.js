@@ -55,7 +55,7 @@ const cases = [
     apply: `u.skipPlayPhase = true; u.skipPlayReason = "麻痹";` },
   { name: "冰冻", mark: "冻", cls: "",
     apply: `u.frozenSlash = true;` },
-  // 持牌场景：判定成功后牌仍在手里（回合结束才消耗），检查是否与生效标记重复
+  // 手工构造的持牌场景（不经过判定流程，故状态牌仍在手里）：检查是否与生效标记重复
   { name: "麻痹(持牌)", mark: "麻", cls: "",
     apply: `u.hand.push(window.BattleStatusCardRegistry.create("paralysis"));
             window.BattleStatusCardRegistry.sync(u, b);

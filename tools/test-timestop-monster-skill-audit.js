@@ -112,7 +112,10 @@ const CONFIRMED_GUARDED = new Set([
   // 9) resolveReactionAction —— 响应动作，被时停者不可响应。
   "endTurn", "onTurnEnd", "prepare", "allyTurnStart", "tickBurning", "battleStart",
   "immuneIncoming", "modifyDamage", "afterDamage", "resolveReactionAction",
-  "addPoison", "consumeStatusByCharm",
+  // 旧版【盖亚妮丝护符】的 consumeStatusByCharm 是兼容层转发，不是怪物技能钩子：
+  // 交牌链路已直接走 BattleStatusCardStorage.consumeByCharm（独立饰品模块），
+  // 该旧断言项随饰品重做一并删除。
+  "addPoison",
   // 10) beforeHeal —— 这是 EnemySkills 的聚合转发，真正的守卫在下游技能模块内部：
   //     EdisSkills.beforeHeal（无限暗刃）与 RuinsEnemySkills.beforeHeal
   //     → ruins-carrier-armor.beforeHeal（坚硬装甲，本轮新增）。

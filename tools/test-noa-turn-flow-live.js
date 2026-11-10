@@ -216,6 +216,18 @@ async function waitNoaTurn(page, timeoutMs = 90000) {
     if (s.battle && s.charm) {
       await settleCharmDiscard(page);
     } else if (s.battle && s.phase === 5 && s.confirmBtn) {
+      // 标准弃牌阶段必须先选够 need 张再确认；只点「确认弃置」会被
+      // confirmDiscard 以「还需选择 N 张弃牌」拒绝，回合永远停在 phase 5。
+      const need = await page.evaluate(() => {
+        const b = window.state.battle;
+        const u = (b.allies || []).concat(b.enemies || []).find(x => x.uid === b.activeUid);
+        const vis = (u?.hand || []).filter(c => !c._pendingDraw).length;
+        const lim = window.NoaSideEffectSkills?.handLimit?.(u) ?? (u?.stats?.handLimit || 5);
+        return Math.max(0, vis - lim);
+      });
+      for (let i = 0; i < need; i++) {
+        await page.locator(`[data-card-index="${i}"]`).first().click({ timeout: 5000 }).catch(() => {});
+      }
       await page.locator("[data-confirm-discard]").evaluate(el => el.click()).catch(() => {});
     } else if (s.battle && s.activeAlly && s.phase === 4 && !s.locked && s.endBtn) {
       await page.locator("[data-end-play]").evaluate(el => el.click()).catch(() => {});
@@ -485,7 +497,12 @@ async function segD(browser) {
       // 造出「诺亚手牌多于上限」：这是 resume-hooks 以出牌者(actor)调用平衡时的分支。
       const mk = i => ({ name: "测试牌" + i, type: "tactic", suit: "♠" });
       const extra = [mk(1), mk(2), mk(3)];
-      noa.hand = noa.hand.filter(c => !c._pendingDraw).slice(0, limit).concat(extra);
+      // 基准手牌只取计入上限的牌：状态牌不计入手牌上限（countsForLimit），
+      // 混进基准会让权威 overflow 从 3 变 2，下面按 extraCount=3 写的断言口径
+      // 就不成立。魅力改造现在按权威计数，也不该弃掉那张状态牌。
+      const base = noa.hand.filter(c => !c._pendingDraw
+        && !window.BattleStatusCards?.isStatus?.(c)).slice(0, limit);
+      noa.hand = base.concat(extra);
       const before = noa.hand.length;
       const foeDiscardBefore = (other.discard || []).length;
       const noaDiscardBefore = (noa.discard || []).length;
@@ -600,6 +617,16 @@ async function advance(page, stop, maxTicks = 220) {
       });
     }
     if (step.phase === 5 && step.confirmBtn) {
+      const need = await page.evaluate(() => {
+        const b = window.state.battle;
+        const u = (b.allies || []).concat(b.enemies || []).find(x => x.uid === b.activeUid);
+        const vis = (u?.hand || []).filter(c => !c._pendingDraw).length;
+        const lim = window.NoaSideEffectSkills?.handLimit?.(u) ?? (u?.stats?.handLimit || 5);
+        return Math.max(0, vis - lim);
+      });
+      for (let i = 0; i < need; i++) {
+        await page.locator(`[data-card-index="${i}"]`).first().click({ timeout: 5000 }).catch(() => {});
+      }
       await page.locator("[data-confirm-discard]").evaluate(el => el.click()).catch(() => {});
     } else if (step.activeAlly && !step.activeIsNoa && step.phase === 4 && !step.locked && step.endBtn) {
       // 只推别人的回合，绝不点掉诺亚自己的出牌阶段。

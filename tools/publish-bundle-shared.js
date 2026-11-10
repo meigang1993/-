@@ -76,6 +76,19 @@ const ORDER_DEPENDENCIES = [
     file: "battle-krow-repeat-resume.js",
     consumers: ["battle-combat.js"],
   },
+  // 重做饰品的两个独立技能文件（同一 bundle 内须早于全部消费方）。
+  {
+    file: "gaianis-amulet-skills.js",
+    consumers: [
+      "battle-status-card-storage.js",
+      "battle-status-card-triggers.js",
+      "battle-combat-card-effects.js",
+    ],
+  },
+  {
+    file: "holy-eagle-sword-skills.js",
+    consumers: ["battle-combat-attack-values.js"],
+  },
 ];
 
 const sharedFileNames = SHARED_SOURCES.map(entry => entry.file);

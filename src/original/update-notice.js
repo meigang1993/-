@@ -1,7 +1,7 @@
 window.UpdateNotice = (() => {
   // 最新更新日期：公告标题、页脚时间与大厅按钮徽标统一以此为准，修改时只改这里。
-  const latest = { iso: "2026-10-26", label: "2026年10月26日", badge: "2026.10.26" };
-    // 公告条目按「常改 / 归档」拆成两个数据文件，避免单文件超过 200 行硬约束：
+  const latest = { iso: "2026-11-10", label: "2026年11月10日", badge: "2026.11.10" };
+    // 公告条目按「常改 / 归档」拆成两个数据文件，避免单文件超过 189 行硬约束：
   //   update-notice-recent.js  —— 最近几期，新条目一律加到该文件第一期
   //   update-notice-archive.js —— 历史归档，条目只增不改
   // 两者均按时间由新到旧排列，拼接时 recent 在前。
@@ -29,7 +29,7 @@ window.UpdateNotice = (() => {
           </div>
         <time datetime="${latest.iso}">更新至${latest.label}</time>
       </header>
-        <p class="update-notice-summary">本次更新新增可玩角色【安倍卡露娜】（追梦人鱼少女），为第 33 名可培养职业，自带【同频歌姬】【记忆泡泡】【幸运海螺】三个技能，本次先完成角色数据、立绘、解锁事件与管家手册、羁绊任务的接入；同时订正【米尔尤拉】的成长表描述。</p>
+        <p class="update-notice-summary">本次更新新增第 34 名可玩角色【怪面诺亚】（魅力改造者），完成角色数据、两张立绘、解锁事件、羁绊任务与管家手册的接入，并实装【魅力改造】【改造副作用】两个技能；同时重做【盖亚妮丝护符】与【圣鹰剑】两件饰品，同步全角色与怪物属性翻倍、四档难度倍率重调。</p>
         <div class="update-notice-list">${sections}</div>
       </section>
     `;

@@ -27,12 +27,8 @@ window.EnemyKillHooks = ({ black, hasSkill, drawJudge }) => {
     if (!actor || !card || tsStopped(actor)) return;
     window.BakarSkills?.beforeKillTargeted?.(state, actor, card);
     window.RuinsEnemySkills?.beforeKillUsed?.(state, actor, card);
-    if (window.RelicSystem?.hasEquipped?.(state, actor, "圣鹰剑")
-      && actor.hand.some(item => item.name === "闪" && !item._pendingDraw)) {
-      if (!card.ignoreResponse) card._tempIgnoreResponse = true;
-      card.ignoreResponse = true;
-      window.BattleLog.add(state, `${actor.name} 的圣鹰剑触发，本次杀不可响应。`);
-    }
+    // 【圣鹰剑】旧版「手握闪则杀不可响应」已重做为「同目标下一张单体杀伤害翻倍」，
+    // 效果改在统一伤害链结算，这里不再写 ignoreResponse。
   }
 
   function beforeKillTargeted(state, actor, target, card, options = {}) {

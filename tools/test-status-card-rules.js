@@ -46,6 +46,10 @@ function statusState(hand = []) {
     card("杀（普攻）", { suit: "♠" }),
   ];
   BattleStatusCards.judgement(state, holder);
+  assert.deepStrictEqual(holder.hand.filter(BattleStatusCards.isStatus), [],
+    "judgement must consume each judged status card immediately");
+  assert.deepStrictEqual(holder.consumed.map(BattleStatusCards.keyOf), ["stun", "seal"],
+    "judged status cards must enter the consumed pile");
   assert.strictEqual(holder.skipPlayPhase, true,
     "black stun judgement must skip the play phase");
   assert.strictEqual(holder.skipDrawPhase, true,

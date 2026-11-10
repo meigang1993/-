@@ -1,17 +1,13 @@
 window.BattleStatusCardStorage = (() => {
   const {
-    canReceive, create, isStatus, keyOf, labelOf, sync,
+    canReceive, isStatus, labelOf, sync,
   } = window.BattleStatusCardRegistry;
 
   function consumeByCharm(state, target, card) {
-    if (!target || !isStatus(card)
-      || !window.RelicSystem?.hasEquipped?.(state, target, "盖亚妮丝护符")) {
-      return false;
-    }
-    window.BattleCards?.put(state.battle, target, card, "consumed");
-    window.BattleLog.add(state,
-      `${target.name} 的盖亚妮丝护符触发，立即消耗${card.name}状态牌。`);
-    return true;
+    if (!target || !isStatus(card)) return false;
+    // 【盖亚妮丝护符】新版：状态牌对持有者无效（不入手牌、直接消耗）。
+    // 保留 consumeByCharm 这个 API，供交牌链路与既有契约继续调用。
+    return !!window.GaianisAmuletSkills?.nullifyStatus?.(state, target, card);
   }
 
   function add(state, target, card, source = "") {
@@ -47,9 +43,10 @@ window.BattleStatusCardStorage = (() => {
   function endTurn(state, unit) {
     const expired = (unit?.hand || []).filter(card =>
       isStatus(card) && card.statusExpiresEndTurn);
-    const hadFreeze = expired.some(card => keyOf(card) === "freeze");
     expired.forEach(card => consumeRemoved(state, unit, card, false));
-    if (hadFreeze) unit.frozenSlash = false;
+    // 冰冻标记由判定设置、本回合内持续生效；判定结算后状态牌已被消耗，
+    // 不能再靠「手里还有 freeze」判断，否则 ban 杀效果会残留到下个回合。
+    if (unit?.frozenSlash) unit.frozenSlash = false;
     if (expired.length) window.BattleLog.add(state,
       `${unit.name} 回合结束，消耗${expired.map(card => card.name).join("、")}。`);
   }

@@ -3,8 +3,8 @@
 // 「无法使用或打出响应牌」应同时封死闪、杀响应、看破、埋伏、后空翻。
 // 生命周期：判定成功时置位，该角色下个回合开始时清除（= 一轮回合）。
 //
-// 场景1 麻痹 + 手握闪 → 敌方杀命中，掉血，闪留在手里（未响应）
-// 场景2 对照 无麻痹 + 手握闪 → 不掉血，闪被消耗
+// 场景1 麻痹 + 持有【闪】 → 敌方杀命中，掉血，闪留在手里（未响应）
+// 场景2 对照 无麻痹 + 持有【闪】 → 不掉血，闪被消耗
 // 场景3 真实判定置位（judgement 成功 → noResponse=true）+ 日志文案
 // 场景4 面板标签说明「无法使用或打出响应牌」
 // 场景5 真实判定后同样无法响应（走真实链路，非仅置位）
@@ -98,7 +98,7 @@ const tagTpl = `(() => {
     await page.waitForTimeout(1200);
     const p1 = await page.evaluate(readTpl);
     out.paralyzed = p1;
-    t("麻痹：手握闪仍被杀命中（掉血）", p1.hp < 100, { hp: p1.hp });
+    t("麻痹：持有【闪】仍被杀命中（掉血）", p1.hp < 100, { hp: p1.hp });
     t("麻痹：闪未被消耗（留在手里）", p1.hand.includes("闪"), { hand: p1.hand });
     t("麻痹：noResponse 标记已置位", p1.noResponse, { v: p1.noResponse });
 
@@ -145,7 +145,7 @@ const tagTpl = `(() => {
     await page.waitForTimeout(1200);
     const p5 = await page.evaluate(readTpl);
     out.realAfterJudge = p5;
-    t("真实判定后：手握闪仍被命中", p5.hp < 100, { hp: p5.hp });
+    t("真实判定后：持有【闪】仍被命中", p5.hp < 100, { hp: p5.hp });
     t("真实判定后：闪未被消耗", p5.hand.includes("闪"), { hand: p5.hand });
   } catch (e) {
     out.err = String(e).slice(0, 300);

@@ -198,6 +198,8 @@
     "battle-pile-stats.js",
     "battle-card-animation-events.js",
     "battle-cards-system.js",
+    "gaianis-amulet-skills.js",
+    "holy-eagle-sword-skills.js",
     "battle-status-card-registry.js",
     "battle-status-card-storage.js",
     "battle-status-card-triggers.js",

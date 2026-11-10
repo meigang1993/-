@@ -20,6 +20,9 @@ window.BattleStatusCardTriggers = (() => {
 
   function judgement(state, unit) {
     visible(unit).filter(isStatus).forEach(status => {
+      // 【盖亚妮丝护符】：状态牌对持有者无效。正常链路在 add 阶段已消耗，
+      // 这里兜住存档 / 手动注入的残留牌，避免任何判定效果生效。
+      if (window.GaianisAmuletSkills?.suppressJudgement?.(state, unit, status)) return;
       const key = keyOf(status);
       if (!["stun", "seal", "paralysis", "confusion", "freeze"].includes(key)) return;
       const judgeOf = key === "stun" ? black
@@ -42,7 +45,10 @@ window.BattleStatusCardTriggers = (() => {
         confusion: "随机对我方其他角色视为使用虚拟【杀】",
       };
       window.BattleLog.add(state,
-        `${unit.name} 的${status.name}判定：${card.suit}${card.name}，${success ? resultMap[key] : "未触发"}。`);
+        `${unit.name} 的${status.name}判定：${card.suit}${card.name}，${success ? resultMap[key] : "未触发"}，判定结算后消耗${status.name}。`);
+      // 判定结算完毕即消耗「对应这一张」状态牌，不再等回合结束：
+      // 时停 / 跳过出牌阶段等路径会绕过结束阶段钩子，状态牌否则会留到下回合重复判定。
+      consumeRemoved(state, unit, status, false);
     });
   }
 

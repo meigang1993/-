@@ -7,6 +7,8 @@ const {
 installGlobals();
 loadRuntime();
 [
+  "gaianis-amulet-skills.js",
+  "holy-eagle-sword-skills.js",
   "battle-status-card-registry.js",
   "battle-status-card-storage.js",
   "battle-status-card-triggers.js",
@@ -132,8 +134,13 @@ try {
 } finally {
   window.BattleCards = originalCards;
 }
-assert(charmTarget.consumed.includes(status) && !charmTarget.hand.includes(status), "Gaianys Charm must consume transferred status cards");
-assert(charmTarget.hand.includes(normal), "Gaianys Charm must not consume normal transferred cards");
+assert(charmTarget.consumed.includes(status) && !charmTarget.hand.includes(status), "Gaianis Amulet must nullify transferred status cards");
+assert(charmTarget.hand.includes(normal), "Gaianis Amulet must not nullify normal transferred cards");
+// 旧断言只走交牌兼容层；这里直接验重做后的效果主体（独立技能模块）。
+const directStatus = window.BattleStatusCards.create("stun");
+assert(window.GaianisAmuletSkills.nullifyStatus(shareState, charmTarget, directStatus) === true
+  && !charmTarget.hand.includes(directStatus),
+  "Gaianis Amulet must nullify a directly granted status card");
 
 const gerda = unitFromCharacter(characters[0], "gerda-watch");
 const comfortAlly = unitFromCharacter(characters[1], "comfort-ally");

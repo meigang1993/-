@@ -103,6 +103,11 @@ if (!fs.existsSync(bundlesPath)) {
       "battle-combat-trail.js",
       "battle-krow-repeat-resume.js",
     ],
+    // 重做后的两件饰品：各自独立文件，所有消费方都必须排在它们之后。
+    "battle-status-card-storage.js": ["gaianis-amulet-skills.js"],
+    "battle-status-card-triggers.js": ["gaianis-amulet-skills.js"],
+    "battle-combat-card-effects.js": ["gaianis-amulet-skills.js"],
+    "battle-combat-attack-values.js": ["holy-eagle-sword-skills.js"],
     "ruins-enemy-skills.js": ["skill-once-per-turn.js"],
     "mieryula-skills.js": ["mieryula-time-stop.js"],
   };

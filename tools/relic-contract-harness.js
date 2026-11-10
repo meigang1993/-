@@ -4,6 +4,9 @@ const { combat, card, scenario } = require("./pursue-kill-fixtures");
 
 window.BattleCards = null;
 require("../src/original/battle-pile-stats.js");
+// 重做饰品的两个独立技能文件：消费方加载前必须先装配。
+require("../src/original/gaianis-amulet-skills.js");
+require("../src/original/holy-eagle-sword-skills.js");
 require("../src/original/battle-cards-system.js");
 require("../src/original/data-future-relics.js");
 require("../src/original/data-relics.js");

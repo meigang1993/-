@@ -149,6 +149,7 @@ const dependencies = [
   ["ruins-witherer-common.js", "ruins-witherer-skills.js"],
   ["ui-selection-tip.js", "ui-hand-view.js"],
   ["battle-card-cleanup.js", "battle-combat-card-effects.js", "battle-combat-attack-values.js", "battle-combat-attack-flow.js", "battle-combat-attack.js", "battle-combat-resolver.js", "battle-combat-trail.js", "battle-krow-repeat-resume.js", "battle-combat.js"],
+  ["gaianis-amulet-skills.js", "holy-eagle-sword-skills.js", "battle-status-card-registry.js", "battle-status-card-storage.js", "battle-status-card-triggers.js", "battle-status-cards.js", "battle-combat-card-effects.js", "battle-combat-attack-values.js"],
   ["data-characters-core.js", "data-characters.js"],
   ["data-machine-factory-enemies.js", "data-world.js"],
   ["data-underwater-train-enemies.js", "data-world.js"],

@@ -11,6 +11,11 @@ window.BattleCombatCardEffects = api => {
       return true;
     }
     if (card.statusKey) {
+      // 【盖亚妮丝护符】：障碍牌对持有者无效，且由其他角色使用时持有者摸一张牌。
+      // 必须拦在生成状态牌之前，否则「无效」会被 add 阶段的消耗掩盖成另一种语义。
+      if (card.type === "obstacle"
+        && window.GaianisAmuletSkills?.resolveObstacle?.(
+          state, actor, target, card, deps.draw)) return true;
       window.BattleStatusCards?.apply?.(state, actor, target, card);
       return true;
     }

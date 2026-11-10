@@ -45,8 +45,10 @@ window.HoshinoKaiichiShareResolution = ({ alive, allUnits, queue }) => {
       fromBefore,
       toBefore,
     });
+    // 【盖亚妮丝护符】重做后效果主体在独立模块：直接走状态牌存储的判据，
+    // 不再经过水下列车技能里那个旧版转发层（consumeStatusByCharm）。
     const received = cards.filter(card =>
-      !window.UnderwaterTrainSkills?.consumeStatusByCharm?.(state, target, card));
+      !window.BattleStatusCardStorage?.consumeByCharm?.(state, target, card));
     // 交牌=借：牌仍属星野一
     received.forEach(card => { if (!card.stolenFromUid) card.stolenFromUid = unit.uid; });
     target.hand.push(...received);

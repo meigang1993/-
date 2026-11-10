@@ -1,7 +1,8 @@
-// 实战：10月16日公告渲染 + 普雷希「女王榨取」技能立绘接图
+// 实战：更新公告渲染（日期以数据源为准）+ 普雷希「女王榨取」技能立绘接图
 //
-// 目的（上一轮未完成的收尾）：
-//   1) 更新公告弹窗首期确实是 2026-10-16，且两条内容都在；
+// 目的：
+//   1) 公告弹窗首期 datetime / 标题日期与 UpdateNotice.latestDate() 一致，
+//      且本期新角色与两件重做饰品条目都在；
 //   2) 女王榨取的技能立绘真的加载出来（此前缺图会退回通用兜底图）。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
@@ -45,14 +46,21 @@ const check = (name, ok, detail = "") => {
       srcIso: src.iso || "",
       srcLabel: src.label || "",
       firstTitle,
-      text: text.slice(0, 4000),
-      // 首期标题的日期段（如「2026年10月19日 · 今日更新」）
-      firstTitleOnPage: /2026年10月\d+日\s*·\s*今日更新/.test(text),
+      // 公告正文较长，新一期插到首位后旧条目会整体后移，截取长度需覆盖全部期次。
+      text: text.slice(0, 20000),
+      // 首期标题的日期段不写死月份，一律以数据源 label 为准。
+      firstTitleOnPage: new RegExp(
+        String(src.label || "__none__").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+        + "\\s*·\\s*今日更新").test(text),
       hasLatestIso: new RegExp(src.iso || "__none__").test(firstDt),
       topics: {
         queen: /女王榨取/.test(text),
         beast: /快速装弹/.test(text),
         preshi: /普雷希/.test(text),
+        noa: /怪面诺亚/.test(text),
+        charm: /魅力改造/.test(text),
+        gaianis: /盖亚妮丝护符/.test(text),
+        eagle: /圣鹰剑/.test(text),
       },
       len: text.length,
     };
@@ -64,6 +72,10 @@ const check = (name, ok, detail = "") => {
     `firstTitle=${notice.firstTitle}`);
   check("公告含「女王榨取」立绘条目", notice.topics.queen, JSON.stringify(notice.topics));
   check("公告含「快速装弹」删除条目", notice.topics.beast, JSON.stringify(notice.topics));
+  check("本期公告含新角色【怪面诺亚】", notice.topics.noa, JSON.stringify(notice.topics));
+  check("本期公告含【魅力改造】", notice.topics.charm, JSON.stringify(notice.topics));
+  check("本期公告含重做饰品【盖亚妮丝护符】", notice.topics.gaianis, JSON.stringify(notice.topics));
+  check("本期公告含重做饰品【圣鹰剑】", notice.topics.eagle, JSON.stringify(notice.topics));
   check("公告文本长度合理（非空壳）", notice.len > 200, `len=${notice.len}`);
 
   console.log("\n【二】女王榨取技能立绘真的能加载");

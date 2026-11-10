@@ -50,10 +50,20 @@ window.BattleDiscardFlow = (deps) => {
     // 【魅力改造】出牌阶段内的溢出弃牌：与弃牌阶段同一套「选够 N 张 → 确认 →
     // discardCards 一次性结算」，但不进结束阶段，清标记后继续本回合出牌。
     if (charm) {
-      if (indexes.length < charm.need) { record(state, `还需选择${charm.need - indexes.length}张弃牌。`); if (onStep) onStep(); return true; }
+      // 挂起期间可弃牌可能被偷/被状态牌替换：把 need 重算到实际可弃数，
+      // 一张都不可弃时清掉挂起继续出牌。与标准弃牌阶段 !canDiscardAny 兜底同口径，
+      // 否则 confirmDiscard 永远停在「还需选择N张弃牌」把回合卡死。
+      const available = (unit.hand || []).filter(card => canDiscardCard(unit, card)).length;
+      const need = Math.min(charm.need, available);
+      if (!canDiscardAny(unit) || need <= 0) {
+        b.noaCharmDiscard = null; b.discardPick = null;
+        record(state, `${unit.name} 的可弃手牌已变化，魅力改造本次弃置取消。`);
+        if (onStep) onStep(); return true;
+      }
+      if (indexes.length < need) { record(state, `还需选择${need - indexes.length}张弃牌。`); if (onStep) onStep(); return true; }
       const cards = [];
-      indexes.slice(0, charm.need).forEach(i => { const card = unit.hand[i]; if (canDiscardCard(unit, card)) cards.unshift(unit.hand.splice(i, 1)[0]); });
-      if (cards.length < charm.need) { b.discardPick = null; record(state, `可弃手牌发生变化，请重新选择弃牌。`); if (onStep) onStep(); return true; }
+      indexes.slice(0, need).forEach(i => { const card = unit.hand[i]; if (canDiscardCard(unit, card)) cards.unshift(unit.hand.splice(i, 1)[0]); });
+      if (cards.length < need) { b.discardPick = null; record(state, `可弃手牌发生变化，请重新选择弃牌。`); if (onStep) onStep(); return true; }
       discardCards(state, unit, cards);
       b.noaCharmDiscard = null;
       b.discardPick = null;
@@ -74,7 +84,7 @@ window.BattleDiscardFlow = (deps) => {
   async function discardCard(state, cardIndex, onStep) {
     const b = state.battle, unit = active(b);
     const charm = b?.noaCharmDiscard?.unitUid === unit?.uid ? b.noaCharmDiscard : null;
-    if (b?.thunderHammer) return manualFlow.resolveThunderHammer(state, cardIndex, onStep);
+    if (b?.thunderHammer && !charm) return manualFlow.resolveThunderHammer(state, cardIndex, onStep);
     if (!b || b.locked || (b.phase !== 5 && !charm) || unit?.side !== "ally") return false;
     if (!charm && visibleHand(unit) > handLimit(unit) && !canDiscardAny(unit)) { const done = completeDiscardPhase(state, unit); if (onStep) onStep(); if (done) await advanceToInput(state, onStep); return true; }
     if (window.MillerSkills?.offerShare?.(state, unit, cardIndex, { canDiscardCard, maxCount: discardNeed(unit) })) { b.discardPick = null; if (onStep) onStep(); return true; }

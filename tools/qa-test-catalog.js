@@ -23,6 +23,23 @@ const timeouts = Object.freeze({
   "test-noa-charm-discard-click-live.js": 240,
   // 单人战斗 A/C 两段各 boot 一次浏览器，A 段要驱动 12 个完整回合
   "test-noa-solo-battle-live.js": 420,
+  // 出牌阶段开始补牌：A/B/C 三段共用一次 boot
+  "test-noa-charm-play-start-draw-live.js": 240,
+  // 全女性队伍 A 段驱动 12 个完整回合，B 段反向再 boot 一次
+  "test-noa-all-female-frenzy-live.js": 420,
+  // 状态牌跳过出牌阶段耦合：模块级边界 + 实机 10 回合真实判定
+  "test-noa-skill-status-skip.js": 120,
+  "test-noa-status-skip-live.js": 300,
+  // 饰品重做：模块级 + 实机各 boot 一次浏览器
+  "test-mona-relic-rework.js": 120,
+  "test-mona-relic-rework-live.js": 240,
+  // 饰品重做后全边界严格检查（含 6 组源码级反向验证）
+  "test-mona-relic-strict-audit.js": 120,
+  // 诺亚两技能 × 全库饰品 冲突严格检查（7 段 + 3 组源码级反向验证）
+  "test-noa-relic-conflict-audit.js": 120,
+  // 圣鹰剑第三张杀 / 英雄级莫娜技能×饰品联动（模块级 + 反向验证）
+  "test-holy-eagle-sword-third-slash.js": 120,
+  "test-mona-hell-linkage.js": 120,
 });
 
 const timeoutFor = (file, fallback) => timeouts[file] || fallback;
@@ -196,6 +213,7 @@ const groups = Object.freeze({
     "test-ruins-card-flag-driven.js",
     "test-ruins-dodge-counter.js",
     "test-status-card-judgement-popup.js",
+    "test-status-card-judgement-consume.js",
     "check-ruins-boss-bounty-live.js",
     "test-ai-orc-cards-all-live.js",
     "test-ai-orc-cards-all.js",
@@ -266,6 +284,11 @@ const groups = Object.freeze({
     "test-witherer1312-live.js",
   ],
   characters: [
+    "test-mona-relic-rework.js",
+    "test-mona-relic-rework-live.js",
+    "test-mona-relic-strict-audit.js",
+    "test-holy-eagle-sword-third-slash.js",
+    "test-mona-hell-linkage.js",
     "test-noa-charm-side-effect-skills.js",
     "test-noa-charm-play-phase-live.js",
     "test-noa-charm-discard-click-live.js",
@@ -277,6 +300,15 @@ const groups = Object.freeze({
     "test-noa-manual-maxed-unlock-click-live.js",
     "test-noa-solo-battle-live.js",
     "test-noa-skill-edges.js",
+    "test-noa-charm-play-start-draw.js",
+    "test-noa-charm-play-start-draw-live.js",
+    "test-noa-all-female-frenzy.js",
+    "test-noa-all-female-frenzy-live.js",
+    "test-noa-skill-status-skip.js",
+    "test-noa-status-skip-live.js",
+    "test-noa-skills-strict-audit.js",
+    "test-noa-relic-conflict-audit.js",
+    "test-noa-skills-recheck.js",
     "test-hitwell-skills-strict-live.js",
     "test-preshi-skills-live.js",
     "test-mieryula-skills-live.js",

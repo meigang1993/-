@@ -91,7 +91,12 @@ window.BattleCombatAttackValues = api => {
     // 其余技能在循环内不改 gatlingRepeats，行为与原先取常量完全一致。
     for (let index = 0; index < (card.gatlingRepeats || 1) && target.hp > 0; index += 1) {
       const result = damage(state, target, amount, card.name, actor, card);
-      if (result?.hpLoss > 0) hit = true;
+      if (result?.hpLoss > 0) {
+        hit = true;
+        // 【圣鹰剑】：伤害真正造成后才记「本回合对该目标造成过单体杀伤害」。
+        window.HolyEagleSwordSkills?.recordHit?.(
+          state, actor, target, card, result.hpLoss);
+      }
       if (window.BattleReactionQueue?.captureHitContinuation?.(
         state.battle, actor, target, amount, card.name, card,
         (card.gatlingRepeats || 1) - index - 1
@@ -107,18 +112,20 @@ window.BattleCombatAttackValues = api => {
   }
 
   function slashTargetAmount(state, actor, target, card, amount, log = true) {
-    if (!target || !deps.isKillCard(card)
-      || !window.RelicSystem?.hasEquipped?.(state, actor, "名刀鬼切")) {
-      return amount;
-    }
+    if (!target || !deps.isKillCard(card)) return amount;
+    // 【圣鹰剑】优先于名刀鬼切判定：旧实现里「没装备名刀鬼切就提前 return」，
+    // 会把同挂点的其它饰品一起吞掉，故改为先逐项叠加再返回。
+    let result = window.HolyEagleSwordSkills?.modifyDamage?.(
+      state, actor, target, card, amount) ?? amount;
+    if (!window.RelicSystem?.hasEquipped?.(state, actor, "名刀鬼切")) return result;
     if (target.hp / Math.max(1, target.maxHp || target.stats?.maxHp || 1) >= .3) {
-      return amount;
+      return result;
     }
     if (log) {
       window.BattleLog.add(state,
         `${actor.name} 的名刀鬼切触发，低生命目标${target.name}受到的杀牌伤害翻倍。`);
     }
-    return amount * 2;
+    return result * 2;
   }
 
   return {
