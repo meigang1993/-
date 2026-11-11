@@ -1,4 +1,4 @@
-// 诺亚【魅力改造】×【改造副作用】严格审计（模块级，直调真实挂点）
+// 诺亚【淫气改造】×【改造副作用】严格审计（模块级，直调真实挂点）
 //   A 状态牌不计入手牌上限：balanceHand 必须与 visibleHandCount 同口径
 //   B 可弃牌不足 need：不得挂起（否则 confirmDiscard 永远选不够 → 卡死）
 //   C autoDiscard 只弃可弃牌，不得动状态牌 / _pendingDraw
@@ -29,7 +29,7 @@ const T = (name, cond, extra) => {
 
 const logs = [], drawn = [], discarded = [];
 const syncMagicCalls = [], afterDiscardCalls = [], damageCalls = [];
-const NOA_SKILLS = [{ name: "魅力改造" }, { name: "改造副作用" }];
+const NOA_SKILLS = [{ name: "淫气改造" }, { name: "改造副作用" }];
 const card = (name, extra = {}) => ({ name, type: "slash", suit: "♠", power: 0, scale: "attack", ...extra });
 const status = name => card(name, { status: true, type: "obstacle" });
 const mk = (uid, gender, side, extra = {}) => ({
@@ -75,6 +75,7 @@ const patch = (src, from, to, tag) => {
   return next;
 };
 let charmSrc = read("noa-charm-skills.js");
+let noaDiscardSrc = read("noa-charm-discard.js");
 let discardSrc = read("battle-discard-flow.js");
 let sideSrc = read("noa-side-effect-skills.js");
 // 反向锚点（修复后生效；未修复时锚点不存在则跳过，由 A~F 的红来体现）
@@ -83,11 +84,12 @@ const tryPatch = (tag, file, from, to) => {
     if (file === "charm") charmSrc = patch(charmSrc, from, to, tag);
     if (file === "discard") discardSrc = patch(discardSrc, from, to, tag);
     if (file === "side") sideSrc = patch(sideSrc, from, to, tag);
+    if (file === "charmdisc") noaDiscardSrc = patch(noaDiscardSrc, from, to, tag);
   } catch (e) { /* 未修复态：锚点不存在，红由断言给出 */ }
 };
 if (MODE === "count") tryPatch("count", "charm", "const diff = limit - countedHand(owner);", "const diff = limit - (owner.hand || []).length;");
 if (MODE === "discardable") tryPatch("discardable", "charm", "if (need === overflow && need > 0 && owner.side === \"ally\"", "if (need > 0 && owner.side === \"ally\"");
-if (MODE === "auto") tryPatch("auto", "charm", "const pool = discardableCards(owner);", "const pool = (owner.hand || []);");
+if (MODE === "auto") tryPatch("auto", "charmdisc", "const pool = discardableCards(owner);", "const pool = (owner.hand || []);");
 if (MODE === "resume") {
   tryPatch("resume", "discard", "const need = Math.min(charm.need, available);", "const need = charm.need;");
   tryPatch("resume2", "discard", "if (!canDiscardAny(unit) || need <= 0) {", "if (false) {");
@@ -95,6 +97,7 @@ if (MODE === "resume") {
 if (MODE === "virtual") tryPatch("virtual", "side", "if (!virtual) return false;", "/* REVERT_VIRTUAL */");
 
 vm.runInContext(sideSrc, ctx, { filename: "noa-side-effect-skills.js" });
+vm.runInContext(noaDiscardSrc, ctx, { filename: "noa-charm-discard.js" });
 vm.runInContext(charmSrc, ctx, { filename: "noa-charm-skills.js" });
 vm.runInContext(read("battle-runtime-helpers.js"), ctx, { filename: "battle-runtime-helpers.js" });
 vm.runInContext(discardSrc, ctx, { filename: "battle-discard-flow.js" });
@@ -208,8 +211,14 @@ async function segC() {
     card("a"), card("b"), card("c"), card("d"), card("e"), status("中毒"),
   ], 0, { activeUid: "e0" });
   // 上限 4，权威计入 5 → 需弃 1 张；当前 diff=4-6=-2 → need=2
+  discarded.length = 0; syncMagicCalls.length = 0; afterDiscardCalls.length = 0;
   Charm.balanceHand(state, noa, ctx.BattleSystem.draw);
-  T("C0 弃的是诺亚自己的牌", discarded.every(d => d.uid === "noa"), { discarded });
+  T("C0 别家回合不弃牌（淫气改造仅本人出牌阶段生效）",
+    discarded.length === 0 && counted(noa) === 5, { discarded, counted: counted(noa) });
+  // 本人回合且已有其它提示：不叠加玩家选牌，走自动弃兜底，验证状态牌口径与统一结算
+  state.battle.activeUid = "noa";
+  state.battle.handReveal = { unitUid: "noa" };
+  Charm.balanceHand(state, noa, ctx.BattleSystem.draw);
   T("C1 状态牌未被弃", !discarded.some(d => d.status), { discarded });
   T("C2 恰好弃 1 张（权威 discardNeed=1）", discarded.length === 1,
     { discarded: discarded.length, need: helpers.discardNeed(noa) });

@@ -49,7 +49,7 @@ window.GameDataCharactersExtra = [
     ]
   },
   {
-    id: "little_elrana", name: "小艾尔拉娜", gender: "female", face: "小", art: "./assets/images/elrana-clone.990db014.webp", avatar: "./assets/images/elrana-clone.990db014.webp", role: "艾尔拉娜的克隆女儿", locked: true,
+    id: "little_elrana", name: "小艾尔拉娜", gender: "female", face: "小", art: "./assets/images/elrana-clone.73187ed4.webp", avatar: "./assets/images/elrana-clone.73187ed4.webp", role: "艾尔拉娜的克隆女儿", locked: true,
     stats: { attack: 9.6, magic: 10, speed: 11.0, maxHp: 110, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "持续毒伤与治疗联动辅助。毒针为杀牌附加可叠加的回合开始伤害，再生之躯提供自愈，协助母亲在艾尔拉娜完成有效治疗后为其补牌。",
     skills: [

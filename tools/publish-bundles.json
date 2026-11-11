@@ -184,6 +184,7 @@
     "app-hall-bindings.js",
     "update-notice-recent.js",
     "update-notice-archive.js",
+    "update-notice-rules.js",
     "update-notice.js",
     "butler-manual-progress.js",
     "butler-manual.js"
@@ -290,6 +291,7 @@
     "battle-lines.js",
     "manny-skills.js",
     "miller-skills.js",
+    "gerlot-revenge-skills.js",
     "bertis-gerlot-skills.js",
     "angelica-luka-skills.js",
     "artina-maria-skills.js",
@@ -359,6 +361,7 @@
     "abe-karuna-diva-skills.js",
     "abe-karuna-bubble-zone.js",
     "abe-karuna-bubble-skills.js",
+    "noa-charm-discard.js",
     "noa-charm-skills.js",
     "noa-side-effect-skills.js"
   ],

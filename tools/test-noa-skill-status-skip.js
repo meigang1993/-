@@ -1,4 +1,4 @@
-// 怪面诺亚【魅力改造】×【改造副作用】严格检查：状态牌跳过出牌阶段耦合 + 其他边界
+// 怪面诺亚【淫气改造】×【改造副作用】严格检查：状态牌跳过出牌阶段耦合 + 其他边界
 //   A 眩晕 / 麻痹 / 混乱(无同伴) 已跳过出牌阶段 -> 不狂暴、不覆盖跳过原因
 //   B 连续回合：眩晕不咬 -> 下回合正常咬 -> 麻痹不咬 -> 再下回合正常咬（不残留/不漏判）
 //   C 不受影响对照：封魔 / 冻结 / 眩晕判定失败 -> 仍狂暴
@@ -34,7 +34,7 @@ const T = (name, cond, extra) => {
 };
 
 const logs = [], virtuals = [], pools = [], damage = [], lines = [];
-const SKILLS = [{ name: "魅力改造" }, { name: "改造副作用" }];
+const SKILLS = [{ name: "淫气改造" }, { name: "改造副作用" }];
 const mk = (ref, gender, side = "ally", extra = {}) => ({
   uid: ref, ref, name: ref, gender, side, hp: 500, maxHp: 500,
   stats: { attack: 6, magic: 4, speed: 8, maxHp: 500, handLimit: 4 },

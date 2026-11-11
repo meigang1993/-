@@ -17,9 +17,9 @@ const timeouts = Object.freeze({
   "test-reaction-queue-guards-live.js": 300,
   // 诺亚回合流 A~E 共 5 段各自 boot 一次浏览器，E 段还要逐项禁用技能重跑
   "test-noa-turn-flow-live.js": 420,
-  // 魅力改造出牌阶段 3 段各自 boot 一次，含逐张真实点击弹窗
+  // 淫气改造出牌阶段 3 段各自 boot 一次，含逐张真实点击弹窗
   "test-noa-charm-play-phase-live.js": 240,
-  // 魅力改造弃牌 A~D 四段各自 boot 一次浏览器，逐张真实鼠标点击
+  // 淫气改造弃牌 A~D 四段各自 boot 一次浏览器，逐张真实鼠标点击
   "test-noa-charm-discard-click-live.js": 240,
   // 单人战斗 A/C 两段各 boot 一次浏览器，A 段要驱动 12 个完整回合
   "test-noa-solo-battle-live.js": 420,
@@ -35,11 +35,19 @@ const timeouts = Object.freeze({
   "test-mona-relic-rework-live.js": 240,
   // 饰品重做后全边界严格检查（含 6 组源码级反向验证）
   "test-mona-relic-strict-audit.js": 120,
+  // 饰品实际效果严格检查：真实伤害取整 / 真实消耗挂点 / 5 组反向验证
+  "test-mona-relic-actual-effect-audit.js": 120,
   // 诺亚两技能 × 全库饰品 冲突严格检查（7 段 + 3 组源码级反向验证）
   "test-noa-relic-conflict-audit.js": 120,
+  // 回合归属修正 + 淫气文案 + 公告显式报错（模块级，含 2 组源码级反向验证）
+  "test-noa-own-turn-strict.js": 120,
   // 圣鹰剑第三张杀 / 英雄级莫娜技能×饰品联动（模块级 + 反向验证）
   "test-holy-eagle-sword-third-slash.js": 120,
   "test-mona-hell-linkage.js": 120,
+  // 四副本篝火 / 水下列车精英层 / 伊迪斯立绘 三项修复严格检查（含反向验证）
+  "test-dungeon-rest-elite-art-audit.js": 120,
+  // 伊迪斯新立绘 / 四副本篝火 / 水下列车精英层 实机检查
+  "test-edis-art-rest-live.js": 180,
 });
 
 const timeoutFor = (file, fallback) => timeouts[file] || fallback;
@@ -117,6 +125,8 @@ const groups = Object.freeze({
     "check-bounty-hunt-drops.js",
     "check-exp-multiplier-and-orc-groups.js",
     "check-dungeon-routes.js",
+    "test-dungeon-rest-elite-art-audit.js",
+    "test-edis-art-rest-live.js",
     "check-butler-difficulty-coupling.js",
     "check-ruins-enemy-skill-text.js",
     "check-bounty-elite-live.js",
@@ -287,6 +297,7 @@ const groups = Object.freeze({
     "test-mona-relic-rework.js",
     "test-mona-relic-rework-live.js",
     "test-mona-relic-strict-audit.js",
+    "test-mona-relic-actual-effect-audit.js",
     "test-holy-eagle-sword-third-slash.js",
     "test-mona-hell-linkage.js",
     "test-noa-charm-side-effect-skills.js",
@@ -309,6 +320,7 @@ const groups = Object.freeze({
     "test-noa-skills-strict-audit.js",
     "test-noa-relic-conflict-audit.js",
     "test-noa-skills-recheck.js",
+    "test-noa-own-turn-strict.js",
     "test-hitwell-skills-strict-live.js",
     "test-preshi-skills-live.js",
     "test-mieryula-skills-live.js",

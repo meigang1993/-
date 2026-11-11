@@ -35,9 +35,11 @@ window.DungeonMap = (() => {
     });
   }
   function linearLayers(route, diff, state) {
+    // 与 fixed-random 同口径：固定节点之外从第 2 层起按 eliteRate 逐层掷点；
+    // mixedEliteFrom 仅作为可选最早层，不再把精英锁死在后段固定层数。
     const last = route.layers || diff.layers, rest = new Set(route.rest || []), chest = new Set(route.chest || []), boss = new Set(route.boss || [last]);
     return Array.from({ length: last }, (_, i) => {
-      const layer = i + 1, type = layer === 1 ? "start" : boss.has(layer) ? "boss" : rest.has(layer) ? "rest" : chest.has(layer) ? "chest" : layer >= (route.mixedEliteFrom || 99) && window.GameRandom.chance(diff.eliteRate || 0, state) ? "elite" : "normal";
+      const layer = i + 1, type = layer === 1 ? "start" : boss.has(layer) ? "boss" : rest.has(layer) ? "rest" : chest.has(layer) ? "chest" : layer >= (route.mixedEliteFrom ?? 2) && window.GameRandom.chance(diff.eliteRate || 0, state) ? "elite" : "normal";
       return [makeNode(layer, 0, type)];
     });
   }

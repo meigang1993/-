@@ -27,7 +27,7 @@ const T = (name, cond, extra) => {
 };
 
 const logs = [], virtuals = [], damages = [], draws = [], discarded = [];
-const NOA_SKILLS = [{ name: "魅力改造" }, { name: "改造副作用" }];
+const NOA_SKILLS = [{ name: "淫气改造" }, { name: "改造副作用" }];
 const mk = (uid, gender, side, extra = {}) => ({
   uid, ref: uid, name: uid, gender, side, hp: 130, maxHp: 130, hand: [],
   stats: { attack: 6, magic: 4, speed: 8, handLimit: 4 },
@@ -81,6 +81,7 @@ ctx.MillerSkills = { offerShare: () => false };
 ctx.RelicSystem = { hasEquipped: () => false };
 
 vm.runInContext(read("noa-side-effect-skills.js"), ctx, { filename: "noa-side-effect-skills.js" });
+vm.runInContext(read("noa-charm-discard.js"), ctx, { filename: "noa-charm-discard.js" });
 vm.runInContext(read("noa-charm-skills.js"), ctx, { filename: "noa-charm-skills.js" });
 vm.runInContext(read("battle-turn-state.js"), ctx, { filename: "battle-turn-state.js" });
 vm.runInContext(read("battle-turn-start.js"), ctx, { filename: "battle-turn-start.js" });
@@ -257,10 +258,14 @@ if (SEGS.includes("B9")) {
   const r = Charm.balanceHand(state, es[0], ctx.BattleSystem.draw);
   T("B9a 敌方回合溢出重判不挂起 noaCharmDiscard（不得弹玩家弃牌选择）",
     !battle.noaCharmDiscard, { charm: battle.noaCharmDiscard || null, r });
-  T("B9b 自动弃至上限 4", noa.hand.length === 4, { hand: noa.hand.length });
-  T("B9c 弃牌归属诺亚自己、无重复", discarded.length === 3
-    && discarded.every(d => d.u === "noa")
-    && new Set(discarded.map(d => d.card)).size === 3, { discarded });
+  T("B9b 敌方回合不自动弃（手牌保持 7 张）", noa.hand.length === 7 && r === 0,
+    { hand: noa.hand.length, r });
+  T("B9c 敌方回合无弃牌结算、无重复", discarded.length === 0, { discarded });
+  battle.activeUid = noa.uid;
+  const r2 = Charm.balanceHand(state, noa, ctx.BattleSystem.draw);
+  T("B9d 切到诺亚回合后按上限挂起玩家弃牌（need=3）",
+    battle.noaCharmDiscard?.need === 3 && !battle.locked,
+    { charm: battle.noaCharmDiscard, r2, locked: battle.locked });
 }
 
 console.log(`RESULT ${pass}/${total}`);

@@ -56,7 +56,7 @@ window.BattleTurnStart = ({
     if (unit.skipDrawPhase) record(state, `${unit.name} 因封魔跳过摸牌阶段。`);
     else if (!repeated) draw(unit, turnDrawCount(unit), battle);
     window.CatherineSkills?.syncMagic?.(state, unit);
-    // 【魅力改造】只在出牌阶段（phase 4）生效，摸牌阶段不补牌/不弃牌；
+    // 【淫气改造】只在出牌阶段（phase 4）生效，摸牌阶段不补牌/不弃牌；
     // 出牌阶段开始时由 battle-turn-input.js 统一调用 balanceHand。
     if (!repeated) window.NoaSideEffectSkills?.beginPlayPhase?.(state, unit);
   }

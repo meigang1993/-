@@ -144,6 +144,9 @@ context.RelicSystem.all({ resources: { relics: [] }, equipment: {} }).forEach(da
   if (data?.enemy && !enemyIds.has(data.enemy)) fail(`Relic ${data.name} references unknown enemy: ${data.enemy}`);
 });
 const dependencies = [
+["noa-charm-discard.js", "noa-charm-skills.js"],
+["gerlot-revenge-skills.js", "bertis-gerlot-skills.js"],
+["update-notice-recent.js", "update-notice-archive.js", "update-notice-rules.js", "update-notice.js"],
   ["economy-config.js", "data-cards.js", "card-utils.js"],
   ["skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-skills.js", "battle-playability-registries.js", "battle-card-playability.js", "battle-combat-targeting.js", "battle-combat.js", "ruins-enemy-skills.js"],
   ["ruins-witherer-common.js", "ruins-witherer-skills.js"],

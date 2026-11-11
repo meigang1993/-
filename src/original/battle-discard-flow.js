@@ -47,7 +47,7 @@ window.BattleDiscardFlow = (deps) => {
     const b = state.battle, unit = active(b), indexes = selectedDiscardIndexes(b, active(b));
     const charm = b?.noaCharmDiscard?.unitUid === unit?.uid ? b.noaCharmDiscard : null;
     if (!b || b.locked || (b.phase !== 5 && !charm) || unit?.side !== "ally") return false;
-    // 【魅力改造】出牌阶段内的溢出弃牌：与弃牌阶段同一套「选够 N 张 → 确认 →
+    // 【淫气改造】出牌阶段内的溢出弃牌：与弃牌阶段同一套「选够 N 张 → 确认 →
     // discardCards 一次性结算」，但不进结束阶段，清标记后继续本回合出牌。
     if (charm) {
       // 挂起期间可弃牌可能被偷/被状态牌替换：把 need 重算到实际可弃数，
@@ -57,7 +57,7 @@ window.BattleDiscardFlow = (deps) => {
       const need = Math.min(charm.need, available);
       if (!canDiscardAny(unit) || need <= 0) {
         b.noaCharmDiscard = null; b.discardPick = null;
-        record(state, `${unit.name} 的可弃手牌已变化，魅力改造本次弃置取消。`);
+        record(state, `${unit.name} 的可弃手牌已变化，淫气改造本次弃置取消。`);
         if (onStep) onStep(); return true;
       }
       if (indexes.length < need) { record(state, `还需选择${need - indexes.length}张弃牌。`); if (onStep) onStep(); return true; }

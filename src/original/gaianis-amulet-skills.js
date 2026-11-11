@@ -48,7 +48,9 @@ window.GaianisAmuletSkills = (() => {
   // 判定层兜底：异常注入 / 存档残留的状态牌同样不生效，直接消耗。
   function suppressJudgement(state, unit, card) {
     if (!holds(state, unit) || !card) return false;
-    window.BattleStatusCardStorage?.consumeRemoved?.(state, unit, card, true);
+    // 与 nullifyStatus 同一口径：状态牌只是「无效并进消耗区」，不是被强制弃置。
+    // 传 forced=true 会走 showForcedDiscard，往出牌区写一张「被弃置」快照。
+    window.BattleStatusCardStorage?.consumeRemoved?.(state, unit, card, false);
     window.BattleLog?.add?.(state,
       `${unit.name} 的${NAME}令${card.name}判定无效。`);
     return true;

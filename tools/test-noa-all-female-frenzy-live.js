@@ -1,7 +1,7 @@
 // 怪面诺亚：全女性队伍 vs 单人战斗的狂暴行为（真实浏览器多回合驱动）
 //   A 全女性队伍（诺亚 + 3 名女性队友）连续推进 12 回合：
 //     每回合都狂暴 / 咬杀目标池不分敌我 / 咬杀真打队友与敌人 /
-//     狂暴回合魅力改造不生效 / 上限恒为 4 / 队友回合正常出牌 / 不卡死 / 无 JS 错误
+//     狂暴回合淫气改造不生效 / 上限恒为 4 / 队友回合正常出牌 / 不卡死 / 无 JS 错误
 //   B 反向：运行时禁用狂暴后，A 段狂暴相关断言必须变红
 // 支持 NOA_AF=A,B 分批；REVERT=frenzy 走 B 段。
 const path = require("path");
@@ -100,7 +100,8 @@ async function boot(browser, { disableFrenzy = false } = {}) {
     wrap(window.BattleSystem, "useVirtualKill", "virtual",
       a => ({ actor: a[1]?.ref, target: a[2]?.ref, side: a[2]?.side, card: a[3]?.name }));
     wrap(window.NoaSideEffectSkills, "beginPlayPhase", "frenzy",
-      a => ({ unit: a[1]?.ref, turn: window.state?.battle?.turn }));
+      a => ({ unit: a[1]?.ref, turn: window.state?.battle?.turn,
+              skip: !!a[1]?.skipPlayPhase, reason: a[1]?.skipPlayReason || null }));
     wrap(window.NoaCharmSkills, "balanceHand", "balance",
       a => ({ unit: a[1]?.ref, active: window.state?.battle?.activeUid }));
     wrap(window.NoaCharmSkills, "enterPlayPhase", "enter", a => ({ unit: a[1]?.ref }));
@@ -131,6 +132,13 @@ async function boot(browser, { disableFrenzy = false } = {}) {
     };
     if (disabled && window.NoaSideEffectSkills) {
       window.NoaSideEffectSkills.beginPlayPhase = () => false;
+    }
+    // 反向段只验证「狂暴」是否被禁用：状态牌判定（眩晕/麻痹/混乱）同样会
+    // 跳过出牌阶段，会把 B3/B4（C3/C4）污染成假红。隔离判定阶段后诺亚
+    // 每回合正常进出牌阶段，才能证明 A 段断言不是恒真。
+    if (disabled) {
+      if (window.BattleStatusCards?.judgement) window.BattleStatusCards.judgement = () => {};
+      if (window.UnderwaterTrainSkills?.judgement) window.UnderwaterTrainSkills.judgement = () => {};
     }
     // 40ms 零丢失观测：drive 按 turn 存快照，出牌阶段一闪而过会漏。
     window.__afTexts = [];
@@ -263,7 +271,7 @@ async function segA(browser) {
     })))}`);
     const frenzyCalls = (last.frenzy || []).filter(x => x.extra?.unit === "noa");
     const frenzyTurns = new Set(frenzyCalls.map(x => x.extra?.turn)).size;
-    T("A3 多个诺亚回合都做狂暴判定（按回合去重 >=2）", frenzyTurns >= 2,
+    T("A3 多个诺亚回合都做改造副作用判定（按回合去重 >=2）", frenzyTurns >= 2,
       { calls: frenzyCalls.length, distinctTurns: frenzyTurns,
         turns: frenzyCalls.map(x => x.extra?.turn).slice(0, 8) });
     const perTurn = new Map();
@@ -275,7 +283,7 @@ async function segA(browser) {
     // 战报对重复文本会去重，且 state.log 只保留最近 30 条（battle-log.js），
     // 多回合推进后早期狂暴文本会被挤出，文本条数绝不能代表狂暴次数。
     // 主判据是零丢失的 beginPlayPhase 调用记录按回合核对；文本只要还存在 >=1 条即可。
-    T("A4 每个诺亚回合都做且只做一次狂暴判定（一直狂暴，不是只第一回合）",
+    T("A4 每个诺亚回合都做且只做一次副作用判定（眩晕等跳过回合不狂暴）",
       perTurn.size >= 2 && [...perTurn.values()].every(n => n === 1) && hits >= 1,
       { perTurn: [...perTurn.entries()], hits, distinctTurns: frenzyTurns,
         sample: (texts.match(/改造副作用发作[^|]*/g) || []).slice(0, 3) });
@@ -290,9 +298,27 @@ async function segA(browser) {
     T("A6 虚拟咬杀 >=2 次且目标都不是诺亚自己", virt.length >= 2
       && virt.every(v => v.extra?.target && v.extra.target !== "noa"),
       { count: virt.length, sample: virt.slice(0, 5).map(v => v.extra) });
-    T("A6b 每次狂暴判定恰好生成一次咬杀（不重不漏）",
-      frenzyCalls.length === virt.length,
-      { frenzy: frenzyCalls.length, virtual: virt.length });
+    // beginPlayPhase 每个诺亚回合都会被调用，但「进入时已被其它原因跳过出牌阶段」
+    // （眩晕/麻痹/混乱，或本技能同回合幂等）的调用按设计不发动狂暴、不咬杀：
+    // 这些分支进入时 skipPlayPhase 已为 true。狂暴回合数必须按 skip=false 的调用
+    // 计，不能拿全部调用当分母——偶发一次眩晕就会误报「少咬一次」（A6b 旧红项）。
+    // 目标池采样 pools 只在真正狂暴时发生，作第二条零丢失证据。
+    const frenzyFired = frenzyCalls.filter(x => !x.extra?.skip);
+    const firedTurns = new Set(frenzyFired.map(x => x.extra?.turn)).size;
+    const virtTurns = new Set(virt.map(v => v.turn)).size;
+    const poolsEarly = last.pools || [];
+    T("A6b 每个真正狂暴的回合恰好生成一次咬杀（不重不漏）",
+      firedTurns >= 2 && firedTurns === virtTurns
+      && virt.length === firedTurns && poolsEarly.length === virt.length,
+      { calls: frenzyCalls.length, fired: frenzyFired.length, firedTurns,
+        virtual: virt.length, virtTurns, pools: poolsEarly.length,
+        skipCalls: frenzyCalls.filter(x => x.extra?.skip).map(x => ({
+          turn: x.extra?.turn, reason: x.extra?.reason })),
+        virtTurnList: virt.map(v => v.turn) });
+    T("A6c 其它原因跳过出牌阶段的回合不发动狂暴（眩晕等不白咬）",
+      frenzyCalls.filter(x => x.extra?.skip)
+        .every(x => !virt.some(v => v.turn === x.extra?.turn)),
+      frenzyCalls.filter(x => x.extra?.skip).map(x => x.extra));
     const pools = last.pools || [];
     T("A7 狂暴目标池含女性队友与敌人、不含自己（不分敌我）",
       pools.some(p => p.some(u => u.side === "ally" && u.gender === "female")
@@ -321,7 +347,7 @@ async function segA(browser) {
       !(await page.evaluate(() => !!window.__afPlaySeen)));
     const balance = last.balance || [];
     const noaInPlay = balance.filter(x => x.extra?.active === last.uid && x.phase === 4);
-    T("A12 诺亚狂暴回合魅力改造不生效（phase4 balanceHand 调用为 0）",
+    T("A12 诺亚狂暴回合淫气改造不生效（phase4 balanceHand 调用为 0）",
       noaInPlay.length === 0, { total: balance.length, inPlay: noaInPlay.length });
     T("A13 手牌上限恒为基础 4（与单人一致）", await page.evaluate(() => {
       const n = window.state?.battle?.allies?.find(u => u.ref === "noa");

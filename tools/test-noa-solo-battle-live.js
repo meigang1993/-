@@ -1,6 +1,6 @@
 // 怪面诺亚 · 单人战斗（我方仅诺亚）严格检查
 //   A 真实驱动 3 个诺亚回合：无存活男性 -> 每回合狂暴虚拟咬杀 + 跳过出牌阶段
-//     同时验：魅力改造整回合不生效 / 咬杀真实造成伤害 / 手牌上限 4 /
+//     同时验：淫气改造整回合不生效 / 咬杀真实造成伤害 / 手牌上限 4 /
 //     结束阶段无男性伤害 / 弃牌阶段是否卡死 / 敌方 AI 回合正常推进 / 无 JS 错误
 //   C 反向验证：运行时禁用 beginPlayPhase 后，A 段狂暴相关断言必须变红
 // 支持 NOA_SOLO=A,C 分批；REVERT=frenzy 走 C 段。
@@ -102,6 +102,13 @@ async function boot(browser, { disableFrenzy = false } = {}) {
     if (disabled && window.NoaSideEffectSkills) {
       window.NoaSideEffectSkills.beginPlayPhase = () => false;
       window.__frenzyDisabled = true;
+    }
+    // 反向段只验证「狂暴」是否被禁用：状态牌判定（眩晕/麻痹/混乱）同样会
+    // 跳过出牌阶段，会把 B3/B4（C3/C4）污染成假红。隔离判定阶段后诺亚
+    // 每回合正常进出牌阶段，才能证明 A 段断言不是恒真。
+    if (disabled) {
+      if (window.BattleStatusCards?.judgement) window.BattleStatusCards.judgement = () => {};
+      if (window.UnderwaterTrainSkills?.judgement) window.UnderwaterTrainSkills.judgement = () => {};
     }
     // 战报会滚动；hook 未必命中（BattleLog 可能不是全局），用 40ms 轮询零丢失累积。
     window.__soloTexts = [];
@@ -263,13 +270,13 @@ async function segA(browser) {
     T("A11 skipPlayReason 为改造副作用",
       noaTurns.some(s => s.reason === "改造副作用"), noaTurns.map(s => s.reason));
 
-    // 魅力改造：狂暴回合不进 phase 4，balanceHand / enterPlayPhase 不应触发补牌
+    // 淫气改造：狂暴回合不进 phase 4，balanceHand / enterPlayPhase 不应触发补牌
     const balance = last.balance || [];
     const noaActiveBalance = balance.filter(x => x.extra?.active === last.uid);
     // 虚拟咬杀是一次「出牌」，会触发出牌后钩子调 balanceHand；但 prepare/摸牌/
     // 弃牌等非 phase4 阶段函数首行就 return 0，不补牌也不弃牌，故只盯 phase4。
     const noaActiveInPlay = noaActiveBalance.filter(x => x.phase === 4);
-    T("A12 诺亚自己的狂暴回合内魅力改造不生效（phase4 的 balanceHand 调用为 0）",
+    T("A12 诺亚自己的狂暴回合内淫气改造不生效（phase4 的 balanceHand 调用为 0）",
       noaActiveInPlay.length === 0,
       { total: balance.length, noaActive: noaActiveBalance.length,
         inPlay: noaActiveInPlay.length, noaCalls: noaActiveBalance.slice(0, 4) });

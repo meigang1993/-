@@ -1,7 +1,8 @@
-// 怪面诺亚【魅力改造】（锁定技，仅出牌阶段 = battle.phase===4 生效）
+// 怪面诺亚【淫气改造】（锁定技，仅「诺亚自己的」出牌阶段生效：
+//   battle.phase===4 且 battle.activeUid===诺亚 uid）
 //   1. 手牌数始终等于上限：少于摸至上限，多于由玩家弃至上限
 //   2. 使用【杀】不消耗杀意  3. 使用杀台词
-// 上限由【改造副作用】按存活男性队友数动态给出；非出牌阶段一律不生效。
+// 上限由【改造副作用】按存活男性队友数动态给出；非出牌阶段、别家回合一律不生效。
 // 溢出弃牌复用弃牌阶段那套（手牌区点选 + 确认弃置），由 battle-discard-flow.js 结算。
 window.NoaCharmSkills = (() => {
   const PLAY_PHASE = 4;
@@ -12,74 +13,30 @@ window.NoaCharmSkills = (() => {
   // 甚至挂起选不够的弃牌选择卡死回合；_pendingDraw 已在手里且会落位，须算入。
   const countedHand = unit => (unit?.hand || []).filter(card =>
     window.GuestCharacterSkills?.countsForLimit?.(unit, card) ?? true).length;
-  // 与 BattleRuntimeHelpers.canDiscardCard 同口径：排除 _pendingDraw、状态牌、
-  // 水下列车限制牌。need 必须夹到可弃牌数，否则挂起无法完成。
-  const discardableCards = unit => (unit?.hand || []).filter(card =>
-    !card._pendingDraw
-    && (window.GuestCharacterSkills?.countsForLimit?.(unit, card) ?? true)
-    && (window.UnderwaterTrainSkills?.canDiscard?.(unit, card) ?? true));
   const isKill = card => !!window.CardUtils?.isKillCard?.(card)
     || card?.type === "slash" || /杀(?:（[^）]*）)?$/.test(card?.name || "");
   const limitOf = unit => Math.max(0,
     window.NoaSideEffectSkills?.handLimit?.(unit) ?? unit?.stats?.handLimit ?? 0);
   const inPlayPhase = state => state?.battle?.phase === PLAY_PHASE;
+  // phase 4 是全局阶段，别家出牌时同为 4；免杀意/台词/手牌平衡都必须再确认
+  // 当前回合单位就是诺亚本人，否则会在别人回合生效（回合外免杀意、回合外补弃牌）。
+  const inOwnPlayPhase = (state, actor) => inPlayPhase(state)
+    && !!actor && state?.battle?.activeUid === actor.uid;
+  if (!window.NoaCharmDiscard) throw new Error("[noa-charm-discard] 模块未装配：noa-charm-discard.js 必须先于 noa-charm-skills.js 加载");
+  const { discardableCards, startCharmDiscard, autoDiscard } = window.NoaCharmDiscard({ limitOf });
 
   // 供 battle-card-playability.js 的 hasNoIntentCost 消费；只认角色本人打出的杀牌，
   // 且只在出牌阶段生效（其它阶段打出的杀正常消耗杀意）。
   function noIntentCost(actor, card) {
-    if (!inPlayPhase(window.state)) return false;
-    return isNoa(actor) && hasSkill(actor, "魅力改造") && isKill(card);
+    if (!inOwnPlayPhase(window.state, actor)) return false;
+    return isNoa(actor) && hasSkill(actor, "淫气改造") && isKill(card);
   }
 
   // 使用杀台词：由 battle-combat.js 在「使用X」日志之后立即调用。
   function playKillLine(state, actor, card) {
-    if (!inPlayPhase(state)) return;
-    if (!isNoa(actor) || !hasSkill(actor, "魅力改造") || !isKill(card)) return;
+    if (!inOwnPlayPhase(state, actor)) return;
+    if (!isNoa(actor) || !hasSkill(actor, "淫气改造") || !isKill(card)) return;
     window.BattleLines?.skill?.(state, actor, "使用杀");
-  }
-
-  // 手牌多于上限：不弹专用选牌窗，改为与弃牌阶段一样的弃牌。
-  // 只挂一个 noaCharmDiscard 标记；UI 打开标准弃牌选择（b.discardPick + 手牌区点选 +
-  // 确认弃置），确认时走 battle-discard-flow.js 的 discardCards 一次性结算。
-  // 玩家可任意挑 need 张；不设 locked。已有挂起 / 可见牌不足时走自动弃兜底，避免卡死。
-  // 已有其它玩家提示（锤子/米勒/交牌/半魅魔血等）时绝不叠加第二个弃牌选择，否则抢手牌卡死。
-  function startCharmDiscard(state, b, owner, need) {
-    if (b.locked || b.handReveal || b.noaCharmDiscard
-      || window.AppRuntimeRecovery?.hasBlockingBattlePrompt?.(b) || discardableCards(owner).length < need) return false;
-    b.noaCharmDiscard = { unitUid: owner.uid, need };
-    b.discardPick = null;
-    window.BattleLog?.add?.(state,
-      `${owner.name}的魅力改造发动，需弃置${need}张手牌至手牌上限${limitOf(owner)}（与弃牌阶段相同）。`);
-    return true;
-  }
-
-  // 自动弃兜底：优先弃已落位的可弃牌（状态牌一律不动）；不足时补 _pendingDraw
-  // 的普通牌（摸牌动画未落位，不涉及玩家点选，不会卡死）。归属是诺亚自己。
-  // 结算与 battle-discard-flow.js 的 discardCards 同款：void 分流、弃牌触发、
-  // 魔力同步、战报；逐张 put 与 putMany 等价，且兼容既有调用方。
-  function autoDiscard(state, b, owner, need) {
-    const pool = discardableCards(owner);
-    const extra = pool.slice(-need);
-    if (extra.length < need) {
-      const pending = (owner.hand || []).filter(card => card._pendingDraw
-        && (window.GuestCharacterSkills?.countsForLimit?.(owner, card) ?? true));
-      extra.push(...pending.slice(0, need - extra.length));
-    }
-    // 一张都弃不了时静默降级：不写「一次性弃置 。」空战报，也不触发
-    // 弃牌/魔力同步钩子。balanceHand 每次出牌后都会重判，空战报会反复刷屏。
-    if (!extra.length) return 0;
-    extra.forEach(card => {
-      const i = owner.hand.indexOf(card);
-      if (i >= 0) owner.hand.splice(i, 1);
-      window.BattleCards?.put?.(b, owner, card,
-        card.void || card.type === "consume" ? "consumed" : "discard");
-    });
-    window.WendyCadicisSkills?.afterDiscard?.(state, owner, extra,
-      { draw: window.BattleSystem?.draw, pushFloat: window.BattleCombat?.pushFloat });
-    window.CatherineSkills?.syncMagic?.(state, owner);
-    window.BattleLog?.add?.(state,
-      `${owner.name} 一次性弃置 ${extra.map(card => card.name).join("、")}。`);
-    return -extra.length;
   }
 
   // 手牌恒等：出牌阶段开始时、出牌结算后各调用一次（均在 phase 4 内）。
@@ -93,9 +50,14 @@ window.NoaCharmSkills = (() => {
     if (b.noaCharmDiscard) return 0;
     // 任意出牌都可能改变诺亚的手牌（偷牌、交牌、群体效果），故不局限于出牌者本人；
     // 但「出牌阶段开始时」只属于当前回合单位，别家回合不能替诺亚开弃牌选择（onlySelf）。
-    const owner = isNoa(unit) && hasSkill(unit, "魅力改造")
-      ? unit : (opts?.onlySelf ? null : (b.allies || []).find(u => isNoa(u) && hasSkill(u, "魅力改造")));
+    const owner = isNoa(unit) && hasSkill(unit, "淫气改造")
+      ? unit : (opts?.onlySelf ? null : (b.allies || []).find(u => isNoa(u) && hasSkill(u, "淫气改造")));
     if (!owner) return 0;
+    // battle.phase===4 是全局阶段，敌方/队友出牌时同为 4；出牌后钩子每次出牌
+    // 都会重判，若不看当前回合单位，就会在别人回合替诺亚摸牌/弃牌（回合外生效）。
+    // 只在诺亚自己的出牌阶段生效：battle-turn-start.js 每回合开始已设 activeUid，
+    // enterPlayPhase（出牌阶段开始）与五条旁路全部走这条路径。
+    if (b.activeUid !== owner.uid) return 0;
     const limit = limitOf(owner);
     const diff = limit - countedHand(owner);
     if (diff > 0 && typeof draw === "function") {
@@ -143,15 +105,15 @@ window.NoaCharmSkills = (() => {
       const short = Math.max(0, limit - countedHand(owner));
       if (short === 0) {
         window.BattleLog?.add?.(state,
-          `${owner.name}的魅力改造发动，摸${gained}张牌至手牌上限${limit}。`);
+          `${owner.name}的淫气改造发动，摸${gained}张牌至手牌上限${limit}。`);
       } else if (gained > 0) {
         const reason = stopSig ? reasonOf(stopSig) : "本次摸牌未到手";
         window.BattleLog?.add?.(state,
-          `${owner.name}的魅力改造发动，实际摸到${gained}张牌，仍差${short}张未补齐至上限${limit}（${reason}）。`);
+          `${owner.name}的淫气改造发动，实际摸到${gained}张牌，仍差${short}张未补齐至上限${limit}（${reason}）。`);
       } else {
         const sig = stopSig || { locked: !!owner.drawLockedThisTurn, exhausted: true, redirected: 0, gained: 0 };
         window.BattleLog?.add?.(state,
-          `${owner.name}的魅力改造未能补齐：${reasonOf(sig)}，手牌${before}张低于上限${limit}。`);
+          `${owner.name}的淫气改造未能补齐：${reasonOf(sig)}，手牌${before}张低于上限${limit}。`);
       }
       return gained;
     }
@@ -172,7 +134,7 @@ window.NoaCharmSkills = (() => {
 
   // 所有「进入出牌阶段」的路径统一走这里：设 phase=4 + 手牌平衡 + 溢出挂起检查。
   // 狂暴（改造副作用）已设 skipPlayPhase 时，任何旁路都不得把 phase 改回 4，
-  // 否则「跳过本回合出牌阶段」会被绕过，且魅力改造会在本不该生效的回合补牌。
+  // 否则「跳过本回合出牌阶段」会被绕过，且淫气改造会在本不该生效的回合补牌。
   // 返回 true 才允许各路径继续执行 playPhaseStart / record / 出牌推进。
   function enterPlayPhase(state, unit, draw, onStep) {
     const b = state?.battle;

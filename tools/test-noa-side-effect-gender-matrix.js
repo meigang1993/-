@@ -1,10 +1,10 @@
-// 怪面诺亚【改造副作用】1~4 人 × 全性别组合严格检查，含与【魅力改造】联动
+// 怪面诺亚【改造副作用】1~4 人 × 全性别组合严格检查，含与【淫气改造】联动
 //   A 每个队伍人数 n=1..4、2^n 种性别组合：手牌上限 = 4 + 存活男性队友数
 //   B 结束阶段：只对「其他存活男性」各造成攻击力伤害；女性/自己/敌方/死者不受
 //   C 无存活男性 -> 狂暴虚拟【咬杀】+ skipPlayPhase；有男性则不狂暴
 //   D 联动：人数决定上限 -> balanceHand 摸至上限 / 溢出挂起玩家弃置
 //   E 死亡变体：男性阵亡后上限实时下降，伤害不再打到死者
-//   F 狂暴回合 enterPlayPhase 不得进入 phase4（魅力改造整回合不生效）
+//   F 狂暴回合 enterPlayPhase 不得进入 phase4（淫气改造整回合不生效）
 // 反向：REVERT=gender|self|frenzy|limit 时对应断言必须变红。
 // 支持 SIDE_GENDER=A,B,C,D,E,F 分批。
 const fs = require("fs");
@@ -35,7 +35,7 @@ const T = (name, cond, extra) => {
 
 const logs = [], lines = [], virtuals = [], damageLog = [], discarded = [];
 const NOA_SKILLS = [
-  { name: "魅力改造", text: "锁定技，出牌阶段内手牌数始终等于手牌上限；使用【杀】牌不消耗杀意。" },
+  { name: "淫气改造", text: "锁定技，出牌阶段内手牌数始终等于手牌上限；使用【杀】牌不消耗杀意。" },
   { name: "改造副作用", text: "锁定技，结束阶段对其他存活男性造成攻击力伤害；每名存活男性手牌上限+1；无存活男性时随机虚拟咬杀并跳过出牌阶段。" },
 ];
 const mkUnit = (ref, gender, hp = 50, extra = {}) => ({
@@ -62,7 +62,8 @@ ctx.BattleSystem = {
 ctx.GameData = { characters: [{ id: "noa", stats: { handLimit: 4 } }] };
 
 vm.runInContext(rawSide, ctx, { filename: "noa-side-effect-skills.js" });
-vm.runInContext(fs.readFileSync(SRC("noa-charm-skills.js"), "utf8"), ctx,
+vm.runInContext(fs.readFileSync(SRC("noa-charm-discard.js"), "utf8"), ctx, { filename: "noa-charm-discard.js" });
+ vm.runInContext(fs.readFileSync(SRC("noa-charm-skills.js"), "utf8"), ctx,
   { filename: "noa-charm-skills.js" });
 const Side = ctx.NoaSideEffectSkills, Charm = ctx.NoaCharmSkills;
 if (REVERT === "frenzy") Side.beginPlayPhase = () => false;
@@ -145,7 +146,7 @@ if (SEGS.includes("A") || SEGS.includes("B") || SEGS.includes("C")) {
   }
 }
 
-// ---------- D：人数 -> 上限 -> 魅力改造联动 ----------
+// ---------- D：人数 -> 上限 -> 淫气改造联动 ----------
 if (SEGS.includes("D")) {
   for (let n = 1; n <= 4; n++) {
     for (let mask = 0; mask < (1 << n); mask++) {
@@ -204,7 +205,7 @@ if (SEGS.includes("F")) {
     const allow = Charm.enterPlayPhase(state, noa, ctx.BattleSystem.draw, () => {});
     const m = expectM(2, mask);
     if (m === 0) {
-      T(`F ${label(2, mask)} 狂暴回合不进phase4、魅力改造不生效`,
+      T(`F ${label(2, mask)} 狂暴回合不进phase4、淫气改造不生效`,
         allow === false && battle.phase !== 4 && Charm.noIntentCost(noa, { name: "杀", type: "slash" }) === false,
         { allow, phase: battle.phase });
     } else {

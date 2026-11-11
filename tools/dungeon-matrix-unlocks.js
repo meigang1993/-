@@ -13,8 +13,8 @@ function testConfiguration() {
   ["adventure", "warrior", "king", "hell"].forEach(id => {
     assert(JSON.stringify(GameData.difficulties[id].weights) === JSON.stringify({ normal: 75, rest: 10, chest: 15 }), `${id} map rest weight changed`);
   });
-  assert(JSON.stringify(GameData.missions.find(item => item.id === "underwater_train").route.rest) === "[10]", "Underwater Train must have one rest layer");
-  assert(JSON.stringify(GameData.missions.find(item => item.id === "orc_dungeon").route.rest) === "[9]", "Orc Dungeon must have one rest layer");
+  assert(JSON.stringify(GameData.missions.find(item => item.id === "underwater_train").route.rest) === "[14]", "Underwater Train must have one rest layer");
+  assert(JSON.stringify(GameData.missions.find(item => item.id === "orc_dungeon").route.rest) === "[12]", "Orc Dungeon must have one rest layer");
   const orcPool = GameData.enemies.orc_dungeon;
   const bakaar = orcPool.find(enemy => enemy.id === "demon_king_bakaar");
   const bakaarGroup = DungeonEnemyGroups.bossGroup(orcPool, GameData.difficulties.normal, [bakaar]);

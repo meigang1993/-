@@ -89,6 +89,19 @@ const ORDER_DEPENDENCIES = [
     file: "holy-eagle-sword-skills.js",
     consumers: ["battle-combat-attack-values.js"],
   },
+  // 2026-11-11 预防性拆出的 3 个子模块：装配点显式抛错，必须早于消费方。
+  {
+    file: "noa-charm-discard.js",
+    consumers: ["noa-charm-skills.js"],
+  },
+  {
+    file: "gerlot-revenge-skills.js",
+    consumers: ["bertis-gerlot-skills.js"],
+  },
+  {
+    file: "update-notice-rules.js",
+    consumers: ["update-notice.js"],
+  },
 ];
 
 const sharedFileNames = SHARED_SOURCES.map(entry => entry.file);

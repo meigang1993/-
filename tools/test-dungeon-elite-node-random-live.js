@@ -1,7 +1,7 @@
 // 实战核查：水下列车 / 兽人地下城 / 废墟沙城 是否会随机出现精英怪节点
 //   A) 三个副本在多个随机种子下，精英节点是否出现、出现位置是否随种子变化
 //   B) 精英节点只会落在非固定层（rest / chest / boss / start 不应出现精英）
-//   C) 水下列车为 linear 路线，精英受 mixedEliteFrom 限制
+//   C) 水下列车为 linear 路线，精英在固定节点之外的所有层随机出现
 //   D) 精英战的敌人组合是否在多个组合间随机（不是每次同一个）
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
@@ -124,10 +124,11 @@ const eliteGroups = (page, missionId, difficultyId, times) => page.evaluate(
       }
     }
 
-    // 水下列车：linear 且限制 mixedEliteFrom=11，精英只应在 11 层及以后、BOSS 层之前
+    // 修复后：linear 不再被 mixedEliteFrom=11 锁死，精英可在第 2 层之后的非固定层随机出现
     const uw = summary.underwater_train.normal;
-    T("水下列车 精英受 mixedEliteFrom(11) 限制，只出现在 11 层之后",
-      uw.eliteLayerUnion.every(l => l >= 11), uw);
+    T("水下列车 精英不再固定在 11 层之后（覆盖前中段）",
+      uw.eliteLayerUnion.some(l => l < 11), uw);
+    T("水下列车 精英位置随种子变化", uw.distinctLayerSets > 1, uw);
     T("水下列车 精英不出现在 BOSS 层(15)", !uw.eliteLayerUnion.includes(15), uw);
 
     console.log("\n===== 精英敌人组合 =====");

@@ -1,4 +1,4 @@
-// 诺亚【魅力改造】×【改造副作用】复查严格检查（模块级，直调真实挂点）
+// 诺亚【淫气改造】×【改造副作用】复查严格检查（模块级，直调真实挂点）
 //   H 补牌夹状态牌：补齐判定必须按 countedHand，不能按 hand.length 增量
 //   I 溢出但一张都弃不了：不得写「一次性弃置 。」空战报
 //   J 摸牌信号（耗尽 / 封魔 / 转交）在补齐循环里仍生效
@@ -32,7 +32,7 @@ const mk = (uid, gender, side, extra = {}) => ({
   uid, ref: uid, name: uid, gender, side, hp: 130, maxHp: 130, hand: [],
   stats: { attack: 6, magic: 4, speed: 8, handLimit: 4 }, skills: [], ...extra,
 });
-const noa = () => mk("noa", "female", "ally", { skills: [{ name: "魅力改造" }, { name: "改造副作用" }] });
+const noa = () => mk("noa", "female", "ally", { skills: [{ name: "淫气改造" }, { name: "改造副作用" }] });
 const battle = (o = {}) => ({ turn: 1, phase: 4, allies: [], enemies: [], activeUid: "noa", locked: false, ...o });
 const counted = u => (u?.hand || []).filter(c => ctx.GuestCharacterSkills.countsForLimit(u, c)).length;
 
@@ -75,6 +75,7 @@ const patch = (src, from, to, tag) => {
   return next;
 };
 let charmSrc = read("noa-charm-skills.js");
+let noaDiscardSrc = read("noa-charm-discard.js");
 if (MODE === "counted") {
   charmSrc = patch(charmSrc,
     "while (countedHand(owner) < limit && rounds < maxRounds)",
@@ -84,9 +85,10 @@ if (MODE === "counted") {
     "if (gained >= diff) break;", "counted-break");
 }
 if (MODE === "empty") {
-  charmSrc = patch(charmSrc,
+  noaDiscardSrc = patch(noaDiscardSrc,
     "    if (!extra.length) return 0;\n", "", "empty");
 }
+vm.runInContext(noaDiscardSrc, ctx, { filename: "noa-charm-discard.js" });
 vm.runInContext(charmSrc, ctx, { filename: "noa-charm-skills.js" });
 vm.runInContext(read("noa-side-effect-skills.js"), ctx, { filename: "noa-side-effect-skills.js" });
 

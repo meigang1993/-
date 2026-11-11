@@ -33,7 +33,7 @@ const T = (name, cond, extra) => {
 };
 
 const logs = [], virtuals = [], pools = [], damage = [];
-const SKILLS = [{ name: "魅力改造" }, { name: "改造副作用" }];
+const SKILLS = [{ name: "淫气改造" }, { name: "改造副作用" }];
 const mk = (ref, gender, side = "ally", extra = {}) => ({
   uid: ref, ref, name: ref, gender, side, hp: 500, maxHp: 500,
   stats: { attack: 6, magic: 4, speed: 8, maxHp: 500, handLimit: 4 },

@@ -66,9 +66,9 @@ const swordSetup = relics => `(() => {
   b.selectedSkillCard = null;
   st.log = [];
   a.intent = 5; a.hp = 200; a.maxHp = 200;
-  // 模板攻击力是小数（属性翻倍后 9.6），伤害取整会让 ×2 变成 10→19。
-  // 这里钉成整数，才能对「精确翻倍」做严格断言。
-  a.stats = { attack: 10, magic: 0, speed: 4, handLimit: 4, bloodlust: 1 };
+  // 用真实小数攻击力 9.6（属性翻倍后的模板值）。修复前 ×2 会得到 19.2→19，
+  // 玩家看到的「翻倍」比首击 10 少 1 点；修复后必须严格 10→20。
+  a.stats = { attack: 9.6, magic: 0, speed: 4, handLimit: 4, bloodlust: 1 };
   a.tempAttack = 0;
   a.battleRelics = ${JSON.stringify(relics)};
   a.hand = [
@@ -114,6 +114,24 @@ const playSlash = `(() => {
   } else if (REVERT === "sword") {
     await page.evaluate(() => {
       window.HolyEagleSwordSkills.modifyDamage = (_s, _a, _t, _c, amount) => amount;
+    });
+  } else if (REVERT === "round") {
+    // 旧版：翻倍前不取整（保留日志，让只有 B3 精准打红）。
+    await page.evaluate(() => {
+      window.HolyEagleSwordSkills.modifyDamage = (s, a, t, _c, amount) => {
+        if (!window.HolyEagleSwordSkills.marked(s, a, t)) return amount;
+        window.BattleLog.add(s, `${a.name} 的圣鹰剑触发，对${t.name}的下一张单体【杀】伤害翻倍。`);
+        return amount * 2;
+      };
+    });
+  } else if (REVERT === "forced") {
+    // 旧版：兜底消耗走 forcedDiscard，会往出牌区写「被弃置」快照。
+    await page.evaluate(() => {
+      window.GaianisAmuletSkills.suppressJudgement = (state, unit, card) => {
+        window.BattleStatusCardStorage.consumeRemoved(state, unit, card, true);
+        window.BattleLog.add(state, `${unit.name} 的盖亚妮丝护符令${card.name}判定无效。`);
+        return true;
+      };
     });
   }
 
@@ -162,15 +180,36 @@ const playSlash = `(() => {
   T("B5", "对照：未装备圣鹰剑时两次伤害相等",
     n1.loss > 0 && n2.loss === n1.loss, { n1: n1.loss, n2: n2.loss });
 
+  // ===== C 护符：残留状态牌经判定层兜底消耗时，不写出牌区「被弃置」快照 =====
+  await page.evaluate(charmSetup(["盖亚妮丝护符"]));
+  const C = await page.evaluate(`(() => {
+    const st = window.state, b = st.battle, e = b.enemies[0];
+    b.played = [];
+    e.hand.push({ name: "眩晕", type: "status", statusKey: "stun", stun: true });
+    window.BattleStatusCardTriggers.judgement(st, e);
+    return {
+      forced: (b.played || []).filter(x => x._playedAction === "被弃置" || x.dismantled).length,
+      statusLeft: e.hand.filter(x => x.type === "status" || x.stun).length,
+      logs: (st.log || []).slice(0, 20).map(String),
+    };
+  })()`);
+  T("C2", "兜底消耗不写出牌区「被弃置」快照", C.forced === 0, C);
+  T("C3", "兜底消耗清掉残留状态牌并写判定无效战报",
+    C.statusLeft === 0 && C.logs.some(l => l.includes("判定无效")), C);
   T("C1", "无页面错误", errors.length === 0, errors.slice(0, 4));
 
   console.log(`\nRESULT ${pass}/${total}  LIVE_REVERT=${REVERT || "none"}  红=${red.join(",") || "无"}`);
   const expectRed = REVERT === "charm" ? ["A2", "A3", "A4"]
-    : REVERT === "sword" ? ["B3", "B4"] : [];
+    : REVERT === "sword" ? ["B3", "B4"]
+      : REVERT === "round" ? ["B3"]
+        : REVERT === "forced" ? ["C2"] : [];
   if (expectRed.length) {
     const missing = expectRed.filter(tag => !red.includes(tag));
-    const unrelated = red.filter(tag => REVERT === "charm"
-      ? tag.startsWith("B") || tag.startsWith("C") : !tag.startsWith("B"));
+    // charm 反向会同时关掉 A 段与 C 段（C 段验的正是护符兜底），
+    // 因此 A/C 段红都属合理连带，只有 B 段（圣鹰剑）算误伤。
+    const unrelated = red.filter(tag => REVERT === "charm" ? tag.startsWith("B")
+      : REVERT === "sword" || REVERT === "round" ? !tag.startsWith("B")
+        : !tag.startsWith("C"));
     const ok = missing.length === 0 && unrelated.length === 0;
     console.log(ok ? "REVERT_OK 反向验证精准打红" : `REVERT_BAD 缺失=${missing} 误伤=${unrelated}`);
     if (!ok) process.exitCode = 1;

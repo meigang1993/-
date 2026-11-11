@@ -104,7 +104,7 @@ const INTRO = "啊啊……身体好热";
     const evt = {
       fired: trigger.fired, modal: trigger.modal, fn: trigger.fn,
       lines: seen.length,
-      hasLines: ["罗卡尔，你又失败了。", "地下室封印着强大的魅力改造者", "多给她男人，不然她会发狂的。", "好的，妈妈，有了我会试试。"].every(s => joined.includes(s)),
+      hasLines: ["罗卡尔，你又失败了。", "地下室封印着强大的淫气改造者", "多给她男人，不然她会发狂的。", "好的，妈妈，有了我会试试。"].every(s => joined.includes(s)),
     };
     T("C1 第三次全军覆没触发剧情弹窗", evt.fired && evt.modal === "thirdDefeat", evt);
     T("C2 对话逐句渲染且关键句齐全", evt.hasLines === true, { lines: evt.lines, sample: joined.slice(0, 220) });
@@ -192,7 +192,7 @@ const INTRO = "啊啊……身体好热";
       line: (introDebug?.line || "").slice(0, 60),
     });
 
-    // 【魅力改造】只在出牌阶段（phase 4）生效，免杀意判据还读 window.state。
+    // 【淫气改造】只在出牌阶段（phase 4）生效，免杀意判据还读 window.state。
     // 串行跑时战斗可能仍停在登场字幕等待态；先解字幕锁、把行动权交给诺亚、
     // 进入出牌阶段并清掉溢出弃牌挂起，再采集 E4~E6 的快照。
     await page.evaluate(() => {
@@ -240,7 +240,7 @@ const INTRO = "啊啊……身体好热";
       if (handState.hand === handState.limit) break;
       await page.waitForTimeout(200);
     }
-    T("E5 魅力改造令手牌恒等于上限", handState.hand === handState.limit, handState);
+    T("E5 淫气改造令手牌恒等于上限", handState.hand === handState.limit, handState);
     // 开局恰好摸满不等于技能生效，主动制造缺口再验「摸至上限」。
     const charmProof = await page.evaluate(() => {
       const st = window.state, b = st.battle, n = b.allies.find(u => u.ref === "noa");
@@ -252,7 +252,7 @@ const INTRO = "啊啊……身体好热";
       window.NoaCharmSkills.balanceHand(st, n, window.BattleSystem.draw);
       return { before, after: n.hand.length, limit };
     });
-    T("E5b 手牌少于上限时魅力改造摸至上限",
+    T("E5b 手牌少于上限时淫气改造摸至上限",
       charmProof.before < charmProof.limit && charmProof.after === charmProof.limit, charmProof);
     const revert = await page.evaluate(() => {
       const st = window.state, n = st.battle.allies.find(u => u.ref === "noa");
@@ -268,7 +268,7 @@ const INTRO = "啊啊……身体好热";
       return { before, after, limit };
     });
     T("E5c 反向：禁用平衡后不会补齐", revert.after === revert.before && revert.after < revert.limit, revert);
-    // free 是开场快照；魅力改造只认出牌阶段，实时钉状态后再判才不是恒假断言。
+    // free 是开场快照；淫气改造只认出牌阶段，实时钉状态后再判才不是恒假断言。
     const freeNow = await page.evaluate(() => {
       const b = window.state.battle, noa = b.allies.find(u => u.ref === "noa");
       b.phase = 4; b.activeUid = noa.uid; b.locked = false;

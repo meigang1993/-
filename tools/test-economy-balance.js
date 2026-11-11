@@ -46,7 +46,7 @@ function fixedRouteCounts(id) {
     if (fixed.boss.has(layer)) counts.boss += 1;
     else if (fixed.rest.has(layer)) counts.rest += 1;
     else if (fixed.chest.has(layer)) counts.chest += 1;
-    else if (route.type === "linear" && layer >= (route.mixedEliteFrom || Infinity)) counts.mixed += 1;
+    else if (route.type === "linear" && layer >= (route.mixedEliteFrom ?? 2)) counts.mixed += 1;
     else counts.normal += 1;
   }
   return counts;
@@ -61,7 +61,7 @@ function fixedRouteReward(id) {
 }
 const underwaterCounts = fixedRouteCounts("underwater_train");
 const orcCounts = fixedRouteCounts("orc_dungeon");
-assert(JSON.stringify(underwaterCounts) === JSON.stringify({ normal: 7, mixed: 4, rest: 1, chest: 1, boss: 1 }), "underwater route payout counts must match its configured layers");
+assert(JSON.stringify(underwaterCounts) === JSON.stringify({ normal: 0, mixed: 11, rest: 1, chest: 1, boss: 1 }), "underwater route payout counts must match its configured layers");
 assert(JSON.stringify(orcCounts) === JSON.stringify({ normal: 9, mixed: 0, rest: 1, chest: 1, boss: 1 }), "orc route payout counts must match its configured layers");
 const expectedRuns = {
   machine_factory: 8 * randomNodeReward + configured.boss,
@@ -70,7 +70,7 @@ const expectedRuns = {
 };
 
 assert(expectedRuns.machine_factory >= 1600 && expectedRuns.machine_factory <= 1680, "machine factory baseline is outside target");
-assert(expectedRuns.underwater_train >= 2550 && expectedRuns.underwater_train <= 2620, "underwater train baseline is outside target");
+assert(expectedRuns.underwater_train >= 2850 && expectedRuns.underwater_train <= 2910, "underwater train baseline is outside target");
 assert(expectedRuns.orc_dungeon >= 2880 && expectedRuns.orc_dungeon <= 2940, "orc dungeon baseline is outside target");
 
 for (const id of Object.keys(expectedRuns)) {

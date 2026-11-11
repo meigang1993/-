@@ -58,7 +58,7 @@ const forceAdvance = (page, isNoa) => page.evaluate(flag => {
   return null;
 }, isNoa);
 
-// 魅力改造溢出弃牌：先按 need 真实点选手牌，再真实点「确认弃置」清挂起。
+// 淫气改造溢出弃牌：先按 need 真实点选手牌，再真实点「确认弃置」清挂起。
 // 两级兜底只用于推进辅助（不改产品逻辑），避免任何一拍没点中就把回合卡死。
 const settleCharmDiscard = async page => {
   const need = await page.evaluate(() =>
@@ -184,7 +184,7 @@ async function waitNoaTurn(page, timeoutMs = 90000) {
         active: b?.activeUid, uid: n?.uid, phase: b?.phase,
         locked: b?.locked, battle: !!b,
         activeAlly: !!active && active.side === "ally",
-        // 魅力改造溢出弃牌挂起时 UI 只渲染「确认弃置」，不渲染「结束出牌」。
+        // 淫气改造溢出弃牌挂起时 UI 只渲染「确认弃置」，不渲染「结束出牌」。
         charm: !!b?.noaCharmDiscard,
         charmNeed: b?.noaCharmDiscard?.need || 0,
         endBtn: !!document.querySelector("[data-end-play]"),
@@ -297,7 +297,7 @@ async function segA(browser) {
       return { ok, i0, i1: noa.intent, foeHp: foe.hp };
     });
     T("A1 真实 useCard 链路打出杀牌", played.ok !== false, played);
-    T("A2 魅力改造令杀牌不消耗杀意", played.i1 === played.i0, played);
+    T("A2 淫气改造令杀牌不消耗杀意", played.i1 === played.i0, played);
     let snap = null;
     for (let i = 0; i < 40; i++) {
       snap = await stateOf(page);
@@ -499,7 +499,7 @@ async function segD(browser) {
       const extra = [mk(1), mk(2), mk(3)];
       // 基准手牌只取计入上限的牌：状态牌不计入手牌上限（countsForLimit），
       // 混进基准会让权威 overflow 从 3 变 2，下面按 extraCount=3 写的断言口径
-      // 就不成立。魅力改造现在按权威计数，也不该弃掉那张状态牌。
+      // 就不成立。淫气改造现在按权威计数，也不该弃掉那张状态牌。
       const base = noa.hand.filter(c => !c._pendingDraw
         && !window.BattleStatusCards?.isStatus?.(c)).slice(0, limit);
       noa.hand = base.concat(extra);
@@ -528,7 +528,7 @@ async function segD(browser) {
       };
       // 模拟 battle-card-resume-hooks.js: actor 是别的角色。
       window.NoaCharmSkills.balanceHand(st, other, window.BattleSystem.draw);
-      // 【魅力改造】多于上限：不弹专用窗，开弃牌阶段同款挂起，
+      // 【淫气改造】多于上限：不弹专用窗，开弃牌阶段同款挂起，
       // 再走真实 confirmDiscard → discardCards 一次性结算（挑末尾正好弃掉 extra）。
       const popup = b.noaCharmDiscard ? "noaCharmDiscard" : null;
       const need = b.noaCharmDiscard?.need || 0;

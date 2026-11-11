@@ -1,4 +1,4 @@
-// 【魅力改造】「出牌阶段开始时手牌小于上限是否摸齐」严格检查（Node 直调真实挂点）
+// 【淫气改造】「出牌阶段开始时手牌小于上限是否摸齐」严格检查（Node 直调真实挂点）
 //   与既有测试不同：这里不直接调 balanceHand，而是驱动 enterPlayPhase /
 //   BattleTurnInput.advanceToInput（真实「出牌阶段开始」入口），再观察手牌。
 //   A 主路径（battle-turn-input.js 注入 draw）
@@ -35,7 +35,7 @@ const T = (name, cond, extra) => {
 };
 
 const logs = [], records = [], draws = [];
-const NOA_SKILLS = [{ name: "魅力改造" }, { name: "改造副作用" }];
+const NOA_SKILLS = [{ name: "淫气改造" }, { name: "改造副作用" }];
 const mk = (uid, gender, side, extra = {}) => ({
   uid, ref: uid, name: uid, gender, side, hp: 130, maxHp: 130, hand: [],
   stats: { attack: 6, magic: 4, speed: 8, handLimit: 4 },
@@ -65,9 +65,10 @@ ctx.AppRuntimeErrors = undefined;
 
 // 加载技能模块（REVERT 源码级反向：hook 撤挂点 / count 谎报差额 / recheck 撤重判）
 let charmSrc = read("noa-charm-skills.js");
+const noaDiscardSrc = read("noa-charm-discard.js");
 const HOOK = "balanceHand(state, unit, draw || window.BattleSystem?.draw, { onlySelf: true });";
 const ANCHOR_COUNT = "实际摸到${gained}张牌";
-const ANCHOR_RECHECK = "while (gained < diff && rounds < maxRounds) {";
+const ANCHOR_RECHECK = "const maxRounds = Math.max(2, Math.min(8, diff + 2));";
 const ANCHOR_SIGNAL = "window.BattleDrawFeedback?.signal?.(result, owner, remaining, toHand)";
 const applyRevert = (src, from, to, tag) => {
   const next = src.replace(from, to);
@@ -78,11 +79,12 @@ if (REVERT) charmSrc = applyRevert(charmSrc, HOOK, "/* NOA_START_REVERT */", "ho
 if (MODE === "count") charmSrc = applyRevert(charmSrc, ANCHOR_COUNT,
   "实际摸到${diff}张牌", "count");
 if (MODE === "recheck") charmSrc = applyRevert(charmSrc, ANCHOR_RECHECK,
-  "while (gained < diff && rounds < 1) {", "recheck");
+  "const maxRounds = 1;", "recheck");
 if (MODE === "signal") charmSrc = applyRevert(charmSrc, ANCHOR_SIGNAL, "undefined", "signal");
 const reverted = charmSrc;
 vm.runInContext(read("battle-draw-feedback.js"), ctx, { filename: "battle-draw-feedback.js" });
 vm.runInContext(read("noa-side-effect-skills.js"), ctx, { filename: "noa-side-effect-skills.js" });
+vm.runInContext(noaDiscardSrc, ctx, { filename: "noa-charm-discard.js" });
 vm.runInContext(charmSrc, ctx, { filename: "noa-charm-skills.js" });
 vm.runInContext(read("battle-turn-input.js"), ctx, { filename: "battle-turn-input.js" });
 const Charm = ctx.NoaCharmSkills;

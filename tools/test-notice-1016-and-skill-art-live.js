@@ -58,7 +58,7 @@ const check = (name, ok, detail = "") => {
         beast: /快速装弹/.test(text),
         preshi: /普雷希/.test(text),
         noa: /怪面诺亚/.test(text),
-        charm: /魅力改造/.test(text),
+        charm: /淫气改造/.test(text),
         gaianis: /盖亚妮丝护符/.test(text),
         eagle: /圣鹰剑/.test(text),
       },
@@ -73,7 +73,7 @@ const check = (name, ok, detail = "") => {
   check("公告含「女王榨取」立绘条目", notice.topics.queen, JSON.stringify(notice.topics));
   check("公告含「快速装弹」删除条目", notice.topics.beast, JSON.stringify(notice.topics));
   check("本期公告含新角色【怪面诺亚】", notice.topics.noa, JSON.stringify(notice.topics));
-  check("本期公告含【魅力改造】", notice.topics.charm, JSON.stringify(notice.topics));
+  check("本期公告含【淫气改造】", notice.topics.charm, JSON.stringify(notice.topics));
   check("本期公告含重做饰品【盖亚妮丝护符】", notice.topics.gaianis, JSON.stringify(notice.topics));
   check("本期公告含重做饰品【圣鹰剑】", notice.topics.eagle, JSON.stringify(notice.topics));
   check("公告文本长度合理（非空壳）", notice.len > 200, `len=${notice.len}`);

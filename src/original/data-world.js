@@ -37,8 +37,8 @@ window.GameDataWorld = {
   missions: [
     // 原本没有 route，走 defaultLayers：休整与宝箱靠权重随机，英雄级因精英率 .6
     // 挤占掷点，约 27% 的路线整张图没有休整点（全队回血的唯一手段），故改为固定层。
-    { id: "machine_factory", name: "魔国机械工厂", kind: "dungeon", reward: { gold: 0, ...window.GameEconomy.missionRewards.machine_factory }, subtitle: "自动化魔械生产线", route: { type: "fixed-random", layers: 10, rest: [5], chest: [8], boss: [10] } },
-    { id: "underwater_train", name: "水下列车", kind: "dungeon", requiresFlag: "underwaterTrainUnlocked", lockedHint: "娜娜莉解锁后触发别墅事件开放", reward: { gold: 0, ...window.GameEconomy.missionRewards.underwater_train }, subtitle: "被狂鲨海盗团劫持的人鱼国航线", bgm: "./assets/sounds/underwater-train-battle.ogg", route: { type: "linear", layers: 15, rest: [10], chest: [8], boss: [15], mixedEliteFrom: 11 } },
+    { id: "machine_factory", name: "魔国机械工厂", kind: "dungeon", reward: { gold: 0, ...window.GameEconomy.missionRewards.machine_factory }, subtitle: "自动化魔械生产线", route: { type: "fixed-random", layers: 10, rest: [9], chest: [8], boss: [10] } },
+    { id: "underwater_train", name: "水下列车", kind: "dungeon", requiresFlag: "underwaterTrainUnlocked", lockedHint: "娜娜莉解锁后触发别墅事件开放", reward: { gold: 0, ...window.GameEconomy.missionRewards.underwater_train }, subtitle: "被狂鲨海盗团劫持的人鱼国航线", bgm: "./assets/sounds/underwater-train-battle.ogg", route: { type: "linear", layers: 15, rest: [14], chest: [8], boss: [15] } },
     ...(window.GameDataFutureDungeons || []),
   ],
   enemies: {

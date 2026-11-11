@@ -170,7 +170,7 @@ const check = (name, cond, info) => {
     && done.mariaLocked === false && done.modal === null, done);
   check("解锁日志正确", /废墟沙城已解锁/.test(done.logHead || ""), { log: done.logHead });
 
-  // ---------- 5) 副本概述：15层 / 篝火4·9 / 宝箱7 ----------
+  // ---------- 5) 副本概述：15层 / 篝火在 BOSS 前一层(14) / 宝箱7 ----------
   const map = await page.evaluate(() => {
     const M = window.DungeonMap;
     const mission = (window.GameData?.missions || []).find(m => m.id === "ruins_sand_city");
@@ -194,7 +194,7 @@ const check = (name, cond, info) => {
   });
   if (map) {
     check("共 15 层", map.layers === 15, { layers: map.layers });
-    check("篝火固定在第 4、9 层", JSON.stringify(map.restLayers) === "[4,9]", map.restLayers);
+    check("篝火固定在 BOSS 前一层（第 14 层）", JSON.stringify(map.restLayers) === "[14]", map.restLayers);
     check("宝箱固定在第 7 层", JSON.stringify(map.chestLayers) === "[7]", map.chestLayers);
     check("节点随机（50 局布局不同）", map.layouts > 1, { 布局种类: map.layouts });
   } else {

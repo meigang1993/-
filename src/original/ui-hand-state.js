@@ -51,7 +51,7 @@ window.GameUIHandState = (() => {
     modes.transferLocked = modes.dimensionTransfer || modes.kaiichiShare
       || modes.cadicisShare || modes.borrowChoice
       || modes.ailengDrill || modes.catherineSteal || modes.wendyTutor || modes.mieryulaBloodthirst;
-    // 【魅力改造】溢出弃牌：出牌阶段内复用弃牌阶段同一套手牌区选牌 + 确认弃置，
+    // 【淫气改造】溢出弃牌：出牌阶段内复用弃牌阶段同一套手牌区选牌 + 确认弃置，
     // 不弹专用选牌窗。挂起期间出牌按钮禁用，选够后点确认才回到出牌。
     const charmDiscard = battle.noaCharmDiscard?.unitUid === actor.uid;
     modes.charmDiscard = charmDiscard;
@@ -82,7 +82,7 @@ window.GameUIHandState = (() => {
       && battle.allies.some(unit => unit.uid !== actor.uid && unit.hp > 0);
     const discardResult = hasDiscardSkill ? "一次性弃置并结算弃牌技能" : "一次性弃置";
     const discardTip = charmDiscard
-      ? `魅力改造：手牌超出上限，选择${needDiscard}张手牌后点确认弃置（与弃牌阶段相同，当前 ${visible}/${limit}）`
+      ? `淫气改造：手牌超出上限，选择${needDiscard}张手牌后点确认弃置（与弃牌阶段相同，当前 ${visible}/${limit}）`
       : canMillerShare
         ? `弃牌阶段：选择${needDiscard}张手牌，可用收获分享交给队友，或点确认一次性弃置（当前 ${visible}/${limit}）`
         : `弃牌阶段：选择${needDiscard}张手牌后点确认，${discardResult}（当前 ${visible}/${limit}）`;

@@ -63,7 +63,7 @@ window.GameSkinData = (() => {
     { id: "loki_default", charId: "loki", name: "默认", quality: "default", price: 0, art: "./assets/images/loki-portrait.e4c2018a.webp", desc: "洛基的初始外观。", initial: true },
     { id: "cadicis_default", charId: "cadicis", name: "默认", quality: "default", price: 0, art: "./assets/images/cadicis-portrait.0c2fa8f8.webp", desc: "卡迪西斯的初始外观。", initial: true },
     { id: "gerlot_default", charId: "gerlot", name: "默认", quality: "default", price: 0, art: "./assets/images/gerlot-portrait.e6f7410f.webp", desc: "杰洛特的初始外观。", initial: true },
-    { id: "little_elrana_default", charId: "little_elrana", name: "默认", quality: "default", price: 0, art: "./assets/images/elrana-clone.990db014.webp", desc: "小艾尔拉娜的初始外观。", initial: true },
+    { id: "little_elrana_default", charId: "little_elrana", name: "默认", quality: "default", price: 0, art: "./assets/images/elrana-clone.73187ed4.webp", desc: "小艾尔拉娜的初始外观。", initial: true },
     { id: "ace_default", charId: "ace", name: "默认", quality: "default", price: 0, art: "./assets/images/ace-portrait.115ef71b.webp", desc: "艾斯的初始外观。", initial: true },
     { id: "aileng_default", charId: "aileng", name: "默认", quality: "default", price: 0, art: "./assets/images/aileng-portrait.5b5e628d.webp", desc: "艾伦格的初始外观。", initial: true },
     { id: "hitwell_default", charId: "hitwell", name: "默认", quality: "default", price: 0, art: "./assets/images/hitwell-portrait.6af64b8e.webp", desc: "希特威的初始外观。", initial: true },

@@ -149,7 +149,7 @@ async function segB(page, errors) {
   }
   const joined = lines.join("|");
   T("B1 真实点击推进对话，关键句齐全", advClicks >= 3
-    && ["罗卡尔，你又失败了。", "地下室封印着强大的魅力改造者",
+    && ["罗卡尔，你又失败了。", "地下室封印着强大的淫气改造者",
       "多给她男人，不然她会发狂的。", "好的，妈妈，有了我会试试。"]
       .every(s => joined.includes(s)), { advClicks, lines: lines.length, joined: joined.slice(0, 160) });
 

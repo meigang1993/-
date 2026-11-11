@@ -35,8 +35,7 @@ for (let i = 0; i < N; i++) {
   nodes.forEach(n => { (byLayer[n.layer] ||= []).push(n); });
   if (!(byLayer[1]?.length === 1 && byLayer[1][0].type === "start")) startOk = false;
   if (!(byLayer[15]?.length === 1 && byLayer[15][0].type === "boss")) bossOk = false;
-  if (!(byLayer[4]?.length === 1 && byLayer[4][0].type === "rest")) restOk = false;
-  if (!(byLayer[9]?.length === 1 && byLayer[9][0].type === "rest")) restOk = false;
+  if (!(byLayer[14]?.length === 1 && byLayer[14][0].type === "rest")) restOk = false;
   if (!(byLayer[7]?.length === 1 && byLayer[7][0].type === "chest")) chestOk = false;
   layouts.add(nodes.map(n => n.type).join(""));
 
@@ -53,7 +52,7 @@ for (let i = 0; i < N; i++) {
 ok("15 层", layersOk);
 ok("第 1 层起点", startOk);
 ok("第 15 层 BOSS", bossOk);
-ok("篝火固定在第 4、9 层各一个", restOk);
+ok("篝火固定在 BOSS 前一层（第 14 层）", restOk);
 ok("宝箱固定在第 7 层一个", chestOk);
 ok("节点随机（布局多样性）", layouts.size > 50, `${layouts.size}/200 种`);
 ok("普通战斗 1~4 只", labelOk && cntMin >= 1 && cntMax <= 4, `实测 ${cntMin}~${cntMax}`);

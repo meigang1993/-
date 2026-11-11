@@ -41,7 +41,7 @@ window.BattleTurnInput = ({
         if (!done) return;
         continue;
       }
-      // 【魅力改造】只在出牌阶段生效：所有进入出牌阶段的路径统一走
+      // 【淫气改造】只在出牌阶段生效：所有进入出牌阶段的路径统一走
       // NoaCharmSkills.enterPlayPhase（设 phase=4 + 手牌平衡 + 溢出挂起 +
       // 狂暴 skipPlayPhase 拦截），避免旁路把狂暴回合又开成可出牌。
       if (!window.NoaCharmSkills?.enterPlayPhase?.(state, unit, draw, onStep)) return;

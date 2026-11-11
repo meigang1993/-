@@ -1,12 +1,12 @@
-// 怪面诺亚【魅力改造】× 免杀意离区残留 · 真实链路严格检查
+// 怪面诺亚【淫气改造】× 免杀意离区残留 · 真实链路严格检查
 //
 // 背景：【记忆泡泡】曾出现同类 BUG —— 牌打出后 _bubbleFree/_bubbleCast 未清除，
-// 捞回后再打出错误免杀意。魅力改造的免杀意是「角色 + 出牌阶段 + 杀牌」动态判据，
+// 捞回后再打出错误免杀意。淫气改造的免杀意是「角色 + 出牌阶段 + 杀牌」动态判据，
 // 不给牌打标记；本测试用真实 useCard 链路确认：杀牌离开手牌区后不残留免杀意，
 // 换人 / 换阶段 / 回收再打出都按正常规则消耗杀意。
 //
 //   A 诺亚打出杀（免杀意）→ 弃牌堆无标记 → 捞回给队友打出正常扣杀意
-//   B 杀牌经魅力改造弃置离手 → 弃牌堆无标记 → 捞回给队友打出正常扣杀意
+//   B 杀牌经淫气改造弃置离手 → 弃牌堆无标记 → 捞回给队友打出正常扣杀意
 //   C 对照：同一出牌阶段内诺亚自己回收再打出仍免杀意（锁定技设计，不是残留）
 //   D 反向验证：把判据改成恒 true（模拟「标记跟着牌走」），A/B 的扣杀意断言必须变红
 //
@@ -56,7 +56,7 @@ const run = async (page, expr, label = "run") => {
 const KILL = (name = "杀（普攻）", suit = "♠", extra = {}) =>
   ({ name, type: "slash", suit, power: 0, scale: "attack", ...extra });
 
-// 基础战场：allies[0] = 怪面诺亚（带魅力改造），allies[1] = 普通队友，敌人不可响应。
+// 基础战场：allies[0] = 怪面诺亚（带淫气改造），allies[1] = 普通队友，敌人不可响应。
 const base = (o = {}) => `(() => {
   const st = window.state, b = st.battle;
   b.animQueue = []; b.locked = false; b.phase = ${o.phase ?? 4};
@@ -64,7 +64,7 @@ const base = (o = {}) => `(() => {
   b.selectedCardIndex = -1; b.selectedSkillCard = null;
   const u = b.allies[0], u2 = b.allies[1];
   u.name = "怪面诺亚"; u.gender = "female"; u.ref = "noa";
-  u.skills = [{ type: "passive", name: "魅力改造", text: "锁定技" }];
+  u.skills = [{ type: "passive", name: "淫气改造", text: "锁定技" }];
   u.stats = { attack: 6, magic: 4, speed: 8, maxHp: 130, bloodlust: 3, handLimit: 4, drawPerTurn: 1, initialDraw: 1 };
   u.hp = u.maxHp = 130; u.block = 0; u.intent = 2; u.intentMax = 3;
   u.battleRelics = [];
@@ -180,14 +180,14 @@ async function segA(browser) {
 async function segB(browser) {
   const { page, errors } = await boot(browser);
   try {
-    // 手牌 6 张（含 2 张杀），上限 4 → 魅力改造需弃 2 张
+    // 手牌 6 张（含 2 张杀），上限 4 → 淫气改造需弃 2 张
     const hand = [KILL("杀（普攻）", "♠"), KILL("杀（普攻）", "♥"),
       { name: "试牌1", type: "tactic", suit: "♠" }, { name: "试牌2", type: "tactic", suit: "♥" },
       { name: "试牌3", type: "tactic", suit: "♣" }, { name: "试牌4", type: "tactic", suit: "♦" }];
     const s0 = await run(page, base({ hand }), "B-setup");
     T("B0 场景：手牌 6 > 上限 4", s0 && s0.hand === 6, s0);
 
-    // 触发魅力改造溢出：标准弃牌阶段同款（手牌区选牌 + 确认弃置）
+    // 触发淫气改造溢出：标准弃牌阶段同款（手牌区选牌 + 确认弃置）
     const hang = await run(page, `(() => {
       const st = window.state, b = st.battle, u = b.allies[0];
       window.NoaCharmSkills.balanceHand(st, u, () => {}, { onlySelf: true });

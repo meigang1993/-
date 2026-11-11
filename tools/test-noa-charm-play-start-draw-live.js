@@ -1,4 +1,4 @@
-// 【魅力改造】「出牌阶段开始手牌小于上限是否摸齐」实机检查（真实挂点 + 真实 BattleSystem.draw）
+// 【淫气改造】「出牌阶段开始手牌小于上限是否摸齐」实机检查（真实挂点 + 真实 BattleSystem.draw）
 //   A 1 名存活男性 → 上限 5，手牌 1 → 补齐到 5，DOM 手牌区同步渲染
 //   B 0 名存活男性 → 上限 4，手牌 2 → 补齐到 4
 //   C 反向：把 enterPlayPhase 换成「只设 phase」的旧入口 → 不补齐
@@ -248,8 +248,8 @@ async function setupReal(page, opts = {}) {
       T("E2 真实信号：drawn=0 / exhausted=true / locked=false",
         e.signals[0]?.drawn === 0 && e.signals[0]?.exhausted === true
         && e.signals[0]?.locked === false, e.signals);
-      T("E3 战报只 1 条魅力改造，含「未能补齐」「牌堆已无可摸的牌」，不写「未摸到牌」",
-        e.logs.filter(l => l.includes("魅力改造")).length === 1
+      T("E3 战报只 1 条淫气改造，含「未能补齐」「牌堆已无可摸的牌」，不写「未摸到牌」",
+        e.logs.filter(l => l.includes("淫气改造")).length === 1
         && e.logs.some(l => l.includes("未能补齐"))
         && e.logs.some(l => l.includes("牌堆已无可摸的牌"))
         && !e.logs.some(l => l.includes("未摸到牌")), e.logs);
@@ -277,10 +277,10 @@ async function setupReal(page, opts = {}) {
       T("G2 真实信号：drawn=3 / redirected=3 / exhausted=false，只 1 轮即停",
         g.calls.length === 1 && g.signals[0]?.drawn === 3
         && g.signals[0]?.redirected === 3 && g.signals[0]?.exhausted === false, g.signals);
-      T("G3 两条战报各司其职：转交一条 + 魅力改造一条，且不重复「吸魔邪眼转交」",
+      T("G3 两条战报各司其职：转交一条 + 淫气改造一条，且不重复「吸魔邪眼转交」",
         g.logs.filter(l => l.includes("吸魔邪眼转交")).length === 1
-        && g.logs.filter(l => l.includes("魅力改造")).length === 1
-        && !g.logs.some(l => l.includes("魅力改造") && l.includes("吸魔邪眼转交")), g.logs);
+        && g.logs.filter(l => l.includes("淫气改造")).length === 1
+        && !g.logs.some(l => l.includes("淫气改造") && l.includes("吸魔邪眼转交")), g.logs);
       T("G4 全日志不出现重复的「未摸到牌」", !g.logs.some(l => l.includes("未摸到牌")), g.logs);
       T("G5 转交动画只有 1 条 drawBatch（uid=对方、count=3）",
         g.batches.length === 1 && g.batches[0].count === 3

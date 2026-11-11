@@ -1,7 +1,7 @@
 // 【怪面诺亚】两技能 × 全库饰品 冲突严格检查（模块级，加载真实挂点）
 //   A 并发挂起：charm 不得与其它玩家提示叠加（霹雳之锤/米勒分享/交牌/半魅魔血…）
-//   B 盖亚妮丝护符 × 魅力改造：摸牌致溢出、状态牌无效、文案与归属、自己人不摸
-//   C 圣鹰剑 × 魅力改造/改造副作用：免杀意+翻倍、技能伤害不翻倍、咬杀、存档退化
+//   B 盖亚妮丝护符 × 淫气改造：摸牌致溢出、状态牌无效、文案与归属、自己人不摸
+//   C 圣鹰剑 × 淫气改造/改造副作用：免杀意+翻倍、技能伤害不翻倍、咬杀、存档退化
 //   D 克罗研究记录：额外结算不被 charm 挂起吞掉、续跑顺序、两次结算不重复平衡
 //   E 霹雳之锤 × 格林机枪：waitingGreen 与 charm 不互吞
 //   F 全库饰品钩子：诺亚在场不抛异常、balanceHand 排序
@@ -35,7 +35,7 @@ const mk = (uid, side, extra = {}) => ({
   hand: [], stats: { attack: 6, magic: 4, speed: 8, handLimit: 4 },
   skills: [], relics: [], intent: 1, ...extra,
 });
-const NOA_SKILLS = [{ name: "魅力改造" }, { name: "改造副作用" }];
+const NOA_SKILLS = [{ name: "淫气改造" }, { name: "改造副作用" }];
 
 ctx.GameData = { characters: [{ id: "noa", stats: { handLimit: 4 } }] };
 ctx.BattleLog = { add: (s, t) => logs.unshift(String(t)) };
@@ -108,9 +108,10 @@ const patch = (src, from, to, tag) => {
   return next;
 };
 let charmSrc = read("noa-charm-skills.js");
+let charmDiscardSrc = read("noa-charm-discard.js");
 let discardSrc = read("battle-discard-flow.js");
 let swordSrc = read("holy-eagle-sword-skills.js");
-if (MODE === "guard") charmSrc = patch(charmSrc,
+if (MODE === "guard") charmDiscardSrc = patch(charmDiscardSrc,
   "|| window.AppRuntimeRecovery?.hasBlockingBattlePrompt?.(b)", "|| false", "guard");
 if (MODE === "discard") discardSrc = patch(discardSrc,
   "if (b?.thunderHammer && !charm)", "if (b?.thunderHammer)", "discard");
@@ -130,6 +131,7 @@ if (!ctx.AppRuntimeRecovery) {
   };
 }
 load(read("battle-status-card-storage.js"), "status-storage");
+load(charmDiscardSrc, "noa-charm-discard");
 load(charmSrc, "noa-charm");
 load(read("noa-side-effect-skills.js"), "noa-side-effect");
 load(read("gaianis-amulet-skills.js"), "gaianis");
@@ -227,13 +229,18 @@ if (SEGS.includes("B")) {
     ctx.GaianisAmuletSkills.resolveObstacle(state, enemy, noa, { name: "障碍" }, draw);
     T("B1 其他角色用障碍牌→护符摸 1 张", noa.hand.length === 5, { hand: noa.hand.length });
     ctx.NoaCharmSkills.balanceHand(state, noa, draw);
-    T("B2 溢出在别家回合自动弃至上限", counted(noa) === 4, { counted: counted(noa) });
-    T("B3 弃牌钩子只触发一次（不重复结算）",
-      afterDiscardCalls.length === 1 && syncMagicCalls.length === 1,
+    T("B2 别家回合溢出不自动弃（淫气改造仅本人出牌阶段生效）",
+      counted(noa) === 5 && discarded.length === 0 && !b.noaCharmDiscard,
+      { counted: counted(noa), discarded: discarded.length, charm: b.noaCharmDiscard });
+    T("B3 别家回合不触发弃牌/魔力同步钩子",
+      afterDiscardCalls.length === 0 && syncMagicCalls.length === 0,
       { afterDiscard: afterDiscardCalls.length, syncMagic: syncMagicCalls.length });
-    T("B4 牌总数守恒（摸 1 弃 1，无复制无丢失）",
-      discarded.length === 1 && discarded[0].uid === "noa",
-      { discarded: discarded.length, uid: discarded[0]?.uid });
+    b.activeUid = "noa";
+    ctx.NoaCharmSkills.balanceHand(state, noa, draw);
+    T("B4 本人出牌阶段才挂起玩家弃牌（need=1）、不自动弃、不锁战斗",
+      b.noaCharmDiscard?.need === 1 && counted(noa) === 5
+      && discarded.length === 0 && !b.locked,
+      { charm: b.noaCharmDiscard, counted: counted(noa), discarded: discarded.length, locked: b.locked });
   }
   {
     const { state, b, noa } = basicState();
@@ -271,7 +278,7 @@ if (SEGS.includes("C")) {
   const { state, b, noa, enemy } = basicState();
   noa.relics = ["圣鹰剑"];
   const k = kill();
-  T("C1 魅力改造：出牌阶段杀牌免杀意", ctx.NoaCharmSkills.noIntentCost(noa, k) === true);
+  T("C1 淫气改造：出牌阶段杀牌免杀意", ctx.NoaCharmSkills.noIntentCost(noa, k) === true);
   ctx.NoaCharmSkills.playKillLine(state, noa, k);
   T("C2 圣鹰剑记录造成过伤害的单体杀", ctx.HolyEagleSwordSkills.recordHit(state, noa, enemy, k, 10) === true);
   T("C3 对同一目标下一张杀翻倍", ctx.HolyEagleSwordSkills.modifyDamage(state, noa, enemy, kill(), 10) === 20);
@@ -387,8 +394,9 @@ if (SEGS.includes("E")) {
     noa.hand = Array.from({ length: 6 }, (_, j) => kill("杀" + j));
     discarded.length = 0;
     ctx.NoaCharmSkills.balanceHand(state, noa, draw);
-    T("E3 机枪续跑期间溢出走自动弃、不叠加玩家提示",
-      !b.noaCharmDiscard && counted(noa) === 4, { charm: b.noaCharmDiscard, counted: counted(noa) });
+    T("E3 敌方回合溢出不自动弃、不叠加玩家提示（仅本人出牌阶段生效）",
+      !b.noaCharmDiscard && counted(noa) === 6 && discarded.length === 0,
+      { charm: b.noaCharmDiscard, counted: counted(noa), discarded: discarded.length });
     T("E4 greenGatlingResume 未被 charm 清掉", !!b.greenGatlingResume);
   }
   T("E5 锤子 resolve/cancel 会清 greenGatlingResume 并续跑",
@@ -432,7 +440,8 @@ if (SEGS.includes("G")) {
     discarded.length = 0;
     ctx.NoaCharmSkills.balanceHand(state, noa, draw);
     T("G1 交牌弹窗挂起时不叠加 charm", !b.noaCharmDiscard, b.noaCharmDiscard);
-    T("G2 交牌挂起期间溢出自动弃至上限", counted(noa) === 4, { counted: counted(noa) });
+    T("G2 交牌挂起期间（敌方回合）溢出不弃牌", counted(noa) === 6 && discarded.length === 0,
+      { counted: counted(noa), discarded: discarded.length });
     b.handReveal = null;
     const before = noa.hand.length;
     ctx.NoaCharmSkills.balanceHand(state, noa, draw);

@@ -47,10 +47,10 @@ const check = (name, ok, evidence = "") => results.push({ name, ok, evidence });
 
 // 期望的路线配置：与 data-world.js / data-future-dungeons.js / data-ruins-sand-city.js 对齐
 const EXPECT = {
-  machine_factory: { layers: 10, rest: [5], chest: [8], type: "fixed-random" },
-  underwater_train: { layers: 15, rest: [10], chest: [8], type: "linear" },
-  orc_dungeon: { layers: 13, rest: [9], chest: [7], type: "fixed-random" },
-  ruins_sand_city: { layers: 15, rest: [4, 9], chest: [7], type: "fixed-random" },
+  machine_factory: { layers: 10, rest: [9], chest: [8], type: "fixed-random" },
+  underwater_train: { layers: 15, rest: [14], chest: [8], type: "linear" },
+  orc_dungeon: { layers: 13, rest: [12], chest: [7], type: "fixed-random" },
+  ruins_sand_city: { layers: 15, rest: [14], chest: [7], type: "fixed-random" },
 };
 
 const MISSIONS = ["machine_factory", "underwater_train", "orc_dungeon", "ruins_sand_city"];
@@ -94,9 +94,9 @@ for (const missionId of MISSIONS) {
     let badLayerCount = 0, badStart = 0, badBoss = 0, badRest = 0, badChest = 0;
     let badType = 0, dangling = 0, unreachable = 0, deadEnd = 0, orphans = 0;
     let eliteSeen = 0, totalNonFixed = 0, noRestRuns = 0, restTotal = 0;
-    // 期望精英占比：linear 路线有 mixedEliteFrom 限制，精英只出现在该层及之后，
-    // 所以全局占比天然低于 eliteRate，不能拿 eliteRate 直接比。
-    const eliteFrom = exp.type === "linear" ? (mission.route?.mixedEliteFrom || 99) : 1;
+    // 期望精英占比：固定节点之外逐层掷点，mixedEliteFrom 仅限制最早层；
+    // linear 与 fixed-random 同口径（第 2 层起），不能拿 eliteRate 直接比。
+    const eliteFrom = mission.route?.mixedEliteFrom ?? 2;
     const last = exp.layers;
     let eliteCapable = 0, candidates = 0;
     for (let L = 2; L < last; L++) {

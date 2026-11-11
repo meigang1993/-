@@ -41,6 +41,19 @@ const SPLITS = [
     main: "battle-damage-resolution.js",
     deps: ["BattleWhiteLolita"],
   },
+  // 2026-11-11 预防性拆分：3 个 189 行文件各拆出一个子模块。
+  {
+    main: "noa-charm-skills.js",
+    deps: ["NoaCharmDiscard"],
+  },
+  {
+    main: "bertis-gerlot-skills.js",
+    deps: ["GerlotRevengeSkills"],
+  },
+  {
+    main: "update-notice.js",
+    deps: ["UpdateNoticeRules", "UpdateNoticeRecent", "UpdateNoticeArchive"],
+  },
 ];
 
 const failures = [];
@@ -110,6 +123,11 @@ if (!fs.existsSync(bundlesPath)) {
     "battle-combat-attack-values.js": ["holy-eagle-sword-skills.js"],
     "ruins-enemy-skills.js": ["skill-once-per-turn.js"],
     "mieryula-skills.js": ["mieryula-time-stop.js"],
+    "noa-charm-skills.js": ["noa-charm-discard.js"],
+    "bertis-gerlot-skills.js": ["gerlot-revenge-skills.js"],
+    "update-notice.js": [
+      "update-notice-recent.js", "update-notice-archive.js", "update-notice-rules.js",
+    ],
   };
   // 共享模块必须同时出现在两个消费方所在的 bundle，否则跨包依赖并未消除
   const sharedCross = {

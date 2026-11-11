@@ -14,7 +14,7 @@ window.NewCharacterUnlockEvents = (() => {
       ["格尔达", "那就快点准备吧，下一场战斗我可不想错过。"],
     ];
     /* 邦迪是精英怪、不在角色栏，按名字直接挂他的立绘，否则这句台词无人对应。 */
-    const bondi = { name: "兽人王邦迪", art: "./assets/new-portraits/orc-king-bondi.2f15201d.webp" };
+    const bondi = { name: "兽人王邦迪", art: "./assets/new-portraits/orc-king-bondi.d0ce4839.webp" };
     return eventView("gerdaNurseryUnlock", state, "兽人公主格尔达", [bondi, "gerda", "lokar"], lines,
       "事件结束后，格尔达会在孕育殿堂开放兑换，价格20精华宝珠。", "开放格尔达兑换", "gerda-nursery-unlock-complete");
   }

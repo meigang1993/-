@@ -22,7 +22,7 @@ window.BattleSystem = { pushFloat() {} };
   "data.js", "data-future-relics.js", "data-relics.js", "relics.js",
   "sakura-risa-combat-skills.js", "sakura-risa-lifecycle-skills.js", "sakura-risa-skills.js",
   "sakura-risa-eye.js",
-  "battle-draw-feedback.js", "witherer-relic-skills.js", "bertis-gerlot-skills.js",
+  "battle-draw-feedback.js", "witherer-relic-skills.js", "gerlot-revenge-skills.js", "bertis-gerlot-skills.js",
   "nonoka-new-moon-skills.js",
   "nonoka-loki-skills.js",
   "battle-card-tactics.js", "battle-card-active-relics-core.js", "battle-card-active-relics-demon.js", "battle-card-active-relics-assassin.js", "battle-card-active-relics-arsenal.js", "battle-card-active-relics.js",

@@ -62,7 +62,10 @@ window.HolyEagleSwordSkills = (() => {
       || !marked(state, actor, target)) return amount;
     window.BattleLog?.add?.(state,
       `${actor.name} 的${NAME}触发，对${target.name}的下一张单体【杀】伤害翻倍。`);
-    return amount * 2;
+    // 伤害管线是 Math.round(amount) 后才扣血；攻击力可为小数（如 9.6），
+    // 直接 amount*2 会得到 19.2→19，玩家看到的「翻倍」比首击 10 少 1 点。
+    // 先按同一口径取整再翻倍，保证严格 2 倍，且与名刀鬼切叠加时仍是整数。
+    return Math.round(amount) * 2;
   }
 
   return { NAME, holds, isSingleKill, marked, recordHit, modifyDamage };

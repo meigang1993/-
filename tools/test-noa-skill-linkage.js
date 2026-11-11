@@ -1,7 +1,7 @@
-// 怪面诺亚【魅力改造】×【改造副作用】联动严格检查（Node 直调）
+// 怪面诺亚【淫气改造】×【改造副作用】联动严格检查（Node 直调）
 //   A 动态手牌上限联动：N 名存活男性 -> 上限 4+N -> 出牌阶段摸至上限 / 出牌后补回
 //   B 结束阶段伤害致死 -> 上限实时下降 -> 下回合出牌阶段开始触发玩家弃置
-//   C 无存活男性 -> 狂暴虚拟咬杀 + 跳过出牌阶段 -> 魅力改造整回合不生效
+//   C 无存活男性 -> 狂暴虚拟咬杀 + 跳过出牌阶段 -> 淫气改造整回合不生效
 //   D 所有「进入出牌阶段」路径必须统一：调 balanceHand + 尊重 skipPlayPhase
 //   E 免杀意即时判定 / 虚拟咬杀 noIntentCost 离区清除，无记忆泡泡式残留
 //   F 手牌上限消费方一致（标准弃牌阶段与 balanceHand 用同一 handLimit）
@@ -33,7 +33,7 @@ const mkUnit = (ref, gender, hp = 50, extra = {}) => ({
   skills: [], ...extra,
 });
 const NOA_SKILLS = [
-  { name: "魅力改造", text: "锁定技，出牌阶段内手牌数始终等于手牌上限；使用【杀】牌不消耗杀意。" },
+  { name: "淫气改造", text: "锁定技，出牌阶段内手牌数始终等于手牌上限；使用【杀】牌不消耗杀意。" },
   { name: "改造副作用", text: "锁定技，结束阶段对其他存活男性造成攻击力伤害；每名存活男性手牌上限+1；无存活男性时随机虚拟咬杀并跳过出牌阶段。" },
 ];
 const slash = (name = "杀（普攻）", extra = {}) => ({
@@ -71,6 +71,7 @@ ctx.AppRuntimeErrors = {};
 
 // ---------- 载入 ----------
 vm.runInContext(read("noa-side-effect-skills.js"), ctx, { filename: "noa-side-effect-skills.js" });
+vm.runInContext(read("noa-charm-discard.js"), ctx, { filename: "noa-charm-discard.js" });
 vm.runInContext(read("noa-charm-skills.js"), ctx, { filename: "noa-charm-skills.js" });
 try {
   vm.runInContext(read("battle-card-cleanup.js"), ctx, { filename: "battle-card-cleanup.js" });
@@ -162,11 +163,11 @@ const draw = ctx.BattleSystem.draw;
   const frenzy = Side.beginPlayPhase(state, noa);
   T("C1 无存活男性触发狂暴", frenzy === true && noa.skipPlayPhase === true, { frenzy, skip: noa.skipPlayPhase });
   T("C2 虚拟【咬杀】已打出", virtuals.length === 1 && virtuals[0].card?.name === "咬杀", { virtuals });
-  T("C3 虚拟牌自带 noIntentCost（phase3 不靠魅力改造）",
+  T("C3 虚拟牌自带 noIntentCost（phase3 不靠淫气改造）",
     virtuals[0]?.card?.noIntentCost === true && virtuals[0]?.card?.virtual === undefined,
     { card: virtuals[0]?.card });
   T("C4 同回合不重复狂暴", Side.beginPlayPhase(state, noa) === true);
-  // 主路径：见到 skipPlayPhase 不设 phase=4 -> 魅力改造整回合不生效
+  // 主路径：见到 skipPlayPhase 不设 phase=4 -> 淫气改造整回合不生效
   battle.phase = 3;
   lines.length = 0;
   T("C5 狂暴回合不进 phase4（免杀意判据不生效）",
@@ -249,7 +250,7 @@ const draw = ctx.BattleSystem.draw;
   const { state, battle, noa } = fresh(2);
   battle.phase = 4;
   const card = slash();
-  T("E1 魅力改造不往牌上写标记（即时判定）",
+  T("E1 淫气改造不往牌上写标记（即时判定）",
     !("noIntentCost" in card) && Charm.noIntentCost(noa, card) === true);
   // 虚拟咬杀的 noIntentCost 是牌自带，离区应被 clearPlayFlags 清除
   const v = slash("咬杀", { virtual: true, void: true, noIntentCost: true, generatedBySkill: "改造副作用" });

@@ -1,4 +1,4 @@
-// 【魅力改造】触发弃牌时「手牌能否真实点击」实机严格检查
+// 【淫气改造】触发弃牌时「手牌能否真实点击」实机严格检查
 //   A 全链路真实鼠标点击：逐张点手牌 -> discardPick 累加 -> 点确认弃置 -> 结算
 //   B 反向：未挂起/禁用弃牌入口时点手牌不会误弃
 //   C 联动：男性人数改变上限 -> 需要弃置张数跟着变（2 男 vs 1 男）
@@ -118,8 +118,8 @@ async function segA(browser) {
     T("A1 手牌区渲染 8 张且全部可点（discardable、无 disabled、pointer-events 非 none）",
       a1.cardCount === 8 && a1.discardable === 8 && a1.disabledClass === 0
       && a1.pointerNone === 0, a1);
-    T("A2 显示魅力改造弃牌提示 + 未选够时确认按钮禁用",
-      a1.tip.includes("魅力改造") && a1.confirmDisabled === true, a1);
+    T("A2 显示淫气改造弃牌提示 + 未选够时确认按钮禁用",
+      a1.tip.includes("淫气改造") && a1.confirmDisabled === true, a1);
     T("A3 仍在出牌阶段（弃牌不切到结束阶段）", a1.phase === 4, a1);
 
     // 逐张真实点击：0（首）、3（中间）、7（末尾），验证任意位置都能选

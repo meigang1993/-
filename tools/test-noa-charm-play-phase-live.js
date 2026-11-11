@@ -1,4 +1,4 @@
-// 怪面诺亚【魅力改造】出牌阶段生效 + 弃牌阶段同款弃置 · 实机严格检查
+// 怪面诺亚【淫气改造】出牌阶段生效 + 弃牌阶段同款弃置 · 实机严格检查
 //   A 出牌阶段开始：手牌 > 上限触发弃置；不弹专用选牌窗，改为手牌区点选任意张 + 确认弃置
 //   B 非出牌阶段（摸牌/弃牌/结束）一律不触发
 //   C 反向验证：禁用 balanceHand 后 A 的触发断言确实变红
@@ -119,8 +119,8 @@ async function segA(browser) {
     T("A1 触发弃置：挂起 noaCharmDiscard（无专用弹窗、不锁战斗）",
       a1.charm === 3 && !a1.panelVisible && !a1.locked, a1);
     T("A2 未替玩家自动弃牌（手牌仍 8 张）", a1.hand.length === 8, a1.hand);
-    T("A3 弃牌阶段同款：手牌区可点选 + 确认弃置按钮 + 提示含魅力改造",
-      a1.confirmExists && a1.tip.includes("魅力改造") && a1.handNodes === 8, a1);
+    T("A3 弃牌阶段同款：手牌区可点选 + 确认弃置按钮 + 提示含淫气改造",
+      a1.confirmExists && a1.tip.includes("淫气改造") && a1.handNodes === 8, a1);
     T("A4 仍在出牌阶段且不能跳过弃牌（无「结束出牌」）",
       a1.phase === 4 && !a1.endPlay, a1);
     T("A5 未选够时确认按钮禁用", a1.confirmDisabled === true, a1);

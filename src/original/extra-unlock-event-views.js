@@ -7,7 +7,7 @@ window.ExtraUnlockEventViews = (() => {
   /* 魅魔女大臣只在杰洛特归还事件里出现两句台词，没有角色栏条目，单独给一张立绘。 */
   const minister = { name: "魅魔女大臣", art: "./assets/images/succubus-minister-portrait.5f2ba968.webp" };
   /* 安倍麦克是副本精英兼剧情人物（不进角色栏），复用他在敌人表里的立绘。 */
-  const abeMike = { name: "安倍麦克", art: "./assets/images/abe-mike.8d685b02.webp" };
+  const abeMike = { name: "安倍麦克", art: "./assets/images/abe-mike.055ae705.webp" };
   const view = (key, state, title, cast, lines, note, buttonText, action) =>
     window.AdvDialogue.render({
       key, title, cast: window.AdvDialogue.cast(state, cast), lines, note,

@@ -8,9 +8,9 @@ const { dismissOpeningStory } = require(path.join(__dirname, "..", "tests", "hel
 
 const ROOT = path.resolve(__dirname, "..");
 const DUNGEONS = [
-  { id: "ruins_sand_city", name: "废墟沙城", flag: "ruinsSandCityUnlocked", layers: 15, route: "fixed-random", rest: [4, 9], chest: [7], boss: [15] },
-  { id: "orc_dungeon", name: "兽人地下城", flag: "orcDungeonUnlocked", layers: 13, route: "fixed-random", rest: [9], chest: [7], boss: [13] },
-  { id: "underwater_train", name: "水下列车", flag: "underwaterTrainUnlocked", layers: 15, route: "linear", rest: [10], chest: [8], boss: [15] },
+  { id: "ruins_sand_city", name: "废墟沙城", flag: "ruinsSandCityUnlocked", layers: 15, route: "fixed-random", rest: [14], chest: [7], boss: [15] },
+  { id: "orc_dungeon", name: "兽人地下城", flag: "orcDungeonUnlocked", layers: 13, route: "fixed-random", rest: [12], chest: [7], boss: [13] },
+  { id: "underwater_train", name: "水下列车", flag: "underwaterTrainUnlocked", layers: 15, route: "linear", rest: [14], chest: [8], boss: [15] },
 ];
 
 (async () => {
