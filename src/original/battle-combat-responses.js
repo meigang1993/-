@@ -84,6 +84,7 @@ window.BattleCombatResponses = (api) => {
       else window.BattleLog.add(state, `${target.name} 展示${shown.suit}${shown.name}，但${actor.name}没有同花色牌可弃置，魔弹特攻无效。`);
     }
     window.OrcDungeonSkills?.afterMagicMissile?.(state, actor, target, p.card);
+    if (resolved) window.NoaCharmSkills?.onHandGained?.(window.state, actor);
     if (resolved && p.repeatAfter) {
       b.comboPartnerUid = target.uid;
       specials.repeatTactic(state, actor, repeatTarget, p.card);

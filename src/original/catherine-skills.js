@@ -95,6 +95,7 @@ window.CatherineSkills = (() => {
     if (!card.stolenFromUid) card.stolenFromUid = victim.uid;
     if (battle.animQueue) card._pendingDraw = true;
     receiver.hand.push(card);
+    window.NoaCharmSkills?.onHandGained?.(window.state, receiver);
     window.BattleCards?.syncStatusCards?.(receiver);
     battle.animQueue?.push({
       type: "stealCard", fromUid: victim.uid, fromSide: victim.side,

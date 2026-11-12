@@ -76,7 +76,10 @@ window.BattleCards = window.BattleCards || (() => {
   }
   function put(b, holder, card, pile = "discard", opts = {}) {
     if (pile === "discard" && (card?.void || card?.copiedByEdis)) pile = "consumed";
-    const owner = card?.stolenFromUid && b?.allies.concat(b.enemies).find(u => u.uid === card.stolenFromUid), dest = owner || holder, zone = dest?.pileStats || dest;
+    // 首次结算即把 uid 归属固化成不可变阵营；原主离场时仍按阵营共享堆归还，
+    // 不会回落 holder 造成「我方永久占有敌方牌 / 敌方永久失去」。
+    window.CardOwnership?.fix?.(b, card);
+    const owner = card?.stolenFromUid && b?.allies.concat(b.enemies).find(u => u.uid === card.stolenFromUid), dest = window.CardOwnership?.destination?.(b, holder, card) || owner || holder, zone = dest?.pileStats || dest;
     if (!zone || !card) return;
     const trailId = opts.showDiscard || opts.forcedDiscard
       || pile === "consumed" && card._playedFlightDone ? moveId(card) : "";

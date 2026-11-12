@@ -99,6 +99,7 @@ window.BattleCardTactics = ({ log, ctx, deps, reveal, openHandReveal }) => {
     if (!gained.stolenFromUid) gained.stolenFromUid = partner.uid;
     if (state.battle.animQueue) gained._pendingDraw = true;
     actor.hand.push(gained);
+    window.NoaCharmSkills?.onHandGained?.(window.state, actor);
     window.BattleCards?.syncStatusCards?.(actor);
     window.BattleCards?.afterHandLost?.(state.battle, partner);
     state.battle.animQueue?.push({

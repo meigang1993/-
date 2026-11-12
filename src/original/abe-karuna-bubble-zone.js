@@ -23,8 +23,11 @@ window.AbeKarunaBubbleZone = (() => {
   const ownerOf = (battle, card) => !!card?.stolenFromUid
     && (battle?.allies || []).concat(battle?.enemies || [])
       .find(unit => unit.uid === card.stolenFromUid);
-  // 原主可能已阵亡离场，此时回落使用者自己（put 的 dest = owner || holder）。
-  const destOf = (battle, actor, card) => ownerOf(battle, card) || actor;
+  // 原主可能已阵亡离场：优先用不可变阵营归属找同阵营共享牌堆，
+  // 与 put 口径一致；再回落使用者自己，避免摘不到牌而静默失败。
+  const destOf = (battle, actor, card) =>
+    window.CardOwnership?.destination?.(battle, actor, card)
+    || ownerOf(battle, card) || actor;
 
   // 入堆时可能存的是还原副本（转换牌），故先按对象精确匹配，再按牌名花色回退。
   function removeFromPile(pile, card) {

@@ -41,6 +41,12 @@ const timeouts = Object.freeze({
   "test-noa-relic-conflict-audit.js": 120,
   // 回合归属修正 + 淫气文案 + 公告显式报错（模块级，含 2 组源码级反向验证）
   "test-noa-own-turn-strict.js": 120,
+  // 偷来的敌方手牌触发淫气改造重判（挂起弹窗 / 直连 / 回合守卫 / 11 条路径）
+  "test-noa-stolen-hand-charm.js": 120,
+// 卡牌阵营归属固定：uid 反查 / 重洗复用 / 原主离场漂移 / REVERT=fix 反向
+"test-card-faction-ownership.js": 120,
+  // originSide 随主存档压缩 / 读档重建，含两条写盘路径与 2 组源码级反向
+  "test-card-ownership-save-compact.js": 120,
   // 圣鹰剑第三张杀 / 英雄级莫娜技能×饰品联动（模块级 + 反向验证）
   "test-holy-eagle-sword-third-slash.js": 120,
   "test-mona-hell-linkage.js": 120,
@@ -321,6 +327,9 @@ const groups = Object.freeze({
     "test-noa-relic-conflict-audit.js",
     "test-noa-skills-recheck.js",
     "test-noa-own-turn-strict.js",
+    "test-noa-stolen-hand-charm.js",
+"test-card-faction-ownership.js",
+    "test-card-ownership-save-compact.js",
     "test-hitwell-skills-strict-live.js",
     "test-preshi-skills-live.js",
     "test-mieryula-skills-live.js",

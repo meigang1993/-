@@ -62,6 +62,7 @@ window.OrcDroneSkills = deps => {
       actor.hand.push(card);
       stolen.push(card);
     }
+    if (stolen.length) window.NoaCharmSkills?.onHandGained?.(window.state, actor);
     if (stolen.length) {
       state.battle.animQueue?.push({
         type: "stealCard", fromUid: target.uid, fromSide: target.side,

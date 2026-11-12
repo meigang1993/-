@@ -11,6 +11,7 @@
     "data-cards.js",
     "data-ruins-content.js",
     "card-utils.js",
+    "card-ownership.js",
     "data-characters-core.js",
     "data-characters-extra.js",
     "data-future-characters.js",

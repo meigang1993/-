@@ -15,6 +15,7 @@ window.AceSkills = deps => {
       target.hand.push(card);
     });
     window.BattleCards?.syncStatusCards?.(target);
+    window.NoaCharmSkills?.onHandGained?.(window.state, target);
     window.BattleCards?.afterHandLost?.(state.battle, actor);
     target.aceIntentBoost = (target.aceIntentBoost || 0) + 1;
     state.battle.animQueue?.push({
@@ -67,6 +68,7 @@ window.AceSkills = deps => {
     if (!picked.stolenFromUid) picked.stolenFromUid = source.uid;
     if (state.battle.animQueue) picked._pendingDraw = true;
     responder.hand.push(picked);
+    window.NoaCharmSkills?.onHandGained?.(window.state, responder);
     window.BattleCards?.syncStatusCards?.(responder);
     state.battle.animQueue?.push({
       type: "stealCard", fromUid: source.uid, fromSide: source.side,

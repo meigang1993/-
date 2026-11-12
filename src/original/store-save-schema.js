@@ -6,6 +6,8 @@ window.GameStoreSaveSchema = (() => {
   const record = value => !!value && typeof value === "object" && !Array.isArray(value);
   const safeId = value => typeof value === "string"
     && /^[A-Za-z0-9._:-]{1,120}$/.test(value);
+  // 阵营归属是牌上不可变的运行时字段，只认两个合法值，防止存档注入任意 side。
+  const validOriginSide = side => side === "ally" || side === "enemy";
 
   function canonicalCard(name) {
     if (typeof name !== "string" || !name) return null;
@@ -17,18 +19,27 @@ window.GameStoreSaveSchema = (() => {
   function rebuildCard(card) {
     const source = record(card) ? canonicalCard(card.name) : null;
     if (!source || !suits.has(card.suit)) return null;
-    return { ...source, suit: card.suit };
+    const rebuilt = { ...source, suit: card.suit };
+    // 读档重建时把固化的阵营带回来：stolenFromUid 是运行时 uid，
+    // 压缩存档里不保留它，原主反查会失效，只能靠 originSide 归还。
+    if (validOriginSide(card.originSide)) rebuilt.originSide = card.originSide;
+    return rebuilt;
   }
 
   function cardIdentity(card) {
     const rebuilt = rebuildCard(card);
-    return rebuilt ? { name: rebuilt.name, suit: rebuilt.suit } : null;
+    if (!rebuilt) return null;
+    const identity = { name: rebuilt.name, suit: rebuilt.suit };
+    // 归属是运行时字段、不在模板上，直接读原牌，避免与 rebuildCard 的重建口径耦合。
+    if (validOriginSide(card?.originSide)) identity.originSide = card.originSide;
+    return identity;
   }
 
   function validStoredCard(card, allowLegacyRemoved = false) {
-    return !!rebuildCard(card)
+    return (!!rebuildCard(card)
       || allowLegacyRemoved && record(card)
-        && legacyRemovedCards.has(card.name) && suits.has(card.suit);
+        && legacyRemovedCards.has(card.name) && suits.has(card.suit))
+      && (card?.originSide == null || validOriginSide(card.originSide));
   }
 
   function validShopStock(raw, options = {}) {

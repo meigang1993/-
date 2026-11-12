@@ -57,7 +57,8 @@ window.NonokaNewMoonSkills = (() => {
       give.forEach(card => { card._pendingDraw = true; if (!card.stolenFromUid) card.stolenFromUid = unit.uid; target.hand.push(card); });
       if (give.length) window.BattleCards?.syncStatusCards?.(target);
       if (give.length) battle.animQueue?.push({ type: "giveCards", fromUid: unit.uid, fromSide: unit.side, toUid: target.uid, toSide: target.side, count: give.length, cards: give, fromBefore, toBefore });
-      if (give.length) window.BattleCards?.afterHandLost?.(state.battle, unit);
+      if (give.length) window.NoaCharmSkills?.onHandGained?.(window.state, target);
+  if (give.length) window.BattleCards?.afterHandLost?.(state.battle, unit);
       window.BattleLog.add(state, `${unit.name} 将${give.length}张手牌交给${target.name}。`);
     } else window.BattleLog.add(state, `${unit.name} 选择不交出新月之歌手牌。`);
     battle.newMoonShare = null; clearTurn(state, unit); return true;

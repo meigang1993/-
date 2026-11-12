@@ -103,7 +103,7 @@ function installGlobals() {
 
 function loadRuntime() {
   [
-    "economy-config.js", "data-cards.js", "card-utils.js", "card-art.js", "data-characters-core.js",
+    "economy-config.js", "data-cards.js", "card-utils.js", "card-ownership.js", "card-art.js", "data-characters-core.js",
     "data-characters-extra.js", "data-future-characters.js", "data-new-characters.js", "data-characters.js",
     "data-future-orc-enemies.js", "data-bakar-enemy.js", "data-future-enemies.js",
     "data-orc-bondi.js", "data-guard-kelly.js", "data-sakura-risa.js",

@@ -111,6 +111,7 @@ window.HitwellSkills = (() => {
       if (!given.stolenFromUid) given.stolenFromUid = actor.uid;
       if (battle.animQueue) given._pendingDraw = true;
       target.hand.push(given);
+      window.NoaCharmSkills?.onHandGained?.(window.state, target);
       window.BattleCards?.syncStatusCards?.(target);
       battle.animQueue?.push({
         type: "stealCard", fromUid: actor.uid, fromSide: actor.side,

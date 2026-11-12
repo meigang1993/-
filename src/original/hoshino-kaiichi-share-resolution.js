@@ -53,7 +53,8 @@ window.HoshinoKaiichiShareResolution = ({ alive, allUnits, queue }) => {
     received.forEach(card => { if (!card.stolenFromUid) card.stolenFromUid = unit.uid; });
     target.hand.push(...received);
     window.BattleCards?.syncStatusCards?.(target);
-    window.BattleCards?.afterHandLost?.(battle, unit);
+    window.NoaCharmSkills?.onHandGained?.(window.state, target);
+  window.BattleCards?.afterHandLost?.(battle, unit);
     window.BattleLog.add(state, `${unit.name}将${cards.length}张手牌交给${target.name}。`);
     return finishShare(state, prompt);
   }

@@ -26,7 +26,12 @@ window.GameStoreMainSnapshot = ({ meta }) => {
     const battle = window.BattleSaveCheckpoint?.snapshot?.(snapshot, { inPlace: true });
     if (battle) delete snapshot.battle;
     const data = compactSaveData(stripTemporaryCards(snapshot));
-    if (battle) data.battle = battle;
+    if (battle) {
+      // checkpoint 的 battle 是整块深拷贝（played 需保留完整模板供读档直接渲染），
+      // 但瞬时动画/挂起态与压缩路径同口径清空，避免运行时 uid 随存档固化。
+      window.GameStoreCompact.stripBattleTransientCards(battle);
+      data.battle = battle;
+    }
     if (!validateRaw(data)) throw invalidSnapshot();
     return data;
   }

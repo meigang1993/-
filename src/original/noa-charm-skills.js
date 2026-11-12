@@ -146,5 +146,13 @@ window.NoaCharmSkills = (() => {
     return true;
   }
 
-  return { noIntentCost, playKillLine, balanceHand, enterPlayPhase, PLAY_PHASE };
+  // 从其它角色获得手牌（偷窃/窃取/交牌/借刀…）时重判手牌恒等：这些路径经过
+  // handReveal 挂起，runHooks 会被 paused 整段暂停，弹窗结算只补跑 repeatTactic，
+  // 出牌后钩子里的 balanceHand 从未执行。守卫全在 balanceHand 内，别家回合/
+  // 非出牌阶段一律不生效，重复调用幂等。
+  function onHandGained(state, unit) {
+    return balanceHand(state, unit, window.BattleSystem?.draw);
+  }
+
+  return { noIntentCost, playKillLine, balanceHand, enterPlayPhase, onHandGained, PLAY_PHASE };
 })();

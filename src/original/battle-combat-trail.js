@@ -10,7 +10,8 @@ window.BattleCombatTrail = ({ allUnits }) => {
     return {
       pile: card?.type === "consume" || card?.copiedByEdis || card?.void
         ? "consumed" : "discard",
-      side: owner?.side || actor?.side || "ally",
+      side: window.CardOwnership?.trailSide?.(battle, card, actor)
+        || owner?.side || actor?.side || "ally",
     };
   }
 

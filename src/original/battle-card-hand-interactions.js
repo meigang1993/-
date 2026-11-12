@@ -86,6 +86,7 @@ window.BattleCardHandInteractions = (ctx, helpers) => {
     if (!stolen.stolenFromUid) stolen.stolenFromUid = target.uid;
     if (state.battle.animQueue) stolen._pendingDraw = true;
     actor.hand.push(stolen);
+    window.NoaCharmSkills?.onHandGained?.(window.state, actor);
     window.BattleCards?.syncStatusCards?.(actor);
     state.battle.animQueue?.push({
       type: "stealCard",
