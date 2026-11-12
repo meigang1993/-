@@ -112,13 +112,13 @@ window.WithererRelicSkills = (() => {
     if (target.hp <= 0 || state.battle.withererChestHealing || !window.RelicSystem?.hasEquipped?.(state, target, "凋零者胸部")) return;
     const mate = sameSide(state.battle, target).filter(u => u.uid !== target.uid && u.hp > 0 && u.hp < u.maxHp).sort((a, b) => a.hp - b.hp)[0];
     if (!mate) return;
-    const amount = Math.min(mate.maxHp - mate.hp, Math.max(0, stat(target, "magic"))), card = { name: "凋零者胸部" };
+    const amount = window.BattleHpValue.healCap(mate, stat(target, "magic")), card = { name: "凋零者胸部" };
     if (!amount) return;
     state.battle.withererChestHealing = true;
     let allowed; try { allowed = window.EnemySkills?.beforeHeal?.(state, mate, amount, target, card, damage); } finally { state.battle.withererChestHealing = false; }
-    const v = target.hp > 0 && mate.hp > 0 ? Math.min(mate.maxHp - mate.hp, Math.max(0, allowed ?? amount)) : 0;
+    const v = target.hp > 0 && mate.hp > 0 ? window.BattleHpValue.healCap(mate, allowed ?? amount) : 0;
     if (v > 0) {
-      mate.hp += v; window.BattleStats?.heal?.(state.battle, target, v);
+      window.BattleHpValue.applyHeal(mate, v); window.BattleStats?.heal?.(state.battle, target, v);
       pushFloat?.(state.battle, mate.uid, "heal", v);
       window.EnemySkills?.clearHolyScar?.(state, mate); window.EnemySkills?.onHeal?.(state, draw);
       window.ElranaAceNanaliSkills?.afterHeal?.(state, mate, { damage, draw, pushFloat }, target, card);

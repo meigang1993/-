@@ -34,6 +34,7 @@ require("../src/original/battle-card-tactics.js");
 require("../src/original/battle-card-hand-interactions.js");
 require("../src/original/battle-card-counter-interactions.js");
 require("../src/original/battle-card-interactions.js");
+require("../src/original/hp-value.js");
 require("../src/original/battle-card-specials.js");
 require("../src/original/underwater-train-bite-skills.js");
 require("../src/original/underwater-train-prepare-skills.js");

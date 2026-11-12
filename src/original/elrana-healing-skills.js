@@ -23,10 +23,10 @@ window.ElranaHealingSkills = deps => {
 
   function heal(state, target, amount, actor, source, api, assistToken) {
     const card = { name: source };
-    const healed = window.EnemySkills?.beforeHeal?.(state, target, amount, actor, card, api.damage)
-      ?? Math.min(target.maxHp - target.hp, Math.max(0, amount));
+    const healed = window.BattleHpValue.clean(window.EnemySkills?.beforeHeal?.(state, target, amount, actor, card, api.damage)
+      ?? window.BattleHpValue.healCap(target, amount));
     if (healed > 0) {
-      target.hp = Math.min(target.maxHp, target.hp + healed);
+      window.BattleHpValue.applyHeal(target, healed);
       window.BattleStats?.heal?.(state.battle, actor, healed);
       api.pushFloat?.(state.battle, target.uid, "heal", healed);
       window.EnemySkills?.clearHolyScar?.(state, target);
@@ -44,12 +44,12 @@ window.ElranaHealingSkills = deps => {
     const card = { name: source, _groupHeal: true };
     let any = false;
     targets.forEach(target => {
-      const cap = Math.min(target.maxHp - target.hp, Math.max(0, amount));
+      const cap = window.BattleHpValue.healCap(target, amount);
       const blocked = cap > 0
         && window.EnemySkills?.beforeHeal?.(state, target, amount, actor, card, api.damage) === 0;
       const healed = blocked ? 0 : cap;
       if (healed > 0) {
-        target.hp = Math.min(target.maxHp, target.hp + healed);
+        window.BattleHpValue.applyHeal(target, healed);
         window.BattleStats?.heal?.(state.battle, actor, healed);
         window.EnemySkills?.clearHolyScar?.(state, target);
         any = true;

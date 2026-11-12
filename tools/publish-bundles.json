@@ -1,5 +1,6 @@
 {
   "startup": [
+    "hp-value.js",
     "runtime-battle-styles.js",
     "runtime-loader-state.js",
     "runtime-script-loader.js",
@@ -191,6 +192,7 @@
     "butler-manual.js"
   ],
   "battle-rules": [
+    "hp-value.js",
     "card-art.js",
     "ui-common-card-art.js",
     "ui-common-card-combat.js",
@@ -283,6 +285,7 @@
     "battle-victory.js"
   ],
   "battle-skills": [
+    "hp-value.js",
     "skill-once-per-turn.js",
     "battle-line-data.js",
     "new-character-line-data.js",
@@ -411,6 +414,7 @@
     "battle-ai.js"
   ],
   "battle-presentation": [
+    "hp-value.js",
     "battle-damage-audio.js",
     "battle-damage-fx.js",
     "battle-audio-samples.js",

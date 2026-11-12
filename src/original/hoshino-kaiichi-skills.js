@@ -73,9 +73,9 @@ window.HoshinoKaiichiSkills = (() => {
   function heal(state, target, amount, healer, deps) {
     const allowed = window.EnemySkills?.beforeHeal?.(
       state, target, amount, healer, { name: "半魅魔血" }, deps.damage);
-    const healed = Math.min(target.maxHp - target.hp, Math.max(0, allowed ?? amount));
+    const healed = window.BattleHpValue.healCap(target, allowed ?? amount);
     if (healed > 0) {
-      target.hp += healed;
+      window.BattleHpValue.applyHeal(target, healed);
       window.BattleStats?.heal?.(state.battle, healer, healed);
       deps.pushFloat?.(state.battle, target.uid, "heal", healed);
       window.EnemySkills?.clearHolyScar?.(state, target);

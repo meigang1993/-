@@ -70,7 +70,7 @@ window.RuinsEliteSkills = (() => {
     dead.forEach(enemy => { enemy.hp = Math.max(1, Math.ceil((enemy.maxHp || 1) * 0.4)); });
     const loss = dead.length * Math.ceil((unit.maxHp || 1) * 0.1);
     const before = unit.hp;
-    unit.hp = Math.max(0, unit.hp - loss);
+    window.BattleHpValue.applyDamage(unit, loss);
     const lost = before - unit.hp;
     if (lost > 0) window.BattleSystem?.pushFloat?.(state.battle, unit.uid, "hp-loss", lost);
     window.BattleLines?.skill?.(state, unit, "增援部队");

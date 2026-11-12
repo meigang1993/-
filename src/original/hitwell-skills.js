@@ -24,9 +24,9 @@ window.HitwellSkills = (() => {
     line(state, unit, "天使血愈");
     let any = false;
     others.forEach(other => {
-      const amount = Math.min(other.maxHp - other.hp, healed);
+      const amount = window.BattleHpValue.healCap(other, healed);
       if (amount <= 0) return;
-      other.hp = Math.min(other.maxHp, other.hp + amount);
+      window.BattleHpValue.applyHeal(other, amount);
       window.BattleStats?.heal?.(battle, unit, amount);
       api?.pushFloat?.(battle, other.uid, "heal", amount);
       any = true;
@@ -47,13 +47,13 @@ window.HitwellSkills = (() => {
     const battle = state?.battle;
     if (!battle) return;
     const amount = magicOf(actor);
-    const cap = Math.min(actor.maxHp - actor.hp, Math.max(0, amount));
+    const cap = window.BattleHpValue.healCap(actor, amount);
     const blocked = cap > 0
       && window.EnemySkills?.beforeHeal?.(state, actor, amount, actor, card, api?.damage) === 0;
     const healed = blocked ? 0 : cap;
     if (healed <= 0) return;
     line(state, actor, "神心自愈");
-    actor.hp = Math.min(actor.maxHp, actor.hp + healed);
+    window.BattleHpValue.applyHeal(actor, healed);
     window.BattleStats?.heal?.(battle, actor, healed);
     window.EnemySkills?.clearHolyScar?.(state, actor);
     api?.pushFloat?.(battle, actor.uid, "heal", healed);

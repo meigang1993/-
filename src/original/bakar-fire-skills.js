@@ -1,8 +1,18 @@
 window.BakarFireSkills = (() => {
+  const RATE = 0.3;
   const isSlash = card => window.CardUtils?.isKillCard?.(card) || card?.type === "slash";
   const visible = unit => (unit?.hand || []).filter(card => !card._pendingDraw);
   const burningCards = unit => visible(unit).filter(card => card.burning);
   const isBakar = unit => window.BakarCoreSkills.isBakar(unit);
+  const sourceAttack = source => Math.max(0,
+    (Number(source?.stats?.attack) || 0) + (Number(source?.tempAttack) || 0));
+  // 每张燃烧牌按施加时攻击力快照各算 30%（至少 1 点），旧牌无快照时回退到施加者当前攻击力。
+  const burningDamage = (card, source) => {
+    const snapshot = Number(card?.burningSourceAttack);
+    const attack = Number.isFinite(snapshot) && snapshot >= 0
+      ? snapshot : sourceAttack(source);
+    return Math.max(1, Math.round(attack * RATE));
+  };
 
   function beforeKillTargeted(state, actor, card) {
     if (!isBakar(actor) || !isSlash(card)) return;
@@ -18,6 +28,7 @@ window.BakarFireSkills = (() => {
     if (!picked) return;
     picked.burning = true;
     picked.burningSourceUid = source?.uid || null;
+    picked.burningSourceAttack = sourceAttack(source);
     window.BattleLog.add(state,
       `${target.name} 的${picked.suit || ""}${picked.name}获得燃烧属性。`);
   }
@@ -65,14 +76,19 @@ window.BakarFireSkills = (() => {
     const groups = new Map();
     cards.forEach(card => {
       const uid = card.burningSourceUid || "";
-      groups.set(uid, (groups.get(uid) || 0) + 1);
+      if (!groups.has(uid)) groups.set(uid, []);
+      groups.get(uid).push(card);
     });
-    const actions = [...groups].map(([uid, count]) => {
+    const amountOf = (uid, group) => {
+      const source = units.find(actor => actor.uid === uid) || unit;
+      return group.reduce((sum, card) => sum + burningDamage(card, source), 0);
+    };
+    const actions = [...groups].map(([uid, group]) => {
       const source = units.find(actor => actor.uid === uid) || unit;
       return window.BattleReactionQueue?.directDamageAction?.(
         source,
         unit,
-        count,
+        amountOf(uid, group),
         "燃烧",
         {
           name: "燃烧",
@@ -88,10 +104,10 @@ window.BakarFireSkills = (() => {
       window.BattleReactionQueue.flush(state, damage);
       return;
     }
-    for (const [uid, count] of groups) {
+    for (const [uid, group] of groups) {
       if (unit.hp <= 0 || state.battle.locked) break;
       const source = units.find(actor => actor.uid === uid) || unit;
-      directDamage(state, unit, count, "燃烧", source, 0, {
+      directDamage(state, unit, amountOf(uid, group), "燃烧", source, 0, {
         name: "燃烧",
         type: "skill",
         fire: true,

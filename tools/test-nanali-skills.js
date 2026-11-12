@@ -32,6 +32,7 @@ load("./src/original/economy-config.js");
 load("./src/original/data-cards.js");
 load("./src/original/card-utils.js");
 load("./src/original/battle-draw-feedback.js");
+load("./src/original/hp-value.js");
 load("./src/original/elrana-healing-skills.js");
 load("./src/original/ace-skills.js");
 load("./src/original/nanali-skills.js");

@@ -43,6 +43,7 @@ global.window = {
   },
 };
 require("../src/original/game-random.js");
+require("../src/original/hp-value.js");
 require("../src/original/witherer-relic-skills.js");
 require("../src/original/witherer-skills.js");
 require("../src/original/battle-thunder-hammer-response.js");

@@ -86,7 +86,7 @@ window.BattleFloatNumbers = (() => {
     const gain = float.kind === "heal" || float.kind === "armor-gain";
     const armor = float.kind.startsWith("armor");
     const defense = float.kind.startsWith("defense");
-    element.textContent = `${float.label ? `${float.label} ` : ""}${gain ? "+" : "-"}${float.value}${defense ? " 防御系统" : armor ? " 护甲" : ""}`;
+    element.textContent = `${float.label ? `${float.label} ` : ""}${gain ? "+" : "-"}${window.BattleHpValue.clean(float.value)}${defense ? " 防御系统" : armor ? " 护甲" : ""}`;
     element.style.left = `${(armor || defense) && barRect
       ? barRect.left - 8 : rect.left + rect.width / 2}px`;
     element.style.top = `${rect.top + rect.height * .38 - offset}px`;

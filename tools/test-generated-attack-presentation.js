@@ -6,6 +6,7 @@ require("../src/original/game-random.js");
 require("../src/original/economy-config.js");
 require("../src/original/data-cards.js");
 require("../src/original/card-utils.js");
+require("../src/original/hp-value.js");
 require("../src/original/battle-damage-utils.js");
 require("../src/original/battle-draw-transaction.js");
 require("../src/original/flora-speed-assault.js");

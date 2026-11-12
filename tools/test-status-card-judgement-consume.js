@@ -6,6 +6,7 @@ const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
 const { combat, card, unit } = require("./pursue-kill-fixtures");
+require("../src/original/hp-value.js");
 
 const REVERT = process.env.REVERT || "";
 const SRC = name => path.join(__dirname, "../src/original", name);

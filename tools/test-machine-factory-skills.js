@@ -21,6 +21,7 @@ window.BattleCards = {
 require("../src/original/battle-pile-stats.js");
 require("../src/original/battle-draw-feedback.js");
 require("../src/original/machine-factory-skills.js");
+require("../src/original/hp-value.js");
 require("../src/original/enemy-status-effects.js");
 require("../src/original/enemy-kill-hooks.js");
 require("../src/original/enemy-damage-hooks.js");

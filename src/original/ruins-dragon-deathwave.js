@@ -48,7 +48,7 @@ window.RuinsDragonDeathWave = (() => {
     if (missing.length < recorded.length) return;
     const amount = stat(dragon, "attack");
     const before = unit.hp;
-    unit.hp = Math.max(0, unit.hp - amount);
+    window.BattleHpValue.applyDamage(unit, amount);
     const loss = before - unit.hp;
     if (loss > 0) {
       window.BattleSystem?.pushFloat?.(state.battle, unit.uid, "hp-loss", loss);

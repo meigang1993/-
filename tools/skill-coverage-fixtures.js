@@ -116,7 +116,7 @@ function loadRuntime() {
     "battle-ai-skill-moves.js", "battle-ai-skill-planner.js",
     "guest-ophelia-guard.js", "green-hat.js",
     "battle-reaction-queue-store.js", "battle-reaction-queue-run.js", "battle-reaction-queue.js",
-    "witherer-relic-skills.js", "witherer-skills.js", "bondi-skills.js",
+    "hp-value.js", "witherer-relic-skills.js", "witherer-skills.js", "bondi-skills.js",
     "nonoka-new-moon-skills.js", "nonoka-loki-skills.js",
     "battle-draw-transaction.js", "flora-speed-assault.js", "flora-skills.js",
     "carlos-skills.js", "flora-carlos-skills.js",

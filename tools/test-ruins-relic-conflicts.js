@@ -26,6 +26,7 @@ function setup() {
   load("./src/original/ruins-relic-propeller.js");
   load("./src/original/ruins-relic-effects.js");
   // 鲨鱼头套是工厂函数，需传 singleSlash 后挂到 window.UnderwaterTrainSkills
+  load("./src/original/hp-value.js");
   load("./src/original/underwater-train-bite-skills.js");
   window.UnderwaterTrainSkills = window.UnderwaterTrainBiteSkills({
     singleSlash: c => window.CardUtils.isSingleKill(c),

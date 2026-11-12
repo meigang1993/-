@@ -61,7 +61,7 @@ window.BattleStatusCardTriggers = (() => {
       unit.skipPlayReason = "混乱";
       if (amount > 0) {
         const before = unit.hp;
-        unit.hp = Math.max(0, unit.hp - amount);
+        window.BattleHpValue.applyDamage(unit, amount);
         const loss = before - unit.hp;
         if (loss > 0) {
           window.BattleSystem?.pushFloat?.(state.battle, unit.uid, "hp-loss", loss);
@@ -93,7 +93,7 @@ window.BattleStatusCardTriggers = (() => {
     window.BattleCards?.put?.(state.battle, holder, landmine, "consumed");
     if (amount > 0) {
       const before = holder.hp;
-      holder.hp = Math.max(0, holder.hp - amount);
+      window.BattleHpValue.applyDamage(holder, amount);
       const loss = before - holder.hp;
       if (loss > 0) {
         window.BattleSystem?.pushFloat?.(state.battle, holder.uid, "hp-loss", loss);

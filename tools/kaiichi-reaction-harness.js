@@ -5,6 +5,7 @@ window.RuinsRelicEffects = { missileLauncherBlock: () => true };
 
 require("../src/original/green-hat.js");
 require("../src/original/nanali-sealed.js");
+require("../src/original/hp-value.js");
 require("../src/original/elrana-healing-skills.js");
 require("../src/original/ace-skills.js");
 require("../src/original/nanali-skills.js");

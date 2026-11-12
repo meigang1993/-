@@ -14,6 +14,7 @@ function testCardInteractions() {
   require("../src/original/battle-cards-system.js");
   require("../src/original/battle-status-card-registry.js");
   require("../src/original/battle-status-card-storage.js");
+  require("../src/original/hp-value.js");
   require("../src/original/battle-status-card-triggers.js");
   require("../src/original/battle-status-cards.js");
   require("../src/original/battle-pile-stats.js");

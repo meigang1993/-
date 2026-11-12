@@ -29,13 +29,16 @@ const { startRegressionBattle } = require(
 // 描述一旦被改，这两条会先于行为断言变红，提示同步实现与本用例。
 const srcOf = name => fs.readFileSync(
   path.join(__dirname, "..", "src", "original", name), "utf8");
-// 【狂战意志】「多段或连击伤害时逐段结算」已取消：多段只发 1 枚。
-// 描述一旦被加回逐段声明，这条会先于行为断言变红，提示同步实现与本用例。
+// 【狂战意志】仍按段结算：每段各发 1 枚标记（见场景9）。
+// 描述一旦被改，这两条会先于行为断言变红，提示同步实现与本用例。
 const berserkDescPerSeg = /狂战意志[\s\S]{0,600}?逐段结算/
   .test(srcOf("data-characters-extra.js"));
-// 【半魅魔血】「多段或连击伤害时逐段结算」已取消：多段只摸 1 次 2 张。
-// 描述一旦被加回逐段声明，这条会先于行为断言变红，提示同步实现与本用例。
+// 【半魅魔血】描述仍声明同一张实体/虚拟牌的多段逐段结算，但「技能造成的
+// 追加伤害不触发此技」：电钻火花/疯狂刺刀的 _drillExtraHit 追加段属于技能
+// 伤害，故每次攻击只在首段触发 1 次（与场景2 心血之咒同口径）。
 const kaiichiDescPerSeg = /半魅魔血[\s\S]{0,600}?逐段结算/
+  .test(srcOf("data-new-characters.js"));
+const kaiichiDescBlocksExtra = /技能造成的追加伤害不触发此技/
   .test(srcOf("data-new-characters.js"));
 
 let pass = 0, fail = 0;
@@ -321,8 +324,8 @@ async function runEyeFeed(browser, errors, cardJson) {
       `发动=${r1.drill} 段数=${r1.seg}(骰子=${r1.roll})`);
     // 【复仇反击】只响应「有目标线的牌」（hasTargetLine），电钻火花的追加段是
     // type:"skill" 且无目标线，故只有第一段（实体杀）触发——与外神之眼的实体牌
-    // 限定同口径；注：心血之咒现已同样限定"实体牌或虚拟牌"（见场景2），不再属于
-    // 逐段类，仍按段放大的受击类是曼妮 / 半魅魔血 / 狂战。
+    // 限定同口径；注：心血之咒与半魅魔血现已同样限定"实体牌或虚拟牌"（见场景2、8），
+    // 逐段类只剩曼妮（按段入队）与狂战（每段发标记）。
     check("1.1 杰洛特【复仇反击】只响应有目标线的牌（追加段为技能伤害）",
       r1.opens === r1.drill,
       `入队=${r1.opens} 攻击次数=${r1.drill} 段数=${r1.seg}`);
@@ -385,17 +388,19 @@ async function runEyeFeed(browser, errors, cardJson) {
       `触发=${r8.hits} 段数=${r8.seg}`);
     // 计数按「攻击次数」归一化：电钻火花可能发动多次（敌方偶尔连出第 2 张杀），
     // 每次独立攻击各触发 1 次才是对的；只要触发数不超过攻击次数，就没有被段数放大。
-    // 用户最终口径：多段与连击对受击/反击类一律逐段结算，半魅魔血每段各摸 1 次。
-    // seg 是「单次发动的段数」(1+roll)，不是总段数；总段数 = 发动次数 × 每次段数。
-    // 逐段结算时触发数应等于总段数（远超攻击次数）。
-    check("8.2 半魅魔血逐段结算（每段各摸 1 次）", r8.hits === r8.totalSeg,
-      `触发=${r8.hits} 总段数=${r8.totalSeg}(发动${r8.drill}次，骰子和+${
+    // 半魅魔血只由实体牌/虚拟牌造成的伤害触发，电钻火花的 _drillExtraHit 追加段
+    // 是技能伤害，按描述「技能造成的追加伤害不触发此技」被拦截（与场景2 同口径）。
+    // seg 是「单次发动的段数」(1+roll)，总段数 = 发动次数 × 每次段数。
+    check("8.2 半魅魔血只响应实体/虚拟牌段（追加技能段不触发）",
+      r8.hits === r8.drill && r8.hits < r8.totalSeg,
+      `触发=${r8.hits} 攻击次数=${r8.drill} 总段数=${r8.totalSeg}(发动${r8.drill}次，骰子和+${
         r8.totalSeg - r8.drill})`);
-    check("8.2b 摸牌次数超过攻击次数（证明确实按段放大）", r8.hits > r8.drill,
-      `触发=${r8.hits} 攻击次数=${r8.drill}（合并时两者应相等）`);
-    // 【半魅魔血】已取消逐段，描述里不得再出现这句话，否则与实现不一致。
-    check("8.3 【半魅魔血】描述已声明逐段（与实现一致）", kaiichiDescPerSeg,
-      kaiichiDescPerSeg ? "描述含逐段声明" : "描述缺逐段声明，需同步补回");
+    check("8.2b 摸牌次数不被段数放大", r8.hits <= r8.drill && r8.hits < r8.totalSeg,
+      `触发=${r8.hits} 攻击次数=${r8.drill} 总段数=${r8.totalSeg}`);
+    // 描述与实现口径一致：实体/虚拟牌多段逐段，但技能追加段明确排除。
+    check("8.3 半魅魔血描述与实现口径一致（逐段声明 + 追加段排除）",
+      kaiichiDescPerSeg && kaiichiDescBlocksExtra,
+      `逐段声明=${kaiichiDescPerSeg} 追加段排除=${kaiichiDescBlocksExtra}`);
 
     // ---------- 场景9：安洁莉卡【狂战】受击标记 × 多段 ----------
     const r9 = await runDragonCase(browser, errors, "angelica", "获得1枚狂战标记");
@@ -404,7 +409,7 @@ async function runEyeFeed(browser, errors, cardJson) {
     // 同上：狂战意志逐段结算，每段各发 1 枚标记。
     check("9.1 【狂战意志】描述已声明逐段（与实现一致）", berserkDescPerSeg,
       berserkDescPerSeg ? "描述含逐段声明" : "描述缺逐段声明，需同步补回");
-    // 与 8.2 同口径：按攻击次数归一化，避免敌方连出第 2 张杀时误判为放大。
+    // 狂战意志仍逐段：按总段数归一化，避免敌方连出第 2 张杀时误判为漏触发。
     check("9.2 狂战标记逐段结算（每段各发 1 枚）", r9.hits === r9.totalSeg,
       `日志标记=${r9.hits} 总段数=${r9.totalSeg}(发动${r9.drill}次，骰子和+${
         r9.totalSeg - r9.drill})`);

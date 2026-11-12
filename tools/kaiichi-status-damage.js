@@ -20,6 +20,7 @@ function kaiichi(uid, hand = [card("蓄力")]) {
 async function runKaiichiStatusDamage() {
   require("../src/original/bakar-relic-skills.js");
   require("../src/original/bakar-core-skills.js");
+  require("../src/original/hp-value.js");
   require("../src/original/bakar-fire-skills.js");
   require("../src/original/bakar-skills.js");
   require("../src/original/manny-skills.js");
@@ -29,12 +30,13 @@ async function runKaiichiStatusDamage() {
   const poisonBlood = kaiichi("poison-kaiichi");
   const poisonHelper = unit("poison-helper", "ally", []);
   const poisoner = unit("poison-source", "enemy", []);
+  Object.assign(poisoner, { stats: { attack: 10, magic: 0, speed: 2 } });
   Object.assign(poisonBlood, { poison: 2, poisonSourceUid: poisoner.uid, statuses: ["毒"] });
   const poisonState = scenario([], []).state;
   Object.assign(poisonState.battle, { allies: [poisonBlood, poisonHelper], enemies: [poisoner], activeUid: poisonBlood.uid, phase: 1 });
   window.state = poisonState;
   window.EnemySkills.tickPoison(poisonState, poisonBlood, poisonCombat.damage);
-  assert.strictEqual(poisonBlood.hp, 28, "Poison must deal its current stack as HP damage");
+  assert.strictEqual(poisonBlood.hp, 24, "Poison must deal 30% of applier attack per stack as HP damage");
   assert.strictEqual(poisonBlood.poison, 2, "a Poison tick must not add another Poison stack");
   assert.deepStrictEqual(poisonDraws, [], "Poison is status damage and must not trigger Half-Succubus Blood");
   assert(!poisonState.battle.locked && !poisonState.battle.kaiichiShare,

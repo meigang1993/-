@@ -8,7 +8,7 @@ loadRuntime();
 
 const extra = [
   "battle-damage-attributes.js",
-  "battle-damage-utils.js",
+  "hp-value.js", "battle-damage-utils.js",
   "battle-damage-relics.js",
   "battle-damage-lifecycle.js",
   "battle-damage-hit.js",

@@ -19,7 +19,7 @@ loadRuntime();
   // 废墟杂兵依赖 RuinsGruntCommon（C.alive / C.visible 的宿主），缺了会抛
   // "C.alive is not a function"，必须与其使用者一起加载。
   "data-ruins-sand-city-enemies.js", "ruins-grunt-common.js",
-  "ruins-grunt-skills.js", "ruins-grunt-landmine.js", "ruins-grunt-rps.js",
+  "hp-value.js", "ruins-grunt-skills.js", "ruins-grunt-landmine.js", "ruins-grunt-rps.js",
   "ruins-enemy-skills.js", "enemy-skills.js",
   "orc-drone-skills.js", "orc-combat-skills.js",
 ].forEach(file => vm.runInThisContext(

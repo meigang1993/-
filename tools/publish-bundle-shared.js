@@ -12,6 +12,21 @@
 //   1) 零依赖、纯声明式，重复执行幂等（后加载的覆盖先加载的，内容相同）；
 //   2) 在每个引用它的 bundle 中排在所有消费方之前（顺序即装配依赖）。
 const SHARED_SOURCES = [
+  // 统一 HP 数值清洁：恢复/扣血/飘字的消费方横跨 startup、battle-rules、
+  // battle-skills、battle-presentation。纯声明式、重复执行幂等，运行时才调用。
+  {
+    file: "hp-value.js",
+    consumers: [
+      "battle-card-specials.js", "battle-damage-hit.js", "battle-damage-utils.js",
+      "battle-status-card-triggers.js", "battle-combat-card-effects.js",
+      "hoshino-kaiichi-skills.js", "nonoka-loki-skills.js",
+      "enemy-status-effects.js", "enemy-damage-hooks.js", "enemy-skills.js",
+      "bakar-fire-skills.js", "elrana-healing-skills.js", "hitwell-skills.js",
+      "underwater-train-bite-skills.js", "witherer-relic-skills.js",
+      "ruins-dragon-deathwave.js", "ruins-elite-skills.js", "ruins-grunt-rps.js",
+      "ruins-witherer-skills.js", "battle-float-numbers.js",
+    ],
+  },
   {
     file: "skill-once-per-turn.js",
     consumers: ["battle-card-playability.js", "ruins-enemy-skills.js"],

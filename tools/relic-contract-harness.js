@@ -14,6 +14,7 @@ require("../src/original/relics.js");
 require("../src/original/battle-relic-turns.js");
 require("../src/original/battle-discard-flow.js");
 require("../src/original/underwater-train-control-skills.js");
+require("../src/original/hp-value.js");
 require("../src/original/underwater-train-bite-skills.js");
 require("../src/original/underwater-train-prepare-skills.js");
 require("../src/original/underwater-train-target-counters.js");

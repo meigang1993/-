@@ -19,7 +19,7 @@ window.RuinsGruntRPS = (() => {
     const amount = mine?.landmineAttack || 0;
     if (amount > 0) {
       const before = holder.hp;
-      holder.hp = Math.max(0, holder.hp - amount);
+      window.BattleHpValue.applyDamage(holder, amount);
       const loss = before - holder.hp;
       if (loss > 0) {
         window.BattleSystem?.pushFloat?.(state.battle, holder.uid, "hp-loss", loss);

@@ -160,7 +160,7 @@ function runSakuraRisaAdvancedContracts(context) {
   const combatSource = fs.readFileSync("./src/original/battle-combat.js", "utf8");
   const damageSource = [
     "battle-damage-lifecycle.js", "battle-damage-resolution.js",
-    "battle-damage-hit.js",
+    "hp-value.js", "battle-damage-hit.js",
   ].map(file => fs.readFileSync(`./src/original/${file}`, "utf8")).join("\n");
   load("battle-combat-visuals.js");
   const visuals = BattleCombatVisuals({ nextAnim: () => 1 }, battle => battle.allies.concat(battle.enemies));

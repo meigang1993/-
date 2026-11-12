@@ -13,7 +13,7 @@ installGlobals();
 loadRuntime();
 [
   "battle-status-card-registry.js", "battle-status-card-storage.js",
-  "battle-status-card-triggers.js", "battle-status-cards.js",
+  "hp-value.js", "battle-status-card-triggers.js", "battle-status-cards.js",
   "data-ruins-content.js", "ruins-card-skills.js",
   "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-tactic-immunity.js", "mieryula-skills.js", "battle-playability-registries.js", "battle-card-playability.js", "battle-ai-helpers.js",
   "battle-ai-slash-planner.js", "battle-ai-skill-planner.js",

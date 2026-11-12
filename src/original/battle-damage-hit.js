@@ -60,7 +60,7 @@ window.BattleDamageHit = ({
     const hpLoss = defense.rest;
     const hpBefore = target.hp;
     target.block -= blocked;
-    target.hp = Math.max(0, target.hp - hpLoss);
+    window.BattleHpValue.applyDamage(target, hpLoss);
     window.SakuraRisaSkills?.preventDeath?.(state, target);
     window.FloraCarlosSkills?.recordSpeedAssaultHit?.(
       state, card, target, hpBefore, hpLoss);

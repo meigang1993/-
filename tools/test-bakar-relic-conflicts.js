@@ -4,6 +4,7 @@ const {
 
 require("../src/original/bakar-relic-skills.js");
 require("../src/original/bakar-core-skills.js");
+require("../src/original/hp-value.js");
 require("../src/original/bakar-fire-skills.js");
 require("../src/original/bakar-skills.js");
 require("../src/original/bondi-skills.js");

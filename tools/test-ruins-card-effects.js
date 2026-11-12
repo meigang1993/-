@@ -9,7 +9,7 @@ loadRuntime();
 [
   "battle-status-card-registry.js",
   "battle-status-card-storage.js",
-  "battle-status-card-triggers.js",
+  "hp-value.js", "battle-status-card-triggers.js",
   "battle-status-cards.js",
   "data-ruins-content.js",
   "ruins-card-skills.js",

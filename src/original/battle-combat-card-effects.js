@@ -64,7 +64,7 @@ window.BattleCombatCardEffects = api => {
     if (card.bloodletting) {
       const intended = Math.max(1, Math.floor(actor.maxHp * .1));
       const before = actor.hp;
-      actor.hp = Math.max(1, actor.hp - intended);
+      actor.hp = Math.max(1, window.BattleHpValue.clean(actor.hp - intended));
       const loss = before - actor.hp;
       pushFloat(state.battle, actor.uid, "hp-loss", loss);
       const drawn = deps.draw(actor, 1, state.battle);

@@ -108,9 +108,9 @@ window.EnemySkills = (() => {
     if (unit.ai !== "elrana_clone") return;
     const red = unit.hand.filter(card => !card._pendingDraw && !black(card)).length;
     const value = red + stat(unit, "magic");
-    const healed = Math.min(unit.maxHp - unit.hp, value);
-    unit.hp = Math.min(unit.maxHp, unit.hp + value);
+    const healed = window.BattleHpValue.healCap(unit, value);
     if (!healed) return;
+    window.BattleHpValue.applyHeal(unit, healed);
     window.BattleStats?.heal?.(state.battle, unit, healed);
     status.clearHolyScar(state, unit);
     window.BattleLines?.skill(state, unit, "再生之躯");
@@ -133,7 +133,7 @@ window.EnemySkills = (() => {
     hammerMove: (_state, actor) => machine.hammerMove(actor),
     useRadar: tactical.useRadar, useGrenade: tactical.useGrenade,
     useHammer: (state, actor, damage) => machine.useHammer(state, actor, damage),
-    addPoison: status.addPoison, addShock: status.addShock,
+    addPoison: status.addPoison, addShock: status.addShock, shockDamage: status.shockDamage,
     absorbDefense: (state, target, amount, meta) => machine.absorbDefense(state, target, amount, meta),
     beforeHeal: (state, target, amount, actor, card, damage) => {
       const base = window.EdisSkills?.beforeHeal?.(

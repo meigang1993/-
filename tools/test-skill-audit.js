@@ -18,6 +18,7 @@ vm.runInThisContext(fs.readFileSync("./src/original/battle-card-active-relics.js
 vm.runInThisContext(fs.readFileSync("./src/original/battle-card-hand-interactions.js", "utf8"), { filename: "battle-card-hand-interactions.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/battle-card-counter-interactions.js", "utf8"), { filename: "battle-card-counter-interactions.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/battle-card-interactions.js", "utf8"), { filename: "battle-card-interactions.js" });
+vm.runInThisContext(fs.readFileSync("./src/original/hp-value.js", "utf8"), { filename: "hp-value.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/battle-card-specials.js", "utf8"), { filename: "battle-card-specials.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/character-skill-access.js", "utf8"), { filename: "character-skill-access.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/skill-once-per-turn.js", "utf8"), { filename: "skill-once-per-turn.js" });

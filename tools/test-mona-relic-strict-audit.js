@@ -74,7 +74,7 @@ function load(file) {
   "holy-eagle-sword-skills.js",
   "battle-status-card-registry.js",
   "battle-status-card-storage.js",
-  "battle-status-card-triggers.js",
+  "hp-value.js", "battle-status-card-triggers.js",
   "battle-status-cards.js",
   "battle-draw-feedback.js",
   "battle-combat-card-effects.js",

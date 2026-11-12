@@ -16,6 +16,7 @@ window.GameData = {
 };
 require("../src/original/dungeon-enemies.js");
 require("../src/original/machine-factory-skills.js");
+require("../src/original/hp-value.js");
 require("../src/original/enemy-status-effects.js");
 require("../src/original/enemy-kill-hooks.js");
 require("../src/original/enemy-damage-hooks.js");

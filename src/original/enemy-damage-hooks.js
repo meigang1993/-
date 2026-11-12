@@ -41,7 +41,8 @@ window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
     // 精灵守护属受击触发（其他友方受伤后给护甲），按设计逐段结算。
     window.GuardKellySkills?.afterDamage?.(state, actor, target, card, hpLoss, cardUser);
     if (hpLoss && target.shock && !card?.shockBonus) {
-      damage(state, target, target.shock, "感电", actor, {
+      const shockAmount = status.shockDamage?.(state, target, actor) ?? target.shock;
+      damage(state, target, shockAmount, "感电", actor, {
         name: "感电", type: "skill", shockBonus: true, ignoreResponse: true,
         ignoreBlock: true, skipDamageModify: true,
       });
@@ -49,7 +50,7 @@ window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
     }
     // 感电/圣痕会参与同一伤害链内后续段的结算(感电在下次受伤时立刻追加伤害、
     // 圣痕让后续圣属性伤害翻倍)，延后会改变伤害结果，故保持同步发放。
-    if (hpLoss && card?.shock && !card?._soulChain) status.addShock(state, target, 1);
+    if (hpLoss && card?.shock && !card?._soulChain) status.addShock(state, target, 1, actor);
     if (hpLoss && card?.holy && !card?._soulChain) status.addHolyScar(state, target);
     if (hpLoss && card?.poison && !card?.poisonTick && !card?._soulChain) {
       settleStatus(state, () => status.addPoison(state, target, 1, actor));

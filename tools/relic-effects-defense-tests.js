@@ -49,6 +49,7 @@ function testWhiteGothicLolita() {
   require("../src/original/battle-damage-lifecycle.js");
   require("../src/original/battle-white-lolita.js");
   require("../src/original/battle-damage-resolution.js");
+  require("../src/original/hp-value.js");
   require("../src/original/battle-damage-hit.js");
   require("../src/original/battle-damage.js");
   const actor = unit("攻击者");

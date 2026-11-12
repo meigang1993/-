@@ -47,6 +47,10 @@ const timeouts = Object.freeze({
 "test-card-faction-ownership.js": 120,
   // originSide 随主存档压缩 / 读档重建，含两条写盘路径与 2 组源码级反向
   "test-card-ownership-save-compact.js": 120,
+  // 毒标记伤害改为施加者攻击力30%（快照 / 叠加 / 旧档兼容 / REVERT=rate 反向）
+  "test-poison-mark-applier-attack.js": 120,
+  // 燃烧/感电改为施加者攻击力30% + HP浮点尾巴收敛（REVERT=burn|shock|hp 反向）
+  "test-burn-shock-rate-and-hp-value.js": 120,
   // 圣鹰剑第三张杀 / 英雄级莫娜技能×饰品联动（模块级 + 反向验证）
   "test-holy-eagle-sword-third-slash.js": 120,
   "test-mona-hell-linkage.js": 120,
@@ -328,8 +332,10 @@ const groups = Object.freeze({
     "test-noa-skills-recheck.js",
     "test-noa-own-turn-strict.js",
     "test-noa-stolen-hand-charm.js",
-"test-card-faction-ownership.js",
+    "test-card-faction-ownership.js",
     "test-card-ownership-save-compact.js",
+    "test-poison-mark-applier-attack.js",
+    "test-burn-shock-rate-and-hp-value.js",
     "test-hitwell-skills-strict-live.js",
     "test-preshi-skills-live.js",
     "test-mieryula-skills-live.js",

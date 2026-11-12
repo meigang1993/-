@@ -11,6 +11,7 @@ require("../src/original/data-skins.js");
 require("../src/original/skins.js");
 require("../src/original/skin-fx-runtime.js");
 require("../src/original/angelica-berserker-skin-fx.js");
+require("../src/original/hp-value.js");
 require("../src/original/angelica-luka-skills.js");
 
 window.BattleLines = { skill() {} };

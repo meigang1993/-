@@ -63,9 +63,9 @@ window.AngelicaLukaSkills = (() => {
       ?? `摸${drawn}张牌`;
     window.BattleLog.add(state, `${actor.name} ${drawText}。`);
     const heal = Math.round(spent * (actor.maxHp || 0) * 0.1);
-    const healed = Math.max(0, Math.min(actor.maxHp - actor.hp, heal));
+    const healed = window.BattleHpValue.healCap(actor, heal);
     if (healed > 0) {
-      actor.hp += healed;
+      window.BattleHpValue.applyHeal(actor, healed);
       window.BattleStats?.heal?.(state.battle, actor, healed);
       window.EnemySkills?.clearHolyScar?.(state, actor);
       ctx?.pushFloat?.(state.battle, actor.uid, "heal", healed);
@@ -109,8 +109,8 @@ window.AngelicaLukaSkills = (() => {
   function bloodSlaughter(state, actor, hpLoss, deps) {
     line(state, actor, "嗜血杀戮");
     if (actor.hp >= actor.maxHp) { const drawn = deps.draw(actor, 1, state.battle), result = window.BattleDrawFeedback.action(actor, 1, drawn); window.BattleLog.add(state, `${actor.name} 生命已满，嗜血杀戮${actor.drawLockedThisTurn ? result : `改为${result}`}。`); return; }
-    const healed = Math.min(actor.maxHp - actor.hp, hpLoss);
-    actor.hp += healed;
+    const healed = window.BattleHpValue.healCap(actor, hpLoss);
+    window.BattleHpValue.applyHeal(actor, healed);
     window.BattleStats?.heal?.(state.battle, actor, healed);
     window.EnemySkills?.clearHolyScar?.(state, actor);
     deps.pushFloat?.(state.battle, actor.uid, "heal", healed);

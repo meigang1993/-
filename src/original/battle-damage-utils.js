@@ -99,7 +99,7 @@ window.BattleDamageUtils = (deps, ctx) => {
     amount = Math.max(1, Math.round(amount));
     ctx.holdVisual(target);
     const hpBefore = target.hp;
-    target.hp = Math.max(0, target.hp - amount);
+    window.BattleHpValue.applyDamage(target, amount);
     state.battle.lastHitUid = target.uid;
     state.battle.hitFxId += 1;
     const damageTypes = window.BattleDamageAttributes?.resolve(card || { name: source }, source, actor) || ["physical"];

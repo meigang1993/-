@@ -105,8 +105,8 @@ window.GameUIBattleUnits = (U, I) => {
 
   function statusIcons(unitData) {
     const timerCount = status => /^计时(\d+)$/.exec(status)?.[1] || "";
-    const statusTip = status => status === "毒" ? `毒：${unitData.poison || 0}层`
-      : status === "感电" ? `感电：${unitData.shock || 0}层`
+    const statusTip = status => status === "毒" ? `毒：${unitData.poison || 0}层；回合开始时每枚标记造成施加者攻击力30%的毒属性伤害（至少1点，按施加时快照叠加）`
+      : status === "感电" ? `感电：${unitData.shock || 0}层，每层按施加者攻击力30%追加伤害`
         : status === "歼灭" ? "歼灭模式"
           // 时停是米尔尤拉限定技【神奇怀表】的状态，说明写全三个负面效果，
           // 避免玩家只看到一个字却不知道发生了什么。
@@ -124,7 +124,7 @@ window.GameUIBattleUnits = (U, I) => {
       + ` ${status === "时停" ? "time-stop" : ""}`
       + ` ${timerCount(status) ? "timer" : ""}`;
     const burning = (unitData.hand || []).some(card => card.burning && !card._pendingDraw)
-      ? `<span class="status-icon burning-hand" title="燃烧：每个准备阶段按燃烧牌数量失去生命，受到火属性伤害翻倍">火</span>`
+      ? `<span class="status-icon burning-hand" title="燃烧：每个准备阶段每张燃烧牌按施加者攻击力30%造成伤害，受到火属性伤害翻倍">火</span>`
       : "";
     const lock = unitData.lockSuit
       ? `<span class="status-icon lock-suit" title="锁定标记：${U.esc(unitData.lockSuit)}">${U.esc(unitData.lockSuit)}</span>`

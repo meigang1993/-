@@ -59,9 +59,9 @@ window.NonokaLokiSkills = (() => {
     return true;
   }
   function heal(state, target, amount, actor, deps) {
-    const healed = window.EnemySkills?.beforeHeal?.(state, target, amount, actor, { name: "偶像之吻" }, deps.damage) ?? Math.min(target.maxHp - target.hp, Math.max(0, amount));
+    const healed = window.BattleHpValue.clean(window.EnemySkills?.beforeHeal?.(state, target, amount, actor, { name: "偶像之吻" }, deps.damage) ?? window.BattleHpValue.healCap(target, amount));
     if (healed > 0) {
-      target.hp = Math.min(target.maxHp, target.hp + healed);
+      window.BattleHpValue.applyHeal(target, healed);
       window.BattleStats?.heal?.(state.battle, actor, healed);
       deps.pushFloat(state.battle, target.uid, "heal", healed);
       window.EnemySkills?.clearHolyScar?.(state, target);

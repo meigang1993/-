@@ -5,6 +5,7 @@ const { combat, card, scenario, unit } = require("./pursue-kill-fixtures");
 
 require("../src/original/card-art.js");
 require("../src/original/battle-pile-stats.js");
+require("../src/original/hp-value.js");
 require("../src/original/enemy-status-effects.js");
 require("../src/original/enemy-damage-hooks.js");
 require("../src/original/guard-kelly-skills.js");

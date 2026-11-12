@@ -9,7 +9,7 @@ loadRuntime();
 [
   "battle-status-card-registry.js",
   "battle-status-card-storage.js",
-  "battle-status-card-triggers.js",
+  "hp-value.js", "battle-status-card-triggers.js",
   "battle-status-cards.js",
 ].forEach(f => vm.runInThisContext(
   fs.readFileSync(`./src/original/${f}`, "utf8"), { filename: f },

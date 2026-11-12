@@ -2,6 +2,7 @@ global.window = global;
 require("../src/original/game-random.js");
 require("../src/original/battle-damage-attributes.js");
 require("../src/original/battle-combat-visuals.js");
+require("../src/original/hp-value.js");
 require("../src/original/battle-damage-utils.js");
 require("../src/original/battle-combat-attack-flow.js");
 

@@ -39,6 +39,7 @@ assert.strictEqual(ranking[1].score, 25, "damage, kill, response, and card score
 
 const { combat, card, scenario } = require("./pursue-kill-fixtures");
 require("../src/original/machine-factory-skills.js");
+require("../src/original/hp-value.js");
 require("../src/original/enemy-status-effects.js");
 require("../src/original/enemy-kill-hooks.js");
 require("../src/original/enemy-damage-hooks.js");
@@ -83,14 +84,14 @@ function applyCreditedDamage(state, victim, amount, _source, source) {
   BattleStats.damage(state.battle, source, victim, amount, hpBefore);
 }
 
-const poisonSource = { uid: "ally-poison", name: "施毒者", side: "ally" };
-const poisoned = { uid: "enemy-poison", name: "中毒目标", side: "enemy", hp: 2, statuses: [] };
+const poisonSource = { uid: "ally-poison", name: "施毒者", side: "ally", stats: { attack: 10 } };
+const poisoned = { uid: "enemy-poison", name: "中毒目标", side: "enemy", hp: 6, maxHp: 6, statuses: [] };
 const poisonState = { battle: { allies: [poisonSource], enemies: [poisoned] }, log: [] };
 BattleStats.initialize(poisonState.battle);
 EnemySkills.addPoison(poisonState, poisoned, 2, poisonSource);
 EnemySkills.tickPoison(poisonState, poisoned, applyCreditedDamage);
-assert.strictEqual(poisonState.battle.performance[poisonSource.uid].damage, 2,
-  "poison damage must be credited to its applier");
+assert.strictEqual(poisonState.battle.performance[poisonSource.uid].damage, 6,
+  "poison damage must be credited as 30% applier attack per stack");
 assert.strictEqual(poisonState.battle.performance[poisonSource.uid].kills, 1,
   "a poison defeat must grant kill contribution to its applier");
 

@@ -43,9 +43,9 @@ window.UnderwaterTrainBiteSkills = ({ singleSlash }) => {
 
   function afterDamage(state, actor, card, hpLoss) {
     if (!hpLoss || !card?.biteKill) return;
-    const healed = Math.min(actor.maxHp - actor.hp, hpLoss);
+    const healed = window.BattleHpValue.healCap(actor, hpLoss);
     if (!healed) return;
-    actor.hp += healed;
+    window.BattleHpValue.applyHeal(actor, healed);
     window.BattleStats?.heal?.(state.battle, actor, healed);
     window.EnemySkills?.clearHolyScar?.(state, actor);
     window.EnemySkills?.onHeal?.(state, window.BattleSystem?.draw);
