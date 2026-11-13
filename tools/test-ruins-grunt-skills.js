@@ -10,6 +10,7 @@ const {
 installGlobals();
 loadRuntime();
 [
+  "gaianis-amulet-skills.js", "holy-eagle-sword-skills.js",
   "hp-value.js",
   // ruins-enemy-skills.js 的 isSkillBlocked 走 SkillOncePerTurn 登记表，
   // 缺登记表时直接抛错（非静默放行），所以必须先加载它。

@@ -12,6 +12,7 @@ const { installGlobals, loadRuntime } = require("./skill-coverage-fixtures");
 installGlobals();
 loadRuntime();
 [
+  "gaianis-amulet-skills.js", "holy-eagle-sword-skills.js",
   "battle-status-card-registry.js",
   "battle-status-card-storage.js",
   "hp-value.js", "battle-status-card-triggers.js",

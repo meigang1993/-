@@ -28,6 +28,7 @@ window.RelicSystem = { hasEquipped: () => false };
 window.RuinsRelicEffects = { missileLauncherBlock: () => true };
 
 [
+  "gaianis-amulet-skills.js", "holy-eagle-sword-skills.js",
   "hp-value.js", "economy-config.js", "data-cards.js", "card-utils.js", "witherer-relic-skills.js",
   "witherer-skills.js", "nonoka-new-moon-skills.js", "nonoka-loki-skills.js",
   "battle-ai-helpers.js", "battle-ai-tactics.js", "battle-ai-slash-planner.js",

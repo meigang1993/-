@@ -17,6 +17,7 @@ const {
 installGlobals();
 loadRuntime();
 [
+  "gaianis-amulet-skills.js", "holy-eagle-sword-skills.js",
   "battle-status-card-registry.js",
   "battle-status-card-storage.js",
   "hp-value.js", "battle-status-card-triggers.js",

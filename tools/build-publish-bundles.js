@@ -139,7 +139,11 @@ function writeCache(outputs, sourceMaps) {
     bundles[name] = { code: sha256(outputs[name]), map: sha256(sourceMaps[name]) };
   }
   try {
-    fs.writeFileSync(cachePath, JSON.stringify({ sources: inputFingerprint(), bundles }));
+    fs.writeFileSync(cachePath, JSON.stringify({
+      sources: inputFingerprint(),
+      version: buildVersion(fs.readFileSync(path.join(publish, "index.html"), "utf8")),
+      bundles,
+    }));
   } catch (error) {
     // 缓存只是加速手段，写失败不应让构建失败
   }
@@ -181,8 +185,21 @@ function writeAtomic(target, content) {
 }
 
 // 产物内容与 HEAD 不同但版本号未推进时：自动升版（默认）或照旧抛错。
+// 另外：同一未推批次里继续改源码时，HEAD 版本没变、工作区版本已高于 HEAD，
+// 原护栏只比较这两者便直接放行，这正是「改了源码却没升版」的根因。因此再按
+// 源码输入指纹判一次：相对上次构建有变化就再升一版，源码没变时重复构建不连升。
 // 返回刷新后的 index.html，供后续校验使用。
+function lastBuildState() {
+  try {
+    const cache = JSON.parse(fs.readFileSync(cachePath, "utf8"));
+    return { sources: cache?.sources || null, version: cache?.version || null };
+  } catch (error) {
+    return { sources: null, version: null };
+  }
+}
+
 function enforceVersionAdvanced(root, outputs, index, checkOnly) {
+  let bumpedByGuard = false;
   try {
     assertRepositoryPublishVersion(root, outputs, index);
   } catch (error) {
@@ -194,12 +211,29 @@ function enforceVersionAdvanced(root, outputs, index, checkOnly) {
     console.log(
       `Auto-bumped game-build ${result.previous} -> ${result.next} (${result.summary})`
     );
+    bumpedByGuard = true;
     assertRepositoryPublishVersion(
       root,
       outputs,
       fs.readFileSync(path.join(publish, "index.html"), "utf8")
     );
   }
+  if (checkOnly || !autoBump || bumpedByGuard) return;
+  const currentSources = inputFingerprint();
+  const state = lastBuildState();
+  const currentVersion = buildVersion(fs.readFileSync(path.join(publish, "index.html"), "utf8"));
+  // 缓存同时记录「上次构建时的源码指纹」与「当时的版本号」：两者都与本次一致
+  // 才算这批源码改动已升过版，避免每次重建都连升，也避免旧机制遗留批次漏升。
+  if (state.sources === currentSources && state.version === currentVersion) return;
+  const result = bumpRepositoryVersion(root, currentVersion);
+  if (!result.changed) return;
+  console.log(
+    `Auto-bumped game-build ${result.previous} -> ${result.next} ` +
+    `(source inputs changed: ${result.summary})`
+  );
+  assertRepositoryPublishVersion(
+    root, outputs, fs.readFileSync(path.join(publish, "index.html"), "utf8")
+  );
 }
 
 async function main() {

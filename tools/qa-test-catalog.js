@@ -51,6 +51,11 @@ const timeouts = Object.freeze({
   "test-poison-mark-applier-attack.js": 120,
   // 燃烧/感电改为施加者攻击力30% + HP浮点尾巴收敛（REVERT=burn|shock|hp 反向）
   "test-burn-shock-rate-and-hp-value.js": 120,
+  "test-burn-shock-hp-recheck.js": 120,
+  // 状态伤害来源归属复查（毒/燃烧/感电施加者失效、HP阈值、存档压缩，REVERT=shadow 反向）
+  "test-status-source-attribution-audit.js": 120,
+  // 状态 DOT 口径定案：毒按施加者分组结算、状态段不触发感电（REVERT=group|shock 反向）
+  "test-status-dot-split-and-shock.js": 120,
   // 圣鹰剑第三张杀 / 英雄级莫娜技能×饰品联动（模块级 + 反向验证）
   "test-holy-eagle-sword-third-slash.js": 120,
   "test-mona-hell-linkage.js": 120,
@@ -336,6 +341,9 @@ const groups = Object.freeze({
     "test-card-ownership-save-compact.js",
     "test-poison-mark-applier-attack.js",
     "test-burn-shock-rate-and-hp-value.js",
+    "test-burn-shock-hp-recheck.js",
+    "test-status-source-attribution-audit.js",
+    "test-status-dot-split-and-shock.js",
     "test-hitwell-skills-strict-live.js",
     "test-preshi-skills-live.js",
     "test-mieryula-skills-live.js",

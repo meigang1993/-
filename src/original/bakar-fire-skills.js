@@ -13,6 +13,15 @@ window.BakarFireSkills = (() => {
       ? snapshot : sourceAttack(source);
     return Math.max(1, Math.round(attack * RATE));
   };
+  // 施加者已离场 / uid 失效时，不得把伤害来源回退成受害者自己：
+  // 否则 BattleStats 的「同阵营不记」判据会吞掉这次伤害与击杀，战报写成自伤，
+  // 且后续感电会按受害者攻击力放大。影子来源保留原 uid 让统计仍落到原施加者名下。
+  const shadowSource = (unit, uid, label) => ({
+    uid: uid || `__${label}__`, name: label,
+    side: unit.side === "ally" ? "enemy" : "ally",
+    hp: 0, maxHp: 0, stats: { attack: 0 }, tempAttack: 0,
+    hand: [], statuses: [], block: 0,
+  });
 
   function beforeKillTargeted(state, actor, card) {
     if (!isBakar(actor) || !isSlash(card)) return;
@@ -79,12 +88,15 @@ window.BakarFireSkills = (() => {
       if (!groups.has(uid)) groups.set(uid, []);
       groups.get(uid).push(card);
     });
-    const amountOf = (uid, group) => {
-      const source = units.find(actor => actor.uid === uid) || unit;
-      return group.reduce((sum, card) => sum + burningDamage(card, source), 0);
-    };
+    // 旧档燃烧牌没有施加者 uid / 攻击力快照时，不得回退到目标自己：
+    // 否则会按目标攻击力算 30%（目标越强烧得越狠）。sourceFor 返回 null
+    // 时 burningDamage 取 0 攻击力 → 至少 1 点；伤害归属对象用影子来源。
+    const sourceFor = uid => units.find(actor => actor.uid === uid) || null;
+    const actorFor = uid => sourceFor(uid) || shadowSource(unit, uid, "燃烧");
+    const amountOf = (uid, group) => group.reduce(
+      (sum, card) => sum + burningDamage(card, sourceFor(uid)), 0);
     const actions = [...groups].map(([uid, group]) => {
-      const source = units.find(actor => actor.uid === uid) || unit;
+      const source = actorFor(uid);
       return window.BattleReactionQueue?.directDamageAction?.(
         source,
         unit,
@@ -106,7 +118,7 @@ window.BakarFireSkills = (() => {
     }
     for (const [uid, group] of groups) {
       if (unit.hp <= 0 || state.battle.locked) break;
-      const source = units.find(actor => actor.uid === uid) || unit;
+      const source = actorFor(uid);
       directDamage(state, unit, amountOf(uid, group), "燃烧", source, 0, {
         name: "燃烧",
         type: "skill",

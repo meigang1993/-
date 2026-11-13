@@ -10,16 +10,16 @@ module.exports = ({ assert, unit }) => {
   const skills = templates.flatMap(template => template.skills || []);
   const relics = Object.keys({ ...GameDataRelics, ...GameDataFutureRelics });
 
-  // 32 → 33：新增安倍卡露娜（歌姬 / 幸运海螺 / 记忆泡泡）等角色后同步计数。
+  // 32 → 33 → 34：新增安倍卡露娜（歌姬 / 幸运海螺 / 记忆泡泡）等角色后同步计数。
   // 本断言是「审计覆盖面」护栏：角色数变动时必须显式复核，不能直接放行。
-  assert(GameData.characters.length === 33,
-    "skill audit must cover all 33 playable characters");
+  assert(GameData.characters.length === 34,
+    "skill audit must cover all 34 playable characters");
   assert(enemies.length === 36, "skill audit must cover all 36 enemies");
   // 80 → 78：删除洛基「护母心切」与卡迪西斯「战场指挥官」各 1 项。
   // 78 → 81：新增米尔尤拉（渴血杀戮 / 无谋霸姬 / 神奇怀表）。
-  // 81 → 83 → 86：索尼娅、格尔达、星野依、星野海一、安倍卡露娜等角色技能补齐。
-  assert(GameData.characters.flatMap(template => template.skills || []).length === 86,
-    "skill audit must cover all 86 playable-character skills");
+  // 81 → 83 → 86 → 88：索尼娅、格尔达、星野依、星野海一、安倍卡露娜等角色技能补齐。
+  assert(GameData.characters.flatMap(template => template.skills || []).length === 88,
+    "skill audit must cover all 88 playable-character skills");
   // 72 → 71：删除魔王军猛兽部队「快速装弹」。
   assert(enemies.flatMap(template => template.skills || []).length === 71,
     "skill audit must cover all 71 enemy skills");

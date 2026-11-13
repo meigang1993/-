@@ -40,7 +40,11 @@ window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
   function afterDamage(state, actor, target, card, hpLoss, damage, cardUser = actor, directDamage = null) {
     // 精灵守护属受击触发（其他友方受伤后给护甲），按设计逐段结算。
     window.GuardKellySkills?.afterDamage?.(state, actor, target, card, hpLoss, cardUser);
-    if (hpLoss && target.shock && !card?.shockBonus) {
+    // 感电是「主动攻击造成伤害时」的追加电击；毒/燃烧等状态 DOT 段属于持续
+    // 状态结算，每次 tick 都引发电击会形成连锁放大（30% 口径后尤其明显），
+    // 且燃烧按施加者分组结算时会按组重复触发。感电自身段仍由 shockBonus 防自激。
+    if (hpLoss && target.shock && !card?.shockBonus
+        && !card?.poisonTick && !card?.burningTick) {
       const shockAmount = status.shockDamage?.(state, target, actor) ?? target.shock;
       damage(state, target, shockAmount, "感电", actor, {
         name: "感电", type: "skill", shockBonus: true, ignoreResponse: true,

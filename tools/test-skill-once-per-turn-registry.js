@@ -206,7 +206,11 @@ for (const [name, re, file] of aiRespects) {
   // 每个含有消费方的 bundle 都必须自带登记表（否则跨包依赖复活）
   const groupsWith = file => Object.keys(manifest)
     .filter(name => Array.isArray(manifest[name]) && manifest[name].includes(file));
-  for (const consumer of shared.SHARED_SOURCES[0].consumers) {
+  // 按文件名取登记表自己的消费方，不能写死 SHARED_SOURCES[0]：
+  // hp-value.js 后来插入到数组头部，索引 0 已变成 hp-value，硬编码会把
+  // battle-float-numbers.js 这类 hp 消费方误判成登记表消费方，产生假红。
+  const registryEntry = shared.SHARED_SOURCES.find(entry => entry.file === registry);
+  for (const consumer of registryEntry.consumers) {
     for (const group of groupsWith(consumer)) {
       check(groupsWith(registry).includes(group),
         `登记表已打进 ${group}（消费方 ${consumer} 所在包）`,

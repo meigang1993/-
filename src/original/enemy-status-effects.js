@@ -17,10 +17,23 @@ window.EnemyStatusEffects = ({ alive, markStatus }) => {
     return sourceAttack(actor);
   };
   const markerDamage = (state, mark) => Math.max(1, Math.round(markerAttack(state, mark) * RATE));
+  // 施加者已离场 / uid 失效时，不得把伤害来源回退成受害者自己：
+  // 否则 BattleStats 的「同阵营不记」判据会吞掉这次伤害与击杀，战报写成自伤，
+  // 且 legacy 感电会按受害者攻击力放大 30%。影子来源保留原 uid 让统计仍落到
+  // 原施加者名下，攻击力为 0、阵营与目标相反，只是结算用的占位对象。
+  const shadowSource = (unit, uid, label) => ({
+    uid: uid || `__${label}__`, name: label,
+    side: unit.side === "ally" ? "enemy" : "ally",
+    hp: 0, maxHp: 0, stats: { attack: 0 }, tempAttack: 0,
+    hand: [], statuses: [], block: 0,
+  });
 
   function normalizeMarks(state, unit) {
     const count = Math.max(0, Math.floor(finite(unit?.poison)));
-    const fallbackUid = unit?.poisonSourceUid || unit?.uid || null;
+    // 旧档毒标记缺失施加者时不得回退到目标自己：否则会按目标攻击力算 30%，
+    // 目标越强毒伤越高，且战报把施加者记成受害者。留空则由 markerAttack
+    // 判为「找不到施加者」→ 0 攻击力 → 至少 1 点。
+    const fallbackUid = unit?.poisonSourceUid || null;
     const old = Array.isArray(unit?.poisonMarks) ? unit.poisonMarks.slice() : [];
     while (old.length < count) old.push({ sourceUid: fallbackUid });
     const marks = old.slice(0, count).map(mark => ({
@@ -37,7 +50,7 @@ window.EnemyStatusEffects = ({ alive, markStatus }) => {
     const amount = Math.max(0, Math.floor(finite(count)));
     if (!amount) return;
     const marks = normalizeMarks(state, target);
-    const sourceUid = source?.uid || target.uid || null;
+    const sourceUid = source?.uid || null;
     const attack = sourceAttack(source);
     for (let i = 0; i < amount; i += 1) marks.push({ sourceUid, attack });
     target.poison = marks.length;
@@ -67,7 +80,7 @@ window.EnemyStatusEffects = ({ alive, markStatus }) => {
     const amount = Math.max(0, Math.floor(finite(count)));
     if (!amount) return;
     const marks = normalizeShockMarks(state, target);
-    const sourceUid = source?.uid || target.uid || null;
+    const sourceUid = source?.uid || null;
     const attack = sourceAttack(source);
     for (let i = 0; i < amount; i += 1) marks.push({ sourceUid, attack });
     target.shock = marks.length;
@@ -78,12 +91,15 @@ window.EnemyStatusEffects = ({ alive, markStatus }) => {
   }
 
   // 每层感电按施加时攻击力快照各算 30%（四舍五入、至少 1 点）后叠加。
-  // 旧档只有 shock 数字，没有施加者信息，降级按本次伤害来源的当前攻击力补齐。
+  // 旧档只有 shock 数字，没有施加者信息，降级按本次伤害来源的当前攻击力补齐；
+  // 若本次来源恰好就是受害者（上游回退），按 0 攻击力处理，避免自我放大。
   function shockDamage(state, target, actor) {
     const marks = normalizeShockMarks(state, target);
     return marks.reduce((sum, mark) => {
       if (mark?._legacy || !Number.isFinite(Number(mark?.attack))) {
-        return sum + Math.max(1, Math.round(sourceAttack(actorOf(state, mark?.sourceUid) || actor) * RATE));
+        const legacyActor = actorOf(state, mark?.sourceUid)
+          || (actor === target ? null : actor);
+        return sum + Math.max(1, Math.round(sourceAttack(legacyActor) * RATE));
       }
       return sum + markerDamage(state, mark);
     }, 0);
@@ -112,17 +128,29 @@ window.EnemyStatusEffects = ({ alive, markStatus }) => {
       });
   }
 
+  // 按施加者分组分别结算，与燃烧 tickBurning 对齐：30% 口径下每枚毒标记
+  // 各自按施加者攻击力快照计伤，合并成一次结算会把 A/B 两人的伤害与击杀
+  // 全部记到首位施加者名下（MVP 统计失真）。分组后每段各自的伤害、统计与
+  // 击杀归属落到该施加者，施加者失效时沿用影子来源。
   function tickPoison(state, unit, damage) {
     if (!unit.poison || unit.hp <= 0) return;
     const marks = normalizeMarks(state, unit);
-    const amount = marks.reduce((sum, mark) => sum + markerDamage(state, mark), 0);
-    if (!amount) return;
-    const sourceUid = marks[0]?.sourceUid || unit.poisonSourceUid || null;
-    const source = actorOf(state, sourceUid) || unit;
-    damage(state, unit, amount, "毒", source, {
-      name: "毒", type: "skill", poison: true, poisonTick: true,
-      ignoreResponse: true, ignoreBlock: true, skipDamageModify: true,
+    const groups = new Map();
+    marks.forEach(mark => {
+      const uid = mark?.sourceUid || "";
+      if (!groups.has(uid)) groups.set(uid, []);
+      groups.get(uid).push(mark);
     });
+    for (const [uid, group] of groups) {
+      if (unit.hp <= 0 || state.battle?.locked) break;
+      const amount = group.reduce((sum, mark) => sum + markerDamage(state, mark), 0);
+      if (!amount) continue;
+      const source = actorOf(state, uid) || shadowSource(unit, uid || null, "毒");
+      damage(state, unit, amount, "毒", source, {
+        name: "毒", type: "skill", poison: true, poisonTick: true,
+        ignoreResponse: true, ignoreBlock: true, skipDamageModify: true,
+      });
+    }
   }
 
   return { addPoison, addShock, shockDamage, addHolyScar, clearHolyScar, onHeal, tickPoison };

@@ -133,10 +133,13 @@ function runNormal() {
     api.addPoison(state, victim, 1, second);
     const rec = damageRecorder();
     api.tickPoison(state, victim, rec.damage);
-    T("C2 不同施加者的毒标记按各自30%合计9点", rec.calls.length === 1 && rec.calls[0].amount === 9,
-      { amount: rec.calls[0]?.amount, marks: victim.poisonMarks });
-    T("C3 混合毒标记一次结算且归属首位施加者", rec.calls[0]?.actorUid === first.uid && victim.poison === 2,
-      { actorUid: rec.calls[0]?.actorUid, poison: victim.poison });
+    T("C2 不同施加者的毒标记按各自30%合计9点",
+      rec.calls.length === 2 && rec.calls.reduce((s, c) => s + c.amount, 0) === 9,
+      { amounts: rec.calls.map(c => c.amount), marks: victim.poisonMarks });
+    T("C3 混合毒标记按施加者分组各自归属",
+      rec.calls[0]?.actorUid === first.uid && rec.calls[1]?.actorUid === second.uid
+      && victim.poison === 2,
+      { actorUids: rec.calls.map(c => c.actorUid), poison: victim.poison });
   }
 
   // D: legacy saves with poison + poisonSourceUid but no poisonMarks must still use the new formula.
