@@ -1,5 +1,5 @@
 // 内英组杀手希尔德 · 英雄级实战回归
-//   ⭐ 暗幕隐身：有黑色牌时不会成为单体【杀】牌的目标（此前实现成了"不可响应"）
+//   ⭐ 暗幕隐身：有黑色牌时不会成为实体单体【杀】牌的目标（此前实现成了"不可响应"）
 //   🔵 影舞步：准备阶段连续判定，黑色收入手中、红色停止
 //   🔵 潜影背刺：结束阶段，有黑色牌时指定敌方一名角色，造成等同攻击力的物理伤害
 //   🔵 影舞步：连续判定不再限张数（原实现硬编码上限 6 张）
@@ -79,7 +79,7 @@ const peekTpl = `(() => {
   await page.evaluate(setupTpl([{ name: "杀", type: "slash", suit: "♠", scale: "attack" }]));
   const hidden = await page.evaluate(aimTpl);
   console.log(`[暗幕隐身·黑] chooseTarget=${hidden.ok} UI可选=${hidden.uiAllowed}`);
-  T("暗幕隐身：有黑色牌时单体【杀】不能指定她",
+  T("暗幕隐身：有黑色牌时实体单体【杀】不能指定她",
     hidden.ok === false, hidden);
   T("暗幕隐身：UI 层同步置灰（不出现点了没反应）",
     hidden.uiAllowed === false, hidden);
@@ -90,7 +90,7 @@ const peekTpl = `(() => {
   await page.waitForTimeout(900);
   const afterHit = await page.evaluate(peekTpl);
   console.log(`[暗幕隐身·红] chooseTarget=${shown.ok} 敌掉血=${200 - afterHit.foeHp}`);
-  T("暗幕隐身：无黑色牌时可被单体【杀】指定",
+  T("暗幕隐身：无黑色牌时可被实体单体【杀】指定",
     shown.ok === true && shown.uiAllowed === true, shown);
 
   // ===== 暗幕隐身 ③：群体【杀】不受隐身影响 =====
@@ -99,7 +99,7 @@ const peekTpl = `(() => {
   await page.evaluate(sweepSetup);
   const sweepAim = await page.evaluate(aimTpl);
   console.log(`[暗幕隐身·群体杀] chooseTarget=${sweepAim.ok}`);
-  T("暗幕隐身：只挡单体【杀】，群体【杀】仍可指定",
+  T("暗幕隐身：只挡实体单体【杀】，群体【杀】仍可指定",
     sweepAim.ok === true, sweepAim);
 
   // ===== 影舞步 ①：判定黑色 → 获得该牌 =====

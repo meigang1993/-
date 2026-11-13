@@ -106,6 +106,9 @@ window.EnemyKillHooks = ({ black, hasSkill, drawJudge }) => {
   }
 
   function chiyoSlash(state, actor, target, card) {
+    // 连击产生的虚拟【杀（普攻）】不再重复判定、也不再触发封闪，
+    // 否则每张虚拟杀都会再开一轮判定 → 无限连锁。
+    if (card._chiyoChainVirtual) return;
     if (target.hand.some(item => item.suit === "♥" && !item._pendingDraw)) {
       if (!card.ignoreResponse) card._tempIgnoreResponse = true;
       card.ignoreResponse = true;
@@ -122,9 +125,11 @@ window.EnemyKillHooks = ({ black, hasSkill, drawJudge }) => {
       red += 1;
     }
     if (!red) return;
-    card.gatlingRepeats = (card.gatlingRepeats || 1) + red;
+    // 不再把整张【杀】重复结算 X+1 次（目标一死剩余次数就白费），
+    // 改为记录额外虚拟杀张数，由 ChiyoChainSkills 在原牌结算后逐张发动并允许转移目标。
+    card._chiyoExtra = red;
     window.BattleLines?.skill(state, actor, "红缨连鬼斩");
-    window.BattleLog.add(state, `${actor.name} 本次杀额外结算${red}次。`);
+    window.BattleLog.add(state, `${actor.name} 本次杀将额外使用${red}张虚拟【杀（普攻）】。`);
   }
 
   return { beforeKillUsed, beforeKillTargeted, prepareGroupKillTarget };

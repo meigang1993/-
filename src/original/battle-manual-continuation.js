@@ -25,6 +25,8 @@ window.BattleManualContinuation = deps => {
   async function resumeAfterManualResponse(state, onStep, inherited) {
     const current = actionGuard(state, inherited);
     if (!current()) return;
+    // 【红缨连鬼斩】虚拟杀链若在玩家响应提示处挂起，恢复后先把剩余次数跑完。
+    window.ChiyoChainSkills?.resume?.(state);
     if (!await resume.resumeInterruptedActions(state, onStep, current)) return;
     await continueAfterInterruptedActions(state, onStep, current);
   }
@@ -73,6 +75,9 @@ window.BattleManualContinuation = deps => {
     const current = actionGuard(state, inherited);
     if (!current()) return;
     const battle = state.battle;
+    // 挂起不一定来自玩家手动响应（交牌、泡泡、锤子等也走中断恢复），
+    // 统一在这里补跑【红缨连鬼斩】剩余链；resume 自带回合守卫，重复调用幂等。
+    window.ChiyoChainSkills?.resume?.(state);
     // 霹雳之锤解决（弃牌补伤或放弃发动）后，玩家仍处在自己的出牌阶段：
     // 这两件事都不是「结束回合」，必须把控制权交回玩家继续出牌。
     // 此前会一路走到 finishTurnAndAdvance，直接推进到弃牌阶段并换人。

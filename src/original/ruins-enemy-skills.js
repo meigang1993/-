@@ -36,7 +36,8 @@ window.RuinsEnemySkills = (() => {
     elite?.beforeKillTargeted?.(state, actor, target, card);
   }
 
-  // 供目标选择环节调用：某些敌人（如隐身中的希尔德）不可被指定为单体【杀】的目标。
+  // 供目标选择环节调用：某些敌人（如隐身中的希尔德）不可被指定为实体单体【杀】
+  // 的目标；虚拟杀不受此限，判定口径在 RuinsEliteSkills.blocksKillTarget 内收口。
   function blocksKillTarget(target, card) {
     return !!elite?.blocksKillTarget?.(target, card);
   }

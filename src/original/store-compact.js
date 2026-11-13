@@ -66,6 +66,8 @@ window.GameStoreCompact = (() => {
     "awaitingMimicUid", "awaitingSpeedAssaultUid", "prepareUnitUid",
     "endPhaseUnitUid", "pendingVictory", "pendingDefeat", "victoryScreen",
     "lastClash", "karunaBubble", "karunaBubblePending", "opheliaGuard",
+    // 【红缨连鬼斩】挂起的虚拟杀链：只在该回合内有效，跨存档补跑会凭空打出一串杀。
+    "chiyoChain",
   ];
   function stripBattleTransientCards(battle) {
     if (!battle || typeof battle !== "object") return battle;

@@ -122,31 +122,43 @@ window.WendySkills = (() => {
       });
   }
 
-  function afterDiscard(state, unit, cards, deps) {
-    if (unit?.ref !== "wendy" || !cards?.length) return;
-    // 每弃置 1 张牌即结算 1 点（此前为每 2 张 1 点，弃单数张时余量被吞）。
-    const gainBase = cards.length;
-    if (!gainBase) return;
-    // 芙萝娅与卡迪西斯获得双倍（卡迪西斯此前只拿到基础值，仅为飘字打强化标记）。
-    const doubles = state.battle.allies
-      .filter(ally => ["flora", "cadicis"].includes(ally.ref) && alive(ally));
-    line(state, unit, "飘浮掩体", doubles.find(ally => ally.ref === "flora"));
+  // 【飘浮掩体】锁定技，弃牌阶段触发：我方全体获得等同于温蒂魔力值的护甲，
+  // 卡迪西斯在队伍中时获得 2 倍。与「本次弃了几张牌」完全解耦——
+  // 旧实现挂在 afterDiscard 上，温蒂手牌不超上限（无需弃牌）时整段不触发，
+  // 且芙萝娅/卡迪西斯按弃牌数双倍，属性加点毫无收益。
+  function floatingCover(state, unit, deps = {}) {
+    const battle = state?.battle;
+    if (!battle || unit?.ref !== "wendy" || !alive(unit)) return false;
+    // 弃牌阶段每回合只结算一次：enterDiscardOrEnd 在手动确认/自动推进链路里
+    // 可能被重复调用，用回合号挡住重复加甲。
+    if (unit._floatingCoverTurn === battle.turn) return false;
+    unit._floatingCoverTurn = battle.turn;
+    const rawMagic = (unit.stats?.magic || 0) + (unit.tempMagic || 0);
+    // 魔力可能是小数（装备/祝福加成），护甲按点收敛，避免出现 4.800000000001。
+    const magic = Math.max(0, Math.round(
+      window.BattleHpValue?.clean?.(rawMagic) ?? rawMagic));
+    // 按持有者阵营取同阵营角色：当前温蒂只作为我方角色，按 side 取值是防御性对齐，
+    // 避免技能被复制 / 战斗演练到敌方单位时把护甲加到玩家头上。
+    const team = (unit.side === "enemy" ? battle.enemies : battle.allies) || [];
+    const allies = team.filter(alive);
+    if (!allies.length) return false;
+    const cadicis = allies.find(ally => ally.ref === "cadicis") || null;
+    line(state, unit, "飘浮掩体", cadicis);
     const gains = [];
-    state.battle.allies.filter(alive).forEach(ally => {
-      const gain = gainBase * (["flora", "cadicis"].includes(ally.ref) ? 2 : 1);
+    allies.forEach(ally => {
+      const gain = magic * (ally === cadicis ? 2 : 1);
       ally.block = (ally.block || 0) + gain;
-      gains.push({
-        unit: ally, gain,
-        reinforced: gain > gainBase,
-      });
-      deps.pushFloat?.(state.battle, ally.uid, "armor-gain", gain);
+      gains.push({ unit: ally, gain, reinforced: gain > magic });
+      deps.pushFloat?.(battle, ally.uid, "armor-gain", gain);
     });
     unit.skinTeacherArmor = (unit.skinTeacherArmor || 0)
       + gains.reduce((sum, item) => sum + item.gain, 0);
     window.WendyTeacherSkinFX?.cover?.(state, unit, gains);
     window.BattleLog.add(state,
-      `${unit.name} 弃牌触发飘浮掩体，每弃1张牌我方全体获得${gainBase}点护甲${doubles.length ? `，${doubles.map(ally => ally.name).join("、")}获得双倍` : ""}。`);
+      `${unit.name} 弃牌阶段触发飘浮掩体，我方全体获得${magic}点护甲`
+      + `${cadicis ? `，${cadicis.name}获得2倍护甲` : ""}。`);
+    return true;
   }
 
-  return { afterCardPlayed, afterDiscard, chooseTutorCard, isKill, tutor, tutorPool };
+  return { afterCardPlayed, floatingCover, chooseTutorCard, isKill, tutor, tutorPool };
 })();

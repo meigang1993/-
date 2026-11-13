@@ -15,7 +15,7 @@ window.WendyCadicisSkills = (() => {
   return {
     handleSpecialCard,
     afterCardPlayed,
-    afterDiscard: wendy.afterDiscard,
+    floatingCover: wendy.floatingCover,
     chooseTutorCard: wendy.chooseTutorCard,
     tutorPool: wendy.tutorPool,
     beforeKillTargeted: cadicis.beforeKillTargeted,

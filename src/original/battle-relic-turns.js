@@ -4,8 +4,8 @@ window.BattleRelicTurns = (() => {
     unit.battleStartRelicCaptions = [];
     if (!window.RelicSystem?.hasEquipped?.(state, unit, "妖刀村雨")) return false;
     const foes = unit.side === "enemy" ? state.battle.allies : state.battle.enemies;
-    // 自动斩必须走与手动指定同一套目标限制：隐身中的希尔德不可被单体【杀】
-    // 指定，否则饰品会绕过锁定技。按血量升序取第一个「可被指定」的目标。
+    // 自动斩走与手动指定同一套目标限制。妖刀村雨生成的是虚拟【杀】，按新口径
+    // 可指定隐身中的希尔德；仍保留统一判定源，以便其它「不可指定」机制生效。
     const slash = window.CardUtils.fromEntity("杀（普攻）", {
       noIntentCost: true,
       sourceName: "妖刀村雨",

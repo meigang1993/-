@@ -9,6 +9,9 @@ window.BattleDiscardFlow = (deps) => {
     // 表现即「被反制装置反死后卡在弃牌阶段」。
     if (unit.hp <= 0 && !window.SakuraRisaSkills?.pendingRevival?.(unit)) return enterEndPhase(state, unit);
     if (!unit.playedSlashThisTurn && window.RelicSystem?.hasEquipped?.(state, unit, "母亲怀表")) { record(state, `${unit.name} 的母亲怀表触发，跳过弃牌阶段。`); return enterEndPhase(state, unit); }
+    // 【飘浮掩体】在弃牌阶段开始时结算一次，与本次实际弃牌张数无关：
+    // 旧挂点在 discardCards（实际弃牌后），温蒂无需弃牌的回合会整段漏触发。
+    window.WendyCadicisSkills?.floatingCover?.(state, unit, { pushFloat: combat.pushFloat });
     const need = discardNeed(unit);
     if (unit.side === "ally" && need > 0) { record(state, `${unit.name} 手牌超过上限，需要弃置${need}张。`); return false; }
     discardOverflow(state, unit); return enterEndPhase(state, unit);
@@ -29,7 +32,7 @@ window.BattleDiscardFlow = (deps) => {
     const b = state.battle, normal = cards.filter(c => !c.void), voids = cards.filter(c => c.void);
     window.BattleCards.putMany(b, unit, normal, "discard");
     voids.forEach(card => window.BattleCards.put(b, unit, card, "consumed"));
-    window.WendyCadicisSkills?.afterDiscard?.(state, unit, cards, { draw, pushFloat: combat.pushFloat });
+    // 【飘浮掩体】已改在弃牌阶段入口结算（见 enterDiscardOrEnd），这里不再按弃牌数重复加甲。
     // 手牌里的战术牌变少，需重算「魔力增幅」的 tempMagic（见 battle-discard-overflow 同名注释）。
     window.CatherineSkills?.syncMagic?.(state, unit);
     record(state, `${unit.name} ${label} ${cards.map(c => c.name).join("、")}。`);

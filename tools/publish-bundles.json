@@ -310,6 +310,7 @@
     "machine-factory-skills.js",
     "enemy-status-effects.js",
     "enemy-kill-hooks.js",
+    "chiyo-chain-skills.js",
     "enemy-damage-hooks.js",
     "enemy-combat-hooks.js",
     "enemy-tactical-skills.js",

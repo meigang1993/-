@@ -45,8 +45,7 @@ window.NoaCharmDiscard = ({ limitOf }) => {
       window.BattleCards?.put?.(b, owner, card,
         card.void || card.type === "consume" ? "consumed" : "discard");
     });
-    window.WendyCadicisSkills?.afterDiscard?.(state, owner, extra,
-      { draw: window.BattleSystem?.draw, pushFloat: window.BattleCombat?.pushFloat });
+    // 【飘浮掩体】只在弃牌阶段触发，出牌阶段内的溢出弃牌不结算护甲。
     window.CatherineSkills?.syncMagic?.(state, owner);
     window.BattleLog?.add?.(state,
       `${owner.name} 一次性弃置 ${extra.map(card => card.name).join("、")}。`);

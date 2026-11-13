@@ -2,9 +2,9 @@
 // BUG1：AI 使用【拆解】/【偷窃】指向玩家角色时，优先移除状态牌（如【粘液】）。
 //       状态牌是负面负担（粘液：不能弃置、打出需消耗杀意、可被判定致死），
 //       替对手清掉等于反向帮忙。修复：只有对同阵营角色才优先清理状态牌。
-// BUG2：【妖刀村雨】准备阶段自动斩只按血量升序取目标，未走 blocksKillTarget，
-//       于是绕过希尔德「暗幕隐身」（持有黑色牌时不可被单体【杀】指定）这一锁定技。
-//       修复：按血量升序取第一个「可被指定」的目标；若无人可被指定则不斩。
+// 口径回归：妖刀村雨准备阶段自动斩按血量升序取目标，并保持接统一判定源。
+//       暗幕隐身现只挡实体单体【杀】，自动斩生成的是虚拟【杀】，可指定隐身希尔德；
+//       仍按血量升序取第一个「可被指定」的目标，若无人可被指定则不斩。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
@@ -86,7 +86,7 @@ const check = (name, ok, detail = "") => {
     JSON.stringify(r1.c.left) === JSON.stringify(["闪"]),
     `left=${JSON.stringify(r1.c.left)} ok=${r1.c.ok}`);
 
-  console.log("\n【二】妖刀村雨：必须遵守暗幕隐身锁定技");
+  console.log("\n【二】妖刀村雨：虚拟杀不受暗幕隐身限制");
   const r2 = await page.evaluate(() => {
     const state = window.state, b = state.battle;
     const orig = window.RelicSystem.hasEquipped;
@@ -101,18 +101,20 @@ const check = (name, ok, detail = "") => {
       return { ok, used };
     };
 
-    // D：e0=隐身希尔德且血量最低，e1=普通 → 应跳过 e0 斩 e1
+    // D：e0=隐身希尔德且血量最低，e1=普通 → 虚拟杀可指定，照常斩 e0
     e0.ai = "ruins_hilde"; e0.hp = 10; e0.hand = [black()];
     e1.ai = "plain"; e1.hp = 90; e1.hand = [];
     out.d = run();
     out.dStealth = !!window.RuinsEnemySkills?.blocksKillTarget?.(e0,
       window.CardUtils.fromEntity("杀（普攻）", {}));
+    out.dEntity = !!window.RuinsEnemySkills?.blocksKillTarget?.(e0,
+      window.CardUtils.cloneEntity("杀（普攻）", {}));
 
-    // E：只剩隐身希尔德 → 无人可被指定，不斩
+    // E：只剩隐身希尔德 → 虚拟杀仍可指定，照常斩
     e1.hp = 0;
     out.e = run();
 
-    // F：希尔德无黑色牌（未隐身）→ 正常斩血量最低的她
+    // F：希尔德无黑色牌（未隐身）→ 同样斩血量最低的她
     e1.hp = 90;
     e0.hand = [];
     out.f = run();
@@ -123,13 +125,16 @@ const check = (name, ok, detail = "") => {
     window.RelicSystem.hasEquipped = orig;
     return out;
   });
-  check("前置：隐身中希尔德确实 blocksKillTarget", r2.dStealth === true);
-  check("D 隐身希尔德血量最低：跳过她，斩另一敌人",
-    r2.d.ok === true && r2.d.used === r2.uids.e1,
+  check("前置：实体单体【杀】仍被 blocksKillTarget 拦下", r2.dEntity === true,
+    `entity=${r2.dEntity}`);
+  check("前置：虚拟【杀】不受暗幕隐身限制", r2.dStealth === false,
+    `virtual=${r2.dStealth}`);
+  check("D 隐身希尔德血量最低：虚拟杀照常斩她",
+    r2.d.ok === true && r2.d.used === r2.uids.e0,
     `ok=${r2.d.ok} used=${r2.d.used} e0=${r2.uids.e0} e1=${r2.uids.e1}`);
-  check("E 只剩隐身目标：不斩", r2.e.ok === false && r2.e.used === null,
+  check("E 只剩隐身目标：仍斩她", r2.e.ok === true && r2.e.used === r2.uids.e0,
     `ok=${r2.e.ok} used=${r2.e.used}`);
-  check("F 未隐身（无黑色牌）：正常斩血量最低者",
+  check("F 未隐身（无黑色牌）：同样斩血量最低者",
     r2.f.ok === true && r2.f.used === r2.uids.e0,
     `ok=${r2.f.ok} used=${r2.f.used} stealth=${r2.fStealth}`);
 

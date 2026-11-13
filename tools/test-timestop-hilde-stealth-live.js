@@ -1,6 +1,6 @@
 // 时停 × 希尔德【暗幕隐身】专项回归
 //
-// 背景：暗幕隐身是锁定技（有黑色牌时不可被单体【杀】指定），但它此前完全没有
+// 背景：暗幕隐身是锁定技（有黑色牌时不可被实体单体【杀】指定），但它此前完全没有
 // 时停守卫 —— 被【神奇怀表】标记的希尔德照样不可指定，时停对这条技能无效。
 //
 // 该技能有三个互不重合的入口：目标选择逻辑（battle-combat-targeting）、
@@ -78,7 +78,7 @@ const aimTpl = `(() => {
   // ===== A 基线：未被时停，有黑色牌 → 不可指定 =====
   await page.evaluate(setupTpl(null));
   const base = await page.evaluate(aimTpl);
-  T("A1 基线：未被时停且有黑色牌时，单体【杀】不可指定她",
+  T("A1 基线：未被时停且有黑色牌时，实体单体【杀】不可指定她",
     base.ok === false && base.foeBlack > 0, base);
   T("A2 基线：stealthOn 为真（隐身确实生效）", base.stealthOn === true, base);
   T("A3 基线：UI 层同步置灰", base.uiAllowed === false, base);
@@ -87,7 +87,7 @@ const aimTpl = `(() => {
   await page.evaluate(setupTpl(["时停"]));
   const stopped = await page.evaluate(aimTpl);
   T("B1 时停中：stealthOn 为假（隐身被禁用）", stopped.stealthOn === false, stopped);
-  T("B2 时停中：单体【杀】可以指定她（隐身失效）", stopped.ok === true, stopped);
+  T("B2 时停中：实体单体【杀】可以指定她（隐身失效）", stopped.ok === true, stopped);
   T("B3 时停中：UI 高亮同步放开（不出现点了没反应）",
     stopped.uiAllowed === true, stopped);
   T("B4 时停中：仍持有黑色牌（排除「没隐身所以能选」的假绿）",
@@ -117,7 +117,7 @@ const aimTpl = `(() => {
   await page.evaluate(setupTpl([]));
   const restored = await page.evaluate(aimTpl);
   T("C1 标记消失后：stealthOn 恢复为真", restored.stealthOn === true, restored);
-  T("C2 标记消失后：单体【杀】重新不可指定", restored.ok === false, restored);
+  T("C2 标记消失后：实体单体【杀】重新不可指定", restored.ok === false, restored);
   T("C3 标记消失后：UI 重新置灰", restored.uiAllowed === false, restored);
 
   T("页面无 JS 报错", errors.length === 0, { errors: errors.slice(0, 3) });

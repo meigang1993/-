@@ -1,5 +1,6 @@
-// 温蒂【飘浮掩体】弃牌转护甲结算：每弃置 1 张牌 → 我方全体各 1 点，芙萝娅双倍。
-// 旧口径为「每 2 张 1 点」，弃单数张时余量被吞（弃 1 张得 0、弃 3 张只得 1）。
+// 温蒂【飘浮掩体】调整后回归：弃牌阶段按温蒂魔力值给全队护甲，卡迪西斯 2 倍。
+// 旧口径「每弃 1 张 → 全体各 1 点、芙萝娅/卡迪西斯双倍」已整体废弃；
+// 触发点从 discardCards（实际弃牌后）移到弃牌阶段入口，无需弃牌的回合也生效。
 const fs = require("fs");
 const vm = require("vm");
 
@@ -34,42 +35,43 @@ window.BattleLines = {
   },
 };
 window.BattleLog = {
-  add(state, message) {
-    state.log.push(message);
-  },
+  add(state, message) { state.log.push(message); },
 };
+window.BattleHpValue = { clean: value => Math.round(value * 100) / 100 };
+window.WendyTeacherSkinFX = { cover(state, actor, gains) { coverCalls.push(gains); } };
+window.CatherineSkills = { syncMagic() {} };
+window.BattleCards = { putMany() {}, put() {} };
+window.UnderwaterTrainSkills = { canDiscard: () => true };
+let coverCalls = [];
 
 load("./src/original/wendy-skills.js");
+load("./src/original/battle-discard-flow.js");
+load("./src/original/battle-discard-overflow.js");
 
+const origCover = window.WendySkills.floatingCover;
 const alive = (ref, extra = {}) => ({
-  ref, name: ref, hp: 10, maxHp: 10, block: 0, side: "ally", ...extra,
+  ref, name: ref, hp: 10, maxHp: 10, block: 0, side: "ally", hand: [], ...extra,
 });
-const hand = count => Array.from({ length: count },
-  (_, index) => ({ name: `弃牌${index}`, type: "slash" }));
 const noopDeps = { pushFloat() {} };
 
-let coverCalls = [];
-window.WendyTeacherSkinFX = {
-  cover(state, actor, gains) {
-    coverCalls.push({ actor: actor?.ref, gains });
-  },
-};
-
-function scene(withFlora = true) {
-  const wendy = alive("wendy", { uid: "a0" });
+function scene(opts = {}) {
+  const wendy = alive("wendy", {
+    uid: "a0", stats: { magic: opts.magic ?? 5 }, tempMagic: opts.tempMagic ?? 0,
+  });
   const ally = alive("rokar", { uid: "a1" });
   const flora = alive("flora", { uid: "a2" });
-  const allies = withFlora ? [wendy, ally, flora] : [wendy, ally];
+  const cadicis = alive("cadicis", { uid: "a3" });
+  const allies = [wendy, ally, flora, cadicis];
+  if (opts.deadCadicis) cadicis.hp = 0;
   const state = {
     lines: [], log: [],
-    battle: { allies, enemies: [], animQueue: [] },
+    battle: { allies, enemies: [alive("e0", { side: "enemy", uid: "e0" })], turn: 7, animQueue: [] },
   };
   coverCalls = [];
   spoken.length = 0;
-  return { state, wendy, ally, flora };
+  return { state, wendy, ally, flora, cadicis };
 }
 
-// 记录飘字：每个存活友方各一次，值为各自实得护甲
 function floatDeps() {
   const floats = [];
   return { floats, deps: { pushFloat(battle, uid, kind, gain) {
@@ -77,225 +79,147 @@ function floatDeps() {
   } } };
 }
 
-T("弃 1 张 → 我方全体各 1 点、芙萝娅 2 点（旧口径此处为 0）", () => {
-  const { state, wendy, ally, flora } = scene();
-  window.WendySkills.afterDiscard(state, wendy, hand(1), noopDeps);
-  assert(wendy.block === 1 && ally.block === 1 && flora.block === 2,
-    `blocks must be 1/1/2, got ${wendy.block}/${ally.block}/${flora.block}`);
-});
+// 真实 BattleDiscardFlow.enterDiscardOrEnd 挂点：把聚合入口换成记录用的转发，
+// 内部仍调用真实的 floatingCover 实现。
+function runFlow(need, opts = {}) {
+  const sc = scene(opts);
+  const calls = [];
+  const prev = window.WendyCadicisSkills;
+  window.WendyCadicisSkills = {
+    floatingCover: (st, unit, deps) => {
+      calls.push(unit.uid);
+      return origCover(st, unit, deps);
+    },
+  };
+  const flow = window.BattleDiscardFlow({
+    active: () => sc.wendy,
+    visibleHand: u => u.hand.length,
+    handLimit: () => 4,
+    canDiscardCard: () => true,
+    canDiscardAny: () => true,
+    discardNeed: () => need,
+    discardOverflow: () => {},
+    enterEndPhase: () => true,
+    draw: () => [],
+    combat: { pushFloat() {} },
+    record: () => {},
+    advanceToInput: async () => {},
+    manualFlow: {},
+  });
+  flow.enterDiscardOrEnd(sc.state, sc.wendy);
+  window.WendyCadicisSkills = prev;
+  return { ...sc, calls };
+}
 
-T("弃 3 张 → 全体各 3 点、芙萝娅 6 点（旧口径此处为 1）", () => {
-  const { state, wendy, ally, flora } = scene();
-  window.WendySkills.afterDiscard(state, wendy, hand(3), noopDeps);
-  assert(wendy.block === 3 && ally.block === 3 && flora.block === 6,
-    `blocks must be 3/3/6, got ${wendy.block}/${ally.block}/${flora.block}`);
+// —— 数值口径 ——
+T("全体获得等同于温蒂魔力值(5)的护甲，卡迪西斯 2 倍", () => {
+  const { state, wendy, ally, flora, cadicis } = scene();
+  window.WendySkills.floatingCover(state, wendy, noopDeps);
+  assert(wendy.block === 5 && ally.block === 5 && flora.block === 5,
+    `plain allies must gain 5, got ${wendy.block}/${ally.block}/${flora.block}`);
+  assert(cadicis.block === 10, `cadicis must gain 10, got ${cadicis.block}`);
 });
-
-T("弃 2 张 → 全体各 2 点、芙萝娅 4 点", () => {
-  const { state, wendy, ally, flora } = scene();
-  window.WendySkills.afterDiscard(state, wendy, hand(2), noopDeps);
-  assert(wendy.block === 2 && ally.block === 2 && flora.block === 4,
-    `blocks must be 2/2/4, got ${wendy.block}/${ally.block}/${flora.block}`);
+T("tempMagic 计入魔力值", () => {
+  const { state, wendy, ally } = scene({ magic: 5, tempMagic: 2 });
+  window.WendySkills.floatingCover(state, wendy, noopDeps);
+  assert(wendy.block === 7 && ally.block === 7, `got ${wendy.block}/${ally.block}`);
 });
-
-T("多批次弃牌按张数各自结算，不再累计吞余量", () => {
-  const { state, wendy, ally, flora } = scene();
-  window.WendySkills.afterDiscard(state, wendy, hand(1), noopDeps);
-  window.WendySkills.afterDiscard(state, wendy, hand(1), noopDeps);
-  assert(wendy.block === 2 && ally.block === 2 && flora.block === 4,
-    `blocks must be 2/2/4, got ${wendy.block}/${ally.block}/${flora.block}`);
+T("小数魔力收敛为整数，无浮点尾巴", () => {
+  const { state, wendy } = scene({ magic: 4.8 });
+  window.WendySkills.floatingCover(state, wendy, noopDeps);
+  assert(Number.isInteger(wendy.block) && wendy.block === 5, `got ${wendy.block}`);
 });
-
-T("战报写明「每弃1张牌」", () => {
+T("芙萝娅不再双倍", () => {
+  const { state, wendy, flora } = scene();
+  window.WendySkills.floatingCover(state, wendy, noopDeps);
+  assert(flora.block === 5, `flora must not be doubled, got ${flora.block}`);
+});
+T("同一回合重复进入不重复加甲", () => {
   const { state, wendy } = scene();
-  window.WendySkills.afterDiscard(state, wendy, hand(2), noopDeps);
-  const entry = state.log.find(line => /飘浮掩体/.test(line)) || "";
-  assert(/每弃1张牌/.test(entry), `log must say 每弃1张牌, got ${entry}`);
-  assert(/获得2点护甲/.test(entry), `log must report 2 points, got ${entry}`);
+  window.WendySkills.floatingCover(state, wendy, noopDeps);
+  const before = wendy.block;
+  window.WendySkills.floatingCover(state, wendy, noopDeps);
+  assert(wendy.block === before, `got ${wendy.block} vs ${before}`);
+});
+T("卡迪西斯阵亡时无 2 倍、无护甲", () => {
+  const { state, wendy, cadicis } = scene({ deadCadicis: true });
+  window.WendySkills.floatingCover(state, wendy, noopDeps);
+  assert(cadicis.block === 0, `dead cadicis must gain 0, got ${cadicis.block}`);
+  assert(!spoken.some(x => x.target === "cadicis"), "dead cadicis must not be line target");
 });
 
-T("芙萝娅不在场时无双倍", () => {
-  const { state, wendy, ally } = scene(false);
-  window.WendySkills.afterDiscard(state, wendy, hand(2), noopDeps);
-  assert(wendy.block === 2 && ally.block === 2,
-    `blocks must be 2/2, got ${wendy.block}/${ally.block}`);
+// —— 连带效果 ——
+T("飘字：每个存活友方一次，值为各自实得护甲", () => {
+  const { state, wendy } = scene();
+  const { floats, deps } = floatDeps();
+  window.WendySkills.floatingCover(state, wendy, deps);
+  assert(floats.length === 4, `must float 4 times, got ${floats.length}`);
+  assert(floats.every(f => f.kind === "armor-gain"), "all floats are armor-gain");
+  assert(floats.find(f => f.uid === "a3").gain === 10, "cadicis float is 10");
 });
-
-T("对照：非温蒂弃牌不触发", () => {
-  const { state, ally, flora } = scene();
-  window.WendySkills.afterDiscard(state, ally, hand(3), noopDeps);
-  assert(ally.block === 0 && flora.block === 0,
-    `non-Wendy discard must not shield, got ${ally.block}/${flora.block}`);
+T("台词以卡迪西斯为目标（妈妈台词口径）", () => {
+  const { state, wendy } = scene();
+  window.WendySkills.floatingCover(state, wendy, noopDeps);
+  const entry = spoken.find(x => x.name === "飘浮掩体");
+  assert(entry && entry.unit === "wendy" && entry.target === "cadicis",
+    `got ${JSON.stringify(entry)}`);
 });
-
-T("对照：未弃牌时不触发", () => {
+T("教师皮肤累计 = 全体所得之和", () => {
+  const { state, wendy } = scene();
+  window.WendySkills.floatingCover(state, wendy, noopDeps);
+  assert(wendy.skinTeacherArmor === 25, `got ${wendy.skinTeacherArmor}`);
+  assert(coverCalls.length === 1 && coverCalls[0].length === 4, "skin FX receives 4 gains");
+});
+T("战报写明魔力护甲与卡迪西斯 2 倍", () => {
+  const { state, wendy } = scene();
+  window.WendySkills.floatingCover(state, wendy, noopDeps);
+  const entry = state.log.find(line => /飘浮掩体/.test(line));
+  assert(entry && /5点护甲/.test(entry) && /2倍护甲/.test(entry), `got ${entry}`);
+  assert(!/每弃1张牌/.test(entry), "old discard-count wording must be gone");
+});
+T("对照：非温蒂 / 阵亡温蒂不触发", () => {
   const { state, wendy, ally } = scene();
-  window.WendySkills.afterDiscard(state, wendy, [], noopDeps);
-  assert(wendy.block === 0 && ally.block === 0 && !state.log.length,
-    "empty discard must not shield or log");
+  assert(window.WendySkills.floatingCover(state, ally, noopDeps) === false);
+  assert(window.WendySkills.floatingCover(state, { ...wendy, hp: 0 }, noopDeps) === false);
+  assert(wendy.block === 0 && ally.block === 0, "no armor gained");
 });
 
-// —— 以下为「护甲数值之外」的连带效果，逐一验证 ——
-
-T("飘字：每个存活友方各一次，值为各自实得护甲", () => {
+// —— 弃牌阶段挂点 ——
+T("弃牌阶段入口触发飘浮掩体（温蒂无需弃牌也一样）", () => {
+  const sc = runFlow(0);
+  assert(sc.calls.length === 1, `must call once, got ${sc.calls.length}`);
+  assert(sc.wendy.block === 5, `got ${sc.wendy.block}`);
+});
+T("弃牌阶段需要选牌时同样先结算一次", () => {
+  const sc = runFlow(2);
+  assert(sc.calls.length === 1 && sc.wendy.block === 5,
+    `got ${JSON.stringify(sc.calls)}/${sc.wendy.block}`);
+});
+T("溢出弃牌（BattleDiscardOverflow）不触发飘浮掩体", () => {
   const { state, wendy } = scene();
-  const { floats, deps } = floatDeps();
-  window.WendySkills.afterDiscard(state, wendy, hand(3), deps);
-  assert(floats.length === 3, `must float 3 times, got ${floats.length}`);
-  const byUid = Object.fromEntries(floats.map(f => [f.uid, f]));
-  assert(byUid.a0?.gain === 3 && byUid.a1?.gain === 3 && byUid.a2?.gain === 6,
-    `floats must be a0=3 a1=3 a2=6, got ${JSON.stringify(floats)}`);
-  assert(floats.every(f => f.kind === "armor-gain"),
-    `float kind must be armor-gain, got ${JSON.stringify(floats)}`);
+  const logsBefore = state.log.filter(x => /飘浮掩体/.test(x)).length;
+  while (wendy.hand.length < 9) {
+    wendy.hand.push({ name: "杀（普攻）", type: "slash", suit: "♠" });
+  }
+  window.BattleDiscardOverflow({
+    visibleHand: u => u.hand.length,
+    handLimit: () => 5,
+  }).discardOverflow(state, wendy);
+  assert(wendy.block === 0, `overflow must not grant armor, got ${wendy.block}`);
+  assert(state.log.filter(x => /飘浮掩体/.test(x)).length === logsBefore,
+    "overflow must not write 飘浮掩体 log");
+});
+T("弃牌数量与护甲完全解耦（弃 0 / 弃 3 同值）", () => {
+  const a = scene(), b = scene();
+  window.WendySkills.floatingCover(a.state, a.wendy, noopDeps);
+  b.wendy.hand = [{ name: "x" }, { name: "y" }, { name: "z" }];
+  window.WendySkills.floatingCover(b.state, b.wendy, noopDeps);
+  assert(a.wendy.block === b.wendy.block && a.wendy.block === 5,
+    `got ${a.wendy.block}/${b.wendy.block}`);
 });
 
-T("台词：触发飘浮掩体，且带芙萝娅为目标", () => {
-  const { state, wendy } = scene();
-  window.WendySkills.afterDiscard(state, wendy, hand(2), noopDeps);
-  const entry = spoken.find(item => item.name === "飘浮掩体");
-  assert(entry, `must speak 飘浮掩体, got ${JSON.stringify(spoken)}`);
-  assert(entry.unit === "wendy", `speaker must be wendy, got ${entry.unit}`);
-  assert(entry.target === "flora", `target must be flora, got ${entry.target}`);
-});
-
-T("台词：芙萝娅不在场时不带目标", () => {
-  const { state, wendy } = scene(false);
-  window.WendySkills.afterDiscard(state, wendy, hand(2), noopDeps);
-  const entry = spoken.find(item => item.name === "飘浮掩体");
-  assert(entry && !entry.target,
-    `target must be absent, got ${JSON.stringify(entry)}`);
-});
-
-T("卡迪西斯获得双倍护甲（此前只拿到基础值）", () => {
-  const { state, wendy, ally, flora } = scene();
-  const cadicis = alive("cadicis", { uid: "a3" });
-  state.battle.allies.push(cadicis);
-  window.WendySkills.afterDiscard(state, wendy, hand(2), noopDeps);
-  assert(cadicis.block === 4, `cadicis must gain 4 (doubled), got ${cadicis.block}`);
-  assert(flora.block === 4, `flora must gain 4, got ${flora.block}`);
-  assert(wendy.block === 2 && ally.block === 2,
-    `plain allies must gain 2, got ${wendy.block}/${ally.block}`);
-  const gains = coverCalls[0]?.gains || [];
-  const flag = Object.fromEntries(gains.map(g => [g.unit.ref, g.reinforced]));
-  assert(flag.cadicis === true && flag.flora === true,
-    `cadicis and flora must be reinforced, got ${JSON.stringify(flag)}`);
-  assert(flag.wendy === false && flag.rokar === false,
-    `plain allies must not be reinforced, got ${JSON.stringify(flag)}`);
-});
-
-T("战报写明卡迪西斯与芙萝娅双双双倍", () => {
-  const { state, wendy } = scene();
-  state.battle.allies.push(alive("cadicis", { uid: "a3" }));
-  window.WendySkills.afterDiscard(state, wendy, hand(2), noopDeps);
-  const entry = state.log.find(line => /飘浮掩体/.test(line)) || "";
-  assert(/双倍/.test(entry), `log must mention 双倍, got ${entry}`);
-  assert(/cadicis/.test(entry) && /flora/.test(entry),
-    `log must name both doubled allies, got ${entry}`);
-});
-
-T("卡迪西斯阵亡时不双倍", () => {
-  const { state, wendy } = scene();
-  state.battle.allies.push(alive("cadicis", { uid: "a3", hp: 0 }));
-  window.WendySkills.afterDiscard(state, wendy, hand(2), noopDeps);
-  const cadicis = state.battle.allies.find(a => a.ref === "cadicis");
-  assert(cadicis.block === 0, `dead cadicis must not gain block, got ${cadicis.block}`);
-});
-
-T("教师皮肤累计 skinTeacherArmor = 本次全体所得之和", () => {
-  const { state, wendy } = scene();
-  window.WendySkills.afterDiscard(state, wendy, hand(2), noopDeps);  // 2+2+4
-  assert(wendy.skinTeacherArmor === 8,
-    `first batch must total 8, got ${wendy.skinTeacherArmor}`);
-  window.WendySkills.afterDiscard(state, wendy, hand(1), noopDeps);  // 1+1+2
-  assert(wendy.skinTeacherArmor === 12,
-    `two batches must total 12, got ${wendy.skinTeacherArmor}`);
-});
-
-T("阵亡友方不得护甲、不飘字", () => {
-  const { state, wendy } = scene();
-  const fallen = alive("sonia", { uid: "a4", hp: 0 });
-  state.battle.allies.push(fallen);
-  const { floats, deps } = floatDeps();
-  window.WendySkills.afterDiscard(state, wendy, hand(2), deps);
-  assert(fallen.block === 0, `fallen ally must not gain block, got ${fallen.block}`);
-  assert(!floats.some(f => f.uid === "a4"),
-    `fallen ally must not float, got ${JSON.stringify(floats)}`);
-  assert(floats.length === 3, `only living allies float, got ${floats.length}`);
-});
-
-T("芙萝娅阵亡时不触发双倍", () => {
-  const { state, wendy } = scene();
-  state.battle.allies.find(a => a.ref === "flora").hp = 0;
-  window.WendySkills.afterDiscard(state, wendy, hand(3), noopDeps);
-  const flora = state.battle.allies.find(a => a.ref === "flora");
-  assert(flora.block === 0, `dead flora must not gain block, got ${flora.block}`);
-  const entry = state.log.find(line => /飘浮掩体/.test(line)) || "";
-  assert(!/双倍/.test(entry), `log must not mention 双倍, got ${entry}`);
-});
-
-T("温蒂自己也在「所有友方角色」之内", () => {
-  const { state, wendy } = scene();
-  window.WendySkills.afterDiscard(state, wendy, hand(2), noopDeps);
-  assert(wendy.block === 2, `wendy herself must gain block, got ${wendy.block}`);
-  const gains = coverCalls[0]?.gains || [];
-  assert(gains.some(g => g.unit.ref === "wendy"),
-    `wendy must appear in gains, got ${JSON.stringify(gains.map(g => g.unit.ref))}`);
-});
-
-// —— 手牌超上限的「溢出弃牌」不触发飘浮掩体（技能只认弃牌阶段的主动弃牌）——
-
-const overflowCalls = [];
-const syncCalls = [];
-window.BattleCards = { putMany() {}, put() {} };
-// 未装配时 canDiscard?.() 返回 undefined，取反会让溢出循环逐张跳过（真实战斗里该模块必定已装配）。
-window.UnderwaterTrainSkills = { canDiscard: () => true };
-window.CatherineSkills = { syncMagic(state, unit) { syncCalls.push(unit?.ref); } };
-window.WendyCadicisSkills = {
-  afterDiscard(state, unit, cards, deps) {
-    overflowCalls.push({ unit: unit?.ref, n: cards.length });
-    window.WendySkills.afterDiscard(state, unit, cards, deps);
-  },
-};
-load("./src/original/battle-discard-overflow.js");
-
-const overflow = window.BattleDiscardOverflow({
-  visibleHand: unit => unit.hand.length,
-  handLimit: () => 5,
-});
-
-T("溢出弃牌不触发飘浮掩体（护甲、飘字、战报均无）", () => {
-  const { state, wendy, ally, flora } = scene();
-  wendy.hand = hand(8);
-  overflowCalls.length = 0;
-  overflow.discardOverflow(state, wendy);
-  assert(overflowCalls.length === 0,
-    `overflow must not call afterDiscard, got ${JSON.stringify(overflowCalls)}`);
-  assert(wendy.block === 0 && ally.block === 0 && flora.block === 0,
-    `no armor from overflow, got ${wendy.block}/${ally.block}/${flora.block}`);
-  assert(!state.log.some(line => /飘浮掩体/.test(line)),
-    `no 飘浮掩体 log from overflow, got ${JSON.stringify(state.log)}`);
-  assert(wendy.hand.length === 5, `overflow must trim to hand limit, got ${wendy.hand.length}`);
-});
-
-T("溢出弃牌仍然同步凯瑟琳魔力（未被连带误删）", () => {
-  const { state, wendy } = scene();
-  wendy.hand = hand(7);
-  syncCalls.length = 0;
-  overflow.discardOverflow(state, wendy);
-  assert(syncCalls.includes("wendy"),
-    `syncMagic must still run, got ${JSON.stringify(syncCalls)}`);
-});
-
-T("对照：弃牌阶段主动弃牌照常触发（溢出排除未误伤）", () => {
-  const { state, wendy, ally, flora } = scene();
-  window.WendySkills.afterDiscard(state, wendy, hand(3), noopDeps);
-  assert(wendy.block === 3 && ally.block === 3 && flora.block === 6,
-    `manual discard must still shield, got ${wendy.block}/${ally.block}/${flora.block}`);
-});
-
-
-console.log(`\n通过 ${passed} / 失败 ${failures.length}`);
+console.log(`\n通过 ${passed} / ${passed + failures.length}`);
 if (failures.length) {
-  failures.forEach(line => console.log(`  - ${line}`));
+  failures.forEach(f => console.log(`  FAILED ${f}`));
   process.exit(1);
 }

@@ -32,6 +32,9 @@ window.BattleCardResumeHooks = (api, stateApi) => {
         window.HitwellSkills?.afterCardPlayed?.(state, actor, card, api),
       (state, actor, target, card) =>
         window.NoaCharmSkills?.balanceHand?.(state, actor, deps.draw),
+      // 【红缨连鬼斩】额外虚拟杀链：原牌结算后才发动，逐张检查目标存活并允许转移。
+      (state, actor, target, card) =>
+        window.ChiyoChainSkills?.afterCardPlayed?.(state, actor, target, card),
       // 卡露娜两个技能都排在最后：记忆泡泡会挂起战斗等待玩家选择，
       // 放前面会让后续角色的钩子被 paused 判定跳过。
       (state, actor, target, card) =>

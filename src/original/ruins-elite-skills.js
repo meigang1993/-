@@ -8,7 +8,10 @@ window.RuinsEliteSkills = (() => {
     + (key === "attack" ? unit.tempAttack || 0 : 0);
   const log = (state, text) => window.BattleLog?.add?.(state, text);
 
-  // 暗幕隐身（锁定技）：有黑色牌时不会成为单体【杀】牌的目标。
+  // 暗幕隐身（锁定技）：有黑色牌时不会成为「实体单体【杀】牌」的目标。
+  // 只挡实体牌：虚拟杀（技能/饰品「视为使用一张杀」、fromEntity / useVirtualKill
+  // 生成的牌）带 virtual，按 CardUtils.isEntityCard 口径不是实体牌，可正常指定。
+  // 转换杀（convertAs，convertedFrom）无 virtual，仍算实体牌，照常不可指定。
   // 实时判定而非回合制缓存：缓存只在她自己准备阶段刷新，我方回合会读到
   // 上回合的过期值，锁定技便时灵时不灵。
   // 时停：暗幕隐身归属「希尔德本人」，被标记时失效。
@@ -19,8 +22,10 @@ window.RuinsEliteSkills = (() => {
   const stopped = unit => !!window.MieryulaTimeStop?.isSkillDisabled?.(unit);
   const stealthOn = unit => !stopped(unit) && unit?.ai === "ruins_hilde"
     && visible(unit).some(black);
-  const blocksKillTarget = (unit, card) => !!card && !card._skill
-    && stealthOn(unit) && singleKill(card);
+  const entitySingleKill = card => !!card && singleKill(card)
+    && (window.CardUtils?.isEntityCard?.(card)
+      ?? (!card.virtual && !card.generatedBySkill && card.type !== "skill"));
+  const blocksKillTarget = (unit, card) => entitySingleKill(card) && stealthOn(unit);
 
   function prepare(state, unit, damage) {
     if (!unit) return;

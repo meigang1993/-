@@ -1,16 +1,6 @@
-// 温蒂【飘浮掩体】实机回归：真实战斗里走真实弃牌流程，验证护甲与全部连带效果。
-//
-// 背景：此前只校验了「每弃 1 张 → 全体各 1 点、芙萝娅双倍」的数值口径，
-// 未验证飘字、台词目标、卡迪西斯强化标记、教师皮肤累计、阵亡排除等连带效果，
-// 也未确认该技能是否真的接进了弃牌流程（否则断言全是空中楼阁）。
-//
-// 验证点：
-//   1. 真实 BattleDiscardFlow.discardCards 触发后，全体护甲真的落到单位上
-//   2. 芙萝娅双倍、卡迪西斯 reinforced、皮肤累计 skinTeacherArmor
-//   3. 战报出现「飘浮掩体」
-//   4. 对照组：换别人弃牌不触发；温蒂弃 0 张不触发
-//   5. 界面无 JS 错误
-
+// 温蒂【飘浮掩体】实机回归（技能调整后）：按温蒂魔力值给全队护甲，卡迪西斯 2 倍。
+// 旧断言全部基于「每弃 1 张 → 全体各 1 点、芙萝娅/卡迪西斯双倍」，已整体重写。
+// 验证 bundle 真实装配：聚合入口、台词数据、弃牌阶段挂点、幂等、溢出弃牌排除。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
@@ -30,7 +20,7 @@ const T = (name, cond, extra) => {
 // 布场：allies[0]=温蒂 allies[1]=普通 allies[2]=芙萝娅 allies[3]=卡迪西斯
 const setupTpl = `(() => {
   const st = window.state, b = st.battle;
-  b.animQueue = []; b.locked = false;
+  b.animQueue = []; b.locked = false; b.turn = 7;
   b.discardPick = null; b.selectedCardIndex = null; b.selectedSkillCard = null;
   st.log = []; st.battleLog = [];
   const need = [["wendy", "温蒂"], ["rokar", "罗卡尔"],
@@ -38,37 +28,62 @@ const setupTpl = `(() => {
   need.forEach((cfg, i) => {
     if (!b.allies[i]) {
       b.allies.push({ uid: "probe" + i, hp: 100, maxHp: 100, block: 0,
-        side: "ally", hand: [] });
+        side: "ally", hand: [], stats: {} });
     }
     const a = b.allies[i];
     a.ref = cfg[0]; a.name = cfg[1]; a.hp = 100; a.maxHp = 100; a.block = 0;
     a.alive = true; a.side = "ally";
-    a.hand = [];
-    a.skinTeacherArmor = 0;
+    a.hand = []; a.skinTeacherArmor = 0;
+    a.stats = a.stats || {};
+    a.stats.magic = 5;
+    a.tempMagic = 0;
+    delete a._floatingCoverTurn;
   });
   b.enemies.forEach(e => { e.hp = 100; e.maxHp = 100; e.hand = []; });
   window.render();
-  return { allies: b.allies.length };
+  return {
+    allies: b.allies.length,
+    wired: typeof window.WendyCadicisSkills?.floatingCover === "function",
+    hpValue: typeof window.BattleHpValue?.clean === "function",
+  };
 })()`;
 
-// 通过真实装配的转发入口弃牌（battle-discard-flow / battle-discard-overflow
-// 两处弃牌链路调用的正是 window.WendyCadicisSkills.afterDiscard）
-const discardTpl = n => `(() => {
+// 真实聚合入口 floatingCover：与弃牌张数无关
+const coverTpl = `(() => {
   const st = window.state, b = st.battle;
   const wendy = b.allies[0];
-  const cards = [];
-  for (let i = 0; i < ${n}; i++) {
-    const c = { name: "杀（普攻）", type: "slash", suit: "♠", scale: "attack" };
-    wendy.hand.push(c); cards.push(c);
-  }
-  const entry = window.WendyCadicisSkills?.afterDiscard;
-  const wired = typeof entry === "function";
-  entry?.(st, wendy, cards, { draw: () => [], pushFloat: () => {} });
+  window.WendyCadicisSkills.floatingCover(st, wendy, { pushFloat: () => {} });
   window.render();
   return {
-    wired,
     blocks: b.allies.slice(0, 4).map(a => ({ ref: a.ref, block: a.block || 0 })),
     skinArmor: wendy.skinTeacherArmor || 0,
+    log: (st.battleLog || st.log || []).filter(x => /飘浮掩体/.test(x)),
+  };
+})()`;
+
+// 真实 BattleDiscardFlow.enterDiscardOrEnd 挂点（need=0：温蒂无需弃牌）
+const flowTpl = `(() => {
+  const st = window.state, b = st.battle;
+  const wendy = b.allies[0];
+  const flow = window.BattleDiscardFlow({
+    active: () => wendy,
+    visibleHand: u => u.hand.length,
+    handLimit: () => 4,
+    canDiscardCard: () => true,
+    canDiscardAny: () => true,
+    discardNeed: () => 0,
+    discardOverflow: () => {},
+    enterEndPhase: () => true,
+    draw: () => [],
+    combat: { pushFloat: () => {} },
+    record: () => {},
+    advanceToInput: async () => {},
+    manualFlow: {},
+  });
+  flow.enterDiscardOrEnd(st, wendy);
+  window.render();
+  return {
+    blocks: b.allies.slice(0, 4).map(a => ({ ref: a.ref, block: a.block || 0 })),
     log: (st.battleLog || st.log || []).filter(x => /飘浮掩体/.test(x)),
   };
 })()`;
@@ -79,67 +94,74 @@ const discardTpl = n => `(() => {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   page.on("pageerror", e => errors.push(String(e.message || e)));
   await openGame(page);
-
   await startRegressionBattle(page);
 
+  const setup = await page.evaluate(setupTpl);
+  T("聚合入口 WendyCadicisSkills.floatingCover 已装配", setup.wired === true, setup);
+  T("BattleHpValue.clean 已装配（魔力值收敛可用）", setup.hpValue === true, setup);
+
+  // —— 主体：真实聚合入口 ——
+  const r = await page.evaluate(coverTpl);
+  const byRef = Object.fromEntries(r.blocks.map(x => [x.ref, x.block]));
+  T("全体获得等同于魔力值(5)的护甲", byRef.wendy === 5 && byRef.rokar === 5,
+    r.blocks);
+  T("芙萝娅不再双倍", byRef.flora === 5, r.blocks);
+  T("卡迪西斯获得 2 倍", byRef.cadicis === 10, r.blocks);
+  T("教师皮肤累计 = 5+5+5+10 = 25", r.skinArmor === 25, { skinArmor: r.skinArmor });
+  T("战报写明飘浮掩体与 5 点护甲、卡迪西斯 2 倍",
+    r.log.length >= 1 && /5点护甲/.test(r.log[0] || "")
+    && /2倍护甲/.test(r.log[0] || ""), r.log);
+  T("旧「每弃1张牌」文案已消失", !/每弃1张牌/.test(r.log.join("")), r.log);
+
+  // —— 台词数据：卡迪西斯在场时是妈妈台词 ——
+  const line = await page.evaluate(`(() => {
+    const fn = window.BattleLineData?.skillLines?.wendy?.["飘浮掩体"];
+    return {
+      cadicis: typeof fn === "function" ? fn({ ref: "cadicis" }) : null,
+      plain: typeof fn === "function" ? fn(null) : null,
+    };
+  })()`);
+  T("卡迪西斯在场台词为「妈妈的魔法会保护好你的」",
+    /妈妈的魔法会保护好你的/.test(line.cadicis || ""), line);
+  T("普通台词为「我的魔法是飘浮」",
+    /我的魔法是飘浮/.test(line.plain || ""), line);
+
+  // —— 弃牌阶段入口：无需弃牌的回合也触发 ——
   await page.evaluate(setupTpl);
+  const f = await page.evaluate(flowTpl);
+  const fByRef = Object.fromEntries(f.blocks.map(x => [x.ref, x.block]));
+  T("弃牌阶段入口触发飘浮掩体（弃 0 张也生效）",
+    fByRef.wendy === 5 && fByRef.rokar === 5, f.blocks);
+  T("弃牌阶段入口同样给卡迪西斯 2 倍", fByRef.cadicis === 10, f.blocks);
+  T("入口战报出现飘浮掩体", f.log.length >= 1, f.log);
 
-  // —— 主体：温蒂弃 3 张 ——
-  const r3 = await page.evaluate(discardTpl(3));
-  T("弃牌链路已装配（WendyCadicisSkills.afterDiscard 可调用）", r3.wired === true, r3);
-  const byRef = Object.fromEntries(r3.blocks.map(x => [x.ref, x.block]));
-  T("弃 3 张 → 温蒂 3 点", byRef.wendy === 3, r3.blocks);
-  T("弃 3 张 → 普通友方 3 点", byRef.rokar === 3, r3.blocks);
-  T("弃 3 张 → 芙萝娅 6 点（双倍）", byRef.flora === 6, r3.blocks);
-  T("弃 3 张 → 卡迪西斯 6 点（双倍）", byRef.cadicis === 6, r3.blocks);
-  T("教师皮肤累计 = 3+3+6+6 = 18", r3.skinArmor === 18,
-    { skinArmor: r3.skinArmor });
-  T("战报出现飘浮掩体", r3.log.length >= 1, r3.log);
-  T("战报写明「每弃1张牌」", /每弃1张牌/.test(r3.log[0] || ""), r3.log);
+  // —— 幂等：同一回合重复调用不加第二次 ——
+  const idem = await page.evaluate(`(() => {
+    const st = window.state, b = st.battle;
+    const before = b.allies.slice(0, 4).map(a => a.block || 0);
+    window.WendyCadicisSkills.floatingCover(st, b.allies[0], { pushFloat: () => {} });
+    window.render();
+    return { before, after: b.allies.slice(0, 4).map(a => a.block || 0) };
+  })()`);
+  T("同一回合重复进入不重复加甲",
+    JSON.stringify(idem.before) === JSON.stringify(idem.after), idem);
 
-  // —— 再弃 1 张：应累加而非被吞 ——
-  const r1 = await page.evaluate(discardTpl(1));
-  const byRef2 = Object.fromEntries(r1.blocks.map(x => [x.ref, x.block]));
-  T("再弃 1 张 → 温蒂累计 4 点", byRef2.wendy === 4, r1.blocks);
-  T("再弃 1 张 → 芙萝娅累计 8 点", byRef2.flora === 8, r1.blocks);
-  T("再弃 1 张 → 卡迪西斯累计 8 点", byRef2.cadicis === 8, r1.blocks);
-  T("教师皮肤累计 = 18+(1+1+2+2) = 24", r1.skinArmor === 24,
-    { skinArmor: r1.skinArmor });
-
-  // —— 对照组：非温蒂弃牌不触发 ——
+  // —— 对照：非温蒂不触发 ——
   const ctrl = await page.evaluate(`(() => {
     const st = window.state, b = st.battle;
-    const rokar = b.allies[1];
     const before = b.allies.slice(0, 4).map(a => a.block || 0);
-    const cards = [];
-    for (let i = 0; i < 3; i++) {
-      const c = { name: "杀（普攻）", type: "slash", suit: "♠" };
-      rokar.hand.push(c); cards.push(c);
-    }
-    window.WendyCadicisSkills?.afterDiscard?.(st, rokar, cards, { draw: () => [], pushFloat: () => {} });
+    window.WendyCadicisSkills.floatingCover(st, b.allies[1], { pushFloat: () => {} });
     window.render();
     return { before, after: b.allies.slice(0, 4).map(a => a.block || 0) };
   })()`);
-  T("对照：非温蒂弃牌不加任何护甲",
+  T("对照：非温蒂不触发",
     JSON.stringify(ctrl.before) === JSON.stringify(ctrl.after), ctrl);
 
-  // —— 对照组：温蒂弃 0 张不触发 ——
-  const zero = await page.evaluate(`(() => {
-    const st = window.state, b = st.battle;
-    const wendy = b.allies[0];
-    const before = b.allies.slice(0, 4).map(a => a.block || 0);
-    window.WendyCadicisSkills?.afterDiscard?.(st, wendy, [], {});
-    window.render();
-    return { before, after: b.allies.slice(0, 4).map(a => a.block || 0) };
-  })()`);
-  T("对照：弃 0 张不加护甲",
-    JSON.stringify(zero.before) === JSON.stringify(zero.after), zero);
-
-  // —— 手牌超上限的「溢出弃牌」不触发飘浮掩体 ——
+  // —— 对照：溢出弃牌不触发（技能只在弃牌阶段入口） ——
   const ovf = await page.evaluate(`(() => {
     const st = window.state, b = st.battle;
     const wendy = b.allies[0];
-    const before = b.allies.slice(0, 4).map(a => ({ ref: a.ref, block: a.block || 0 }));
+    const before = b.allies.slice(0, 4).map(a => a.block || 0);
     const logsBefore = (st.battleLog || []).filter(x => /飘浮掩体/.test(x)).length;
     while (wendy.hand.length < 9) wendy.hand.push({ name: "杀（普攻）", type: "slash", suit: "♠" });
     const tool = window.BattleDiscardOverflow({
@@ -150,7 +172,7 @@ const discardTpl = n => `(() => {
     window.render();
     return {
       before,
-      after: b.allies.slice(0, 4).map(a => ({ ref: a.ref, block: a.block || 0 })),
+      after: b.allies.slice(0, 4).map(a => a.block || 0),
       handLeft: wendy.hand.length,
       logsBefore,
       logsAfter: (st.battleLog || []).filter(x => /飘浮掩体/.test(x)).length,

@@ -121,7 +121,7 @@ const CONFIRMED_GUARDED = new Set([
   //     → ruins-carrier-armor.beforeHeal（坚硬装甲，本轮新增）。
   "beforeHeal",
   // 11) blocksKillTarget —— 希尔德【暗幕隐身】是锁定技，会真正改变战局
-  //     （让她不可被单体【杀】指定），不是纯查询；守卫写在 ruins-elite-skills.js
+  //     （让她不可被实体单体【杀】指定），不是纯查询；守卫写在 ruins-elite-skills.js
   //     的 stealthOn 内部，因为它有三个互不重合的入口（目标选择 / 饰品自动斩 / UI）。
   //     曾误列入 QUERY_ONLY，导致该技能被时停豁免却无人察觉。
   "blocksKillTarget",

@@ -127,7 +127,7 @@ function loadRuntime() {
     "elrana-healing-skills.js", "ace-skills.js", "nanali-skills.js",
     "ace-nanali-skills.js", "elrana-ace-nanali-skills.js",
     "edis-skills.js", "machine-factory-skills.js", "enemy-status-effects.js",
-    "enemy-kill-hooks.js", "enemy-damage-hooks.js", "enemy-combat-hooks.js",
+    "enemy-kill-hooks.js", "chiyo-chain-skills.js", "enemy-damage-hooks.js", "enemy-combat-hooks.js",
     "enemy-tactical-skills.js", "enemy-skills.js", "abe-mike-skills.js",
     "underwater-train-control-skills.js", "underwater-train-bite-skills.js",
     "underwater-train-prepare-skills.js", "underwater-train-target-counters.js",

@@ -107,8 +107,8 @@ window.GameUIBattleTargeting = (() => {
     // 与女王榨取、狙击目标同一类，故按同一口径收口。
     if (card?.mieryulaBloodthirst) allowed = unitData.side === actorSide(battle)
       && unitData.gender === "male" && unitData.uid !== battle.activeUid;
-    // 隐身中的希尔德不可被单体【杀】指定：与逻辑层 chooseTarget 同一判定源，
-    // 否则会出现「点得到但点了没反应」。
+    // 隐身中的希尔德不可被实体单体【杀】指定：与逻辑层 chooseTarget 同一判定源，
+    // 否则会出现「点得到但点了没反应」。虚拟杀不受此限。
     if (allowed && window.RuinsEnemySkills?.blocksKillTarget?.(unitData, card)) allowed = false;
     // 渴血杀戮：选定牌名后没有选中手牌也没有技能牌（selectedSkillCard 已在
     // 出牌结算里清空），若不放行这里，敌方单位不会被标成 selectable-target，

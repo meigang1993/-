@@ -49,6 +49,18 @@ const timeouts = Object.freeze({
   "test-card-ownership-save-compact.js": 120,
   // 毒标记伤害改为施加者攻击力30%（快照 / 叠加 / 旧档兼容 / REVERT=rate 反向）
   "test-poison-mark-applier-attack.js": 120,
+  // 红缨连鬼斩虚拟杀链 + 飘浮掩体按魔力值（REVERT=chain|retarget|magic|phase 反向）
+  "test-chiyo-chain-wendy-cover.js": 120,
+  // 两技能复查：连击链存档/跨回合残留、恢复路径、阵营、公告日期（REVERT=store|turnguard|resume|side|notice）
+  "test-chiyo-wendy-recheck.js": 120,
+  // 橘千樱连击链实机回归（真实 bundle 装配：判定 → 虚拟杀链 → 目标转移）
+  "test-chiyo-chain-live.js": 180,
+  // 234 目标收割压测 + 隐身口径严格检查（模块级，含 3 组源码级反向）
+  "test-chiyo-chain-massacre.js": 120,
+  // 暗幕隐身改为只挡实体单体【杀】（虚拟杀可指定，REVERT=entity 反向）
+  "test-hilde-entity-kill-target.js": 120,
+  // 实体杀口径复查：真实牌形态 / UI与逻辑同结论 / 入口防护（REVERT=entity|ui|guard|text 反向）
+  "test-hilde-entity-kill-recheck.js": 120,
   // 燃烧/感电改为施加者攻击力30% + HP浮点尾巴收敛（REVERT=burn|shock|hp 反向）
   "test-burn-shock-rate-and-hp-value.js": 120,
   "test-burn-shock-hp-recheck.js": 120,
@@ -309,6 +321,12 @@ const groups = Object.freeze({
     "test-witherer1312-live.js",
   ],
   characters: [
+    "test-chiyo-chain-wendy-cover.js",
+    "test-chiyo-wendy-recheck.js",
+    "test-chiyo-chain-live.js",
+    "test-chiyo-chain-massacre.js",
+    "test-hilde-entity-kill-target.js",
+    "test-hilde-entity-kill-recheck.js",
     "test-mona-relic-rework.js",
     "test-mona-relic-rework-live.js",
     "test-mona-relic-strict-audit.js",
