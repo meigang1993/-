@@ -1,4 +1,4 @@
-// 怪面诺亚【淫气改造】【改造副作用】严格检查（Node 直调，不依赖浏览器）
+// 怪面诺亚【淫气改造】【淫气改造】严格检查（Node 直调，不依赖浏览器）
 // 覆盖：角色模板 / 台词 / 皮肤 / 免杀意 / 手牌恒等 / 动态手牌上限 /
 //       结束阶段男性伤害 / 无男性时的虚拟咬杀与跳过出牌 / 解锁链路静态装配。
 // 反向验证：撤掉任一技能判据后，对应断言必须立刻变红。
@@ -29,7 +29,7 @@ const unit = (ref, gender, hp = 50, extra = {}) => ({
 });
 const noaSkills = [
   { name: "淫气改造", type: "passive", text: "锁定技，仅在你的出牌阶段生效：出牌阶段开始时及你每次出牌后，若手牌数少于手牌上限，则摸至上限；若多于手牌上限，由你选择弃至上限。你使用【杀】牌不消耗杀意。" },
-  { name: "改造副作用", type: "passive", text: "锁定技，结束阶段，你对我方其他所有存活男性角色各造成等同于你攻击力的伤害。队伍里每有一名男性角色，你的手牌上限+1。若队伍中没有存活的男性角色，出牌阶段开始时，你随机对一名角色（不分敌我）视为使用一张虚拟【咬杀】，之后跳过本回合的出牌阶段。" },
+  { name: "淫气改造", type: "passive", text: "锁定技，结束阶段，你对我方其他所有存活男性角色各造成等同于你攻击力的伤害。队伍里每有一名男性角色，你的手牌上限+1。若队伍中没有存活的男性角色，出牌阶段开始时，你随机对一名角色（不分敌我）视为使用一张虚拟【咬杀】，之后跳过本回合的出牌阶段。" },
 ];
 ctx.CardUtils = {
   isKillCard: c => c?.type === "slash" || /杀(?:（[^）]*）)?$/.test(c?.name || ""),
@@ -61,14 +61,19 @@ T("A2 身份为淫气改造者", tpl?.role === "淫气改造者", tpl?.role);
 T("A3 0级属性正确（203版全角色翻倍后）", JSON.stringify(tpl?.stats) === JSON.stringify({ attack: 6, magic: 4, speed: 8, maxHp: 130, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 }), tpl?.stats);
 T("A4 每回合摸牌=基础2+1、初始摸牌=基础4+1", tpl?.stats?.drawPerTurn === 1 && tpl?.stats?.initialDraw === 1, tpl?.stats);
 T("A5 锁定且殿堂价100、解锁旗标正确", tpl?.locked === true && tpl?.unlockCost === 100 && tpl?.unlockFlag === "noaNurseryUnlocked", tpl);
-T("A6 两个技能描述与设定一致", tpl?.skills?.length === 2 && tpl.skills[0].text === noaSkills[0].text && tpl.skills[1].text === noaSkills[1].text, tpl?.skills?.map(s => s.name));
+T("A6 合并后只保留【淫气改造】一个技能，描述含原效果与并入的三段副作用",
+  tpl?.skills?.length === 1 && tpl.skills[0].name === "淫气改造"
+  && tpl.skills[0].text.includes(noaSkills[0].text)
+  && /结束阶段，你对我方其他所有存活男性角色/.test(tpl.skills[0].text)
+  && /手牌上限\+1/.test(tpl.skills[0].text)
+  && /虚拟【咬杀】/.test(tpl.skills[0].text), tpl?.skills?.map(s => s.name));
 T("A7 主立绘指向已接入的文件", (tpl?.art || "").includes("noa.470b1881.webp"), tpl?.art);
 T("A8 登场台词与设定一致", tpl?.entrance === "啊啊……身体好热！杀光敌人！别忘了……给我……雄性……淫气改造把我变成了淫荡的怪物！！！", tpl?.entrance);
 
 // ---------- B 台词 ----------
 const sl = ctx.BattleLineData.skillLines.noa || {};
 T("B1 使用杀台词", sl["使用杀"] === "杀！杀杀杀杀！！！", sl);
-T("B2 对男性造成伤害台词", sl["改造副作用"] === "全部！全部进来！！", sl);
+T("B2 对男性造成伤害台词", sl["淫气改造"] === "全部！全部进来！！", sl);
 T("B3 登场台词进入 allyIntroLines", ctx.BattleLineData.allyIntroLines.noa === tpl.entrance, ctx.BattleLineData.allyIntroLines.noa);
 
 // ---------- C 淫气改造（仅出牌阶段生效 + 玩家弃置任意张） ----------
@@ -174,7 +179,7 @@ T("C18 可见牌不足时自动弃兜底、不会卡住回合",
   && !ctx.state.battle.noaCharmDiscard,
   { discarded: discarded.length, hand: n5.hand.length, locked: !!ctx.state.battle.locked });
 
-// ---------- D 改造副作用 ----------
+// ---------- D 淫气改造 ----------
 const male = (uid, hp = 50) => unit(uid, "male", hp);
 const female = (uid, hp = 50) => unit(uid, "female", hp);
 let a = noa();
@@ -196,7 +201,7 @@ lines.length = 0; logs.length = 0;
 Side.endTurn(ctx.state, a, { damage });
 T("D5 结束阶段只打其他存活男性", hits.length === 2 && hits.every(h => h.target.startsWith("m") && h.amount === 5), hits);
 T("D6 伤害数值=攻击力+临时攻击(3+2)", hits.length === 2 && hits.every(h => h.amount === 5), hits);
-T("D7 播放对男性伤害台词", lines.some(l => l.unit === "noa" && l.name === "改造副作用"), lines);
+T("D7 播放对男性伤害台词", lines.some(l => l.unit === "noa" && l.name === "淫气改造"), lines);
 hits = []; Side.endTurn(ctx.state, female("f1"), { damage });
 T("D8 非诺亚不触发", hits.length === 0, hits);
 
@@ -206,8 +211,8 @@ ctx.__virtual = null;
 const fired = Side.beginPlayPhase(ctx.state, a);
 T("D9 无存活男性时触发狂暴", fired === true, fired);
 T("D10 目标可为友方或敌方（不含自己）", ctx.__virtual?.target === "f1" && ctx.state.battle.enemies.some(e => e.uid === "e1"), ctx.__virtual);
-T("D11 虚拟牌为【咬杀】", ctx.__virtual?.card?.name === "咬杀" && ctx.__virtual?.card?.generatedBySkill === "改造副作用", ctx.__virtual?.card);
-T("D12 之后跳过本回合出牌阶段", a.skipPlayPhase === true && a.skipPlayReason === "改造副作用", { skip: a.skipPlayPhase, reason: a.skipPlayReason });
+T("D11 虚拟牌为【咬杀】", ctx.__virtual?.card?.name === "咬杀" && ctx.__virtual?.card?.generatedBySkill === "淫气改造", ctx.__virtual?.card);
+T("D12 之后跳过本回合出牌阶段", a.skipPlayPhase === true && a.skipPlayReason === "淫气改造", { skip: a.skipPlayPhase, reason: a.skipPlayReason });
 ctx.__virtual = null;
 Side.beginPlayPhase(ctx.state, a);
 T("D13 同一回合不重复触发", ctx.__virtual === null, ctx.__virtual);

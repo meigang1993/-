@@ -371,7 +371,7 @@ async function segB(browser) {
       const i = timeline.indexOf(e);
       return i + 1 < timeline.length ? timeline[i + 1].t - e.t : null;
     });
-    console.log(`DIAG lineTicks=${lineTicks} skillRequests=${skillCalls.filter(c => c.name === "改造副作用").length}`
+    console.log(`DIAG lineTicks=${lineTicks} skillRequests=${skillCalls.filter(c => c.name === "淫气改造").length}`
       + ` endCalls=${hurtSnap.endCalls.length} speechShown=${shown.length}`
       + ` captionGrabbed=${snap.captions.some(t => t.includes(HURT_LINE)) ? 1 : 0}`
       + ` lifetimeMs=${JSON.stringify(lifetimeMs)}`);
@@ -383,14 +383,14 @@ async function segB(browser) {
     // 运行时 attack，避免以后再调属性倍率时又过期，同时 attack>0 防止 0 值空转。
     T("B2 伤害数值=诺亚攻击力", attack > 0 && male.hp - afterMale.hp === attack,
       { attack, delta: male.hp - afterMale.hp });
-    T("B3 改造副作用结束阶段钩子真实执行", hurtSnap.endCalls.length >= 1
+    T("B3 淫气改造结束阶段钩子真实执行", hurtSnap.endCalls.length >= 1
       && hurtSnap.endCalls.some(c => c.unit === "怪面诺亚" && c.males.length === 1 && c.amount === attack),
       hurtSnap.endCalls);
     // 以 speech 赋值时间线为准（零丢失），captions 轮询仅作对照：
     // speechShown>0 而 captionGrabbed=0，即「台词已显示、只是被轮询漏抓」。
     T("B4 对男性伤害台词在界面字幕播放", shown.length > 0, {
       captions: snap.captions.slice(0, 8),
-      requested: skillCalls.filter(c => c.name === "改造副作用").length,
+      requested: skillCalls.filter(c => c.name === "淫气改造").length,
       lineTicks, speechShown: shown.length, lifetimeMs,
       timelineTail: timeline.slice(-6),
     });
@@ -464,8 +464,8 @@ async function segC(browser) {
       || snap.log.some(l => l.includes("跳过出牌阶段")) || snap.noa?.skip === true, {
       frenzy: snap.frenzy, skip: snap.noa?.skip, log: snap.log.slice(0, 6),
     });
-    T("C3 跳过原因标记为改造副作用", snap.noa?.reason === "改造副作用"
-      || snap.log.some(l => l.includes("因改造副作用跳过")), {
+    T("C3 跳过原因标记为淫气改造", snap.noa?.reason === "淫气改造"
+      || snap.log.some(l => l.includes("因淫气改造跳过")), {
       reason: snap.noa?.reason, log: snap.log.slice(0, 6),
     });
     // 虚拟咬杀必须真的走 useVirtualKill 造成伤害，不能只有日志。
@@ -502,6 +502,9 @@ async function segD(browser) {
       // 就不成立。淫气改造现在按权威计数，也不该弃掉那张状态牌。
       const base = noa.hand.filter(c => !c._pendingDraw
         && !window.BattleStatusCards?.isStatus?.(c)).slice(0, limit);
+      // 战斗推进到本回合时诺亚手牌可能不足上限，先补齐基准再追加溢出牌，
+      // 否则 before === limit，D 段「手牌超限」前提不成立（与技能合并无关）。
+      while (base.length < limit) base.push(mk(100 + base.length));
       noa.hand = base.concat(extra);
       const before = noa.hand.length;
       const foeDiscardBefore = (other.discard || []).length;

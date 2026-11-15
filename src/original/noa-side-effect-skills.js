@@ -1,8 +1,9 @@
-// 怪面诺亚【改造副作用】（锁定技）
+// 怪面诺亚【淫气改造】合并效果执行块（独立副作用技能已删除，效果并入本技能）：
 //   1. 结束阶段，对我方其他所有存活男性角色各造成等同于攻击力的伤害
 //   2. 队伍里每有一名存活男性角色，手牌上限 +1
 //   3. 没有存活男性角色时，出牌阶段开始随机对一名角色（不分敌我）
 //      视为使用一张虚拟【咬杀】，之后跳过本回合出牌阶段
+// 说明：本模块仍沿用历史全局名，是【淫气改造】的效果执行块，不是独立技能。
 window.NoaSideEffectSkills = (() => {
   const alive = unit => !!unit && unit.hp > 0;
   const isNoa = unit => alive(unit) && unit.ref === "noa";
@@ -17,28 +18,28 @@ window.NoaSideEffectSkills = (() => {
 
   // ui-common / battle-runtime-helpers / battle-ai-helpers 均消费此结果（非诺亚返回 null）。
   function handLimit(unit) {
-    if (!isNoa(unit) || !hasSkill(unit, "改造副作用")) return null;
+    if (!isNoa(unit) || !hasSkill(unit, "淫气改造")) return null;
     const b = window.state?.battle;
     return baseHandLimit(unit) + (b ? malesOf(b).length : 0);
   }
 
   function endTurn(state, unit, api) {
     const b = state?.battle;
-    if (!b || !isNoa(unit) || !hasSkill(unit, "改造副作用")) return true;
+    if (!b || !isNoa(unit) || !hasSkill(unit, "淫气改造")) return true;
     const males = malesOf(b).filter(target => target.uid !== unit.uid);
     if (!males.length) return true;
     // 攻击力不能为负：tempAttack 可能被减益压成负数，直接传给 damage 管线
     // 会经 Math.max(0, target.hp - hpLoss) 变成回血，故在此夹到 0。
     const amount = Math.max(0, (unit.stats?.attack || 0) + (unit.tempAttack || 0));
-    window.BattleLines?.skill?.(state, unit, "改造副作用");
+    window.BattleLines?.skill?.(state, unit, "淫气改造");
     window.BattleLog?.add?.(state,
-      `${unit.name}的改造副作用发作，对我方其他存活男性角色各造成${amount}点伤害。`);
+      `${unit.name}的淫气改造发作，对我方其他存活男性角色各造成${amount}点伤害。`);
     const damage = api?.damage;
     if (typeof damage !== "function") return true;
     males.forEach(target => {
       if (!alive(target)) return;
-      damage(state, target, amount, "改造副作用", unit,
-        { name: "改造副作用", type: "skill", ignoreResponse: true, skipDamageModify: true });
+      damage(state, target, amount, "淫气改造", unit,
+        { name: "淫气改造", type: "skill", ignoreResponse: true, skipDamageModify: true });
     });
     return true;
   }
@@ -47,11 +48,12 @@ window.NoaSideEffectSkills = (() => {
   // 每回合只发动一次（_noaFrenzyTurn 以回合号隔离，避免多条准备阶段路径重复触发）。
   function beginPlayPhase(state, unit) {
     const b = state?.battle;
-    if (!b || !isNoa(unit) || !hasSkill(unit, "改造副作用")) return false;
-    // 幂等只拦「本回合已经咬过」：不能按首次调用就锁死，否则准备阶段首次
-    // 有男性、随后同回合男性阵亡时，会漏判「无存活男性」的狂暴。
-    if (unit.skipPlayPhase && unit.skipPlayReason === "改造副作用"
-      && unit._noaFrenzyTurn === b.turn) return true;
+    if (!b || !isNoa(unit) || !hasSkill(unit, "淫气改造")) return false;
+    // 幂等只按「本回合已咬过」的回合 token 判定：不能按首次调用锁死
+    // （准备阶段首次有男性、随后同回合男性阵亡仍要判狂暴）；也不能比对
+    // skipPlayReason 文案（旧存档仍是合并前的技能名，读档后会重复咬杀）。
+    // _noaFrenzyTurn 只有本效果写入，其它跳过原因不会带它。
+    if (unit.skipPlayPhase && unit._noaFrenzyTurn === b.turn) return true;
     // 眩晕 / 麻痹 / 混乱(无同伴) 等已在判定阶段让本回合跳过出牌阶段时，
     // 「出牌阶段开始」这个时点并不存在：不发动狂暴咬杀，也不覆盖
     // skipPlayReason（战报与手牌面板都要显示真实的跳过原因）。
@@ -64,18 +66,18 @@ window.NoaSideEffectSkills = (() => {
     if (!target) return false;
     const virtual = window.CardUtils?.fromEntity?.("咬杀", {
       temporary: true, void: true, noIntentCost: true,
-      generatedBySkill: "改造副作用", ignoreResponse: true,
+      generatedBySkill: "淫气改造", ignoreResponse: true,
     });
     // 虚拟牌没造出来（数据缺失 / 接口未加载）就不该跳过出牌阶段，
     // 否则玩家白丢一个回合且什么都没发生。
     if (!virtual) return false;
     if (typeof window.BattleSystem?.useVirtualKill !== "function") return false;
     window.BattleLog?.add?.(state,
-      `${unit.name}的改造副作用发作：队伍中没有存活的男性角色，随机对${target.name}`
+      `${unit.name}的淫气改造发作：队伍中没有存活的男性角色，随机对${target.name}`
       + "视为使用一张虚拟【咬杀】，并跳过本回合出牌阶段。");
     window.BattleSystem.useVirtualKill(state, unit, target, virtual);
     unit.skipPlayPhase = true;
-    unit.skipPlayReason = "改造副作用";
+    unit.skipPlayReason = "淫气改造";
     unit._noaFrenzyTurn = b.turn;
     return true;
   }

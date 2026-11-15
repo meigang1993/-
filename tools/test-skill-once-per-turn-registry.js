@@ -31,7 +31,7 @@ check(!!R && Array.isArray(R.FLAGS), "登记表已导出", { has: !!R });
 const NAME_FLAGS = {
   "热血契约": ["bloodPact"], "次元军火库": ["mannyArmory"], "贪玩老虎机": ["millerSlot"],
   "偶像之吻": ["idolKiss"], "解答迷惑": ["wendyTutor"], "疯狂射击": ["crazyShooting"],
-  "苦肉鞭笞": ["bertisWhip"], "取粮": ["bertisTakeFood"], "猩红暴走": ["crimsonRampage"],
+  "苦肉鞭笞": ["bertisWhip"], "取粮": ["bertisTakeFood"], "狂战意志": ["berserkWill"],
   "回春之手": ["elranaHeal"], "贡献计划": ["aceContribution"], "计算下注": ["ailengBet"],
   "充能精华": ["ailengCharge"], "终焉鬼影斩": ["bestaEndSlash"], "窃取": ["catherineSteal"],
   "女王榨取": ["preshiDrain"], "杀欲窥视": ["withererPeek"], "狙击目标": ["artinaSniper", "ruinsSnipe"],

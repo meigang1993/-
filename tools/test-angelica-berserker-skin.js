@@ -137,7 +137,7 @@ pendingHooks.splice(0).forEach(hook => hook());
 assert(phaseActor.rageMarks === 1,
   "rage marks must be granted once the post-damage phase flushes");
 
-// 猩红暴走：出牌阶段限一次，弃全部标记并摸等量牌，再回复 标记数×生命上限10%。
+// 狂战意志：出牌阶段限一次，弃全部标记并摸等量牌，再回复 标记数×生命上限10%。
 const rampageState = { battle: { turn: 1, locked: false, animQueue: [] } };
 const rampageActor = {
   ref: "angelica", name: "安洁莉卡", uid: "a0", hp: 20, maxHp: 40, rageMarks: 4,
@@ -147,21 +147,21 @@ const rampageDeps = {
   draw: (unit_, count) => { rampageDraws.push(count); return count; },
   pushFloat: () => {},
 };
-assert(AngelicaLukaSkills.canUseCrimsonRampage(rampageActor) === true,
-  "Crimson Rampage must be available while rage marks remain");
+assert(AngelicaLukaSkills.canUseBerserkWill(rampageActor) === true,
+  "Berserk Will must be available while rage marks remain");
 AngelicaLukaSkills.handleSpecialCard(rampageState, rampageActor, rampageActor,
-  { crimsonRampage: true }, rampageDeps, {});
+  { berserkWill: true }, rampageDeps, {});
 assert(rampageActor.rageMarks === 0
   && rampageDraws.length === 1 && rampageDraws[0] === 4,
-  "Crimson Rampage must spend every mark and draw that many cards");
+  "Berserk Will must spend every mark and draw that many cards");
 assert(rampageActor.hp === 20 + Math.round(4 * 40 * 0.1),
-  "Crimson Rampage must heal marks x 10% of maxHp");
-assert(AngelicaLukaSkills.canUseCrimsonRampage(rampageActor) === false,
-  "Crimson Rampage must be limited to once per turn");
-rampageActor.usedCrimsonRampage = false;
+  "Berserk Will must heal marks x 10% of maxHp");
+assert(AngelicaLukaSkills.canUseBerserkWill(rampageActor) === false,
+  "Berserk Will must be limited to once per turn");
+rampageActor.usedBerserkWill = false;
 rampageActor.rageMarks = 0;
-assert(AngelicaLukaSkills.canUseCrimsonRampage(rampageActor) === false,
-  "Crimson Rampage must be unusable without rage marks");
+assert(AngelicaLukaSkills.canUseBerserkWill(rampageActor) === false,
+  "Berserk Will must be unusable without rage marks");
 
 // 实体【杀】可用 1 枚标记代替 1 点杀意；无标记或虚拟杀不适用。
 const intentCard = { name: "杀（普攻）", type: "slash" };
@@ -229,8 +229,8 @@ delete window.state;
   ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.queueEntry"],
   ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.rageSpend"],
   ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.rageGain"],
-  ["angelica-luka-skills.js", "crimsonRampage"],
-  ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.crimsonRampage"],
+  ["angelica-luka-skills.js", "berserkWill"],
+  ["angelica-luka-skills.js", "AngelicaBerserkerSkinFX?.berserkWill"],
   ["angelica-luka-skills.js", "scheduleAfterDamage"],
   ["battle-damage-utils.js", "AngelicaBerserkerSkinFX?.rageTrail"],
   ["battle-victory.js", "angelica-berserker-victory-show"],
@@ -262,7 +262,7 @@ assert(css.includes("imperialSwordSummon") && css.includes("imperialMarkShatter"
   "Imperial Blood Slaying must retain greatsword, rage marks, blood ring and rage trail identities");
 assert(css.includes("imperialGiantRise") && css.includes("imperialPulseRing")
   && css.includes("imperialCoreSink") && css.includes("imperialBloodRain"),
-  "Crimson Rampage must keep giant phantom, pulse rings, chest core and blood rain");
+  "Berserk Will must keep giant phantom, pulse rings, chest core and blood rain");
 const victorySource = fs.readFileSync("./src/original/battle-victory.js", "utf8");
 assert(victorySource.includes("帝血未冷，下一场继续。"),
   "Imperial Blood Slaying must use its dedicated victory line");

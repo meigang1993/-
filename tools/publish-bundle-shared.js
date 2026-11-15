@@ -104,6 +104,12 @@ const ORDER_DEPENDENCIES = [
     file: "holy-eagle-sword-skills.js",
     consumers: ["battle-combat-attack-values.js"],
   },
+  // 淫气改造合并效果执行块：noa-charm-skills.limitOf 运行时经它取动态上限，
+  // 与拆分模块同属显式装配依赖，必须先于 noa-charm-skills.js 加载。
+  {
+    file: "noa-side-effect-skills.js",
+    consumers: ["noa-charm-skills.js"],
+  },
   // 2026-11-11 预防性拆出的 3 个子模块：装配点显式抛错，必须早于消费方。
   {
     file: "noa-charm-discard.js",

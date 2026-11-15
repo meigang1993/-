@@ -120,7 +120,7 @@ window.BattleCardPlayability = deps => {
     if (card.preshiDrain && !livingMale()) return true;
     if (card.mieryulaBloodthirst && !livingMale()) return true;
     if ((card.speedAssault || card.withererPeek || card.crazySlaughter
-      || card.crimsonRampage || card.bestaEndSlash) && !livingEnemy()) return true;
+      || card.berserkWill || card.bestaEndSlash) && !livingEnemy()) return true;
     if (card.arsenal && !sameSideUnits(battle, actor).some(unit => unit.uid !== actor.uid && unit.hp > 0)) return true;
     if (card.bertisTakeFood && !(battle.allies || []).some(unit => unit.ref === "bertis" && unit.hp > 0 && (unit.food || 0) > 0)) return true;
     if (card.comboAttack && !canComboAttack(battle, actor, card)) return true;

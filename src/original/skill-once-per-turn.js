@@ -27,7 +27,7 @@ window.SkillOncePerTurn = (() => {
   const SPECIAL = [
     ["speedAssault", (actor, battle) => (battle?.phase === 6
       ? actor.usedSpeedAssaultEnd : actor.usedSpeedAssaultPrepare)],
-    ["crimsonRampage", actor => !window.AngelicaLukaSkills?.canUseCrimsonRampage?.(actor)],
+    ["berserkWill", actor => !window.AngelicaLukaSkills?.canUseBerserkWill?.(actor)],
     ["mariaHonorBlessing", actor => actor.usedMariaHonorBlessing
       || actor.mariaBlessingSuits?.length > 0],
   ];

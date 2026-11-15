@@ -35,7 +35,7 @@ const T = (name, cond, extra) => {
 };
 
 const logs = [], records = [], draws = [];
-const NOA_SKILLS = [{ name: "淫气改造" }, { name: "改造副作用" }];
+const NOA_SKILLS = [{ name: "淫气改造" }, { name: "淫气改造" }];
 const mk = (uid, gender, side, extra = {}) => ({
   uid, ref: uid, name: uid, gender, side, hp: 130, maxHp: 130, hand: [],
   stats: { attack: 6, magic: 4, speed: 8, handLimit: 4 },

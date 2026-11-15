@@ -2,7 +2,7 @@
 //   battle.phase===4 且 battle.activeUid===诺亚 uid）
 //   1. 手牌数始终等于上限：少于摸至上限，多于由玩家弃至上限
 //   2. 使用【杀】不消耗杀意  3. 使用杀台词
-// 上限由【改造副作用】按存活男性队友数动态给出；非出牌阶段、别家回合一律不生效。
+// 上限由【淫气改造】按存活男性队友数动态给出；非出牌阶段、别家回合一律不生效。
 // 溢出弃牌复用弃牌阶段那套（手牌区点选 + 确认弃置），由 battle-discard-flow.js 结算。
 window.NoaCharmSkills = (() => {
   const PLAY_PHASE = 4;
@@ -133,7 +133,7 @@ window.NoaCharmSkills = (() => {
   }
 
   // 所有「进入出牌阶段」的路径统一走这里：设 phase=4 + 手牌平衡 + 溢出挂起检查。
-  // 狂暴（改造副作用）已设 skipPlayPhase 时，任何旁路都不得把 phase 改回 4，
+  // 狂暴（淫气改造）已设 skipPlayPhase 时，任何旁路都不得把 phase 改回 4，
   // 否则「跳过本回合出牌阶段」会被绕过，且淫气改造会在本不该生效的回合补牌。
   // 返回 true 才允许各路径继续执行 playPhaseStart / record / 出牌推进。
   function enterPlayPhase(state, unit, draw, onStep) {

@@ -68,17 +68,17 @@ module.exports = ({
   const rampageDraws = [];
   state = { battle: { allies: [rampager], enemies: [], animQueue: [], locked: false } };
   AngelicaLukaSkills.handleSpecialCard(state, rampager, rampager,
-    { crimsonRampage: true },
+    { berserkWill: true },
     { draw(unit_, count) { rampageDraws.push(count); return count; } },
     {});
   assert(rampager.rageMarks === 0,
-    "Crimson Rampage must spend every rage mark");
+    "Berserk Will must spend every rage mark");
   assert(rampageDraws.length === 1 && rampageDraws[0] === 3,
-    "Crimson Rampage must draw one card per spent mark");
+    "Berserk Will must draw one card per spent mark");
   assert(rampager.hp === 20 + Math.round(3 * 40 * 0.1),
-    "Crimson Rampage must heal marks x 10% of maxHp");
-  assert(AngelicaLukaSkills.canUseCrimsonRampage(rampager) === false,
-    "Crimson Rampage must be limited to once per turn");
+    "Berserk Will must heal marks x 10% of maxHp");
+  assert(AngelicaLukaSkills.canUseBerserkWill(rampager) === false,
+    "Berserk Will must be limited to once per turn");
 
   const raider = unit("raider", "enemy", { ai: "shark_pirate_raider" });
   const lootTarget = unit("loot", "ally", { hand: [card("Loot")] });

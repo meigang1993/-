@@ -1,4 +1,4 @@
-// 怪面诺亚【淫气改造】×【改造副作用】严格检查：状态牌跳过出牌阶段耦合 + 其他边界
+// 怪面诺亚【淫气改造】×【淫气改造】严格检查：状态牌跳过出牌阶段耦合 + 其他边界
 //   A 眩晕 / 麻痹 / 混乱(无同伴) 已跳过出牌阶段 -> 不狂暴、不覆盖跳过原因
 //   B 连续回合：眩晕不咬 -> 下回合正常咬 -> 麻痹不咬 -> 再下回合正常咬（不残留/不漏判）
 //   C 不受影响对照：封魔 / 冻结 / 眩晕判定失败 -> 仍狂暴
@@ -34,7 +34,7 @@ const T = (name, cond, extra) => {
 };
 
 const logs = [], virtuals = [], pools = [], damage = [], lines = [];
-const SKILLS = [{ name: "淫气改造" }, { name: "改造副作用" }];
+const SKILLS = [{ name: "淫气改造" }, { name: "淫气改造" }];
 const mk = (ref, gender, side = "ally", extra = {}) => ({
   uid: ref, ref, name: ref, gender, side, hp: 500, maxHp: 500,
   stats: { attack: 6, magic: 4, speed: 8, maxHp: 500, handLimit: 4 },
@@ -94,7 +94,7 @@ const applySkip = (s, reason, extra = {}) => {
 const endTurn = s => Side.endTurn(s.state, s.noa, {
   damage: (st, t, amt) => damage.push({ uid: t.uid, amt }),
 });
-const noFrenzyLog = () => !logs.some(t => t.includes("改造副作用发作"));
+const noFrenzyLog = () => !logs.some(t => t.includes("淫气改造发作"));
 
 // ---------- A 三种原因跳过出牌阶段 ----------
 {
@@ -111,8 +111,8 @@ const noFrenzyLog = () => !logs.some(t => t.includes("改造副作用发作"));
       r === false && virtuals.length === 0 && pools.length === 0
       && s.noa.skipPlayPhase === true && s.noa.skipPlayReason === reason,
       { r, virtuals: virtuals.length, reason: s.noa.skipPlayReason });
-    T(`A-${reason}-log 不写狂暴战报、不播改造副作用台词`,
-      noFrenzyLog() && !lines.includes("改造副作用"), { logs, lines });
+    T(`A-${reason}-log 不写狂暴战报、不播淫气改造台词`,
+      noFrenzyLog() && !lines.includes("淫气改造"), { logs, lines });
     T(`A-${reason}-mark 不写 _noaFrenzyTurn`,
       s.noa._noaFrenzyTurn !== 9, { mark: s.noa._noaFrenzyTurn });
   }
@@ -135,8 +135,8 @@ const noFrenzyLog = () => !logs.some(t => t.includes("改造副作用发作"));
     && flow[1].r === true && flow[1].v === 1
     && flow[2].r === false && flow[2].v === 0
     && flow[3].r === true && flow[3].v === 1, { flow });
-  T("B2 第4回合跳过原因回到「改造副作用」而非残留眩晕/麻痹",
-    s.noa.skipPlayReason === "改造副作用" && s.noa._noaFrenzyTurn === 4,
+  T("B2 第4回合跳过原因回到「淫气改造」而非残留眩晕/麻痹",
+    s.noa.skipPlayReason === "淫气改造" && s.noa._noaFrenzyTurn === 4,
     { reason: s.noa.skipPlayReason, mark: s.noa._noaFrenzyTurn });
 }
 
@@ -146,7 +146,7 @@ const noFrenzyLog = () => !logs.some(t => t.includes("改造副作用发作"));
   seal.noa.skipDrawPhase = true; seal.noa.drawLockedThisTurn = true;
   const r1 = Side.beginPlayPhase(seal.state, seal.noa);
   T("C1 封魔（只跳过摸牌）仍狂暴、原因不被覆盖",
-    r1 === true && virtuals.length === 1 && seal.noa.skipPlayReason === "改造副作用",
+    r1 === true && virtuals.length === 1 && seal.noa.skipPlayReason === "淫气改造",
     { r1, virtuals: virtuals.length });
 
   const freeze = scene(); resetTurn(freeze, 2);
@@ -181,7 +181,7 @@ const noFrenzyLog = () => !logs.some(t => t.includes("改造副作用发作"));
   resetTurn(s, 1);
   const r = Side.beginPlayPhase(s.state, s.noa);
   T("E1 混乱有同伴时不设 skipPlayPhase，狂暴照常触发（两锁定技叠加）",
-    r === true && virtuals.length === 1 && s.noa.skipPlayReason === "改造副作用",
+    r === true && virtuals.length === 1 && s.noa.skipPlayReason === "淫气改造",
     { r, virtuals: virtuals.length });
   console.log("OBSERVE 混乱(有同伴) 的虚拟【杀】与狂暴的虚拟【咬杀】同为"
     + "「出牌阶段开始」时点的锁定技，二者叠加属设计，非 BUG。");
@@ -194,7 +194,7 @@ const noFrenzyLog = () => !logs.some(t => t.includes("改造副作用发作"));
   const r2 = Side.beginPlayPhase(s.state, s.noa);
   T("F1 同回合重复调用幂等：只咬一次、不重复写战报",
     r1 === true && r2 === true && virtuals.length === 1
-    && logs.filter(t => t.includes("改造副作用发作")).length === 1,
+    && logs.filter(t => t.includes("淫气改造发作")).length === 1,
     { r1, r2, virtuals: virtuals.length });
 }
 {
@@ -208,7 +208,7 @@ const noFrenzyLog = () => !logs.some(t => t.includes("改造副作用发作"));
 }
 {
   const s = scene(); resetTurn(s, 6);
-  s.noa.skipPlayPhase = true; s.noa.skipPlayReason = "改造副作用";
+  s.noa.skipPlayPhase = true; s.noa.skipPlayReason = "淫气改造";
   s.noa._noaFrenzyTurn = 5; // 跨回合残留标记
   const r = Side.beginPlayPhase(s.state, s.noa);
   T("F3 本技能标记跨回合残留时不重复咬（按没有出牌阶段处理）",
@@ -296,7 +296,7 @@ const noFrenzyLog = () => !logs.some(t => t.includes("改造副作用发作"));
   ];
   const missing = consumers.filter(f =>
     !fs.readFileSync(SRC(f), "utf8").includes("skipPlayReason"));
-  T("G3 4 处跳过分支都显示真实 skipPlayReason（眩晕不再被改写成改造副作用）",
+  T("G3 4 处跳过分支都显示真实 skipPlayReason（眩晕不再被改写成淫气改造）",
     missing.length === 0, { missing });
   const triggers = fs.readFileSync(SRC("battle-status-card-triggers.js"), "utf8");
   T("G4 眩晕/麻痹/混乱(无同伴) 三处都会设 skipPlayPhase",

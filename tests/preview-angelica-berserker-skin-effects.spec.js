@@ -41,21 +41,21 @@ test("Angelica Imperial Blood Slaying renders battle effects and victory scene",
     window.AngelicaBerserkerSkinFX.rageGain(state, actor, true);
     window.AngelicaBerserkerSkinFX.rageSpend(state, actor, 4);
     window.AngelicaBerserkerSkinFX.rageTrail(state, actor, target);
-    window.AngelicaBerserkerSkinFX.crimsonRampage(state, actor, 3);
+    window.AngelicaBerserkerSkinFX.berserkWill(state, actor, 3);
     return {
       entry: document.querySelectorAll(".angelica-berserker-entry").length,
       might: document.querySelectorAll(".angelica-berserker-might").length,
       rageGain: document.querySelectorAll(".angelica-berserker-rage-gain").length,
       rageSpend: document.querySelectorAll(".angelica-berserker-rage-slam").length,
       rageTrail: document.querySelectorAll(".angelica-berserker-rage-trail").length,
-      crimsonRampage: document.querySelectorAll(".angelica-berserker-rampage-armor").length,
+      berserkWill: document.querySelectorAll(".angelica-berserker-rampage-armor").length,
       entering: document.querySelectorAll(".angelica-berserker-entering").length,
     };
   });
   // might / rageSpend 走 action-first 锚点，会同时在 .portrait 与 .unit-art
   // 各挂载一份镜像节点（与 manny 皮肤特效测试口径一致），因此计数为 2。
   expect(effectCounts).toMatchObject({
-    entry: 1, might: 2, rageGain: 1, rageSpend: 2, rageTrail: 1, crimsonRampage: 1,
+    entry: 1, might: 2, rageGain: 1, rageSpend: 2, rageTrail: 1, berserkWill: 1,
   });
   expect(effectCounts.entering).toBe(1);
 
@@ -90,7 +90,7 @@ test("Angelica Imperial Blood Slaying renders battle effects and victory scene",
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test("Angelica Crimson Rampage plays staged effects and pulse rings", async ({ page }) => {
+test("Angelica Berserk Will plays staged effects and pulse rings", async ({ page }) => {
   const errors = collectErrors(page);
   await openGame(page);
   await startFreshGame(page);
@@ -138,7 +138,7 @@ test("Angelica Crimson Rampage plays staged effects and pulse rings", async ({ p
       });
     };
     window.AngelicaBerserkerSkinFX.cancel();
-    window.AngelicaBerserkerSkinFX.crimsonRampage(state, actor, 4);
+    window.AngelicaBerserkerSkinFX.berserkWill(state, actor, 4);
     snap();
     for (let i = 0; i < 16; i += 1) { await wait(220); snap(); }
     return { seen, anims, pulseIndexes: Array.from(pulseIndexes).sort() };
@@ -146,7 +146,7 @@ test("Angelica Crimson Rampage plays staged effects and pulse rings", async ({ p
 
   // 血甲收束、冲击波、巨人虚影、脉冲光环、血雨与胸口核心依次出现
   ["armor", "burst", "shock", "giant", "heal", "pulse", "rain", "core"].forEach(key => {
-    expect(staged.seen[key], `Crimson Rampage must render ${key} stage`).toBeGreaterThan(0);
+    expect(staged.seen[key], `Berserk Will must render ${key} stage`).toBeGreaterThan(0);
   });
   // 弃置4枚标记 -> 脉冲光环连续触发，每圈携带独立序号
   expect(staged.pulseIndexes.length).toBeGreaterThanOrEqual(2);

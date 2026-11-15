@@ -85,7 +85,6 @@ window.CardArt = (() => {
     "苦肉鞭笞": "./assets/generated/cards/skill-art-self-punishing-whip.1afab66d.webp",
     "疯狂屠戮": "./assets/generated/cards/skill-art-crazy-slaughter.7dbbf054.webp",
     "狂战意志": "./assets/generated/cards/skill-art-berserker-will.51f36fec.webp",
-    "猩红暴走": "./assets/generated/cards/skill-art-crimson-rampage.ba43cf6a.webp",
     "回春之手": "./assets/generated/cards/skill-art-rejuvenating-hand.08870ba4.webp",
     "贡献计划": "./assets/generated/cards/skill-art-contribution-plan.29b404d6.webp",
     "计算下注": "./assets/generated/cards/skill-art-calculated-bet.4054b9e6.webp",

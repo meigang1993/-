@@ -287,7 +287,7 @@ const logsOf = st => (st.log || []).map(String);
   const S = window.HolyEagleSwordSkills;
   const virtual = { name: "杀（普攻）", type: "slash", virtual: true };
   const converted = { name: "刺杀", type: "slash", convertedFrom: "战术" };
-  const bite = { name: "咬杀", type: "slash", generatedBySkill: "改造副作用" };
+  const bite = { name: "咬杀", type: "slash", generatedBySkill: "淫气改造" };
   T("D1", "实体单体杀判为单体杀", S.isSingleKill(slash()) === true, {});
   T("D2", "群体杀不判为单体杀", S.isSingleKill({ ...slash(), sweep: true }) === false, {});
   T("D3", "非杀牌不判为单体杀", S.isSingleKill({ name: "魔法对决", type: "tactic" }) === false, {});

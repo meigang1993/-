@@ -68,6 +68,16 @@ const timeouts = Object.freeze({
   "test-status-source-attribution-audit.js": 120,
   // 状态 DOT 口径定案：毒按施加者分组结算、状态段不触发感电（REVERT=group|shock 反向）
   "test-status-dot-split-and-shock.js": 120,
+  // 狂战意志合并猩红暴走：主动技 / 登记表 / 数值 / 旧档兼容（REVERT=merge|once|legacy|registry|notice）
+  "test-berserk-will-merge-audit.js": 120,
+  // 诺亚两技能合并：角色表 / 执行块 / 旧档幂等（REVERT=merge|compat|text）
+  "test-noa-charm-merge-audit.js": 120,
+  // 合并技能复查：主动与被动台词边界 / 摸牌反馈 / 旧档（REVERT=line|legacy|once）
+  "test-angelica-merge-recheck.js": 120,
+  // 两次技能合并的旧档迁移 / 死卡链路 / 异常 actor（REVERT=migration|normalize）
+  "test-merge-skill-side-effects.js": 120,
+  // 合并技能最终复查：装配顺序 / 历史公告口径 / 描述同步 / 旧存档（REVERT=order|notice|desc|migration）
+  "test-merge-skill-final-recheck.js": 120,
   // 圣鹰剑第三张杀 / 英雄级莫娜技能×饰品联动（模块级 + 反向验证）
   "test-holy-eagle-sword-third-slash.js": 120,
   "test-mona-hell-linkage.js": 120,
@@ -362,6 +372,11 @@ const groups = Object.freeze({
     "test-burn-shock-hp-recheck.js",
     "test-status-source-attribution-audit.js",
     "test-status-dot-split-and-shock.js",
+    "test-berserk-will-merge-audit.js",
+    "test-noa-charm-merge-audit.js",
+    "test-angelica-merge-recheck.js",
+    "test-merge-skill-side-effects.js",
+    "test-merge-skill-final-recheck.js",
     "test-hitwell-skills-strict-live.js",
     "test-preshi-skills-live.js",
     "test-mieryula-skills-live.js",

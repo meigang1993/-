@@ -33,7 +33,7 @@ const T = (name, cond, extra) => {
 };
 
 const logs = [], virtuals = [], pools = [], damage = [];
-const SKILLS = [{ name: "淫气改造" }, { name: "改造副作用" }];
+const SKILLS = [{ name: "淫气改造" }, { name: "淫气改造" }];
 const mk = (ref, gender, side = "ally", extra = {}) => ({
   uid: ref, ref, name: ref, gender, side, hp: 500, maxHp: 500,
   stats: { attack: 6, magic: 4, speed: 8, maxHp: 500, handLimit: 4 },
@@ -96,9 +96,9 @@ const resetTurn = (s, noa, turn) => {
       && s.noa.skipPlayPhase === true && virtuals.length === 1
       && s.noa._noaFrenzyTurn === turn,
       { r, skip: s.noa.skipPlayPhase, virtuals: virtuals.length, mark: s.noa._noaFrenzyTurn });
-    T(`A${turn}b 每回合恰好一次咬杀、跳过原因恒为「改造副作用」`,
+    T(`A${turn}b 每回合恰好一次咬杀、跳过原因恒为「淫气改造」`,
       virtuals.length === 1 && virtuals[0].card === "咬杀"
-      && s.noa.skipPlayReason === "改造副作用",
+      && s.noa.skipPlayReason === "淫气改造",
       { virtuals, reason: s.noa.skipPlayReason });
   }
   T("A5 全女性队伍手牌上限恒为基础 4（与单人一致）",
@@ -180,7 +180,7 @@ const resetTurn = (s, noa, turn) => {
     && s.noa.skipPlayPhase === true && s.noa.skipPlayReason === "眩晕",
     { r, virtuals: virtuals.length, reason: s.noa.skipPlayReason });
   T("E2 眩晕回合不写狂暴战报",
-    !logs.some(t => t.includes("改造副作用发作")), { logs });
+    !logs.some(t => t.includes("淫气改造发作")), { logs });
 }
 
 console.log(`RESULT ${pass}/${total}` + (REVERT ? ` REVERT=${REVERT}` : ""));

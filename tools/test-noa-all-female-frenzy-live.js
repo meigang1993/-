@@ -271,7 +271,7 @@ async function segA(browser) {
     })))}`);
     const frenzyCalls = (last.frenzy || []).filter(x => x.extra?.unit === "noa");
     const frenzyTurns = new Set(frenzyCalls.map(x => x.extra?.turn)).size;
-    T("A3 多个诺亚回合都做改造副作用判定（按回合去重 >=2）", frenzyTurns >= 2,
+    T("A3 多个诺亚回合都做淫气改造判定（按回合去重 >=2）", frenzyTurns >= 2,
       { calls: frenzyCalls.length, distinctTurns: frenzyTurns,
         turns: frenzyCalls.map(x => x.extra?.turn).slice(0, 8) });
     const perTurn = new Map();
@@ -286,7 +286,7 @@ async function segA(browser) {
     T("A4 每个诺亚回合都做且只做一次副作用判定（眩晕等跳过回合不狂暴）",
       perTurn.size >= 2 && [...perTurn.values()].every(n => n === 1) && hits >= 1,
       { perTurn: [...perTurn.entries()], hits, distinctTurns: frenzyTurns,
-        sample: (texts.match(/改造副作用发作[^|]*/g) || []).slice(0, 3) });
+        sample: (texts.match(/淫气改造发作[^|]*/g) || []).slice(0, 3) });
     // 战报对相邻重复文本会去重，文本计数不能当「每回合都跳过」的证据；
     // 用状态帧 + 40ms 零丢失的 phase4 观测来验。
     const skipFrames = snaps.filter(s => s.skip).length;

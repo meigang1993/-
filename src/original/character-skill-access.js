@@ -12,7 +12,7 @@ window.CharacterSkillAccess = (() => {
     { flags: ["crazyShooting"], name: "疯狂射击", target: "self", cost: "red" },
     { flags: ["bertisWhip"], name: "苦肉鞭笞", target: "friendlyOther" },
     { flags: ["crazySlaughter"], name: "疯狂屠戮", target: "self" },
-    { flags: ["crimsonRampage"], name: "猩红暴走", target: "self" },
+    { flags: ["berserkWill"], name: "狂战意志", target: "self" },
     { flags: ["elranaHeal"], name: "回春之手", target: "friendly", cost: "card" },
     { flags: ["aceContribution"], name: "贡献计划", target: "friendlyOther" },
     { flags: ["ailengBet", "elranaBag"], name: "计算下注", target: "self", cost: "cards" },

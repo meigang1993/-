@@ -25,7 +25,7 @@ const card = (name, extra = {}) => ({ name, type: "slash", suit: "♠", power: 0
 const mk = (uid, side, extra = {}) => ({
   uid, ref: uid, name: uid, gender: "female", side, hp: 130, maxHp: 130, hand: [],
   stats: { attack: 6, magic: 4, speed: 8, handLimit: 4 },
-  skills: [{ name: "淫气改造" }, { name: "改造副作用" }], ...extra,
+  skills: [{ name: "淫气改造" }, { name: "淫气改造" }], ...extra,
 });
 const draw = (u, n) => {
   draws += n;

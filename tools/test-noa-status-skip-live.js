@@ -122,9 +122,9 @@ async function boot(browser) {
       const orig = window.NoaSideEffectSkills.beginPlayPhase;
       window.NoaSideEffectSkills.beginPlayPhase = function (state, unit) {
         const saved = unit.skipPlayPhase, reason = unit.skipPlayReason;
-        if (saved && reason !== "改造副作用") unit.skipPlayPhase = false;
+        if (saved && reason !== "淫气改造") unit.skipPlayPhase = false;
         const r = orig.call(this, state, unit);
-        if (!r && saved && reason !== "改造副作用") {
+        if (!r && saved && reason !== "淫气改造") {
           unit.skipPlayPhase = saved; unit.skipPlayReason = reason;
         }
         return r;
@@ -255,7 +255,7 @@ async function segA(browser) {
     const stunTurn = noaTurns.find(t => t.reason === "眩晕" && t.skip);
     T("A2 存在诺亚回合：skipPlayReason 保持「眩晕」",
       !!stunTurn, { noaTurns });
-    T("A3 眩晕回合不写狂暴战报（skipPlayReason 未被改写成改造副作用）",
+    T("A3 眩晕回合不写狂暴战报（skipPlayReason 未被改写成淫气改造）",
       (() => {
         // 狂暴战报只允许出现在非眩晕的诺亚回合：按 turn 归属核对。
         const frenzyTurns = virtuals
@@ -271,11 +271,11 @@ async function segA(browser) {
     T("A6 眩晕回合不产生咬杀（useVirtualKill 无该回合记录）",
       !!stunTurn && !virtuals.some(v => v.turn === stunTurn.turn
         && v.extra?.card === "咬杀"), { stunTurn, virtuals });
-    T("A7 状态牌到期后，后续诺亚回合恢复狂暴（咬杀 + 原因改造副作用）",
+    T("A7 状态牌到期后，后续诺亚回合恢复狂暴（咬杀 + 原因淫气改造）",
       (() => {
         const later = noaTurns.filter(t => t.turn > (stunTurn?.turn ?? -1));
         const bites = virtuals.filter(v => v.extra?.card === "咬杀" && v.turn > (stunTurn?.turn ?? -1));
-        return later.some(t => t.reason === "改造副作用") && bites.length > 0;
+        return later.some(t => t.reason === "淫气改造") && bites.length > 0;
       })(), { noaTurns, bites: virtuals.filter(v => v.extra?.card === "咬杀") });
     T("A7b 判定结算后眩晕状态牌已自动消耗（不在手牌、已进入消耗区）",
       !!stunCheck?.ok, { stunCheck });

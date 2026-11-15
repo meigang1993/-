@@ -1,4 +1,4 @@
-// 诺亚【淫气改造】【改造副作用】严格检查：回合归属修正 + 文案改名 + 公告显式报错
+// 诺亚【淫气改造】【淫气改造】严格检查：回合归属修正 + 文案改名 + 公告显式报错
 //   A 本人出牌阶段（phase 4 且 activeUid=诺亚）：补牌 / 溢出挂起 / 免杀意 / 台词
 //   B 别家出牌阶段（phase 同为 4，activeUid≠诺亚）：一律不摸不弃、无战报、免杀意与台词也停
 //   C 切回本人回合后重判生效    D 非出牌阶段不生效
@@ -28,7 +28,7 @@ const card = (name, extra = {}) => ({ name, type: "slash", suit: "♠", power: 0
 const mk = (uid, side, extra = {}) => ({
   uid, ref: uid, name: uid, gender: "female", side, hp: 130, maxHp: 130, hand: [],
   stats: { attack: 6, magic: 4, speed: 8, handLimit: 4 },
-  skills: [{ name: "淫气改造" }, { name: "改造副作用" }], ...extra,
+  skills: [{ name: "淫气改造" }, { name: "淫气改造" }], ...extra,
 });
 const draw = (u, n) => {
   draws += n;

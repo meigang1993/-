@@ -1,4 +1,4 @@
-// 怪面诺亚【改造副作用】1~4 人 × 全性别组合严格检查，含与【淫气改造】联动
+// 怪面诺亚【淫气改造】1~4 人 × 全性别组合严格检查，含与【淫气改造】联动
 //   A 每个队伍人数 n=1..4、2^n 种性别组合：手牌上限 = 4 + 存活男性队友数
 //   B 结束阶段：只对「其他存活男性」各造成攻击力伤害；女性/自己/敌方/死者不受
 //   C 无存活男性 -> 狂暴虚拟【咬杀】+ skipPlayPhase；有男性则不狂暴
@@ -36,7 +36,7 @@ const T = (name, cond, extra) => {
 const logs = [], lines = [], virtuals = [], damageLog = [], discarded = [];
 const NOA_SKILLS = [
   { name: "淫气改造", text: "锁定技，出牌阶段内手牌数始终等于手牌上限；使用【杀】牌不消耗杀意。" },
-  { name: "改造副作用", text: "锁定技，结束阶段对其他存活男性造成攻击力伤害；每名存活男性手牌上限+1；无存活男性时随机虚拟咬杀并跳过出牌阶段。" },
+  { name: "淫气改造", text: "锁定技，结束阶段对其他存活男性造成攻击力伤害；每名存活男性手牌上限+1；无存活男性时随机虚拟咬杀并跳过出牌阶段。" },
 ];
 const mkUnit = (ref, gender, hp = 50, extra = {}) => ({
   uid: ref, ref, name: ref, gender, hp, maxHp: 130, side: "ally",
@@ -118,10 +118,10 @@ if (SEGS.includes("A") || SEGS.includes("B") || SEGS.includes("C")) {
         const hitUids = damageLog.map(d => d.uid).sort().join(",");
         const wantUids = mates.filter(u => u.gender === "male").map(u => u.uid).sort().join(",");
         T(`B ${nm} 仅存活男性各掉攻击力6`, hitUids === wantUids
-          && damageLog.every(d => d.amount === 6 && d.reason === "改造副作用"
+          && damageLog.every(d => d.amount === 6 && d.reason === "淫气改造"
             && d.source === "noa"),
         { hitUids, wantUids, damageLog });
-        T(`B ${nm} 有男性才播台词/日志`, (m > 0) === lines.some(l => l.name === "改造副作用")
+        T(`B ${nm} 有男性才播台词/日志`, (m > 0) === lines.some(l => l.name === "淫气改造")
           && (m > 0) === logs.some(t => t.includes("各造成6点伤害")),
         { lines: lines.length, logs });
       }

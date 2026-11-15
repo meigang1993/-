@@ -35,7 +35,7 @@ window.BattleTurnStart = ({
     // 同一回合同一单位重复进入准备流程（手动响应续跑 / 新月分享 / 无谋冲拳恢复）
     // 时，只跳过「一次性」动作：重置 skipPlayPhase、摸牌、狂暴判定。
     // 不能直接 return —— 中断恢复路径仍需靠本函数推进 phase 并继续走到出牌阶段。
-    // 尤其【改造副作用】狂暴设的 skipPlayPhase 不能被第二次进入抹掉。
+    // 尤其【淫气改造】狂暴设的 skipPlayPhase 不能被第二次进入抹掉。
     const startToken = `${battle.turn}:${unit.uid}`;
     const repeated = battle._startPhaseToken === startToken;
     battle._startPhaseToken = startToken;

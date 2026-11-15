@@ -1,4 +1,4 @@
-// 诺亚【淫气改造】×【改造副作用】严格审计（模块级，直调真实挂点）
+// 诺亚【淫气改造】×【淫气改造】严格审计（模块级，直调真实挂点）
 //   A 状态牌不计入手牌上限：balanceHand 必须与 visibleHandCount 同口径
 //   B 可弃牌不足 need：不得挂起（否则 confirmDiscard 永远选不够 → 卡死）
 //   C autoDiscard 只弃可弃牌，不得动状态牌 / _pendingDraw
@@ -29,7 +29,7 @@ const T = (name, cond, extra) => {
 
 const logs = [], drawn = [], discarded = [];
 const syncMagicCalls = [], afterDiscardCalls = [], damageCalls = [];
-const NOA_SKILLS = [{ name: "淫气改造" }, { name: "改造副作用" }];
+const NOA_SKILLS = [{ name: "淫气改造" }, { name: "淫气改造" }];
 const card = (name, extra = {}) => ({ name, type: "slash", suit: "♠", power: 0, scale: "attack", ...extra });
 const status = name => card(name, { status: true, type: "obstacle" });
 const mk = (uid, gender, side, extra = {}) => ({
@@ -223,8 +223,10 @@ async function segC() {
   T("C2 恰好弃 1 张（权威 discardNeed=1）", discarded.length === 1,
     { discarded: discarded.length, need: helpers.discardNeed(noa) });
   T("C3 弃后计入上限手牌=4", counted(noa) === 4, { counted: counted(noa) });
-  T("C4 走统一结算（syncMagic + afterDiscard 钩子在位）",
-    syncMagicCalls.includes("noa") && afterDiscardCalls.some(c => c.uid === "noa"),
+  // 飘浮掩体触发点已在 214 版移到弃牌阶段入口：出牌阶段内的溢出弃牌
+  // 不再重复结算护甲，故 afterDiscard 不应被调用；魔力同步钩子仍在。
+  T("C4 溢出弃牌走统一结算但不重复触发飘浮掩体",
+    syncMagicCalls.includes("noa") && afterDiscardCalls.length === 0,
     { syncMagicCalls, afterDiscardCalls });
 }
 

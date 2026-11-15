@@ -42,7 +42,7 @@ window.BattleAISkillEvaluation = (() => {
     if (card.block || card.charge || card.drawCards || card.targetless
       || card.mannyArmory || card.mannyBarrett || card.millerSlot
       || card.wendyTutor) return 60;
-    if (card.crimsonRampage) return (actor.rageMarks || 0) >= 3 ? 70 : 25;
+    if (card.berserkWill) return (actor.rageMarks || 0) >= 3 ? 70 : 25;
     if (card.bertisTakeFood) {
       return team.some(unit =>
         unit.ref === "bertis" && unit.hp > 0 && (unit.food || 0) > 0) ? 55 : 0;
@@ -61,7 +61,7 @@ window.BattleAISkillEvaluation = (() => {
     }
     if (card.elranaBag || card.armyOrder || card.targetless || card.block
       || card.charge || card.drawCards || card.mannyArmory || card.mannyBarrett
-      || card.millerSlot || card.crimsonRampage
+      || card.millerSlot || card.berserkWill
       || card.wendyTutor) return actor;
     return targetByPolicy(foes);
   }

@@ -37,7 +37,7 @@ window.BattlePreparePrompts = (api) => {
     if (shouldPromptMimic(unit)) { state.battle.awaitingMimicUid = unit.uid; record(state, `${unit.name} 可以发动模仿之音。`); if (onStep) onStep(); return true; }
     if (shouldPromptExtract(unit, state.battle)) { state.battle.awaitingExtractUid = unit.uid; state.battle.extractPrompted = true; record(state, `${unit.name} 可以发动榨取精华。`); if (onStep) onStep(); return true; }
     continueStartPhase(state, unit); if (onStep) onStep(); await waitEffects(); if (!current() || !state.battle || state.battle.locked || state.battle.activeUid !== unit.uid) return true;
-    // 【改造副作用】狂暴：continueStartPhase 里的 beginPlayPhase 已设 skipPlayPhase，
+    // 【淫气改造】狂暴：continueStartPhase 里的 beginPlayPhase 已设 skipPlayPhase，
     // 这条恢复路径此前直接设 phase=4 把「跳过出牌阶段」绕过了（还能继续出牌）。
     if (unit.skipPlayPhase) { record(state, `${unit.name} 因${unit.skipPlayReason || "状态牌"}跳过出牌阶段。`); const done = finishTurn(state); if (onStep) onStep(); if (!done) return true; await advanceToInput(state, onStep, current); return true; }
     if (!window.NoaCharmSkills?.enterPlayPhase?.(state, unit, undefined, onStep)) return true;

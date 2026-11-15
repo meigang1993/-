@@ -41,23 +41,26 @@ window.AngelicaLukaSkills = (() => {
   function beforeIntentCost(state, actor, card) {
     if (!canPayIntentWithRage(actor, card)) return false;
     actor.rageMarks = Math.max(0, (actor.rageMarks || 0) - 1);
-    line(state, actor, "狂战意志");
+    // 「接下来，老子使出全力了！」是【狂战意志】主动发动台词；被动用 1 枚
+    // 标记抵杀意时不再播，避免每次出杀都喊发动语。
     window.AngelicaBerserkerSkinFX?.rageSpend?.(state, actor, 1);
     window.BattleLog.add(state, `${actor.name} 消耗1枚狂战标记代替杀意消耗（剩余${actor.rageMarks}枚）。`);
     return true;
   }
-  function canUseCrimsonRampage(actor) {
-    return actor?.ref === "angelica" && !actor.usedCrimsonRampage
-      && (actor.rageMarks || 0) > 0;
+  function canUseBerserkWill(actor) {
+    // 旧档兼容：合并前的 usedCrimsonRampage 仍代表本回合已发动过，读档后不得再发动一次。
+    return actor?.ref === "angelica" && !actor.usedBerserkWill
+      && !actor.usedCrimsonRampage && (actor.rageMarks || 0) > 0;
   }
-  function crimsonRampage(state, actor, deps, ctx) {
-    if (actor.usedCrimsonRampage || !(actor.rageMarks || 0)) return true;
-    actor.usedCrimsonRampage = true;
+  // 【狂战意志】主动发动：原独立主动技效果已并入本技能，出牌阶段限一次。
+  function berserkWill(state, actor, deps, ctx) {
+    if (!canUseBerserkWill(actor)) return true;
+    actor.usedBerserkWill = true;
     const spent = actor.rageMarks;
     actor.rageMarks = 0;
-    line(state, actor, "猩红暴走");
-    window.AngelicaBerserkerSkinFX?.crimsonRampage?.(state, actor, spent);
-    window.BattleLog.add(state, `${actor.name} 发动猩红暴走，弃置${spent}枚狂战标记。`);
+    line(state, actor, "狂战意志");
+    window.AngelicaBerserkerSkinFX?.berserkWill?.(state, actor, spent);
+    window.BattleLog.add(state, `${actor.name} 发动狂战意志，弃置${spent}枚狂战标记。`);
     const drawn = deps?.draw?.(actor, spent, state.battle) ?? 0;
     const drawText = window.BattleDrawFeedback?.action?.(actor, spent, drawn)
       ?? `摸${drawn}张牌`;
@@ -79,7 +82,7 @@ window.AngelicaLukaSkills = (() => {
     return true;
   }
   function handleSpecialCard(state, actor, target, card, deps, ctx) {
-    if (card?.crimsonRampage) return crimsonRampage(state, actor, deps, ctx);
+    if (card?.berserkWill) return berserkWill(state, actor, deps, ctx);
     return false;
   }
   function afterDamage(state, actor, target, card, hpLoss, deps) {
@@ -156,5 +159,5 @@ window.AngelicaLukaSkills = (() => {
       if (speak) line(state, unit, "狼牙回战");
     }
   }
-  return { beforeCardPlayed, modifyOutgoingDamage, canPayIntentWithRage, beforeIntentCost, canUseCrimsonRampage, handleSpecialCard, afterDamage, battleStart, beginTurn, endTurn, afterCardPlayed };
+  return { beforeCardPlayed, modifyOutgoingDamage, canPayIntentWithRage, beforeIntentCost, canUseBerserkWill, handleSpecialCard, afterDamage, battleStart, beginTurn, endTurn, afterCardPlayed };
 })();

@@ -69,7 +69,7 @@ window.AngelicaBerserkerSkinFX = (() => {
     if (!item?.fx) return;
     Object.entries(vars).forEach(([name, value]) => item.fx.style.setProperty(name, value));
   }
-  function crimsonRampage(state, actor, count) {
+  function berserkWill(state, actor, count) {
     if (!active(actor)) return;
     const marks = Math.max(1, Math.min(10, count || 1));
     const burstEnd = 200 + marks * 90;
@@ -144,5 +144,5 @@ window.AngelicaBerserkerSkinFX = (() => {
     document.querySelectorAll(".angelica-berserker-entering").forEach(node =>
       node.classList.remove("angelica-berserker-entering"));
   }
-  return { active, entry, queueEntry, might, rageGain, rageSpend, rageTrail, crimsonRampage, sync, cancel };
+  return { active, entry, queueEntry, might, rageGain, rageSpend, rageTrail, berserkWill, sync, cancel };
 })();

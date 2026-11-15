@@ -27,7 +27,7 @@ const T = (name, cond, extra) => {
 };
 
 const logs = [], virtuals = [], damages = [], draws = [], discarded = [];
-const NOA_SKILLS = [{ name: "淫气改造" }, { name: "改造副作用" }];
+const NOA_SKILLS = [{ name: "淫气改造" }, { name: "淫气改造" }];
 const mk = (uid, gender, side, extra = {}) => ({
   uid, ref: uid, name: uid, gender, side, hp: 130, maxHp: 130, hand: [],
   stats: { attack: 6, magic: 4, speed: 8, handLimit: 4 },
@@ -123,7 +123,7 @@ if (SEGS.includes("B2")) {
   T("B2b 目标不是诺亚自己", virtuals[0]?.target !== "noa", virtuals[0]);
   T("B2c 目标落在敌方池", es.some(e => e.ref === virtuals[0]?.target), virtuals[0]);
   T("B2d 设置 skipPlayPhase + reason", noa.skipPlayPhase === true
-    && noa.skipPlayReason === "改造副作用", { skip: noa.skipPlayPhase, reason: noa.skipPlayReason });
+    && noa.skipPlayReason === "淫气改造", { skip: noa.skipPlayPhase, reason: noa.skipPlayReason });
 }
 
 // ---------- B3 同回合重复 beginPlayPhase 幂等 ----------

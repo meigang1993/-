@@ -1,4 +1,4 @@
-// 怪面诺亚【淫气改造】×【改造副作用】联动严格检查（Node 直调）
+// 怪面诺亚【淫气改造】×【淫气改造】联动严格检查（Node 直调）
 //   A 动态手牌上限联动：N 名存活男性 -> 上限 4+N -> 出牌阶段摸至上限 / 出牌后补回
 //   B 结束阶段伤害致死 -> 上限实时下降 -> 下回合出牌阶段开始触发玩家弃置
 //   C 无存活男性 -> 狂暴虚拟咬杀 + 跳过出牌阶段 -> 淫气改造整回合不生效
@@ -34,7 +34,7 @@ const mkUnit = (ref, gender, hp = 50, extra = {}) => ({
 });
 const NOA_SKILLS = [
   { name: "淫气改造", text: "锁定技，出牌阶段内手牌数始终等于手牌上限；使用【杀】牌不消耗杀意。" },
-  { name: "改造副作用", text: "锁定技，结束阶段对其他存活男性造成攻击力伤害；每名存活男性手牌上限+1；无存活男性时随机虚拟咬杀并跳过出牌阶段。" },
+  { name: "淫气改造", text: "锁定技，结束阶段对其他存活男性造成攻击力伤害；每名存活男性手牌上限+1；无存活男性时随机虚拟咬杀并跳过出牌阶段。" },
 ];
 const slash = (name = "杀（普攻）", extra = {}) => ({
   name, type: "slash", suit: "♠", power: 0, scale: "attack", ...extra,
@@ -133,7 +133,7 @@ const draw = ctx.BattleSystem.draw;
   Side.endTurn(state, noa, { damage: dmg });
   T("B1 两名男性各掉攻击力 6", before[0] - m0.hp === 6 && before[1] - m1.hp === 6,
     { before, after: [m0.hp, m1.hp] });
-  T("B2 播放改造副作用台词", lines.some(l => l.name === "改造副作用" && l.unit === "noa"), { lines });
+  T("B2 播放淫气改造台词", lines.some(l => l.name === "淫气改造" && l.unit === "noa"), { lines });
   // 一名男性被打死 -> 上限 6 -> 5
   m0.hp = 0;
   T("B3 男性阵亡后上限实时降为 5", Side.handLimit(noa) === 5, { got: Side.handLimit(noa) });
@@ -253,7 +253,7 @@ const draw = ctx.BattleSystem.draw;
   T("E1 淫气改造不往牌上写标记（即时判定）",
     !("noIntentCost" in card) && Charm.noIntentCost(noa, card) === true);
   // 虚拟咬杀的 noIntentCost 是牌自带，离区应被 clearPlayFlags 清除
-  const v = slash("咬杀", { virtual: true, void: true, noIntentCost: true, generatedBySkill: "改造副作用" });
+  const v = slash("咬杀", { virtual: true, void: true, noIntentCost: true, generatedBySkill: "淫气改造" });
   if (ctx.BattleCardCleanup?.clearPlayFlags) ctx.BattleCardCleanup.clearPlayFlags(v);
   T("E2 虚拟咬杀离区后 noIntentCost 被清除", v.noIntentCost === undefined, { noIntentCost: v.noIntentCost });
   battle.phase = 6;

@@ -243,7 +243,7 @@ async function segA(browser) {
     const texts = (last.logs || []).join(" | ");
     T("A4 战报出现「没有存活的男性角色」狂暴文本",
       texts.includes("没有存活的男性角色") && texts.includes("虚拟【咬杀】"),
-      { hit: texts.match(/改造副作用发作[^|]*/g)?.slice(0, 2) || [] });
+      { hit: texts.match(/淫气改造发作[^|]*/g)?.slice(0, 2) || [] });
     T("A5 战报出现「跳过出牌阶段」", texts.includes("跳过出牌阶段"),
       { hit: texts.match(/跳过出牌阶段[^|]*/g)?.slice(0, 2) || [] });
 
@@ -267,8 +267,8 @@ async function segA(browser) {
     T("A10 狂暴回合没有出现「怪面诺亚 可以出牌」（跳过没被绕过）",
       !texts.includes("怪面诺亚 可以出牌"),
       { hit: (texts.match(/怪面诺亚[^|]*可以出牌/g) || []).slice(0, 2) });
-    T("A11 skipPlayReason 为改造副作用",
-      noaTurns.some(s => s.reason === "改造副作用"), noaTurns.map(s => s.reason));
+    T("A11 skipPlayReason 为淫气改造",
+      noaTurns.some(s => s.reason === "淫气改造"), noaTurns.map(s => s.reason));
 
     // 淫气改造：狂暴回合不进 phase 4，balanceHand / enterPlayPhase 不应触发补牌
     const balance = last.balance || [];

@@ -1,4 +1,4 @@
-// 诺亚【淫气改造】×【改造副作用】复查严格检查（模块级，直调真实挂点）
+// 诺亚【淫气改造】×【淫气改造】复查严格检查（模块级，直调真实挂点）
 //   H 补牌夹状态牌：补齐判定必须按 countedHand，不能按 hand.length 增量
 //   I 溢出但一张都弃不了：不得写「一次性弃置 。」空战报
 //   J 摸牌信号（耗尽 / 封魔 / 转交）在补齐循环里仍生效
@@ -32,7 +32,7 @@ const mk = (uid, gender, side, extra = {}) => ({
   uid, ref: uid, name: uid, gender, side, hp: 130, maxHp: 130, hand: [],
   stats: { attack: 6, magic: 4, speed: 8, handLimit: 4 }, skills: [], ...extra,
 });
-const noa = () => mk("noa", "female", "ally", { skills: [{ name: "淫气改造" }, { name: "改造副作用" }] });
+const noa = () => mk("noa", "female", "ally", { skills: [{ name: "淫气改造" }, { name: "淫气改造" }] });
 const battle = (o = {}) => ({ turn: 1, phase: 4, allies: [], enemies: [], activeUid: "noa", locked: false, ...o });
 const counted = u => (u?.hand || []).filter(c => ctx.GuestCharacterSkills.countsForLimit(u, c)).length;
 
@@ -182,7 +182,7 @@ if (has("L")) {
   const frenzyLogs = logs.filter(l => l.includes("咬杀"));
   T("L1 两次调用都返回 true", r1 === true && r2 === true, { r1, r2 });
   T("L2 只发动一次狂暴咬杀", frenzyLogs.length === 1, { frenzyLogs });
-  T("L3 跳过原因保持「改造副作用」", n.skipPlayReason === "改造副作用" && n.skipPlayPhase === true, { reason: n.skipPlayReason });
+  T("L3 跳过原因保持「淫气改造」", n.skipPlayReason === "淫气改造" && n.skipPlayPhase === true, { reason: n.skipPlayReason });
   // 眩晕优先：不狂暴、不覆盖原因
   const n2 = noa(); n2.skipPlayPhase = true; n2.skipPlayReason = "眩晕";
   const b2 = battle({ allies: [n2], enemies: [mk("e0", "male", "enemy")], activeUid: "noa" });

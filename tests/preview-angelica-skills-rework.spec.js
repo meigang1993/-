@@ -213,7 +213,7 @@ test("狂战意志：杀意为0时是否可打出取决于标记，虚拟杀不�
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test("猩红暴走：弃置全部标记、摸等量牌并按生命上限10%回复", async ({ page }) => {
+test("狂战意志：弃置全部标记、摸等量牌并按生命上限10%回复", async ({ page }) => {
   const errors = collectErrors(page);
   await enterBattleWithAngelica(page);
 
@@ -223,13 +223,13 @@ test("猩红暴走：弃置全部标记、摸等量牌并按生命上限10%回�
     actor.maxHp = 40;
     actor.hp = 20;
     actor.rageMarks = 4;
-    actor.usedCrimsonRampage = false;
+    actor.usedBerserkWill = false;
     let drawnFor = -1;
     const deps = {
       draw: (unit, count) => { drawnFor = count; return count; },
     };
     const ctx = { pushFloat: () => {} };
-    const card = { name: "猩红暴走", type: "tactic", crimsonRampage: true };
+    const card = { name: "狂战意志", type: "tactic", berserkWill: true };
     window.AngelicaLukaSkills.handleSpecialCard(
       state, actor, null, card, deps, ctx);
     const first = { marks: actor.rageMarks, drawnFor, hp: actor.hp };

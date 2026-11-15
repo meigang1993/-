@@ -3,7 +3,7 @@ window.GameStoreMigrations = (() => {
     characterProgressionVersion, characterGrowthVersion, baseStats, freshState,
   } = window.GameStoreStateFactory;
   const {
-    renameRelicMap, repairCardLists, repairRelicLists,
+    renameRelicMap, repairCardLists, repairRelicLists, normalizeMergedSkills,
   } = window.StoreRepairs;
   const {
     cleanResource, migrateCharacter, migrateDeck, migrateBondiShopUnlock, syncCardTexts,
@@ -100,6 +100,7 @@ window.GameStoreMigrations = (() => {
       || state.view === "battle" || state.view === "battleLoading";
     const resumedBattle = window.BattleSaveCheckpoint?.restore?.(state) === true;
     const interruptedModal = resumedBattle ? null : unlocks.recoverInterruptedBattle(state);
+    if (normalizeMergedSkills(state)) markForSave(state);
     if (interruptedBattle && !resumedBattle) markForSave(state);
     recoverOrphanedBattleNode(state);
     window.GameStoreCompact?.stripTransientUiState?.(state);

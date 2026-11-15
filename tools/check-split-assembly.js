@@ -123,7 +123,7 @@ if (!fs.existsSync(bundlesPath)) {
     "battle-combat-attack-values.js": ["holy-eagle-sword-skills.js"],
     "ruins-enemy-skills.js": ["skill-once-per-turn.js"],
     "mieryula-skills.js": ["mieryula-time-stop.js"],
-    "noa-charm-skills.js": ["noa-charm-discard.js"],
+    "noa-charm-skills.js": ["noa-side-effect-skills.js", "noa-charm-discard.js"],
     "bertis-gerlot-skills.js": ["gerlot-revenge-skills.js"],
     "update-notice.js": [
       "update-notice-recent.js", "update-notice-archive.js", "update-notice-rules.js",
