@@ -84,7 +84,12 @@ T("A8 回合开始重置 usedBerserkWill 并清理旧档字段",
 const consumers = ["battle-card-playability.js", "battle-ai-skill-evaluation.js"]
   .map(file => [file, src(file)]);
 T("A9 可打出性与 AI 决策都改用 berserkWill",
-  consumers.every(([, s]) => /card\.berserkWill/.test(s) && !/card\.crimsonRampage/.test(s)));
+  consumers.every(([, s]) => !/card\.crimsonRampage/.test(s))
+  // 合并后狂战意志是 self 目标，可打出性不再列入「需存活敌方」分组，
+  // 改由一次性登记表 + 技能授权统一裁决；AI 决策仍直接读 berserkWill。
+  && !/card\.berserkWill \|\| card\.bestaEndSlash/.test(consumers[0][1])
+  && /card\.bestaEndSlash\) && !livingEnemy\(\)/.test(consumers[0][1])
+  && /card\.berserkWill/.test(consumers[1][1]));
 const cardArt = src("card-art.js");
 T("A10 卡图只保留狂战意志，孤立卡图文件已删除",
   /"狂战意志":\s*"\.\/assets\/generated\/cards\/skill-art-berserker-will/.test(cardArt)
@@ -108,10 +113,12 @@ T("A13 皮肤特效导出改为 berserkWill",
   const hits = fs.readdirSync(ROOT).filter(f => f.endsWith(".js") && !skip.has(f))
     .filter(f => src(f).includes("猩红暴走"));
   T("A14 源码中文「猩红暴走」残留 0（公告历史除外）", hits.length === 0, hits);
-  // 本检查文件、QA 目录与合并复查测试都在描述「合并猩红暴走 / 旧档迁移」，属合理例外。
+  // 本检查文件、QA 目录与合并复查测试都在描述「合并猩红暴走 / 旧档迁移」，属合理例外；
+  // 卡图 / 出牌区 / 皮肤特效复查脚本同样必须引用旧技能名做反向对照，一并排除。
   const exempt = new Set(["test-berserk-will-merge-audit.js", "qa-test-catalog.js",
     "test-angelica-merge-recheck.js", "test-merge-skill-side-effects.js",
-    "test-merge-skill-final-recheck.js"]);
+    "test-merge-skill-final-recheck.js", "test-angelica-berserk-will-trail.js",
+    "test-angelica-berserk-will-trail-live.js"]);
   const toolHits = ["tools", "tests"].flatMap(dir => {
     const base = path.join(__dirname, "..", dir);
     return fs.readdirSync(base).filter(f => f.endsWith(".js") && !exempt.has(f))

@@ -41,7 +41,7 @@ window.AngelicaLukaSkills = (() => {
   function beforeIntentCost(state, actor, card) {
     if (!canPayIntentWithRage(actor, card)) return false;
     actor.rageMarks = Math.max(0, (actor.rageMarks || 0) - 1);
-    // 「接下来，老子使出全力了！」是【狂战意志】主动发动台词；被动用 1 枚
+    // 「游戏结束了，看我全力进攻。」是【狂战意志】主动发动台词；被动用 1 枚
     // 标记抵杀意时不再播，避免每次出杀都喊发动语。
     window.AngelicaBerserkerSkinFX?.rageSpend?.(state, actor, 1);
     window.BattleLog.add(state, `${actor.name} 消耗1枚狂战标记代替杀意消耗（剩余${actor.rageMarks}枚）。`);
@@ -54,6 +54,15 @@ window.AngelicaLukaSkills = (() => {
   }
   // 【狂战意志】主动发动：原独立主动技效果已并入本技能，出牌阶段限一次。
   function berserkWill(state, actor, deps, ctx) {
+    // 执行块兜底：正常链路 useCard → CharacterSkillAccess.canResolve 已严格判
+    // phase===4 + 本人行动；此处挡住绕过 useCard 的恢复/存档直接调用路径。
+    // 守卫失败返回 true（已处理但不结算）：resolveCard 对 false 会继续走普通牌
+    // 兜底，把技能卡移出手牌并写「使用了」，比不结算更糟。
+    // 字段缺失视为模块级夹具（无完整 battle），按放行处理，不改既有单测口径。
+    const b = state?.battle;
+    if (b && ((b.phase != null && b.phase !== 4)
+      || (b.activeUid != null && actor?.uid != null
+        && b.activeUid !== actor.uid))) return true;
     if (!canUseBerserkWill(actor)) return true;
     actor.usedBerserkWill = true;
     const spent = actor.rageMarks;
@@ -86,7 +95,9 @@ window.AngelicaLukaSkills = (() => {
     return false;
   }
   function afterDamage(state, actor, target, card, hpLoss, deps) {
-    if (!hpLoss) return;
+    // 护甲全额吸收时 hpLoss 为 0，但 blockLoss > 0 仍算「造成伤害 / 受到伤害」，
+    // 与疯狂刺刀（carlos-skills.js）同口径，避免打护甲时狂战标记一枚不得。
+    if (!(hpLoss > 0 || (deps?.blockLoss || 0) > 0)) return;
     const schedule = deps?.damage?.scheduleAfterDamage;
     const award = () => {
       gainRage(state, actor, "狂战造成伤害", target);

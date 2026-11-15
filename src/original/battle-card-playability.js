@@ -119,8 +119,10 @@ window.BattleCardPlayability = deps => {
     if (card.extract && !livingMale()) return true;
     if (card.preshiDrain && !livingMale()) return true;
     if (card.mieryulaBloodthirst && !livingMale()) return true;
+    // 【狂战意志】合并后是 self 目标、效果不依赖敌方存活，敌人全灭也不该置灰；
+    // 其余几项仍需「有存活敌方」才可发动。
     if ((card.speedAssault || card.withererPeek || card.crazySlaughter
-      || card.berserkWill || card.bestaEndSlash) && !livingEnemy()) return true;
+      || card.bestaEndSlash) && !livingEnemy()) return true;
     if (card.arsenal && !sameSideUnits(battle, actor).some(unit => unit.uid !== actor.uid && unit.hp > 0)) return true;
     if (card.bertisTakeFood && !(battle.allies || []).some(unit => unit.ref === "bertis" && unit.hp > 0 && (unit.food || 0) > 0)) return true;
     if (card.comboAttack && !canComboAttack(battle, actor, card)) return true;

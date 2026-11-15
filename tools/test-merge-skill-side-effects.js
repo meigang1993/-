@@ -226,7 +226,8 @@ T("B7 不动其它单位、其它牌与敌方",
 {
   const lines = read("battle-line-data.js") + read("new-character-line-data.js");
   T("E1 两个合并技能的台词都在表内",
-    /"狂战意志": "接下来，老子使出全力了！"/.test(lines)
+    /"狂战意志": "游戏结束了，看我全力进攻。"/.test(lines)
+    && !/"狂战意志": "接下来，老子使出全力了！"/.test(lines)
     && /"淫气改造": "全部！全部进来！！"/.test(lines));
   const notice = read("update-notice-recent.js");
   T("E2 今日公告写明两次删除与合并",

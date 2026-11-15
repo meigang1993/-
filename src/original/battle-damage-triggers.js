@@ -66,7 +66,10 @@ window.BattleDamageTriggers = (api) => {
     if (!tsStopped(target))
     window.HoshinoSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
     // 狂战（安洁莉卡）逐段结算：多段/连击的每一段各自获得 1 枚标记。
-    window.AngelicaLukaSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
+    // blockLoss 一并提供：护甲全额吸收时 hpLoss=0，只看 hpLoss 会漏发标记
+    // （与疯狂刺刀 afterSlashDamage 同一口径）。
+    window.AngelicaLukaSkills?.afterDamage?.(state, actor, target, card, hpLoss,
+      { damage, draw: deps.draw, pushFloat: ctx.pushFloat, blockLoss });
     window.GuestCharacterSkills?.afterDamage?.(state, actor, target, card, hpLoss, { damage, draw: deps.draw, pushFloat: ctx.pushFloat });
     // 凋零者是敌方单位，会被时停标记；此处不加判会让鲜血之忆/勒脖/长舌头/
     // 镰刀额外回合在被时停时照常触发。

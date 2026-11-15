@@ -70,6 +70,18 @@ const timeouts = Object.freeze({
   "test-status-dot-split-and-shock.js": 120,
   // 狂战意志合并猩红暴走：主动技 / 登记表 / 数值 / 旧档兼容（REVERT=merge|once|legacy|registry|notice）
   "test-berserk-will-merge-audit.js": 120,
+  // 狂战意志卡图/出牌区/皮肤特效：纯 Node 16 项 + 3 组反向复跑
+  "test-angelica-berserk-will-trail.js": 120,
+  // 狂战意志可点击/发动后置灰/新台词：纯 Node 23 项 + 4 组反向复跑
+  "test-angelica-berserk-will-clickable.js": 120,
+  // 狂战意志出牌阶段限一次 / 原锁定技仍生效：纯 Node 28 项 + 5 组反向复跑
+  "test-berserk-will-phase-once-passive.js": 120,
+  // 四条边界收口：护甲伤害攒标记 / 执行块阶段守卫 / 无敌人不置灰（REVERT=block|phase|enemy）
+  "test-berserk-will-boundary-tighten.js": 120,
+  // 实机需等飞牌动画 commit + 皮肤特效最晚一段（约 1.8s）
+  "test-angelica-berserk-will-trail-live.js": 300,
+  // 实机阶段切换：phase1/4/6、locked、已发动、下一回合重置
+  "test-berserk-will-phase-live.js": 300,
   // 诺亚两技能合并：角色表 / 执行块 / 旧档幂等（REVERT=merge|compat|text）
   "test-noa-charm-merge-audit.js": 120,
   // 合并技能复查：主动与被动台词边界 / 摸牌反馈 / 旧档（REVERT=line|legacy|once）
@@ -377,6 +389,10 @@ const groups = Object.freeze({
     "test-angelica-merge-recheck.js",
     "test-merge-skill-side-effects.js",
     "test-merge-skill-final-recheck.js",
+    "test-angelica-berserk-will-trail.js",
+    "test-angelica-berserk-will-clickable.js",
+    "test-berserk-will-phase-once-passive.js",
+    "test-berserk-will-boundary-tighten.js",
     "test-hitwell-skills-strict-live.js",
     "test-preshi-skills-live.js",
     "test-mieryula-skills-live.js",
@@ -539,6 +555,8 @@ const groups = Object.freeze({
     "test-elrana-fallen-physician-skin.js",
     "test-flora-sonic-skin.js",
     "test-angelica-berserker-skin.js",
+    "test-angelica-berserk-will-trail-live.js",
+    "test-berserk-will-phase-live.js",
     "test-nanali-slaughter-witch-skin.js",
     "test-nanali-slaughter-witch-skin-live.js",
     "test-nanali-witch-skin-fx-wiring.js",

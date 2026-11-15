@@ -280,8 +280,9 @@ function runNormal() {
   {
     T("F1 hp-value 登记到全部4个消费bundle",
       (texts.manifest.match(/"hp-value\.js"/g) || []).length === 4);
-    T("F2 技能审计角色计数已同步34/88",
-      texts.contract.includes("length === 34") && texts.contract.includes("length === 88"));
+    // 两次技能合并后角色技能总数 88 → 87 → 86，断言同步到当前值。
+    T("F2 技能审计角色计数已同步34/86",
+      texts.contract.includes("length === 34") && texts.contract.includes("length === 86"));
     T("F3 登记表检测按文件名取消费方（不再硬编码索引0）",
       texts.registry.includes("shared.SHARED_SOURCES.find(entry => entry.file === registry)"));
     const fixtures = ["check-resistance-trigger.js", "pursue-kill-fixtures.js",
@@ -369,7 +370,7 @@ function runRevert(kind) {
       "shared.SHARED_SOURCES[0]");
     assert.notStrictEqual(brokenContract, patched.contract, "计数必须真被改到");
     assert.notStrictEqual(brokenRegistry, patched.registry, "索引必须真被改到");
-    const f2 = brokenContract.includes("length === 34") && brokenContract.includes("length === 88");
+    const f2 = brokenContract.includes("length === 34") && brokenContract.includes("length === 86");
     const f3 = brokenRegistry.includes("shared.SHARED_SOURCES.find(entry => entry.file === registry)");
     assert.strictEqual(f2, false, "REVERT=fixture 应让 F2 精准报红");
     assert.strictEqual(f3, false, "REVERT=fixture 应让 F3 精准报红");
