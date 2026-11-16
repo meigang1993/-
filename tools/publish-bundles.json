@@ -368,7 +368,8 @@
     "abe-karuna-bubble-skills.js",
     "noa-side-effect-skills.js",
     "noa-charm-discard.js",
-    "noa-charm-skills.js"
+    "noa-charm-skills.js",
+    "noa-ultimate-blade-skills.js"
   ],
   "battle-flow": [
     "battle-counter-triggers.js",

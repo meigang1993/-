@@ -15,6 +15,7 @@ window.BattleSaveCheckpointValidation = (() => {
     "awaitingSpeedAssaultUid", "prepareUnitUid", "endPhaseUnitUid",
     "pendingVictory", "pendingDefeat", "victoryScreen",
     "chiyoChain",
+    "noaUltimateChain",
   ];
   const record = value => !!value && typeof value === "object"
     && !Array.isArray(value);

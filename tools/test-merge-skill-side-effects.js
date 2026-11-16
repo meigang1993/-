@@ -157,9 +157,11 @@ T("B3 旧技能卡就地迁移成 berserkWill 且改回【狂战意志】",
   legacy.angelica.hand[0].berserkWill === true
   && !("crimsonRampage" in legacy.angelica.hand[0])
   && legacy.angelica.hand[0].name === "狂战意志");
-T("B4 诺亚只剩【淫气改造】一个技能，且描述已换成合并版",
-  legacy.noa.skills.length === 1 && legacy.noa.skills[0].name === "淫气改造"
-  && /结束阶段/.test(legacy.noa.skills[0].text || ""));
+T("B4 诺亚保留【淫气改造】+【终极刀魔】且描述已换成合并版",
+  legacy.noa.skills.length === 2
+  && legacy.noa.skills.some(s => s.name === "淫气改造" && /结束阶段/.test(s.text || ""))
+  && legacy.noa.skills.some(s => s.name === "终极刀魔" && s.type === "active")
+  && !legacy.noa.skills.some(s => s.name === "改造副作用"));
 T("B5 旧跳过原因改写为【淫气改造】", legacy.noa.skipPlayReason === "淫气改造");
 T("B6 幂等：二次规范化 changed=false",
   typeof normalize === "function" && normalize(legacy.state) === false);
@@ -240,8 +242,9 @@ T("B7 不动其它单位、其它牌与敌方",
     && /name: "狂战意志", type: "active"/.test(angelica));
   const data = read("data-new-characters.js");
   const noa = data.slice(data.indexOf('id: "noa"'), data.indexOf('id: "gerda"'));
-  T("E4 诺亚技能表只剩【淫气改造】且含三项并入效果",
-    (noa.match(/\{\s*name:\s*"[^"]+",\s*type:\s*"(passive|active)"/g) || []).length === 1
+  T("E4 诺亚技能表为【淫气改造】+【终极刀魔】且含三项并入效果",
+    (noa.match(/\{\s*name:\s*"[^"]+",\s*type:\s*"(passive|active)"/g) || []).length === 2
+    && /name: "终极刀魔", type: "active"/.test(noa)
     && /结束阶段，你对我方其他所有存活男性角色/.test(noa)
     && /若队伍中没有存活的男性角色/.test(noa));
 }

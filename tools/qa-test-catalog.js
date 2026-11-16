@@ -84,6 +84,15 @@ const timeouts = Object.freeze({
   "test-berserk-will-phase-live.js": 300,
   // 诺亚两技能合并：角色表 / 执行块 / 旧档幂等（REVERT=merge|compat|text）
   "test-noa-charm-merge-audit.js": 120,
+  "test-noa-ultimate-blade.js": 120,
+  // 独立复查：真实模块链路 / 虚拟杀不放大 X / 旧档与存档往返（REVERT=count|store）
+  "test-noa-ultimate-blade-recheck.js": 120,
+  // 真实 bundle 装配下的发动 → 额外结算 → 转移 → 卡图解码
+  "test-noa-ultimate-blade-live.js": 240,
+  // 出牌阶段限一次四层守卫 + X/预约同源（REVERT=phase|once|reset|same）
+  "test-noa-ultimate-blade-phase-once.js": 120,
+  "test-noa-ultimate-blade-scope-reverse.js": 120,
+  "test-noa-ultimate-blade-phase-live.js": 240,
   // 合并技能复查：主动与被动台词边界 / 摸牌反馈 / 旧档（REVERT=line|legacy|once）
   "test-angelica-merge-recheck.js": 120,
   // 两次技能合并的旧档迁移 / 死卡链路 / 异常 actor（REVERT=migration|normalize）
@@ -386,6 +395,11 @@ const groups = Object.freeze({
     "test-status-dot-split-and-shock.js",
     "test-berserk-will-merge-audit.js",
     "test-noa-charm-merge-audit.js",
+    "test-noa-ultimate-blade.js",
+    "test-noa-ultimate-blade-recheck.js",
+    "test-noa-ultimate-blade-live.js",
+    "test-noa-ultimate-blade-phase-once.js",
+    "test-noa-ultimate-blade-scope-reverse.js",
     "test-angelica-merge-recheck.js",
     "test-merge-skill-side-effects.js",
     "test-merge-skill-final-recheck.js",
@@ -557,6 +571,7 @@ const groups = Object.freeze({
     "test-angelica-berserker-skin.js",
     "test-angelica-berserk-will-trail-live.js",
     "test-berserk-will-phase-live.js",
+    "test-noa-ultimate-blade-phase-live.js",
     "test-nanali-slaughter-witch-skin.js",
     "test-nanali-slaughter-witch-skin-live.js",
     "test-nanali-witch-skin-fx-wiring.js",

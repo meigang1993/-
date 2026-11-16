@@ -265,7 +265,8 @@ T("E1 旧档规范化 changed=true 且技能条目无幽灵旧名",
   && !JSON.stringify(legacy.angelica.skills).includes("猩红暴走")
   && !JSON.stringify(legacy.noa.skills).includes("改造副作用")
   && legacy.angelica.skills.some(s => s.name === "狂战意志" && s.type === "active")
-  && legacy.noa.skills.length === 1
+  && legacy.noa.skills.length === 2
+  && legacy.noa.skills.some(s => s.name === "终极刀魔" && s.type === "active")
   && legacy.angelica.skills.some(s => s.name === "临场发挥"));
 T("E2 手牌 / 牌堆 / 弃牌 / 消耗区旧猩红卡全部迁移",
   ["hand", "deck", "discard", "consumed"].every(key => legacy.angelica[key].every(c =>

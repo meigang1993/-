@@ -122,6 +122,7 @@ window.CardArt = (() => {
     "荣誉祝福": "./assets/generated/cards/skill-art-maria-honor-blessing.bb3f4b54.webp",
     "魅魔钢叉": "./assets/generated/cards/skill-art-succubus-fork.bdc0e56b.webp",
     "女王榨取": "./assets/generated/cards/skill-art-queen-extract.361b442b.webp",
+    "终极刀魔": "./assets/generated/cards/skill-art-ultimate-blade.c1dcc172.webp",
   });
   const skillFallback = "./assets/generated/cards/card-art-charge.bfb8fcb9.webp";
   const isSkill = card => !!card && !card.virtual && !card.convertedFrom

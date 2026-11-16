@@ -84,7 +84,7 @@ window.BattleCombatAttackFlow = (api, values) => {
   const stopped = unit => !!window.MieryulaTimeStop?.isSkillDisabled?.(unit);
 
   function prepareSlash(state, actor, target, card) {
-    if (!card._skipUseKillTriggers) actor.playedSlashThisTurn = true;
+    if (!card._skipUseKillTriggers && !card._skipPlayedSlashFlag) actor.playedSlashThisTurn = true;
     triggerWhiteLolita?.(state, actor, target, card);
     // 出牌者侧的杀牌前置钩子（水下列车 / 兽人地下城 / 聚焦喷火器）归属 actor：
     // 被时停时不得发动。正常流程里被时停者会在回合开始被跳过、根本轮不到出牌，

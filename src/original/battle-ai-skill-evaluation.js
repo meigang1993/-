@@ -1,6 +1,6 @@
 window.BattleAISkillEvaluation = (() => {
   const {
-    HEAL_THRESHOLD, alive, isKill, hpPct, visible, handLimit, hearts,
+    HEAL_THRESHOLD, alive, hpPct, visible, handLimit, hearts,
     targetByPolicy, healTarget, keepValue,
   } = window.BattleAIHelpers;
   const { costCard, otherAlly, ailengChargeTarget } =
@@ -42,6 +42,9 @@ window.BattleAISkillEvaluation = (() => {
     if (card.block || card.charge || card.drawCards || card.targetless
       || card.mannyArmory || card.mannyBarrett || card.millerSlot
       || card.wendyTutor) return 60;
+    // 预约只认实体单体【杀】：手牌里只有群体杀/虚拟杀时发动会白耗限一次。
+    if (card.ultimateBlade) return hasFoe && actor.hand.some(item =>
+      !item._pendingDraw && window.CardUtils?.isEntitySingleKill?.(item)) ? 65 : 0;
     if (card.berserkWill) return (actor.rageMarks || 0) >= 3 ? 70 : 25;
     if (card.bertisTakeFood) {
       return team.some(unit =>

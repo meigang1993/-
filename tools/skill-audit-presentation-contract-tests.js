@@ -19,8 +19,9 @@ module.exports = ({ assert, unit }) => {
   // 78 → 81：新增米尔尤拉（渴血杀戮 / 无谋霸姬 / 神奇怀表）。
   // 81 → 83 → 86 → 88：索尼娅、格尔达、星野依、星野海一、安倍卡露娜等角色技能补齐。
   // 88 → 87：安洁莉卡主动技合并（3 技能变 2 技能）；87 → 86：诺亚两技能合并为一。
-  assert(GameData.characters.flatMap(template => template.skills || []).length === 86,
-    "skill audit must cover all 86 playable-character skills");
+  // 86 → 87：诺亚新增主动技【终极刀魔】。
+  assert(GameData.characters.flatMap(template => template.skills || []).length === 87,
+    "skill audit must cover all 87 playable-character skills");
   // 72 → 71：删除魔王军猛兽部队「快速装弹」。
   assert(enemies.flatMap(template => template.skills || []).length === 71,
     "skill audit must cover all 71 enemy skills");
@@ -84,8 +85,9 @@ module.exports = ({ assert, unit }) => {
   // 47 → 46：删除卡迪西斯主动技「战场指挥官」（带技能立绘）。
   // 46 → 47：新增普雷希主动技「女王榨取」（带技能立绘）。
   // 47 → 49：新增米尔尤拉主动技「渴血杀戮」「神奇怀表」。
-  assert(namedActiveSkills.size === 49,
-    `skill artwork audit must cover all 49 named active skills (实际 ${namedActiveSkills.size})`);
+  // 49 → 50：新增诺亚主动技「终极刀魔」（无专属卡图，走技能卡兜底图）。
+  assert(namedActiveSkills.size === 50,
+    `skill artwork audit must cover all 50 named active skills (实际 ${namedActiveSkills.size})`);
   const artOwners = new Map();
   const hashOwners = new Map();
   namedActiveSkills.forEach((skill, name) => {

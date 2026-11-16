@@ -102,6 +102,7 @@ window.BattleCombat = (deps) => {
     if (window.LokarSkills?.handleSpecialCard?.(state, actor, target, card, deps, specialCtx)) { card._countAsPlayed = true; return; }
     if (window.MillerSkills?.handleSpecialCard?.(state, actor, target, card, deps)) { card._countAsPlayed = true; return; }
     if (window.AngelicaLukaSkills?.handleSpecialCard?.(state, actor, target, card, deps, specialCtx)) { card._countAsPlayed = true; return; }
+    if (window.NoaUltimateBladeSkills?.handleSpecialCard?.(state, actor, target, card)) { card._countAsPlayed = true; return; }
     if (window.ArtinaMariaSkills?.handleSpecialCard?.(state, actor, target, card, deps)) { card._countAsPlayed = true; return; }
     if (window.ElranaAceNanaliSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat }, specialCtx)) { card._countAsPlayed = true; return true; }
     if (window.HoshinoSkills?.handleSpecialCard?.(state, actor, target, card, { ...deps, damage, pushFloat })) { card._countAsPlayed = true; return true; }

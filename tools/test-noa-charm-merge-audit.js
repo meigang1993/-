@@ -45,7 +45,9 @@ const data = src("data-new-characters.js");
   const block = data.slice(data.indexOf('id: "noa"'), data.indexOf('id: "gerda"'));
   const names = [...block.matchAll(/\{\s*name:\s*"([^"]+)",\s*type:\s*"(passive|active|trigger)"/g)]
     .map(m => m[1]);
-  T("A1 诺亚只剩【淫气改造】一个技能", names.length === 1 && names[0] === "淫气改造", names);
+  T("A1 诺亚保留【淫气改造】+【终极刀魔】，无幽灵旧名",
+    names.length === 2 && names.includes("淫气改造") && names.includes("终极刀魔")
+    && !names.includes("改造副作用"), names);
 }
 T("A2 合并后描述含四段效果",
   /出牌阶段开始时及你每次出牌后/.test(data)
@@ -81,8 +83,8 @@ T("A6 幂等按回合 token，不再比对原因字符串（旧档兼容）",
 }
 {
   const contract = fs.readFileSync(path.join(__dirname, "skill-audit-presentation-contract-tests.js"), "utf8");
-  T("A9 全角色技能计数同步为 86", /length === 86,/.test(contract)
-    && /all 86 playable-character skills/.test(contract));
+  T("A9 全角色技能计数同步为 87", /length === 87,/.test(contract)
+    && /all 87 playable-character skills/.test(contract));
 }
 {
   // store-repairs.js 的旧档迁移必须识别旧技能名才能删除幽灵技能，属合理例外。

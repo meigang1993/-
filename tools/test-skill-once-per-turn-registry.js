@@ -36,6 +36,7 @@ const NAME_FLAGS = {
   "充能精华": ["ailengCharge"], "终焉鬼影斩": ["bestaEndSlash"], "窃取": ["catherineSteal"],
   "女王榨取": ["preshiDrain"], "杀欲窥视": ["withererPeek"], "狙击目标": ["artinaSniper", "ruinsSnipe"],
   "荣誉祝福": ["mariaHonorBlessing"], "半魅魔精华": ["kaiichiMilk"],
+  "终极刀魔": ["ultimateBlade"],
   "无人机采精": ["droneExtract"], "魔法巡飞弹": ["magicMissile"],
   "索敌雷达": ["radar"], "毒气手雷": ["poisonGrenade"], "歼灭模式": ["bullHammer"],
   "放置地雷": ["ruinsPlaceLandmine"], "坦克炮弹": ["ruinsTankShell"],

@@ -23,6 +23,7 @@ window.SkillOncePerTurn = (() => {
     ["ruinsTankShell", "usedRuinsTankShell"], ["ruinsPlaceLandmine", "usedRuinsLandmine"],
     ["ruinsLandmineRps", "usedRuinsLandmineRps"],
     ["radar", "radarUsed"], ["poisonGrenade", "grenadeUsed"], ["bullHammer", "hammerUsed"],
+    ["ultimateBlade", "usedUltimateBlade"],
   ];
   const SPECIAL = [
     ["speedAssault", (actor, battle) => (battle?.phase === 6

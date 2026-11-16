@@ -26,24 +26,30 @@ window.ChiyoChainSkills = (() => {
 
   // 虚拟杀不消耗杀意、不进手牌；关闭响应判定与 afterCardPlayed 钩子链，
   // 否则每张虚拟杀都会再触发一批技能（含本链自身）并可能把回合挂死。
-  function virtualSlash() {
+  // 用 _skipPlayedSlashFlag 窄标记只抑制 prepareSlash 里的 playedSlashThisTurn
+  // 置真（母亲怀表 / 震感手炮的「本回合未出杀」判据不被污染）；不再挂
+  // _skipUseKillTriggers，派生杀照常触发【武士铠甲】【精灵女神守护之剑】
+  // 等「使用杀牌」类饰品。妖刀村雨 / 借刀杀响应仍用旧宽标记，口径不变。
+  function virtualSlash(chain) {
     return window.CardUtils?.fromEntity?.("杀（普攻）", {
       temporary: true, void: true, noIntentCost: true,
       ignoreResponse: true, skipAfterCardPlayed: true,
       skipMvpCardCount: true, _skipHandMove: true,
-      _chiyoChainVirtual: true, generatedBySkill: "红缨连鬼斩",
-      sourceName: "红缨连鬼斩",
+      _skipPlayedSlashFlag: true,
+      _chiyoChainVirtual: true, ...(chain?.marker ? { [chain.marker]: true } : {}),
+      generatedBySkill: chain?.skillName || "红缨连鬼斩",
+      sourceName: chain?.skillName || "红缨连鬼斩",
     });
   }
 
-  function useVirtual(state, actorUid, targetUid, probe) {
+  function useVirtual(state, actorUid, targetUid, probe, chain) {
     const battle = state.battle;
     const actor = unitsOf(battle).find(unit => unit.uid === actorUid);
     const target = unitsOf(battle).find(unit => unit.uid === targetUid);
     // 二次防御：chain.targetUid 可能来自存档/恢复，落到这里再向统一判定源
     // 问一次（虚拟杀不受暗幕隐身限制，但别的「不可指定」机制仍要生效）。
     if (!alive(actor) || !alive(target) || !targetable(target, probe)) return false;
-    const card = virtualSlash();
+    const card = virtualSlash(chain);
     const use = window.BattleSystem?.useVirtualKill
       || window.BattleCombat?.useVirtualKill;
     if (!card || typeof use !== "function") return false;
@@ -58,7 +64,10 @@ window.ChiyoChainSkills = (() => {
     while (chain.remaining > 0 && !battle.locked && !battle.ended) {
       const foes = foesOf(battle, chain.side, probe);
       if (!foes.length) {
-        log(state, `红缨连鬼斩已无可指定的存活敌方，剩余${chain.remaining}次连击终止。`);
+        const empty = chain.skillName
+          ? `${chain.skillName}已无可指定的存活敌方`
+          : "红缨连鬼斩已无可指定的存活敌方";
+        log(state, `${empty}，剩余${chain.remaining}次${chain.word || "连击"}终止。`);
         chain.remaining = 0;
         break;
       }
@@ -71,18 +80,20 @@ window.ChiyoChainSkills = (() => {
           ? `${previous.name}不可被单体【杀】指定`
           : `${previous?.name || "原目标"}已阵亡`;
         target = foes.slice().sort((a, z) => a.hp - z.hp)[0];
-        log(state, `${reason}，红缨连鬼斩剩余`
-          + `${chain.remaining}次连击转移至${target.name}。`);
+        const label = chain.skillName || "红缨连鬼斩";
+        log(state, `${reason}，${label}剩余`
+          + `${chain.remaining}次${chain.word || "连击"}转移至${target.name}。`);
         chain.targetUid = target.uid;
       }
-      if (!useVirtual(state, chain.actorUid, target.uid, probe)) {
+      if (!useVirtual(state, chain.actorUid, target.uid, probe, chain)) {
         chain.remaining = 0;
         break;
       }
       chain.remaining -= 1;
     }
-    if (chain.remaining > 0) battle.chiyoChain = chain;
-    else delete battle.chiyoChain;
+    const chainKey = chain.chainKey || "chiyoChain";
+    if (chain.remaining > 0) battle[chainKey] = chain;
+    else delete battle[chainKey];
   }
 
   function afterCardPlayed(state, actor, target, card) {
@@ -100,19 +111,19 @@ window.ChiyoChainSkills = (() => {
   }
 
   // 兜底：虚拟杀若意外触发了玩家响应提示，恢复后把剩余次数继续跑完。
-  function resume(state) {
+  function resume(state, chainKey = "chiyoChain") {
     const battle = state?.battle;
-    const chain = battle?.chiyoChain;
+    const chain = battle?.[chainKey];
     if (!chain || chain.remaining <= 0) return;
     // 链只在挂起它的那个回合内有效。换回合、战斗结束、出牌者阵亡都直接作废，
     // 否则残留链会跨回合补打，甚至随存档带到别的时点凭空打出一串虚拟杀。
     const actor = unitsOf(battle).find(unit => unit.uid === chain.actorUid);
     if (battle.ended || chain.turn !== battle.turn || !alive(actor)) {
-      delete battle.chiyoChain;
+      delete battle[chainKey];
       return;
     }
     run(state, chain);
   }
 
-  return { afterCardPlayed, resume };
+  return { afterCardPlayed, resume, run };
 })();
