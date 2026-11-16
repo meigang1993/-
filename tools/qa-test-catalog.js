@@ -93,6 +93,14 @@ const timeouts = Object.freeze({
   "test-noa-ultimate-blade-phase-once.js": 120,
   "test-noa-ultimate-blade-scope-reverse.js": 120,
   "test-noa-ultimate-blade-phase-live.js": 240,
+  // 真实钩子链：只在下一张实体单体杀触发，第 2 张以上不重复（REVERT=consume|gate）
+  "test-noa-ultimate-blade-next-slash.js": 120,
+  // 实机连续 4 张实体单体杀：战报与敌人血量守恒
+  "test-noa-ultimate-blade-next-slash-live.js": 240,
+  // 实际效果 + 饰品交互（真实伤害管线）：X 守恒 / 武士铠甲 / 守护之剑 / 圣鹰剑 / 电锯剑 / 转换杀
+  "test-noa-ultimate-blade-effect-relics.js": 120,
+  // 饰品冲突独立复查：多饰品同装数值守恒 / 妖刀村雨自动斩 / 反伤致死 / 存档挂起接线
+  "test-noa-ultimate-blade-relic-recheck.js": 120,
   // 合并技能复查：主动与被动台词边界 / 摸牌反馈 / 旧档（REVERT=line|legacy|once）
   "test-angelica-merge-recheck.js": 120,
   // 两次技能合并的旧档迁移 / 死卡链路 / 异常 actor（REVERT=migration|normalize）
@@ -400,6 +408,9 @@ const groups = Object.freeze({
     "test-noa-ultimate-blade-live.js",
     "test-noa-ultimate-blade-phase-once.js",
     "test-noa-ultimate-blade-scope-reverse.js",
+    "test-noa-ultimate-blade-next-slash.js",
+    "test-noa-ultimate-blade-effect-relics.js",
+    "test-noa-ultimate-blade-relic-recheck.js",
     "test-angelica-merge-recheck.js",
     "test-merge-skill-side-effects.js",
     "test-merge-skill-final-recheck.js",
@@ -572,6 +583,7 @@ const groups = Object.freeze({
     "test-angelica-berserk-will-trail-live.js",
     "test-berserk-will-phase-live.js",
     "test-noa-ultimate-blade-phase-live.js",
+    "test-noa-ultimate-blade-next-slash-live.js",
     "test-nanali-slaughter-witch-skin.js",
     "test-nanali-slaughter-witch-skin-live.js",
     "test-nanali-witch-skin-fx-wiring.js",
