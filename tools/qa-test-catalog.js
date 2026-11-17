@@ -43,6 +43,22 @@ const timeouts = Object.freeze({
   "test-noa-own-turn-strict.js": 120,
   // 偷来的敌方手牌触发淫气改造重判（挂起弹窗 / 直连 / 回合守卫 / 11 条路径）
   "test-noa-stolen-hand-charm.js": 120,
+  // 角色强化：契约检查 / 严格复查 / 浏览器实机（含面板截图）/ 副本置灰复查与实机
+  "test-character-enhance.js": 120,
+  "test-character-enhance-recheck.js": 120,
+  "test-character-enhance-live.js": 240,
+  "test-enhance-dungeon-guard.js": 120,
+  "test-enhance-dungeon-live.js": 240,
+  // 莉莉丝元整数收口 / 属性浮点收敛 / 34 名角色适用范围（4 组源码级反向）
+  "test-enhance-integer-scope.js": 120,
+  "test-enhance-integer-scope-live.js": 240,
+  // 强化属性存档/读档全链路（真实 compact→validateRaw→migrate，4 组源码级反向）
+  "test-enhance-save-load.js": 120,
+  // 强化后面板数值变化 / 战斗单位属性 / 出手顺序 / 真实伤害提升（4 组源码级反向）
+  "test-enhance-combat-effect.js": 120,
+  "test-enhance-combat-live.js": 240,
+  "test-all-stats-integer.js": 120,
+  "test-skill-multiplier-difficulty-integer.js": 120,
 // 卡牌阵营归属固定：uid 反查 / 重洗复用 / 原主离场漂移 / REVERT=fix 反向
 "test-card-faction-ownership.js": 120,
   // originSide 随主存档压缩 / 读档重建，含两条写盘路径与 2 组源码级反向
@@ -163,6 +179,8 @@ const groups = Object.freeze({
     "test-settlement-recovery.js",
     "test-economy-balance.js",
     "test-balance-values.js",
+    "test-all-stats-integer.js",
+  "test-skill-multiplier-difficulty-integer.js",
     "test-character-progression.js",
     "test-playable-roster-integrity.js",
     "test-receipt-ledgers.js",
@@ -218,6 +236,16 @@ const groups = Object.freeze({
     "test-ruins-gold-difficulty-live.js",
     "test-ruins-gold-difficulty.js",
     "test-underwater-elite-stats.js",
+  "test-character-enhance.js",
+  "test-character-enhance-recheck.js",
+  "test-character-enhance-live.js",
+  "test-enhance-dungeon-guard.js",
+  "test-enhance-dungeon-live.js",
+  "test-enhance-integer-scope.js",
+  "test-enhance-integer-scope-live.js",
+  "test-enhance-save-load.js",
+  "test-enhance-combat-effect.js",
+  "test-enhance-combat-live.js",
   ],
   battle: [
     "test-visual-hp-residue-live.js",

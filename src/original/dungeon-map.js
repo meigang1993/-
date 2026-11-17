@@ -31,7 +31,7 @@ window.DungeonMap = (() => {
       if (type) return [makeNode(layer, 0, type)];
       const eliteAllowed = layer >= eliteFrom;
       return Array.from({ length: rand(3, 5, state) }, (_, c) =>
-        makeNode(layer, c, eliteAllowed && window.GameRandom.chance(diff.eliteRate || 0, state) ? "elite" : "normal"));
+        makeNode(layer, c, eliteAllowed && window.GameRandom.chance((diff.eliteRate ?? 0) / 100, state) ? "elite" : "normal"));
     });
   }
   function linearLayers(route, diff, state) {
@@ -39,12 +39,12 @@ window.DungeonMap = (() => {
     // mixedEliteFrom 仅作为可选最早层，不再把精英锁死在后段固定层数。
     const last = route.layers || diff.layers, rest = new Set(route.rest || []), chest = new Set(route.chest || []), boss = new Set(route.boss || [last]);
     return Array.from({ length: last }, (_, i) => {
-      const layer = i + 1, type = layer === 1 ? "start" : boss.has(layer) ? "boss" : rest.has(layer) ? "rest" : chest.has(layer) ? "chest" : layer >= (route.mixedEliteFrom ?? 2) && window.GameRandom.chance(diff.eliteRate || 0, state) ? "elite" : "normal";
+      const layer = i + 1, type = layer === 1 ? "start" : boss.has(layer) ? "boss" : rest.has(layer) ? "rest" : chest.has(layer) ? "chest" : layer >= (route.mixedEliteFrom ?? 2) && window.GameRandom.chance((diff.eliteRate ?? 0) / 100, state) ? "elite" : "normal";
       return [makeNode(layer, 0, type)];
     });
   }
   function pickNodeType(diff, state) {
-    return window.GameRandom.chance(diff.eliteRate || 0, state) ? "elite" : pickType(diff.weights, state);
+    return window.GameRandom.chance((diff.eliteRate ?? 0) / 100, state) ? "elite" : pickType(diff.weights, state);
   }
   function pickType(weights, state) {
     let roll = window.GameRandom.value(state) * Object.values(weights).reduce((a, b) => a + b, 0);

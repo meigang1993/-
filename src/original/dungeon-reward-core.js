@@ -4,9 +4,9 @@ window.DungeonRewardCore = (() => {
   const nodes = run => window.DungeonEvents.nodes(run);
   function rollGold(run, type, state = window.state) {
     const diff = GameData.difficulties[run.difficultyId], baseGold = reward[type] || 0;
-    const mission = GameData.missions.find(m => m.id === run.missionId), multiplier = mission?.reward?.goldMultiplier || 1;
+    const mission = GameData.missions.find(m => m.id === run.missionId), multiplier = (mission?.reward?.goldMultiplier || 100) / 100;
     const raw = Array.isArray(baseGold) ? window.GameRandom.int(baseGold[0], baseGold[1], state) : baseGold;
-    return Math.round(raw * (diff.reward || 1) * multiplier);
+    return Math.round(raw * ((diff.reward || 100) / 100) * multiplier);
   }
   function gain(run, type, count = 1, state = window.state) {
     run.lastReward = { gold: 0, essence: 0, relics: [], cards: [], type };

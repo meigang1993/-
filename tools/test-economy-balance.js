@@ -22,15 +22,15 @@ load("./src/original/data-world.js");
 
 assert(GameEconomy.startingGold === 0, "fresh games must start with zero Lilith gold");
 const difficultyRewards = Object.values(GameDataWorld.difficulties).map(item => item.reward);
-assert(JSON.stringify(difficultyRewards) === JSON.stringify([1, 1.35, 1.75, 2.2, 2.75]), "difficulty gold multipliers changed unexpectedly");
+assert(JSON.stringify(difficultyRewards) === JSON.stringify([100, 135, 175, 220, 275]), "difficulty gold multipliers changed unexpectedly");
 
 const mission = id => GameDataWorld.missions.find(item => item.id === id);
 const configured = GameEconomy.dungeonGold;
 const normalAverage = (configured.normal[0] + configured.normal[1]) / 2;
 const normalDifficulty = GameDataWorld.difficulties.normal;
 const weightTotal = Object.values(normalDifficulty.weights).reduce((sum, value) => sum + value, 0);
-const randomNodeReward = normalDifficulty.eliteRate * configured.elite
-  + (1 - normalDifficulty.eliteRate) * (
+const randomNodeReward = (normalDifficulty.eliteRate / 100) * configured.elite
+  + (1 - (normalDifficulty.eliteRate / 100)) * (
     normalDifficulty.weights.normal / weightTotal * normalAverage
     + normalDifficulty.weights.chest / weightTotal * configured.chest
   );
@@ -53,11 +53,11 @@ function fixedRouteCounts(id) {
 }
 function fixedRouteReward(id) {
   const counts = fixedRouteCounts(id);
-  const mixedReward = normalDifficulty.eliteRate * configured.elite
-    + (1 - normalDifficulty.eliteRate) * normalAverage;
+  const mixedReward = (normalDifficulty.eliteRate / 100) * configured.elite
+    + (1 - (normalDifficulty.eliteRate / 100)) * normalAverage;
   const base = counts.normal * normalAverage + counts.mixed * mixedReward
     + counts.chest * configured.chest + counts.boss * configured.boss;
-  return base * mission(id).reward.goldMultiplier;
+  return base * (mission(id).reward.goldMultiplier / 100);
 }
 const underwaterCounts = fixedRouteCounts("underwater_train");
 const orcCounts = fixedRouteCounts("orc_dungeon");

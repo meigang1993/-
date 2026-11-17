@@ -64,6 +64,16 @@ function bindGlobalInfoActions() {
     if (activeOpener) { e.preventDefault(); e.stopPropagation(); openInfoUnit(activeOpener.dataset.activeInfo); return; }
     const tab = target.closest("[data-info-tab]");
     if (tab) { e.preventDefault(); e.stopPropagation(); state.infoTab = tab.dataset.infoTab; render(); return; }
+    const enhanceBtn = target.closest("[data-enhance-char]");
+    if (enhanceBtn && !enhanceBtn.disabled) {
+      e.preventDefault(); e.stopPropagation();
+      const stat = enhanceBtn.dataset.enhanceStat;
+      AppActionGuard.run("角色强化失败", async ({ state: s, isCurrent }) =>
+        enhanceCharacter(enhanceBtn.dataset.enhanceChar, stat, s, isCurrent), {
+        control: enhanceBtn, busyText: "强化中…", captureRun: false, key: "enhance-operation",
+      });
+      return;
+    }
     const skinBtn = target.closest("[data-battle-equip-skin]");
     if (skinBtn) { e.preventDefault(); e.stopPropagation(); equipBattleSkin(skinBtn); return; }
     const close = target.closest("[data-close-info]");

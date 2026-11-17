@@ -14,7 +14,10 @@ window.UICommon = (() => {
   const classList = value => String(value || "").split(/\s+/)
     .map(classToken).filter(Boolean).join(" ");
   const formatStat = value => {
-    const number = Number(value) || 0;
+    const raw = Number(value);
+    // 先收敛到两位小数再显示：浮点长尾（0.30000000000000004）不会漏进面板，
+    // 0.10 显示成 0.1，整数直接输出；NaN/Infinity 一律按 0 处理。
+    const number = Number.isFinite(raw) ? Math.round(raw * 100) / 100 : 0;
     return Number.isInteger(number)
       ? String(number)
       : number.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");

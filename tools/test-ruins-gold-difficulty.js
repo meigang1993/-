@@ -112,15 +112,15 @@ diffKeys.forEach(dk => {
       const s = window.GameDataWorld.scaleEnemyStats(e, diff, e.type);
       const cfg = diff.enemy[e.type];
       if (Number.isFinite(e.hp)) {
-        assert.strictEqual(s.hp, Math.ceil(e.hp * cfg.hp), `${e.id} hp ${e.hp}→${s.hp} 期望 ${Math.ceil(e.hp * cfg.hp)}`);
+        assert.strictEqual(s.hp, Math.ceil(e.hp * cfg.hp / 100), `${e.id} hp ${e.hp}→${s.hp} 期望 ${Math.ceil(e.hp * cfg.hp / 100)}`);
       }
       ["attack", "magic"].forEach(k => {
         if (Number.isFinite(e[k])) {
-          assert.strictEqual(s[k], Math.round(e[k] * cfg.power), `${e.id} ${k} 期望 ${Math.round(e[k] * cfg.power)} 实得 ${s[k]}`);
+          assert.strictEqual(s[k], Math.round(e[k] * cfg.power / 100), `${e.id} ${k} 期望 ${Math.round(e[k] * cfg.power / 100)} 实得 ${s[k]}`);
         }
       });
       if (Number.isFinite(e.speed)) {
-        assert.strictEqual(s.speed, Math.round(e.speed * cfg.speed), `${e.id} speed 期望 ${Math.round(e.speed * cfg.speed)} 实得 ${s.speed}`);
+        assert.strictEqual(s.speed, Math.round(e.speed * cfg.speed / 100), `${e.id} speed 期望 ${Math.round(e.speed * cfg.speed / 100)} 实得 ${s.speed}`);
       }
     });
   });

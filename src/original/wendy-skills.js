@@ -134,7 +134,7 @@ window.WendySkills = (() => {
     if (unit._floatingCoverTurn === battle.turn) return false;
     unit._floatingCoverTurn = battle.turn;
     const rawMagic = (unit.stats?.magic || 0) + (unit.tempMagic || 0);
-    // 魔力可能是小数（装备/祝福加成），护甲按点收敛，避免出现 4.800000000001。
+    // 魔力等属性已统一为整数（装备/祝福临时加成仍可能带小数），护甲按点收敛。
     const magic = Math.max(0, Math.round(
       window.BattleHpValue?.clean?.(rawMagic) ?? rawMagic));
     // 按持有者阵营取同阵营角色：当前温蒂只作为我方角色，按 side 取值是防御性对齐，

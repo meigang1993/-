@@ -87,7 +87,12 @@ window.GameStoreCompact = (() => {
   }
   function compactCharacter(c) {
     if (!c || typeof c !== "object") return c;
-    return { id:c.id, locked:!!c.locked, level:safeNumber(c.level), exp:safeNumber(c.exp), hp:safeNumber(c.hp) };
+    // 强化按属性分别计数：四项都要落盘，缺一项读档都会少加成。
+    // normalize 同时兼容旧档 enhanceLevel（按四项各 n 次还原），避免旧存档回退。
+    const enhance = window.CharacterEnhance?.normalize?.(c)
+      || { maxHp: safeNumber(c?.enhanceLevel), attack: safeNumber(c?.enhanceLevel),
+           magic: safeNumber(c?.enhanceLevel), speed: safeNumber(c?.enhanceLevel) };
+    return { id:c.id, locked:!!c.locked, level:safeNumber(c.level), exp:safeNumber(c.exp), hp:safeNumber(c.hp), enhance };
   }
   function compactSaveData(data) {
     stripTransientUiState(data);

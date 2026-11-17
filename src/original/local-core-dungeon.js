@@ -19,10 +19,10 @@ window.LocalCoreDungeonOps = (() => {
   }
   function rollGold(core, run, kind) {
     const diff = GameData.difficulties[run.difficultyId] || GameData.difficulties.normal;
-    const mission = GameData.missions.find(m => m.id === run.missionId), multiplier = mission?.reward?.goldMultiplier || 1;
+    const mission = GameData.missions.find(m => m.id === run.missionId), multiplier = (mission?.reward?.goldMultiplier || 100) / 100;
     const configured = economy.dungeonGold[kind] || 0;
     const base = Array.isArray(configured) ? window.GameRandom.int(configured[0], configured[1], core) : configured;
-    return Math.round(base * (diff.reward || 1) * multiplier);
+    return Math.round(base * ((diff.reward || 100) / 100) * multiplier);
   }
   function progressionParty(run, participants) {
     const active = uniq(run.activeParty).slice(0, 4);
@@ -129,7 +129,7 @@ window.LocalCoreDungeonOps = (() => {
   function rareReward(core, run, kind, defeated) {
     const result = { cards: [], relics: [] };
     const diff = GameData.difficulties[run.difficultyId] || GameData.difficulties.normal;
-    if (!["elite", "boss"].includes(kind) || !window.GameRandom.chance(diff.dropRate ?? .2, core)) return result;
+    if (!["elite", "boss"].includes(kind) || !window.GameRandom.chance((diff.dropRate ?? 20) / 100, core)) return result;
     const enemyId = defeated.find(id => GameData.eliteUnlocks?.[id]), names = GameData.eliteUnlocks?.[enemyId] || [];
     if (names.length && window.GameRandom.chance(.5, core)) {
       const card = sample((GameData.eliteCards || []).filter(item => names.includes(item.name)), core);

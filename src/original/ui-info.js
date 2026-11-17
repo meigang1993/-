@@ -18,20 +18,17 @@ window.GameUIInfo = (U) => {
   }
   function infoPanel(u, tab = "stats", relicStats = null) {
     if (!u) return ""; const refId = u.id || u.ref, canUseRelics = !!u.id && !!window.state?.chars?.some(c => c.id === u.id), canUseSkins = !!refId && u.side !== "enemy" && !!window.SkinSystem?.forChar?.(refId)?.length;
-    const specialArt = !u.side && window.SkinSystem?.forChar?.(refId)
-      ?.find(skin => skin.specialIllustration);
-    const canUseSpecialArt = !!specialArt;
-    const safeTab = tab === "relics" && !canUseRelics ? "stats" : tab === "skins" && !canUseSkins ? "stats" : tab === "specialArt" && !canUseSpecialArt ? "stats" : (["skills", "relics", "skins", "specialArt"].includes(tab) ? tab : "stats");
+    const canEnhance = !!u.id && u.side !== "enemy" && !u.locked;
+    const safeTab = tab === "relics" && !canUseRelics ? "stats" : tab === "skins" && !canUseSkins ? "stats" : tab === "enhance" && !canEnhance ? "stats" : (["skills", "relics", "skins", "enhance"].includes(tab) ? tab : "stats");
     const unlock = unlockLine(u);
     const title = `${infoTitle(u)}${u.role ? `<p class="role-line">${U.esc(u.role)}</p>` : ""}${unlock}`;
     const livingRoom = !u.side && window.state?.view === "livingRoom";
     const growth = livingRoom ? progressionPanel(u) : "";
-    const body = safeTab === "skills" ? `${title}<h3>技能</h3>${skillList(u)}` : safeTab === "relics" ? relicPanel(u) : safeTab === "skins" ? skinPanel(u, refId) : safeTab === "specialArt" ? specialArtPanel(u, specialArt) : `${title}${growth}${u.side === "enemy" && u.battleRelics?.length ? relicBattlePanel(u) : ""}<div class="stats">${U.statHtml({ ...u, stats: u.stats, relicStats: relicStats || u.relicStats || {}, tempAttack: u.tempAttack, tempMagic: u.tempMagic })}</div>`;
+    const body = safeTab === "skills" ? `${title}<h3>技能</h3>${skillList(u)}` : safeTab === "relics" ? relicPanel(u) : safeTab === "skins" ? skinPanel(u, refId) : safeTab === "enhance" ? enhancePanel(u) : `${title}${growth}${u.side === "enemy" && u.battleRelics?.length ? relicBattlePanel(u) : ""}<div class="stats">${U.statHtml({ ...u, stats: u.stats, relicStats: relicStats || u.relicStats || {}, tempAttack: u.tempAttack, tempMagic: u.tempMagic })}</div>`;
     const relicButton = canUseRelics ? `<button class="${safeTab === "relics" ? "active" : ""}" data-info-tab="relics">饰品</button>` : "";
     const skinButton = canUseSkins ? `<button class="${safeTab === "skins" ? "active" : ""}" data-info-tab="skins">皮肤</button>` : "";
-    const specialArtButton = canUseSpecialArt ? `<button class="${safeTab === "specialArt" ? "active" : ""}" data-info-tab="specialArt">立绘</button>` : "";
-    const art = safeTab === "specialArt" ? specialArtPane(u, specialArt) : U.face(u, true);
-    return `<div class="info-overlay" data-close-info="1" role="dialog" aria-modal="true" aria-label="${U.esc(u.name)}角色详情"><div class="info-popup"><button class="info-close" data-close-info="1" aria-label="关闭角色详情">×</button><aside><button class="${safeTab === "stats" ? "active" : ""}" data-info-tab="stats">属性</button><button class="${safeTab === "skills" ? "active" : ""}" data-info-tab="skills">技能</button>${relicButton}${skinButton}${specialArtButton}</aside><section>${body}</section><div class="info-art">${art}</div></div></div>`;
+    const enhanceButton = canEnhance ? `<button class="enhance-tab ${safeTab === "enhance" ? "active" : ""}" data-info-tab="enhance" aria-label="角色强化">角色强化</button>` : "";
+    return `<div class="info-overlay" data-close-info="1" role="dialog" aria-modal="true" aria-label="${U.esc(u.name)}角色详情"><div class="info-popup"><button class="info-close" data-close-info="1" aria-label="关闭角色详情">×</button><aside><button class="${safeTab === "stats" ? "active" : ""}" data-info-tab="stats">属性</button><button class="${safeTab === "skills" ? "active" : ""}" data-info-tab="skills">技能</button>${relicButton}${skinButton}${enhanceButton}</aside><section>${body}</section><div class="info-art">${U.face(u, true)}</div></div></div>`;
   }
   function skillList(u) {
     return U.skillsOf(u).filter(s => s.showInSkillInfo !== false && (s.source !== "relic" || s.showInSkillInfo)).map((s, i) => `<div class="skill-detail ${String(s.type || "").replace(/[^\w-]/g, "")}">${U.skillName(s, i, false, false, true, false, null, u)}<p>${U.esc(U.skillText(s))}</p></div>`).join("") || `<p class="muted">暂无技能。</p>`;
@@ -95,16 +92,29 @@ window.GameUIInfo = (U) => {
       : "选择已拥有皮肤作为角色外观。";
     return `${infoTitle(u)}<p class="muted">${hint}</p>${warning}<div class="battle-skin-list">${items}</div>`;
   }
-  function specialArtPanel(u, item) {
-    const unlocked = window.SkinSystem.owned(window.state, item);
-    const status = unlocked ? `已解锁 · Lv.${u.level}` : `Lv.${item.unlockLevel} 自动解锁`;
-    return `${infoTitle(u)}<h3>${U.esc(item.name)}</h3><div class="special-art-summary ${unlocked ? "unlocked" : "locked"}"><span class="tag">${status}</span></div>`;
-  }
-  function specialArtPane(u, item) {
-    const unlocked = window.SkinSystem.owned(window.state, item);
-    // 未解锁时不得渲染立绘本体，否则等于提前公开奖励内容。
-    if (!unlocked) return `<div class="special-art-lock"><b>Lv.${item.unlockLevel}</b><span>达到等级后自动解锁</span></div>`;
-    return `<div class="portrait large special-art-portrait" data-art-src="${U.esc(item.art)}" data-art-name="${U.esc(item.name)}"><img src="${U.esc(item.art)}" alt="${U.esc(item.name)}" loading="lazy" decoding="async" draggable="false"></div>`;
+  function enhancePanel(u) {
+    const enhance = window.CharacterEnhance, state = window.state || {};
+    const levels = enhance?.levelsOf?.(u) || { maxHp: 0, attack: 0, magic: 0, speed: 0 };
+    const cost = enhance?.COST ?? 1000;
+    const gold = Math.max(0, Math.floor(Number(state.resources?.gold) || 0));
+    const view = String(state.view || "");
+    // 统一判定源在 CharacterEnhance.blockedReason；兜底用于 bundle 漏装旧模块的极端情况。
+    const blocked = enhance?.blockedReason?.(state)
+      ?? (state.explore || view.startsWith("dungeon") ? "副本中不可强化"
+        : view === "battle" || view === "battleLoading" ? "战斗中不可强化" : "");
+    const keys = enhance?.statKeys || Object.keys(levels);
+    const per = enhance?.BONUS || { maxHp: 3, attack: 1, magic: 1, speed: 1 };
+    const names = enhance?.NAMES || { maxHp: "生命值", attack: "攻击力", magic: "魔力", speed: "速度" };
+    const total = keys.reduce((n, k) => n + (levels[k] || 0), 0);
+    const rows = keys.map(key => {
+      const maxed = !!enhance && levels[key] >= enhance.MAX_LEVEL;
+      const usable = !!enhance && !u.locked && !blocked && !maxed && gold >= cost;
+      const reason = blocked || (maxed ? "已达上限" : gold < cost ? "莉莉丝元不足" : "");
+      const label = reason || `消耗 ${cost} · 强化`;
+      return `<div><span>${names[key] || key}</span><b>+${U.formatStat(per[key])} / 次</b><strong>累计 +${U.formatStat(per[key] * levels[key])}（${levels[key]} 次）</strong><button class="enhance-action" data-enhance-char="${U.esc(u.id)}" data-enhance-stat="${U.esc(key)}" ${usable ? "" : "disabled"}>${label}</button></div>`;
+    }).join("");
+    const hint = `每次消耗 ${cost} 莉莉丝元，选择一项属性永久提升（生命值+3 / 攻击力+1 / 魔力+1 / 速度+1）；各项分别累计，可重复强化。加成对所有战斗生效，升级与读档均保留；副本进行中与战斗中不可强化。`;
+    return `${infoTitle(u)}<h3>角色强化</h3><div class="character-enhance"><div class="enhance-level"><b>已强化 ${total} 次</b><span>莉莉丝元 ${gold}</span></div><p class="muted">${hint}</p><div class="enhance-table"><div class="enhance-head"><span>属性</span><b>每次</b><strong>累计</strong><em>操作</em></div>${rows}</div></div>`;
   }
   function relicPanel(u) {
     const state = window.state, test = state?.hallModal === "testBattle", map = test ? state.testEquipment || {} : state.equipment || {};

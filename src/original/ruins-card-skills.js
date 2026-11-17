@@ -114,7 +114,7 @@ window.RuinsCardSkills = (() => {
 
   function modifyIncomingDamage(state, target, amount, card) {
     if (!target?.vulnerable || !amount) return amount;
-    return amount * 1.5;
+    return Math.round(amount * 150 / 100);
   }
 
   // 吸魔杀：伤害结算、受击动画结束后才获得目标一张牌

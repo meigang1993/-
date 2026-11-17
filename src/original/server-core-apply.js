@@ -96,6 +96,13 @@ window.ServerCoreApply = (() => {
       c.locked = !!next.locked;
       c.level = Number(next.level) || 0;
       c.exp = Number(next.exp) || 0;
+      if (context.method === "enhanceChar") {
+        // 按属性分别计数的四元组写回；旧 enhanceLevel 已由 step 吸收，必须清掉，
+        // 否则读档时两个口径并存会让加成被重复叠加。
+        c.enhance = window.CharacterEnhance?.normalize?.(next)
+          || { maxHp: 0, attack: 0, magic: 0, speed: 0 };
+        delete c.enhanceLevel;
+      }
       recomputeStats(c);
       if (context.method === "unlockChar" && !c.locked) c.hp = c.stats.maxHp;
       else if (c.hp >= oldMax || c.hp == null) c.hp = c.stats.maxHp;
@@ -107,7 +114,8 @@ window.ServerCoreApply = (() => {
     const base = window.GameStore?.baseStats?.() || { attack:0, magic:0, speed:0, maxHp:10, bloodlust:1, handLimit:0, drawPerTurn:0, initialDraw:2 };
     c.level = window.CharacterProgression.cleanLevel(c.level);
     c.exp = window.CharacterProgression.cleanExp(c.exp, c.level);
-    c.stats = { ...base, ...window.CharacterProgression.statsAt(tpl, c.level) };
+    const nextStats = { ...base, ...window.CharacterProgression.statsAt(tpl, c.level) };
+    c.stats = window.CharacterEnhance?.withBonus?.(nextStats, c) || nextStats;
     c.stats.bloodlust = Math.min(99, Math.max(1, c.stats.bloodlust || 1));
   }
   function repairCards(cards) {

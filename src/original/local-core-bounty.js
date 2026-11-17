@@ -1,5 +1,5 @@
 window.LocalCoreBountyOps = (() => {
-  const { outcomes, addResource, assertInventoryCapacity } = window.LocalCoreUtils;
+  const { outcomes, cleanGold, addResource, assertInventoryCapacity } = window.LocalCoreUtils;
 
   function claimBounty(core, args) {
     if ((args.items || []).some(item => item.reward?.type === "relic"
@@ -64,7 +64,7 @@ window.LocalCoreBountyOps = (() => {
   // 已接取的任务必须保留——玩家花了行动力接下的任务被刷新清空是不可接受的。
   function refreshBounty(core) {
     const cost = Number(window.GameEconomy?.bounty?.refreshCost) || 500;
-    const gold = Number(core.resources?.gold) || 0;
+    const gold = cleanGold(core.resources?.gold);
     const max = window.BountyTasks?.maxCount?.(core) || 4;
     const current = Array.isArray(core.bounties) ? core.bounties : [];
     const kept = current.filter(task => task?.accepted);

@@ -92,8 +92,8 @@ function testMigration() {
   assert(character(secondGrowth).hp === 40
     && secondGrowth.flags.characterGrowthVersion === 3,
   "version-2 growth migration must preserve HP when maximum-HP growth is unchanged");
-  assert(character(secondGrowth).stats.attack === 43.31
-    && character(secondGrowth).stats.magic === 17.25,
+  assert(character(secondGrowth).stats.attack === 44
+    && character(secondGrowth).stats.magic === 18,
   "version-2 growth migration must rebuild attack and magic from the new growth table");
 
   const current = fresh();

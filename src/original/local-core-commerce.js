@@ -1,5 +1,5 @@
 window.LocalCoreCommerceOps = (() => {
-  const { n, sample, suits, outcomes, addResource, assertInventoryCapacity } = window.LocalCoreUtils;
+  const { n, sample, suits, outcomes, cleanGold, addResource, assertInventoryCapacity } = window.LocalCoreUtils;
   const economy = window.GameEconomy;
   const SHOP_AUTHORITY_VERSION = 1;
   function char(core, id) { return core.chars.find(c => c.id === id); }
@@ -48,7 +48,7 @@ window.LocalCoreCommerceOps = (() => {
   // 商店手动刷新商品：花固定费用重摇全部库存（含已售位置）。
   function refreshShop(core) {
     const cost = Number(economy?.shop?.refreshCost) || 500;
-    const gold = Number(core.resources?.gold) || 0;
+    const gold = cleanGold(core.resources?.gold);
     const pool = shopPool(core);
     // 无可售商品池或莉莉丝元不足：拒绝且不扣费。
     if (!pool.length || gold < cost) return outcomes.rejected;

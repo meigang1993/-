@@ -5,6 +5,19 @@
 .info-popup aside { display: grid; gap: 12px; align-content: center; }
 .info-popup aside button { min-height: 68px; writing-mode: vertical-rl; letter-spacing: 6px; background: linear-gradient(180deg, #9b1e4e, #d73375); border: 1px solid rgba(255,215,166,.36); }
 .info-popup aside button.active { background: linear-gradient(180deg, #c72c63, #ff5cab); box-shadow: 0 0 20px rgba(255,92,171,.55); }
+/* 角色强化：竖排四字按 68px 按钮高度收紧字距，面板沿用信息区半透明卡片风格。 */
+.info-popup aside button.enhance-tab { font-size: 13px; letter-spacing: 2px; }
+.character-enhance { margin-top: 14px; padding: 16px; border: 1px solid rgba(255,215,166,.24); border-radius: 16px; background: rgba(255,255,255,.06); }
+.enhance-level { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.enhance-level b { color: #ffd88d; font-size: 18px; }
+.enhance-level span { color: #e1c2ee; }
+.enhance-table { margin: 12px 0; }
+.enhance-table > div { display: grid; grid-template-columns: 1fr .8fr 1.5fr 1.25fr; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,215,166,.12); }
+.enhance-table .enhance-head { color: #ffd88d; font-weight: 700; }
+.enhance-table .enhance-head em { font-style: normal; }
+.enhance-table strong { color: #ff9ed2; }
+.enhance-action { width: 100%; min-height: 36px; padding: 6px 8px; font-size: 13px; }
+.enhance-action:disabled { opacity: .55; cursor: not-allowed; }
 .info-popup section { min-width: 0; max-height: calc(92vh - 60px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255,92,171,.55) transparent; padding: 18px; border-radius: 18px; background: rgba(20,5,28,.38); border: 1px solid rgba(255,215,166,.22); }
 .info-title-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .info-title-row h2 { min-width: 0; margin-right: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

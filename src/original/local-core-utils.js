@@ -15,6 +15,8 @@ window.LocalCoreUtils = (() => {
   });
   const scopes = Object.freeze({
     unlockChar: { resources: true, chars: true, flags: true },
+    // 角色强化：扣莉莉丝元 + 写回角色强化等级/属性，其余字段一律不动。
+    enhanceChar: { resources: true, chars: true },
     shopRefresh: { random: true, shopCards: true, defeatedElites: true, unlockedShopCards: true, shopAuthority: true },
     // 手动刷新商品：要扣莉莉丝元并重摇库存，因此必须带 resources。
     refreshShop: { random: true, resources: true, shopCards: true, defeatedElites: true, unlockedShopCards: true, shopAuthority: true },
@@ -37,6 +39,12 @@ window.LocalCoreUtils = (() => {
   Object.values(scopes).forEach(scope => Object.freeze(scope));
   const operationScope = method => scopes[method] || fullScope;
   const n = (v, d = 0) => Number.isFinite(Math.floor(Number(v))) ? Math.floor(Number(v)) : d;
+  // 莉莉丝元一律以整数结算：存档被篡改、旧档残留或外部注入小数余额时先向下取整，
+  // 避免「1000.9 判定可强化、扣完剩 0.9」这类小数进入判定与写回。所有扣费点共用此口径。
+  function cleanGold(value) {
+    const number = Math.floor(Number(value));
+    return Number.isFinite(number) && number > 0 ? number : 0;
+  }
   function clampResource(value) {
     if (window.GameStoreSaveLimits?.clampResource) return window.GameStoreSaveLimits.clampResource(value);
     return Math.min(1_000_000_000, Math.max(0, n(value)));
@@ -132,5 +140,5 @@ window.LocalCoreUtils = (() => {
       equippedSkins: scope.skins ? { ...(state.equippedSkins || {}) } : (state.equippedSkins || {}),
     };
   }
-  return { n, uniq, sample, suits, outcomes, operationScope, clampResource, addResource, assertInventoryCapacity, sanitize };
+  return { n, uniq, sample, suits, outcomes, operationScope, clampResource, cleanGold, addResource, assertInventoryCapacity, sanitize };
 })();

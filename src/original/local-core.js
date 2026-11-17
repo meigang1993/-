@@ -17,6 +17,7 @@ window.LocalCore = (() => {
   function operationError(method) {
     const messages = {
       unlockChar: "孕育未生效：角色条件或精华宝珠不满足要求。",
+      enhanceChar: "强化未生效：莉莉丝元不足、角色未解锁、属性参数无效或该项已达上限。",
       shopBuy: "购买未生效：商品无效、已售出或莉莉丝元不足。",
       shopDelete: "删除未生效：卡牌无效、牌库过小或莉莉丝元不足。",
       smeltRelic: "拆解未生效：饰品不存在。",

@@ -4,14 +4,15 @@ window.GameStoreStateFactory = (() => {
   const rand = (min, max, state = window.state) => window.GameRandom.int(min, max, state);
   const baseStats = () => ({ attack: 0, magic: 0, speed: 0, maxHp: 10, bloodlust: 1, handLimit: 0, drawPerTurn: 0, initialDraw: 2 });
   const cleanLevel = level => window.CharacterProgression.cleanLevel(level);
+  const withEnhance = (stats, c) => window.CharacterEnhance?.withBonus?.(stats, c) || stats;
   const makeCharacter = (tpl) => {
-    const stats = { ...baseStats(), ...window.CharacterProgression.statsAt(tpl, 0) };
+    const stats = withEnhance({ ...baseStats(), ...window.CharacterProgression.statsAt(tpl, 0) }, tpl);
     return { ...tpl, level: 0, exp: 0, hp: stats.maxHp, stats };
   };
   function applyProgression(c, tpl) {
     c.level = cleanLevel(c.level);
     c.exp = window.CharacterProgression.cleanExp(c.exp, c.level);
-    c.stats = { ...baseStats(), ...window.CharacterProgression.statsAt(tpl, c.level) };
+    c.stats = withEnhance({ ...baseStats(), ...window.CharacterProgression.statsAt(tpl, c.level) }, c);
     delete c.spent;
   }
   function freshState() {

@@ -50,7 +50,7 @@ const setup = (id, art) => `(() => {
   };
 })()`;
 
-// 打开角色信息面板，检查是否出现「皮肤」「立绘」页签
+// 打开角色信息面板，检查「皮肤」「角色强化」页签存在且「立绘」页签已移除
 const tabs = id => `(() => {
   const s = window.state;
   s.infoUnit = ${JSON.stringify(id)};
@@ -58,6 +58,7 @@ const tabs = id => `(() => {
   window.render();
   return {
     skin: !!document.querySelector('[data-info-tab="skins"]'),
+    enhance: !!document.querySelector('[data-info-tab="enhance"]'),
     illust: !!document.querySelector('[data-info-tab="specialArt"]'),
   };
 })()`;
@@ -85,9 +86,9 @@ const clickEquip = (id, art) => {
     total += 1; pass += check(`${c.name} 含默认皮肤条目`, r.hasDefault === true, r);
     const t = await page.evaluate(tabs(c.id));
     total += 1; pass += check(`${c.name} 信息面板出现「皮肤」页签`, t.skin === true, t);
-    // 这 7 名角色尚无 10 级特殊立绘素材，「立绘」页签本就应当隐藏；
-    // 一旦日后补了 specialIllustration 条目，此断言会转红提醒补页签。
-    total += 1; pass += check(`${c.name} 无特殊立绘时「立绘」页签隐藏`, t.illust === false, t);
+    // 「立绘」页签已从角色详情面板移除（10 级特殊立绘改由「皮肤」页签承载）。
+    total += 1; pass += check(`${c.name} 信息面板不再出现「立绘」页签`, t.illust === false, t);
+    total += 1; pass += check(`${c.name} 信息面板出现「角色强化」页签`, t.enhance === true, t);
     await page.evaluate(setup(c.id, c.art));
     total += 1; pass += check(`${c.name} 收藏页渲染出默认皮肤卡片`, r.cardFound === true, r);
     // 收藏页图片是 loading="lazy"，强制 eager 并等待解码完成再量 naturalWidth

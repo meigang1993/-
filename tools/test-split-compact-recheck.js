@@ -23,12 +23,16 @@ function T(name, cond, extra) {
 const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 const exists = f => fs.existsSync(path.join(ROOT, f));
 const headCache = {};
+// 「拆分前基线」固定为 227 版最后一次记账提交 a9eddf7。
+// 230 版推送后 HEAD 本身已是拆分后的源码，再拿 HEAD 当基线会让 store-repairs
+// 的显式装配守卫因缺子模块而抛错（夹具失效，不是产品 BUG）。
+const BASE_COMMIT = "a9eddf7";
 function head(f) {
   if (headCache[f]) return headCache[f];
   const p = path.join(HEADROOT, f);
   const s = fs.existsSync(p)
     ? fs.readFileSync(p, "utf8")
-    : cp.execFileSync("git", ["show", `HEAD:src/original/${f}`], { cwd: path.join(__dirname, ".."), encoding: "utf8" });
+    : cp.execFileSync("git", ["show", `${BASE_COMMIT}:src/original/${f}`], { cwd: path.join(__dirname, ".."), encoding: "utf8" });
   headCache[f] = s;
   return s;
 }
@@ -168,9 +172,12 @@ for (const [consumer, deps] of Object.entries(depsByConsumer)) {
   });
   const ns = read(consumer) + "\n" + deps.map(read).join("\n");
   const miss = diffMultiset(strings(hs), strings(ns));
-  // 228/229 回血牌/技能文案调整允许变化；其余字符串必须守恒
+  // 基线固定到 227 后，228~231 的文案演进允许变化；其余字符串必须守恒。
+  // 公告渲染模板随条目扩充改写过，与拆分/压缩无关，按内容精确识别而非放宽整段。
   const allow = new Set(["满血角色不可指定", "恢复生命值"]);
-  miss.filter(x => !allow.has(x)).forEach(x => stringMissing.push(`${consumer}:${x.slice(0, 60)}`));
+  const isVersionText = x => x.includes('class="update-notice"');
+  miss.filter(x => !allow.has(x) && !isVersionText(x))
+    .forEach(x => stringMissing.push(`${consumer}:${x.slice(0, 60)}`));
 }
 T("B0 子模块搬出的函数有 HEAD 同名基线", depFnChecked.length >= 8, { checked: depFnChecked.length, extractedNew: depFnNew });
 T("B1 拆出的函数体与 HEAD 版逐字等价", bodyMismatch.length === 0, bodyMismatch);

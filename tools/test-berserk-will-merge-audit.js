@@ -109,7 +109,7 @@ T("A13 皮肤特效导出改为 berserkWill",
 {
   // store-repairs.js 的旧档迁移必须识别旧技能卡标记才能迁移死卡，属合理例外。
   const skip = new Set(["update-notice-recent.js", "update-notice-archive.js",
-    "store-repairs.js"]);
+    "store-repairs.js", "store-merged-skills-repair.js"]);
   const hits = fs.readdirSync(ROOT).filter(f => f.endsWith(".js") && !skip.has(f))
     .filter(f => src(f).includes("猩红暴走"));
   T("A14 源码中文「猩红暴走」残留 0（公告历史除外）", hits.length === 0, hits);
@@ -118,7 +118,7 @@ T("A13 皮肤特效导出改为 berserkWill",
   const exempt = new Set(["test-berserk-will-merge-audit.js", "qa-test-catalog.js",
     "test-angelica-merge-recheck.js", "test-merge-skill-side-effects.js",
     "test-merge-skill-final-recheck.js", "test-angelica-berserk-will-trail.js",
-    "test-angelica-berserk-will-trail-live.js"]);
+    "test-angelica-berserk-will-trail-live.js", "test-split-compact-recheck.js"]);
   const toolHits = ["tools", "tests"].flatMap(dir => {
     const base = path.join(__dirname, "..", dir);
     return fs.readdirSync(base).filter(f => f.endsWith(".js") && !exempt.has(f))

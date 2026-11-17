@@ -24,39 +24,39 @@ global.window = global;
 
 const stats = id => GameDataCharacters.find(character => character.id === id)?.stats;
 const expectedCharacters = {
-  lokar: { attack: 9.6, magic: 5.0, speed: 11.0, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
-  besta_doll: { attack: 7.2, magic: 10, speed: 11.0, maxHp: 96, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
-  manny: { attack: 9.6, magic: 10, speed: 13.4, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 3 },
-  miller: { attack: 9.6, magic: 10, speed: 11.0, maxHp: 138, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
-  nonoka: { attack: 4.8, magic: 10, speed: 11.0, maxHp: 118, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
-  loki: { attack: 9.6, magic: 5.0, speed: 11.0, maxHp: 144, bloodlust: 2, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
-  flora: { attack: 9.6, magic: 5.0, speed: 15.6, maxHp: 96, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 3 },
-  wendy: { attack: 4.8, magic: 10, speed: 13.4, maxHp: 118, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
-  cadicis: { attack: 9.6, magic: 10, speed: 11.0, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
-  carlos: { attack: 9.6, magic: 5.0, speed: 13.4, maxHp: 110, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 4 },
-  bertis: { attack: 9.6, magic: 10, speed: 11.0, maxHp: 130, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
-  gerlot: { attack: 9.6, magic: 5.0, speed: 13.4, maxHp: 118, bloodlust: 2, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
-  angelica: { attack: 9.6, magic: 5.0, speed: 11.0, maxHp: 154, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
-  luka: { attack: 9.6, magic: 5.0, speed: 13.4, maxHp: 130, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
-  elrana: { attack: 4.8, magic: 10, speed: 13.4, maxHp: 124, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
-  little_elrana: { attack: 9.6, magic: 10, speed: 11.0, maxHp: 110, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
-  ace: { attack: 9.6, magic: 5.0, speed: 11.0, maxHp: 130, bloodlust: 1, handLimit: 5, drawPerTurn: 1, initialDraw: 2 },
-  nanali: { attack: 9.6, magic: 10, speed: 11.0, maxHp: 110, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
-  ophelia: { attack: 4.8, magic: 12.4, speed: 11.0, maxHp: 104, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
-  aileng: { attack: 9.6, magic: 10, speed: 13.4, maxHp: 124, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
-  besta: { attack: 7.2, magic: 12.4, speed: 8.8, maxHp: 96, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
-  catherine: { attack: 4.8, magic: 10, speed: 8.8, maxHp: 96, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
-  hitwell: { attack: 9.6, magic: 10, speed: 13.4, maxHp: 118, bloodlust: 2, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
-  gerda: { attack: 9.6, magic: 10, speed: 13.4, maxHp: 138, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
-  hoshino_yi: { attack: 9.6, magic: 10, speed: 11.0, maxHp: 118, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
-  hoshino_kaiichi: { attack: 4.8, magic: 10, speed: 8.8, maxHp: 158, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
-  artina: { attack: 9.6, magic: 7.4, speed: 13.4, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
-  maria: { attack: 9.6, magic: 10, speed: 13.4, maxHp: 130, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
-  sonia: { attack: 9.6, magic: 10, speed: 13.4, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
-  chiyo: { attack: 7.2, magic: 5.0, speed: 15.6, maxHp: 104, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 1 },
+  lokar: { attack: 10, magic: 5, speed: 11, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
+  besta_doll: { attack: 7, magic: 10, speed: 11, maxHp: 96, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
+  manny: { attack: 10, magic: 10, speed: 13, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 3 },
+  miller: { attack: 10, magic: 10, speed: 11, maxHp: 138, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
+  nonoka: { attack: 5, magic: 10, speed: 11, maxHp: 118, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
+  loki: { attack: 10, magic: 5, speed: 11, maxHp: 144, bloodlust: 2, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
+  flora: { attack: 10, magic: 5, speed: 16, maxHp: 96, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 3 },
+  wendy: { attack: 5, magic: 10, speed: 13, maxHp: 118, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
+  cadicis: { attack: 10, magic: 10, speed: 11, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
+  carlos: { attack: 10, magic: 5, speed: 13, maxHp: 110, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 4 },
+  bertis: { attack: 10, magic: 10, speed: 11, maxHp: 130, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
+  gerlot: { attack: 10, magic: 5, speed: 13, maxHp: 118, bloodlust: 2, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
+  angelica: { attack: 10, magic: 5, speed: 11, maxHp: 154, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
+  luka: { attack: 10, magic: 5, speed: 13, maxHp: 130, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
+  elrana: { attack: 5, magic: 10, speed: 13, maxHp: 124, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
+  little_elrana: { attack: 10, magic: 10, speed: 11, maxHp: 110, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
+  ace: { attack: 10, magic: 5, speed: 11, maxHp: 130, bloodlust: 1, handLimit: 5, drawPerTurn: 1, initialDraw: 2 },
+  nanali: { attack: 10, magic: 10, speed: 11, maxHp: 110, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
+  ophelia: { attack: 5, magic: 12, speed: 11, maxHp: 104, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
+  aileng: { attack: 10, magic: 10, speed: 13, maxHp: 124, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
+  besta: { attack: 7, magic: 12, speed: 9, maxHp: 96, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
+  catherine: { attack: 5, magic: 10, speed: 9, maxHp: 96, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
+  hitwell: { attack: 10, magic: 10, speed: 13, maxHp: 118, bloodlust: 2, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
+  gerda: { attack: 10, magic: 10, speed: 13, maxHp: 138, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
+  hoshino_yi: { attack: 10, magic: 10, speed: 11, maxHp: 118, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
+  hoshino_kaiichi: { attack: 5, magic: 10, speed: 9, maxHp: 158, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+  artina: { attack: 10, magic: 7, speed: 13, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 2 },
+  maria: { attack: 10, magic: 10, speed: 13, maxHp: 130, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
+  sonia: { attack: 10, magic: 10, speed: 13, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
+  chiyo: { attack: 7, magic: 5, speed: 16, maxHp: 104, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 1 },
   // 普雷希（第 31 名）：0 级生命 112（翻倍前 56）、杀意 1、手牌上限 4；摸牌为「基础 2+1」「初始 4+1」，
   // 与其余角色同口径，基础表内仍记 drawPerTurn 1 / initialDraw 1。
-  preshi: { attack: 9.6, magic: 10, speed: 11.0, maxHp: 112, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
+  preshi: { attack: 10, magic: 10, speed: 11, maxHp: 112, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
   // 米尔尤拉（第 32 名）：0 级生命 104（翻倍前 52）、魔力 4（翻倍前 2）；高阶成长表落在统一档位网格上。
   mieryula: { attack: 8, magic: 4, speed: 10, maxHp: 104, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
   // 安倍卡露娜（第 33 名）：0 级生命 100、攻击 4、魔力 8、速度 6（均为翻倍后）；摸牌为「基础 2+1」「初始 4+1」，
@@ -71,23 +71,23 @@ Object.entries(expectedCharacters).forEach(([id, expected]) => {
   assert.deepStrictEqual(stats(id), expected, `${id} balance stats changed`);
 });
 const expectedGrowth = {
-  lokar: [280.42, 67.42, 24.50, 29.18], besta_doll: [210.32, 37.46, 65.32, 21.90], manny: [280.42, 59.94, 40.82, 36.48],
+  lokar: [280, 67, 25, 29], besta_doll: [210, 37, 65, 22], manny: [280, 60, 41, 36],
   // 洛基与卡迪西斯在 10-10 版随【护母心切】【战场指挥官】一并删除而重分配满级成长
   // （两人定位统一改为输出：攻击均提升，卡迪西斯魔力下调，洛基体力下调、速度提升），
   // 详见 update-notice-recent.js 10月10日公告。此表须与该公告口径保持一致。
-  miller: [373.90, 37.46, 40.82, 29.18], nonoka: [303.80, 22.48, 73.46, 29.18], loki: [397.26, 74.90, 16.32, 32.82],
-  flora: [210.32, 67.42, 24.50, 54.72], wendy: [280.42, 14.98, 65.32, 36.48], cadicis: [327.16, 74.90, 16.32, 32.82],
-  carlos: [257.06, 52.44, 16.32, 47.42], bertis: [373.90, 52.44, 57.14, 21.90], gerlot: [303.80, 59.94, 16.32, 40.12],
-  angelica: [408.96, 74.90, 16.32, 21.90], luka: [397.26, 67.42, 16.32, 36.48], elrana: [373.90, 22.48, 81.64, 32.82],
-  little_elrana: [303.80, 37.46, 65.32, 29.18], ace: [327.16, 37.46, 24.50, 40.12], nanali: [257.06, 67.42, 24.50, 32.82],
-  ophelia: [280.42, 14.98, 81.64, 36.48], aileng: [327.16, 52.44, 49.0, 43.78], besta: [233.68, 22.48, 81.64, 14.6],
-  catherine: [233.68, 14.98, 65.32, 14.6], hitwell: [280.42, 37.46, 65.32, 36.48], gerda: [444.00, 29.96, 57.14, 36.48],
-  hoshino_yi: [303.80, 52.44, 57.14, 32.82], hoshino_kaiichi: [514.12, 22.48, 57.14, 21.90], artina: [233.68, 67.42, 24.50, 43.78],
-  maria: [327.16, 44.96, 49.0, 36.48], sonia: [350.54, 52.44, 32.64, 40.12], chiyo: [257.06, 52.44, 16.32, 51.08],
-  preshi: [257.06, 37.46, 65.32, 29.18], mieryula: [397.26, 82.4, 40.82, 80.26],
-  abe_karuna: [233.68, 14.98, 73.46, 43.78],
-  // 第 34 名：攻击 11 档（41.2）为全表最高攻击成长，明确输出倾向。
-  noa: [327.16, 82.4, 24.50, 43.78],
+  miller: [374, 37, 41, 29], nonoka: [304, 22, 73, 29], loki: [397, 75, 16, 33],
+  flora: [210, 67, 25, 55], wendy: [280, 15, 65, 36], cadicis: [327, 75, 16, 33],
+  carlos: [257, 52, 16, 47], bertis: [374, 52, 57, 22], gerlot: [304, 60, 16, 40],
+  angelica: [409, 75, 16, 22], luka: [397, 67, 16, 36], elrana: [374, 22, 82, 33],
+  little_elrana: [304, 37, 65, 29], ace: [327, 37, 25, 40], nanali: [257, 67, 25, 33],
+  ophelia: [280, 15, 82, 36], aileng: [327, 52, 49, 44], besta: [234, 22, 82, 15],
+  catherine: [234, 15, 65, 15], hitwell: [280, 37, 65, 36], gerda: [444, 30, 57, 36],
+  hoshino_yi: [304, 52, 57, 33], hoshino_kaiichi: [514, 22, 57, 22], artina: [234, 67, 25, 44],
+  maria: [327, 45, 49, 36], sonia: [351, 52, 33, 40], chiyo: [257, 52, 16, 51],
+  preshi: [257, 37, 65, 29], mieryula: [397, 82, 41, 80],
+  abe_karuna: [234, 15, 73, 44],
+  // 第 34 名：攻击 11 档（41）为全表最高攻击成长，明确输出倾向。
+  noa: [327, 82, 25, 44],
 };
 assert.strictEqual(Object.keys(expectedGrowth).length, GameDataCharacters.length,
   "every character needs a complete growth baseline");
@@ -98,14 +98,17 @@ Object.entries(expectedGrowth).forEach(([id, expected]) => {
     expected, `${id} growth balance changed`,
   );
 });
-// 结构性护栏：成长表由统一档位生成，每个值都必须是档位单位的整数倍。
-// 这条不锁定具体数值，因此不会随平衡调整而腐坏；但能捕获手改、复制粘贴或串行写入导致的错值。
+// 结构性护栏：成长表原本由统一档位生成，现已全部四舍五入为整数。
+// 仍要求每个值落在原档位网格上（允许 ±0.5 取整误差 / 最小档位 3.648 ≈ 0.137 的 tier 偏差），
+// 能捕获手改、复制粘贴或串行写入导致的错值，同时不随整数化腐坏。
 const growthGrid = { maxHp: 11.684, attack: 7.491, magic: 8.163, speed: 3.648 };
 Object.entries(CharacterProgression.growth).forEach(([id, growth]) => {
   Object.entries(growthGrid).forEach(([key, unit]) => {
     const tier = growth[key] / unit;
+    assert.ok(Number.isInteger(growth[key]),
+      `${id} 的 ${key} 成长必须为整数（全部属性取整口径），实际 ${growth[key]}`);
     assert.ok(
-      Math.abs(tier - Math.round(tier)) < 0.02,
+      Math.abs(tier - Math.round(tier)) < 0.15,
       `${id} 的 ${key} 成长 ${growth[key]} 不在档位网格上（档位 ${tier.toFixed(3)} 非整数）`,
     );
   });
@@ -225,13 +228,13 @@ Object.entries(expectedEnemies).forEach(([id, expected]) => {
   const baseHp = Object.entries(targets).map(([, [list]]) => average(list, "hp"));
   assert.ok(baseHp.every((v, i) => i === 0 || v > baseHp[i - 1]),
     `副本平均生命未递进: ${baseHp.map(v => v.toFixed(1)).join("→")}`);
-  // 先手压力：水下列车英雄级平均速度不低于 20 级角色速度（47.28）的 90%
+  // 先手压力：水下列车英雄级平均速度不低于 20 级角色速度（47.12）的 90%
   const trainHell = average(
     GameDataUnderwaterTrainEnemies.map(enemy => GameDataWorld.scaleEnemyStats(enemy, difficulties[4], enemy.type)),
     "speed",
   );
-  assert.ok(trainHell >= 47.28 * 0.9,
-    `水下列车英雄级平均速度 ${trainHell.toFixed(1)} 未形成先手压力（20 级角色 47.28）`);
+  assert.ok(trainHell >= 47.12 * 0.9,
+    `水下列车英雄级平均速度 ${trainHell.toFixed(1)} 未形成先手压力（20 级角色 47.12）`);
 })();
 const averageHp = group => group.reduce((sum, enemy) => sum + enemy.hp, 0) / group.length;
 assert(averageHp(GameDataMachineFactoryEnemies)
@@ -332,8 +335,9 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.
   // 10-26 安倍卡露娜速度成长由 4 档（7.3）上调至 12 档（21.89，满级速度 24.89）、
   // 11-09 新增第 34 名怪面诺亚并补齐专属成长表（输出倾向：攻击 11 档 41.2）。
   // 11-09 全角色初始属性与成长、全怪物基础属性统一翻倍，成长档位单位同步翻倍。
+  // 11-17 全部角色与怪物属性统一四舍五入取整，成长快照、生命/输出比与先手阈值同步重定。
   assert.strictEqual(digest,
-    "b46967d466e844e36a1b1f3b455d62bea2bc5190afc5434c506c905138b9d637",
+    "d7a08d4e858f7de74dd1d40e5d530a4f797bd665cbff408722883259ec0e4c28",
     "0～20 级角色成长数据被改动（快照不匹配，若有意调整请更新摘要）");
   const lokar = GameDataCharacters.find(character => character.id === "lokar");
   assert.deepStrictEqual(
@@ -358,7 +362,7 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.
     return hp / power;
   };
   // 调整前（HEAD）实测的 0/5/10/15/20 级比例，重平衡后应回到同一水平（±0.4 容差）
-  const baseline = { 0: 14.27, 5: 9.91, 10: 8.89, 15: 8.43, 20: 8.17 };
+  const baseline = { 0: 14.28, 5: 9.98, 10: 8.74, 15: 8.26, 20: 7.97 };
   Object.entries(baseline).forEach(([level, expected]) => {
     const value = ratio(Number(level));
     assert.ok(Math.abs(value - expected) <= 0.4,

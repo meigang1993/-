@@ -18,7 +18,8 @@ window.AngelicaLukaSkills = (() => {
     // 力量爆发改为「实体【杀】结算完成后累积」，出牌前只做回合边界重置。
     if (actor?.ref === "angelica") ensureMightTurn(state, actor);
   }
-  // 实体【杀】结算完成后 +50% 伤害增益（可叠加），回合结束清空。
+  // 实体【杀】结算完成后 +50% 伤害增益（可叠加），回合结束清空；
+  // 伤害出口四舍五入，避免 9×1.5=13.5 这类小数伤害漏进结算与飘字。
   function grantMightBonus(state, actor, card) {
     if (actor?.ref !== "angelica" || !isEntitySlash(card)) return;
     ensureMightTurn(state, actor);
@@ -32,7 +33,7 @@ window.AngelicaLukaSkills = (() => {
   function modifyOutgoingDamage(state, actor, amount) {
     if (!amount || actor?.ref !== "angelica") return amount;
     const bonus = actor.angelicaMightBonus || 0;
-    return bonus ? amount * (1 + bonus) : amount;
+    return bonus ? Math.round(amount * (1 + bonus)) : amount;
   }
   function canPayIntentWithRage(actor, card) {
     return actor?.ref === "angelica" && isEntitySlash(card)
