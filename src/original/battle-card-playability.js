@@ -133,6 +133,16 @@ window.BattleCardPlayability = deps => {
     if (card.statusKey && !opposingUnits(battle, actor)
       .some(unit => unit.hp > 0
         && !window.BattleStatusCards?.has?.(unit, card.statusKey))) return true;
+    // 单体恢复牌：同阵营没有任何受伤角色时没有合法目标，
+    // 置灰避免「选了牌却点谁都没反应、牌还被消耗」。
+    if (window.BattleHealTargetRules?.isSingleHealCard?.(card)
+      && !sameSideUnits(battle, actor)
+        .some(unit => window.BattleHealTargetRules.needsHeal(unit))) return true;
+    // 主动恢复技能：全队满血（且无绿帽收益）时没有合法目标，置灰避免
+    // 「选了技能、弃了牌、点了谁都没反应，本回合限一次还被吃掉」。
+    if (window.BattleHealTargetRules?.isHealSkillCard?.(card)
+      && !window.BattleHealTargetRules.healSkillHasAnyTarget(
+        battle, actor, card)) return true;
     return card.magicBullet && !canMagicBullet(battle, actor, card);
   }
 

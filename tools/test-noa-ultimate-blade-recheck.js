@@ -98,7 +98,7 @@ function makeWin(opts = {}) {
   vm.createContext(ctx);
   ["card-utils.js", "chiyo-chain-skills.js", "noa-ultimate-blade-skills.js",
     "battle-turn-state.js", "store-compact.js",
-    "battle-save-checkpoint-validation.js", "store-repairs.js"]
+    "battle-save-checkpoint-validation.js", "store-merged-skills-repair.js", "store-repairs.js"]
     .forEach(file => vm.runInContext(patched(file), ctx, { filename: file }));
   return { ctx, calls };
 }

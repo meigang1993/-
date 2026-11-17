@@ -56,6 +56,10 @@ function rootText(rel, opts = {}) {
 }
 function src(file, skipDesc = false) {
   let s = rootText(`src/original/${file}`, { skipDesc });
+  // 旧档规范化函数已拆到子模块；静态断言与反向验证按「主文件 + 子模块」整体读取。
+  if (file === "store-repairs.js") {
+    s += "\n" + rootText("src/original/store-merged-skills-repair.js", { skipDesc });
+  }
   if (REVERT === "migration" && file === "store-repairs.js") {
     const n1 = "    const cardLists = [b.played];";
     const n2 = `      if (pile) ["deck", "discard", "consumed"].forEach(key => cardLists.push(pile[key]));`;
@@ -194,7 +198,7 @@ function load(file) {
   vm.runInNewContext(src(file, true), ctx, { filename: file });
 }
 [
-  "store-save-schema.js", "store-repairs.js",
+  "store-save-schema.js", "store-merged-skills-repair.js", "store-repairs.js",
   "battle-line-data.js", "new-character-line-data.js",
   "data-characters-extra.js", "angelica-luka-skills.js",
   "skill-once-per-turn.js", "character-skill-access.js",

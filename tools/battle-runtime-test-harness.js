@@ -109,6 +109,7 @@ load("src/original/battle-card-resume.js");
 load("src/original/character-skill-access.js");
 load("src/original/battle-combat-trail.js");
 load("src/original/battle-krow-repeat-resume.js");
+load("src/original/battle-combat-defeat.js");
 load("src/original/battle-combat.js");
 
 const combat = window.BattleCombat({

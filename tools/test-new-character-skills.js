@@ -245,6 +245,7 @@ require("./new-character-kaiichi-ui-tests")({
 
 
 // ---------- Artina & Maria ----------
+vm.runInThisContext(fs.readFileSync("./src/original/maria-honor-blessing.js", "utf8"), { filename: "maria-honor-blessing.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/artina-maria-skills.js", "utf8"), { filename: "artina-maria-skills.js" });
 vm.runInThisContext(fs.readFileSync("./src/original/battle-line-data.js", "utf8"), { filename: "battle-line-data.js" });
 

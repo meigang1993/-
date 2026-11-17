@@ -15,7 +15,12 @@ function bindCardDrag(card) {
     const up = async ev => {
       document.removeEventListener("pointermove", move); document.removeEventListener("pointerup", up); ghost?.remove(); card.classList.remove("drag-source"); document.body.classList.remove("card-dragging");
       const actor = BattleSystem.active(state.battle), activeCard = actor?.hand[index], outsideHand = !document.elementFromPoint(ev.clientX, ev.clientY)?.closest(".hand-panel");
-      if (dragging && activeCard?.allyTarget && outsideHand && !target) BattleEffects.choose(state, actor.uid);
+      if (dragging && activeCard?.allyTarget && outsideHand && !target) {
+        const rules = window.BattleHealTargetRules;
+        const uid = rules?.isSingleHealCard?.(activeCard)
+          ? rules.defaultHealTarget(state.battle, actor) : actor.uid;
+        if (uid) BattleEffects.choose(state, uid);
+      }
       if (dragging && (target || (activeCard?.allyTarget && outsideHand) || (activeCard?.targetless && outsideHand))) await playSelectedCard();
       else if (dragging) { BattleSystem.cancelSelection(state); BattleEffects.clearTarget(state); render(); }
       setTimeout(() => { delete card.dataset.dragged; }, 0);

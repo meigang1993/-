@@ -28,6 +28,7 @@ function setup() {
     load(`./src/original/${f}`));
   load("./src/original/ruins-witherer-common.js");
   load("./src/original/hp-value.js");
+  load("./src/original/ruins-witherer-virtual-kill.js");
   load("./src/original/ruins-witherer-skills.js");
   load("./src/original/witherer-relic-skills.js");
   load("./src/original/bakar-relic-skills.js");

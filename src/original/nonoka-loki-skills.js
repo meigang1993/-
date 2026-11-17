@@ -48,13 +48,21 @@ window.NonokaLokiSkills = (() => {
   function idolKiss(state, actor, target, deps, card) {
     const index = card?._costCard ? actor.hand.indexOf(card._costCard) : state.battle.selectedCardIndex, heart = actor.hand[index];
     if (actor.usedIdolKiss || !target || target.uid === actor.uid || target.side !== actor.side || !heart || heart._pendingDraw || heart.suit !== "♥") return true;
+    // 结算兜底：双方满血（且无绿帽收益）时白弃♥牌 + 白耗限一次，与回春之手
+    // 同类。判据与 UI/chooseTarget 同源，绿帽收益按既有玩法保留。
+    if (window.BattleHealTargetRules?.healSkillValue
+      && !window.BattleHealTargetRules.healSkillValue(
+        state.battle, actor, { idolKiss: true, _costCard: heart }, target)) return false;
     actor.usedIdolKiss = true; actor.hand.splice(index, 1); window.BattleCards?.put(state.battle, actor, heart, "discard", { showDiscard: true }); card.suit = heart.suit;
     const amount = visibleHand(actor).length + deps.statOf(actor, "magic");
     line(state, actor, "偶像之吻", target);
     window.NonokaIdolSkinFX?.kiss?.(state, actor, target);
-    heal(state, actor, amount, actor, deps);
-    if (target.uid !== actor.uid) heal(state, target, amount, actor, deps);
-    window.BattleLog.add(state, `${actor.name} 弃置♥${heart.name}发动偶像之吻，双方各恢复${amount}点生命。`);
+    const selfHealed = heal(state, actor, amount, actor, deps);
+    const partnerHealed = target.uid !== actor.uid ? heal(state, target, amount, actor, deps) : 0;
+    // 旧文案按理论值写「双方各恢复 X 点」，满血时是谎报；改为按实际值分列。
+    window.BattleLog.add(state, selfHealed + partnerHealed > 0
+      ? `${actor.name} 弃置♥${heart.name}发动偶像之吻，自己恢复${selfHealed}点、${target.name}恢复${partnerHealed}点生命。`
+      : `${actor.name} 弃置♥${heart.name}发动偶像之吻，双方生命已满，未恢复生命。`);
     if (target.gender === "male" && target.ref !== "loki") triggerGreenHat(state, target);
     return true;
   }
@@ -70,6 +78,7 @@ window.NonokaLokiSkills = (() => {
       window.HitwellSkills?.afterHeal?.(state, target, healed, deps);
       window.BertisGerlotSkills?.refreshArrogance?.(state);
     }
+    return healed;
   }
   function triggerGreenHat(state, kissed) {
     state.battle.allies.filter(unit => unit.ref === "loki" && unit.hp > 0).forEach(loki => {

@@ -56,7 +56,7 @@ window.RuinsRelicEffects = { missileLauncherBlock: () => true };
   "battle-combat-responses.js", "battle-card-cleanup.js", "battle-combat-card-effects.js",
   "battle-combat-attack-values.js", "battle-combat-attack-flow.js",
   "battle-combat-attack.js", "battle-combat-resolver.js",
-  "battle-combat-trail.js", "battle-krow-repeat-resume.js", "battle-combat.js",
+  "battle-combat-trail.js", "battle-krow-repeat-resume.js", "battle-combat-defeat.js", "battle-combat.js",
 ].forEach(file => require(`../src/original/${file}`));
 window.GameData = { cardCodex: window.GameDataCards.cardCodex };
 

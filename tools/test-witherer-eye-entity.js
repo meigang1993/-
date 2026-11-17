@@ -29,6 +29,7 @@ function setup() {
   };
   load("./src/original/ruins-witherer-common.js");
   load("./src/original/hp-value.js");
+  load("./src/original/ruins-witherer-virtual-kill.js");
   load("./src/original/ruins-witherer-skills.js");
 }
 

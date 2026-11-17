@@ -16,6 +16,8 @@ function T(name, cond, extra) {
 function read(file) { return fs.readFileSync(path.join(ROOT, file), "utf8"); }
 function src(file) {
   let s = read(file);
+  // 旧档规范化函数已拆到子模块；静态断言与反向验证按「主文件 + 子模块」整体读取。
+  if (file === "store-repairs.js") s += "\n" + read("store-merged-skills-repair.js");
   if (REVERT === "migration" && file === "store-migrations.js") {
     const needle = "    if (normalizeMergedSkills(state)) markForSave(state);";
     if (!s.includes(needle)) throw new Error("REVERT=migration must hit");
@@ -38,9 +40,11 @@ T("A1 读档在恢复战斗后调用合并技能规范化",
   && migrations.indexOf("normalizeMergedSkills(state)") > migrations.indexOf("BattleSaveCheckpoint?.restore")
   && migrations.indexOf("normalizeMergedSkills(state)") < migrations.indexOf("recoverOrphanedBattleNode(state)"));
 const repairs = src("store-repairs.js");
+const mainRepairs = read("store-repairs.js");
 T("A2 规范化函数真实导出",
   /function normalizeMergedSkills\(state\)/.test(repairs)
-  && /normalizeMergedSkills,/.test(repairs.slice(repairs.lastIndexOf("return {"))));
+  && /const \{ normalizeMergedSkills \} = window\.StoreMergedSkillsRepair/.test(mainRepairs)
+  && /normalizeMergedSkills,/.test(mainRepairs.slice(mainRepairs.indexOf("return {"))));
 T("A3 规范化不碰名册与局外牌",
   !/state\.chars|state\.deck/.test(repairs.slice(repairs.indexOf("function normalizeMergedSkills"))));
 {
@@ -92,7 +96,7 @@ function load(file) {
   const ctx = { window: win, GameData: win.GameData, Math, Number, Array, Object, Set, Map, JSON, String, RegExp, console };
   vm.runInNewContext(src(file), ctx, { filename: file });
 }
-["store-save-schema.js", "store-repairs.js",
+["store-save-schema.js", "store-merged-skills-repair.js", "store-repairs.js",
   "battle-line-data.js", "new-character-line-data.js", "data-characters-extra.js",
   "angelica-luka-skills.js", "skill-once-per-turn.js", "character-skill-access.js",
   "data-new-characters.js", "noa-side-effect-skills.js",

@@ -8,6 +8,7 @@ installGlobals();
 loadRuntime();
 ["battle-card-cleanup.js", "skill-once-per-turn.js", "mieryula-time-stop.js", "mieryula-tactic-immunity.js", "mieryula-skills.js", "battle-playability-registries.js", "battle-card-playability.js", "battle-combat-targeting.js",
   "battle-turn-state.js", "battle-discard-flow.js", "battle-end-phase.js",
+  "maria-honor-blessing.js",
   "artina-maria-skills.js"].forEach(file => {
   vm.runInThisContext(fs.readFileSync(`./src/original/${file}`, "utf8"), { filename: file });
 });

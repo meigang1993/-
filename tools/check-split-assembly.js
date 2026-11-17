@@ -54,6 +54,14 @@ const SPLITS = [
     main: "update-notice.js",
     deps: ["UpdateNoticeRules", "UpdateNoticeRecent", "UpdateNoticeArchive"],
   },
+  // 2026-11-17 行数收紧（>180）：7 个新装配点同样必须显式报错。
+  { main: "catherine-skills.js", deps: ["CatherineAbsorbSkills"] },
+  { main: "battle-combat.js", deps: ["BattleCombatDefeat"] },
+  { main: "ui-battle-units.js", deps: ["GameUIBattleUnitStatus"] },
+  { main: "ui-hand-view.js", deps: ["GameUIHandControls"] },
+  { main: "artina-maria-skills.js", deps: ["MariaHonorBlessing"] },
+  { main: "ruins-witherer-skills.js", deps: ["RuinsWithererVirtualKill"] },
+  { main: "store-repairs.js", deps: ["StoreMergedSkillsRepair"] },
 ];
 
 const failures = [];
@@ -115,6 +123,7 @@ if (!fs.existsSync(bundlesPath)) {
     "battle-combat.js": [
       "battle-combat-trail.js",
       "battle-krow-repeat-resume.js",
+      "battle-combat-defeat.js",
     ],
     // 重做后的两件饰品：各自独立文件，所有消费方都必须排在它们之后。
     "battle-status-card-storage.js": ["gaianis-amulet-skills.js"],
@@ -128,6 +137,12 @@ if (!fs.existsSync(bundlesPath)) {
     "update-notice.js": [
       "update-notice-recent.js", "update-notice-archive.js", "update-notice-rules.js",
     ],
+    "catherine-skills.js": ["catherine-absorb-skills.js"],
+    "ui-battle-units.js": ["ui-battle-units-status.js"],
+    "ui-hand-view.js": ["ui-hand-controls.js"],
+    "artina-maria-skills.js": ["maria-honor-blessing.js"],
+    "ruins-witherer-skills.js": ["ruins-witherer-virtual-kill.js"],
+    "store-repairs.js": ["store-merged-skills-repair.js"],
   };
   // 共享模块必须同时出现在两个消费方所在的 bundle，否则跨包依赖并未消除
   const sharedCross = {

@@ -83,6 +83,7 @@ window.GameData = window.GameDataWorld;
 window.GameStoreStateFactory = { rand: min => min };
 load("./src/original/store-save-schema.js");
 load("./src/original/store-bounty-repairs.js");
+load("./src/original/store-merged-skills-repair.js");
 load("./src/original/store-repairs.js");
 
 const migrationState = {

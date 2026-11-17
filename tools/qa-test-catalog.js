@@ -64,6 +64,8 @@ const timeouts = Object.freeze({
   // 燃烧/感电改为施加者攻击力30% + HP浮点尾巴收敛（REVERT=burn|shock|hp 反向）
   "test-burn-shock-rate-and-hp-value.js": 120,
   "test-burn-shock-hp-recheck.js": 120,
+  // 180 行以上文件拆分/压缩复查：装配、函数体等价、运行时等价、副作用（REVERT=order|export|fixture|body）
+  "test-split-compact-recheck.js": 180,
   // 状态伤害来源归属复查（毒/燃烧/感电施加者失效、HP阈值、存档压缩，REVERT=shadow 反向）
   "test-status-source-attribution-audit.js": 120,
   // 状态 DOT 口径定案：毒按施加者分组结算、状态段不触发感电（REVERT=group|shock 反向）
@@ -114,6 +116,12 @@ const timeouts = Object.freeze({
   "test-dungeon-rest-elite-art-audit.js": 120,
   // 伊迪斯新立绘 / 四副本篝火 / 水下列车精英层 实机检查
   "test-edis-art-rest-live.js": 180,
+  // 单体恢复牌不可指定满血角色（UI/逻辑/结算/置灰/默认目标，7 组源码级反向）
+  "test-single-heal-target-rules.js": 120,
+  // 主动恢复技能（回春之手 / 偶像之吻）满血白消耗（10 组源码级反向）
+  "test-skill-heal-target-recheck.js": 120,
+  // 单体恢复牌实机：startup 装配 / DOM 高亮 / chooseTarget / 提示文案
+  "test-single-heal-target-live.js": 180,
 });
 
 const timeoutFor = (file, fallback) => timeouts[file] || fallback;
@@ -358,6 +366,9 @@ const groups = Object.freeze({
     "test-witherer-virtual-source-live.js",
     "test-witherer1312-hell-live.js",
     "test-witherer1312-live.js",
+    "test-single-heal-target-rules.js",
+    "test-skill-heal-target-recheck.js",
+    "test-single-heal-target-live.js",
   ],
   characters: [
     "test-chiyo-chain-wendy-cover.js",
@@ -411,6 +422,7 @@ const groups = Object.freeze({
     "test-noa-ultimate-blade-next-slash.js",
     "test-noa-ultimate-blade-effect-relics.js",
     "test-noa-ultimate-blade-relic-recheck.js",
+    "test-split-compact-recheck.js",
     "test-angelica-merge-recheck.js",
     "test-merge-skill-side-effects.js",
     "test-merge-skill-final-recheck.js",

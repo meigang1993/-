@@ -110,6 +110,18 @@ window.GameUIBattleTargeting = (() => {
     // 隐身中的希尔德不可被实体单体【杀】指定：与逻辑层 chooseTarget 同一判定源，
     // 否则会出现「点得到但点了没反应」。虚拟杀不受此限。
     if (allowed && window.RuinsEnemySkills?.blocksKillTarget?.(unitData, card)) allowed = false;
+    // 单体恢复牌（愈魔瓶 / 伤口处理）：满血角色被指定只会「恢复0点」白费一张牌，
+    // 与逻辑层 chooseTarget 同一判定源，选目标阶段就不标成可选。
+    // 末尾兜底 `side === "enemy"` 还会把敌方标成可选（allyTarget 变量对敌方为
+    // false 时落到这里），逻辑层第 59 行本就拒绝，故一并按同阵营收口。
+    if (allowed && window.BattleHealTargetRules?.isSingleHealCard?.(card)
+      && (unitData.side !== actorSide(battle)
+        || !window.BattleHealTargetRules.needsHeal(unitData))) allowed = false;
+    // 主动恢复技能（回春之手 / 偶像之吻）与单体恢复牌同一判定源：满血目标
+    // 点了只会白弃一张手牌并消耗本回合限一次，选目标阶段就不标成可选。
+    if (allowed && window.BattleHealTargetRules?.isHealSkillCard?.(card)
+      && !window.BattleHealTargetRules.healSkillValue(
+        battle, actor, card, unitData)) allowed = false;
     // 渴血杀戮：选定牌名后没有选中手牌也没有技能牌（selectedSkillCard 已在
     // 出牌结算里清空），若不放行这里，敌方单位不会被标成 selectable-target，
     // 虽然没有高亮也能点，但玩家看不出该点谁——与窃取/狙击同一类问题。

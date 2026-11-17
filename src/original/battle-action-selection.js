@@ -65,10 +65,19 @@ async function confirmBattleCard() {
     if (needsHandChoice(card) && !battle.pendingTargetUid) {
       battle.pendingTargetUid = actor?.uid;
     }
-    if (card?.allyTarget && !battle.pendingTargetUid && battle.allies.filter(unit => unit.hp > 0).length === 1) {
-      battle.pendingTargetUid = actor?.uid;
+    if (card?.allyTarget && !battle.pendingTargetUid) {
+      const rules = window.BattleHealTargetRules;
+      // 单体恢复牌：自己满血时默认转给受伤队友，不再无条件指向自己白费一张牌。
+      // 统一走 choose() → chooseTarget() 校验，不直接写 pendingTargetUid，
+      // 避免绕过目标合法性守卫（与「点了没反应」类护栏同口径）。
+      const uid = rules?.isSingleHealCard?.(card)
+        ? rules.defaultHealTarget(battle, actor)
+        : (battle.allies.filter(unit => unit.hp > 0).length === 1 ? actor?.uid : null);
+      if (uid) BattleEffects.choose(state, uid);
     }
-    if (card?.allyTarget && battle.pendingTargetUid === actor?.uid) BattleEffects.choose(state, actor.uid);
+    if (card?.allyTarget && battle.pendingTargetUid === actor?.uid) {
+      BattleEffects.choose(state, actor.uid);
+    }
     if (card?.soulChain && (battle.pendingTargetUids || []).length
       < Math.min(2, battle.enemies.filter(unit => unit.hp > 0).length)) return;
     if ((!card?.targetless || card?.allyTarget) && !battle?.pendingTargetUid) return;
@@ -97,7 +106,13 @@ async function quickPlayTargetless(index) {
     if (battle?.locked || BattleEffects.animating || battle?.phase !== 4
       || actor?.side !== "ally" || !BattleSystem.canPlay(actor, source)) return;
     if (battle.selectedCardIndex !== index || battle.selectedSkillCard) BattleSystem.selectCard(state, index);
-    if (card.allyTarget) BattleEffects.choose(state, actor.uid);
+    if (card.allyTarget) {
+      const rules = window.BattleHealTargetRules;
+      const uid = rules?.isSingleHealCard?.(card)
+        ? rules.defaultHealTarget(battle, actor) : actor.uid;
+      // 全员满血时规则返回 null：牌已置灰，这里不指定目标，出牌自然不结算。
+      if (uid) BattleEffects.choose(state, uid);
+    }
     if (!card.targetless && !card.allyTarget) return render();
     await playSelectedCard();
   } catch (err) {

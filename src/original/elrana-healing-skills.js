@@ -5,6 +5,11 @@ window.ElranaHealingSkills = deps => {
     const index = ctx?.selectedCostCard ? ctx.selectedCostCard(actor) : state.battle.selectedCardIndex;
     const cost = actor.hand[index];
     if (actor.usedElranaHeal || !target || !cost || cost._pendingDraw) return true;
+    // 结算兜底：AI 直接调用、存档恢复、复制牌等绕过选目标的路径也不能
+    // 白弃 1 张手牌并吃掉本回合限一次。判据与 UI/chooseTarget 同源。
+    if (window.BattleHealTargetRules?.healSkillValue
+      && !window.BattleHealTargetRules.healSkillValue(
+        state.battle, actor, { elranaHeal: true, _costCard: cost }, target)) return false;
     actor.usedElranaHeal = true;
     actor.hand.splice(index, 1);
     window.BattleCards?.put(state.battle, actor, cost, "discard", { showDiscard: true });
@@ -13,11 +18,15 @@ window.ElranaHealingSkills = deps => {
     const team = hand.length && hand.every(red) ? state.battle.allies.filter(alive) : [target];
     line(state, actor, "回春之手", target);
     const assistToken = { name: "回春之手" };
-    if (team.length > 1) healGroup(state, team, amount, actor, "回春之手", api, assistToken);
-    else heal(state, target, amount, actor, "回春之手", api, assistToken);
+    const total = team.length > 1
+      ? healGroup(state, team, amount, actor, "回春之手", api, assistToken)
+      : heal(state, target, amount, actor, "回春之手", api, assistToken);
     window.ElranaFallenPhysicianSkinFX?.heal?.(state, actor, target, team.length > 1);
-    window.BattleLog.add(state,
-      `${actor.name} 弃置${cost.suit || ""}${cost.name}发动回春之手，${team.length > 1 ? "我方全体" : target.name}恢复${amount}点生命。`);
+    // 战报必须写实际恢复量：满血 / 被压制的成员 healCap=0，旧文案按理论值
+    // X 写「恢复 X 点生命」，会误导玩家以为血回上去了。
+    window.BattleLog.add(state, total > 0
+      ? `${actor.name} 弃置${cost.suit || ""}${cost.name}发动回春之手，${team.length > 1 ? "我方全体合计" : target.name}恢复${total}点生命。`
+      : `${actor.name} 弃置${cost.suit || ""}${cost.name}发动回春之手，但无人需要恢复，实际恢复0点生命。`);
     return true;
   }
 
@@ -42,7 +51,7 @@ window.ElranaHealingSkills = deps => {
 
   function healGroup(state, targets, amount, actor, source, api, assistToken) {
     const card = { name: source, _groupHeal: true };
-    let any = false;
+    let any = false, total = 0;
     targets.forEach(target => {
       const cap = window.BattleHpValue.healCap(target, amount);
       const blocked = cap > 0
@@ -53,6 +62,7 @@ window.ElranaHealingSkills = deps => {
         window.BattleStats?.heal?.(state.battle, actor, healed);
         window.EnemySkills?.clearHolyScar?.(state, target);
         any = true;
+        total += healed;
         window.EnemySkills?.onHeal?.(state, api.draw);
         afterHeal(state, target, api, actor, assistToken);
         window.HitwellSkills?.afterHeal?.(state, target, healed, api);
@@ -60,6 +70,7 @@ window.ElranaHealingSkills = deps => {
       api.pushFloat?.(state.battle, target.uid, "heal", healed);
     });
     if (any) window.BertisGerlotSkills?.refreshArrogance?.(state);
+    return total;
   }
 
   function afterHeal(state, target, api, healer, assistToken) {

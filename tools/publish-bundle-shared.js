@@ -123,6 +123,36 @@ const ORDER_DEPENDENCIES = [
     file: "update-notice-rules.js",
     consumers: ["update-notice.js"],
   },
+  // 2026-11-17 行数收紧（>180）所拆出的 7 个子模块：装配点显式抛错，
+  // 必须排在各消费方之前，且 node 夹具手工加载消费方时都要顺带加载。
+  {
+    file: "catherine-absorb-skills.js",
+    consumers: ["catherine-skills.js"],
+  },
+  {
+    file: "battle-combat-defeat.js",
+    consumers: ["battle-combat.js"],
+  },
+  {
+    file: "ui-battle-units-status.js",
+    consumers: ["ui-battle-units.js"],
+  },
+  {
+    file: "ui-hand-controls.js",
+    consumers: ["ui-hand-view.js"],
+  },
+  {
+    file: "maria-honor-blessing.js",
+    consumers: ["artina-maria-skills.js"],
+  },
+  {
+    file: "ruins-witherer-virtual-kill.js",
+    consumers: ["ruins-witherer-skills.js"],
+  },
+  {
+    file: "store-merged-skills-repair.js",
+    consumers: ["store-repairs.js"],
+  },
 ];
 
 const sharedFileNames = SHARED_SOURCES.map(entry => entry.file);

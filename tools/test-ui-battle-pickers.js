@@ -45,6 +45,7 @@ vm.runInThisContext(fs.readFileSync("src/original/ui-common.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/battle-response-ui.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/ui-hand-state.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/ui-selection-tip.js", "utf8"));
+vm.runInThisContext(fs.readFileSync("src/original/ui-hand-controls.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/ui-hand-view.js", "utf8"));
 vm.runInThisContext(fs.readFileSync("src/original/ui-hand.js", "utf8"));
 

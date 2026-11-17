@@ -157,7 +157,7 @@ T("C6 合并后效果完整：标记清零 / 摸牌 / 回血 / 战报",
 console.log("\n【D】原技能口径残留扫描");
 const runtimeFiles = fs.readdirSync(path.join(ROOT, "src/original"))
   .filter(f => f.endsWith(".js"));
-const whitelist = new Set(["store-repairs.js", "update-notice-archive.js", "update-notice-recent.js"]);
+const whitelist = new Set(["store-merged-skills-repair.js", "store-repairs.js", "update-notice-archive.js", "update-notice-recent.js"]);
 const offenders = runtimeFiles.filter(f => !whitelist.has(f) && src(f).includes("猩红暴走"));
 T("D1 运行时源码无「猩红暴走」判定/特效挂点残留",
   offenders.length === 0, JSON.stringify(offenders));

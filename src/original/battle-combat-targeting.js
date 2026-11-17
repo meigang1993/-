@@ -60,6 +60,12 @@ window.BattleCombatTargeting = (deps, hooks) => {
     // 目标是敌方而非自己，此前漏在排除名单外，导致这两件饰品手动使用时点不上目标。
     if (needsHandChoice(card) && !card.demonPoker && !card.succubusFork && !card.assassinLatex && !card.idolKiss && !card.crazyShooting && !card.elranaHeal && target.uid !== actor.uid) return false; if (card.bloodPact && !target.hand.some(c => !c._pendingDraw)) return false; if (!card.allyTarget && !card.extract && !needsHandChoice(card) && target.side !== "enemy") return false;
     if (window.RuinsEnemySkills?.blocksKillTarget?.(target, card)) return false;
+    // 单体恢复牌不能指定满血角色：否则结算 healCap=0，牌照常消耗且写「恢复0点」。
+    if (window.BattleHealTargetRules?.isSingleHealCard?.(card)
+      && !window.BattleHealTargetRules.needsHeal(target)) return false;
+    // 主动恢复技能同理：满血目标会白弃 1 张手牌并消耗本回合限一次。
+    if (window.BattleHealTargetRules?.isHealSkillCard?.(card)
+      && !window.BattleHealTargetRules.healSkillValue(b, actor, card, target)) return false;
     b.pendingTargetUid = targetUid; return true;
   }
   function cancelSelection(state) { if (state.battle) clearSelection(state.battle); }

@@ -26,6 +26,12 @@ window.BattleCombat = (deps) => {
       && !window.CharacterSkillAccess.canResolve(
         state, actor, target, card, canPlay
       )) return false;
+    // 最底层防线：AI 直接调 useCard、存档恢复、复制牌等绕过选目标链路的路径，
+    // 也不能把单体恢复牌结算到满血目标（返回 false 时牌仍在手牌，不会被消耗）。
+    if (window.BattleHealTargetRules?.isSingleHealCard?.(card)
+      && !window.BattleHealTargetRules.needsHeal(target)) return false;
+    // 主动恢复技能同理：绕过选目标链路时也不能白弃牌 + 白耗限一次。
+    if (window.BattleHealTargetRules?.isHealSkillCard?.(card) && !window.BattleHealTargetRules.healSkillValue(battleAtStart, actor, card, target)) return false;
     cardResume?.ensureId(card);
     const trailEntry = card && battleAtStart
       ? trailSnapshot(card, actor, battleAtStart) : null;
@@ -128,21 +134,8 @@ window.BattleCombat = (deps) => {
     }
     resolver.continueAfterCounter(state, actor, target, card);
   }
-  function discardDeadHands(state, b) {
-    const units = allUnits(b);
-    units.filter(u => u.hp <= 0 && !window.SakuraRisaSkills?.pendingRevival?.(u) && !u.deathDiscarded && u.hand?.length).forEach(u => {
-      const cards = u.hand.splice(0); u.deathDiscarded = true;
-      window.BattleCards?.putMany?.(b, u, cards, "discard", { skipAfterHandLost: true });
-      window.BattleLog.add(state, `${u.name} 被击倒，弃置所有手牌。`);
-    });
-  }
-  function checkDefeat(state) {
-    const b = state.battle; if (!b || b.failedTriggered || b.pendingDefeat) return !!(b?.failedTriggered || b?.pendingDefeat);
-    if (pendingFatalAnim(b)) return false;
-    if (!b.test) discardDeadHands(state, b);
-    if (b.test) { const fallen = b.allies.filter(a => a.hp <= 0 && !window.SakuraRisaSkills?.pendingRevival?.(a)); if (fallen.length) { fallen.forEach(a => { a.hp = a.maxHp; a.block = 0; }); b.testRecovery = true; clearTimeout(b.testRecoveryTimer); b.testRecoveryTimer = setTimeout(() => { if ((window.state && window.state !== state) || state.battle !== b) return; b.testRecovery = false; window.render?.(); }, 1200); window.BattleLog.add(state,"测试模式·生命恢复。"); } return false; }
-    if (b.allies.some(a => a.hp > 0 || window.SakuraRisaSkills?.pendingRevival?.(a))) return false; b.failedTriggered = true; b.pendingDefeat = true; b.locked = true; clearSelection(b); return true;
-  }
+  if (!window.BattleCombatDefeat) throw new Error("[battle-combat-defeat] 模块未装配：battle-combat-defeat.js 必须先于 battle-combat.js 加载");
+  const { checkDefeat } = window.BattleCombatDefeat({ deps, allUnits, pendingFatalAnim, clearSelection });
   function checkEnd(state) { const b = state.battle; if (!b || checkDefeat(state) || b.locked || b.enemies.some(e => e.hp > 0 || window.SakuraRisaSkills?.pendingRevival?.(e)) || pendingFatalAnim(b)) return; deps.finishBattle(state, true); }
   const damageApi = window.BattleDamage({ ...deps, nextAnim: deps.nextAnim }, { allUnits, hasSkill, statOf, holdVisual, visualOf, pushFloat, queueSlashText, queueSlashPlay, checkDefeat, checkEnd, clearSelection });
   const { damage, directDamage, triggerWhiteLolita, resolveThunderHammer: resolveDamageThunderHammer, cancelThunderHammer: cancelDamageThunderHammer, resolveManualDodge, confirmDeflectResult } = damageApi;

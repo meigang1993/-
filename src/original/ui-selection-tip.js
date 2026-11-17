@@ -9,8 +9,8 @@
 window.UISelectionTip = (() => {
   function tip({ battle, pickedCard: card, soulNeed, handChoice }) {
     if (card?.demonPoker) return "选择一张非战术牌和一名敌方目标，随机转化为拉芙战术牌使用";
-    if (card?.elranaHeal) return "选择一张手牌弃置，再指定我方角色发动回春之手";
-    if (card?.idolKiss) return "选择一张♥红桃手牌，再指定我方其他角色发动偶像之吻";
+    if (card?.elranaHeal) return "选择一张手牌弃置，再指定我方角色发动回春之手；满血目标不可指定（弃牌后手牌全红转全体恢复时除外）";
+    if (card?.idolKiss) return "选择一张♥红桃手牌，再指定我方其他角色发动偶像之吻；双方满血时不可指定";
     if (card?.crazyShooting) return "选择一张红色手牌，转化为机枪扫杀使用";
     if (card?.armyOrder) return `选择2张花色完全相同的手牌当【魔王军入侵】使用；当前已选${(battle.selectedBagIndexes || []).length}张`;
     if (card?.elranaBag) return `选择任意张手牌弃置后摸等量牌；当前已选${(battle.selectedBagIndexes || []).length}张`;
@@ -32,7 +32,9 @@ window.UISelectionTip = (() => {
     // 渴血杀戮虽然带 allyTarget，但只认我方男性且不能选自己，
     // 若沿用通用 allyTarget 文案会误导玩家（还会出现与自疗无关的提示）。
     if (card?.mieryulaBloodthirst) return "选择我方一名男性角色，对其造成等同于你攻击力的伤害；之后选择一项“杀”牌牌名";
-    if (card?.allyTarget) return "选择我方角色；双击或拖出手牌区可快速自疗";
+    if (card?.allyTarget) return window.BattleHealTargetRules?.isSingleHealCard?.(card)
+      ? "选择一名已受伤的我方角色；满血角色不可指定，双击或拖出手牌区自动选择"
+      : "选择我方角色；双击或拖出手牌区可快速自疗";
     if (card?.targetless) return "点击使用自动指定自己的牌";
     if (card?.extract) return "选择我方男性角色，再次点击目标或确定发动";
     return "选择敌方目标，再次点击目标或确定使用";

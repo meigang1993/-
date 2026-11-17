@@ -63,7 +63,7 @@ const counterSkills = [...resolverBlock.matchAll(/"([^"]+)":/g)].map(m => m[1]);
 
 // ---- 2. UI 文件（渲染触发技弹窗的地方） ----
 const UI_FILES = [
-  "ui-hand-view.js",
+  "ui-hand-controls.js", "ui-hand-view.js",
   "ui-battle-pickers.js",
   "battle-response-ui.js",
   "ui-battle-overlays.js",

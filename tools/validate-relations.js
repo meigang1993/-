@@ -213,6 +213,14 @@ const dependencies = [
   ["app-render-state.js", "app-render.js"],
   ["app-render-chrome.js", "app-render.js"],
   ["app-render.js", "app-boot.js", "app-runtime-error-dialog.js", "app-runtime-errors.js"],
+  // 2026-11-17 行数收紧（>180）：子模块必须先于其主文件加载。
+  ["catherine-absorb-skills.js", "catherine-skills.js"],
+  ["battle-combat-defeat.js", "battle-combat.js"],
+  ["ui-battle-units-status.js", "ui-battle-units.js"],
+  ["ui-hand-controls.js", "ui-hand-view.js"],
+  ["maria-honor-blessing.js", "artina-maria-skills.js"],
+  ["ruins-witherer-virtual-kill.js", "ruins-witherer-skills.js"],
+  ["store-merged-skills-repair.js", "store-repairs.js"],
 ];
 validateScripts(publish, sourceDir, unique, fail, dependencies);
 

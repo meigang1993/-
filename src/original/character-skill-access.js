@@ -102,11 +102,16 @@ window.CharacterSkillAccess = (() => {
     if (!matches.length || actor?.side !== "ally") return true;
     if (matches.length !== 1) return false;
     const [def] = matches;
+    // 主动恢复技能与单体恢复牌同口径：满血目标结算 healCap=0，弃牌与限一次
+    // 照样消耗。useCard 最外层也拦一次，覆盖绕过选目标的路径。
+    const healSkillOk = !window.BattleHealTargetRules?.isHealSkillCard?.(card)
+      || window.BattleHealTargetRules.healSkillValue(battle, actor, card, target);
     return canActor(battle, actor, card)
       && battle?.activeUid === actor.uid
       && phaseAllowed(battle, actor, def)
       && targetAllowed(battle, actor, target, def.target, def)
       && costAllowed(battle, actor, card, def.cost)
+      && healSkillOk
       && (!canPlay || canPlay(actor, card, battle));
   }
   return { definitions, definitionOf, canActor, canResolve };

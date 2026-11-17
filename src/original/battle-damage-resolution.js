@@ -20,8 +20,6 @@ window.BattleDamageResolution = ({
       queueAttackAnim(state, actor, target, card);
       window.WithererSkills?.afterKillFailed?.(state, actor, card);
       window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(state, card);
-      // killInvalidated：本次【杀】根本不成立（魔偶无效 / 邦迪使杀牌失效），
-      // 魔之连杀不连锁——连锁只认「这张牌指定了目标」，不认是否造成生命值伤害。
       return { dodged: false, hpLoss: 0, blockLoss: 0, killInvalidated: true };
     }
 
