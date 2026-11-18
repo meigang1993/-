@@ -43,10 +43,10 @@ function patched(file) {
       "const team = (battle.allies || []);"), "side-aware team");
   if (REVERT === "notice") {
     if (file === "update-notice.js") return hit(s,
-      s.replace('iso: "2026-11-17", label: "2026年11月17日", badge: "2026.11.17"',
+      s.replace('iso: "2026-11-18", label: "2026年11月18日", badge: "2026.11.18"',
         'iso: "2026-11-10", label: "2026年11月10日", badge: "2026.11.10"'), "latest date");
     if (file === "update-notice-recent.js") return hit(s,
-      s.replace('title: "2026年11月17日 · 今日更新"', 'title: "2026年11月10日 · 今日更新"'),
+      s.replace('title: "2026年11月18日 · 今日更新"', 'title: "2026年11月10日 · 今日更新"'),
       "first section title");
   }
   return s;
@@ -212,10 +212,10 @@ function testNotice() {
   const main = patched("update-notice.js");
   const recent = patched("update-notice-recent.js");
   const archive = read("update-notice-archive.js");
-  T("C1 最新日期为 2026-11-17（iso / label / badge 三处一致）",
-    /iso: "2026-11-17"/.test(main) && /label: "2026年11月17日"/.test(main)
-    && /badge: "2026\.11\.17"/.test(main));
-  const firstTitle = recent.indexOf('title: "2026年11月17日 · 今日更新"');
+  T("C1 最新日期为 2026-11-18（iso / label / badge 三处一致）",
+    /iso: "2026-11-18"/.test(main) && /label: "2026年11月18日"/.test(main)
+    && /badge: "2026\.11\.18"/.test(main));
+  const firstTitle = recent.indexOf('title: "2026年11月18日 · 今日更新"');
   const oldTitle = recent.indexOf('title: "2026年11月10日 · 今日更新"');
   T("C2 首期标题为今天且排在 11月10 历史期之前",
     firstTitle >= 0 && oldTitle > firstTitle, { firstTitle, oldTitle });
@@ -227,12 +227,17 @@ function testNotice() {
     && firstItems.includes("卡迪西斯获得 2 倍护甲值")
     && firstItems.includes("让你们见识一下我的绝技。")
     && firstItems.includes("妈妈的魔法会保护好你的"));
-  T("C4 summary 含技能调整且保留既有诺亚口径",
-    main.includes("红缨连鬼斩") && main.includes("飘浮掩体")
-    && main.includes("淫气改造者") && main.includes("【淫气改造】"));
+  // 旧说明清理后 summary 不再复述历次批次；当前生效条目保留在 recent 首期。
+  T("C4 当前生效条目在首期且摘要不复述旧批次",
+    firstItems.includes("技能调整【红缨连鬼斩】")
+    && firstItems.includes("技能调整【飘浮掩体】")
+    && firstItems.includes("【淫气改造】")
+    && main.includes("统一数值口径")
+    && !main.includes("此前新增第 34 名可玩角色")
+    && !main.includes("本次再把【技能倍率】"));
   T("C5 行数未触发归档阈值且期数注释同步",
     lines("update-notice-recent.js") <= 150 && lines("update-notice-archive.js") <= 189
-    && recent.includes("2026年10月12日 ~ 11月17日十二期"),
+    && recent.includes("2026年10月13日 ~ 11月18日十二期"),
     { recent: lines("update-notice-recent.js"), archive: lines("update-notice-archive.js") });
   T("C6 10月10 期已按规则归档，历史期仍在",
     archive.includes('title: "2026年10月10日 · 今日更新"')
@@ -246,7 +251,7 @@ function testNotice() {
   T("C7 三个数据文件装配后公告可渲染且含两技能",
     (html.match(/update-notice-section/g) || []).length >= 3
     && html.includes("红缨连鬼斩") && html.includes("飘浮掩体")
-    && html.includes('datetime="2026-11-17"'));
+    && html.includes('datetime="2026-11-18"'));
 }
 
 // ---------- D：描述与台词防回归 ----------

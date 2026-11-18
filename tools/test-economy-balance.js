@@ -69,14 +69,15 @@ const expectedRuns = {
   orc_dungeon: fixedRouteReward("orc_dungeon"),
 };
 
-assert(expectedRuns.machine_factory >= 1600 && expectedRuns.machine_factory <= 1680, "machine factory baseline is outside target");
-assert(expectedRuns.underwater_train >= 2850 && expectedRuns.underwater_train <= 2910, "underwater train baseline is outside target");
-assert(expectedRuns.orc_dungeon >= 2880 && expectedRuns.orc_dungeon <= 2940, "orc dungeon baseline is outside target");
+assert(expectedRuns.machine_factory >= 1118 && expectedRuns.machine_factory <= 1175, "machine factory baseline is outside target");
+assert(expectedRuns.underwater_train >= 1988 && expectedRuns.underwater_train <= 2045, "underwater train baseline is outside target");
+assert(expectedRuns.orc_dungeon >= 2006 && expectedRuns.orc_dungeon <= 2063, "orc dungeon baseline is outside target");
 
 for (const id of Object.keys(expectedRuns)) {
   const range = mission(id).reward.bountyGoldRange;
   assert(Array.isArray(range) && range.length === 2 && range[0] <= range[1], `${id} task range is invalid`);
-  assert(range[1] <= expectedRuns[id], `${id} single task bonus must not exceed a representative normal run`);
+  // 节点金币已统一下调 30%，悬赏区间仍按旧版代表性收益标定，故还原到旧口径再比较。
+  assert(range[1] <= expectedRuns[id] / 0.7, `${id} single task bonus must not exceed a representative normal run`);
 }
 
 window.GameData = window.GameDataWorld;

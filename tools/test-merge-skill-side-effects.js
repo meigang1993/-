@@ -17,18 +17,19 @@ function read(file) { return fs.readFileSync(path.join(ROOT, file), "utf8"); }
 function src(file) {
   let s = read(file);
   // 旧档规范化函数已拆到子模块；静态断言与反向验证按「主文件 + 子模块」整体读取。
+  // REVERT=normalize 时两份副本都要早退：先加载的独立子模块、后加载的拼接副本
+  // 会互相覆盖，只替换其中一份会让反向验证空转。
+  const NEEDLE = "  function normalizeMergedSkills(state) {";
   if (file === "store-repairs.js") s += "\n" + read("store-merged-skills-repair.js");
+  if (REVERT === "normalize"
+    && (file === "store-repairs.js" || file === "store-merged-skills-repair.js")) {
+    if (!s.includes(NEEDLE)) throw new Error(`REVERT=normalize must hit ${file}`);
+    s = s.replace(NEEDLE, "  function normalizeMergedSkills(state) { return false;");
+  }
   if (REVERT === "migration" && file === "store-migrations.js") {
     const needle = "    if (normalizeMergedSkills(state)) markForSave(state);";
     if (!s.includes(needle)) throw new Error("REVERT=migration must hit");
     s = s.replace(needle, "    // migration removed");
-  }
-  if (REVERT === "normalize" && file === "store-repairs.js") {
-    const needle = "  function normalizeMergedSkills(state) {";
-    if (!s.includes(needle)) throw new Error("REVERT=normalize must hit");
-    const start = s.indexOf(needle);
-    const end = s.indexOf("\n  }", start);
-    s = s.slice(0, start) + "  function normalizeMergedSkills(state) { return false; }" + s.slice(end + 4);
   }
   return s;
 }
@@ -73,6 +74,9 @@ const win = {
   BattleHpValue: {
     healCap: (unit, amount) => Math.max(0, Math.min(amount, (unit.maxHp || 0) - (unit.hp || 0))),
     applyHeal: (unit, amount) => { unit.hp += amount; },
+    // 与 hp-value.js 同口径：按施术者当前最大生命线性叠加，单份至少 1 点。
+    healPctStacks: (actor, pct, n) => Math.max(1, Math.round(
+      (actor.maxHp || actor.stats?.maxHp || 0) * pct / 100)) * Math.max(0, Math.round(n)),
   },
   BattleStats: { heal() {} },
   EnemySkills: { clearHolyScar() {}, onHeal() {} },

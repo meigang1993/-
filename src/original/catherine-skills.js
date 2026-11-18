@@ -21,7 +21,11 @@ window.CatherineSkills = (() => {
   function syncMagic(state, unit) {
     if (!isCatherine(unit) || !alive(unit)) return;
     if (!hasSkill(unit, "魔力增幅")) return;
-    unit.tempMagic = tacticCount(unit);
+    const H = window.BattleHpValue;
+    const grant = unit.catherineGrantMagic || 0;
+    const bonus = H.pctStacks(H.currentStat(unit, "magic", grant), 10, tacticCount(unit));
+    unit.tempMagic = Math.max(0, (unit.tempMagic || 0) - grant) + bonus;
+    unit.catherineGrantMagic = bonus;
   }
   function syncAll(state) {
     allUnits(state?.battle).forEach(unit => syncMagic(state, unit));

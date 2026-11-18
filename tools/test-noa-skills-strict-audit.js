@@ -223,8 +223,8 @@ async function segC() {
   T("C2 恰好弃 1 张（权威 discardNeed=1）", discarded.length === 1,
     { discarded: discarded.length, need: helpers.discardNeed(noa) });
   T("C3 弃后计入上限手牌=4", counted(noa) === 4, { counted: counted(noa) });
-  // 飘浮掩体触发点已在 214 版移到弃牌阶段入口：出牌阶段内的溢出弃牌
-  // 不再重复结算护甲，故 afterDiscard 不应被调用；魔力同步钩子仍在。
+  // 飘浮掩体触发点已在 240 版移到温蒂自己的结束阶段：出牌阶段内的溢出弃牌
+  // 与弃牌阶段都不再结算护甲，故 afterDiscard 不应被调用；魔力同步钩子仍在。
   T("C4 溢出弃牌走统一结算但不重复触发飘浮掩体",
     syncMagicCalls.includes("noa") && afterDiscardCalls.length === 0,
     { syncMagicCalls, afterDiscardCalls });

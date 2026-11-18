@@ -21,7 +21,7 @@ window.RuinsCarrierArmor = (() => {
   }
 
   // 坚硬装甲（锁定技）：无法恢复自身生命值。
-  // 增援部队的 10% 生命损失是直接改写 unit.hp（不走治疗链），故不受本条影响。
+  // 增援部队的满血复活与 10% 生命损失都是直接改写 unit.hp（不走治疗链），故不受本条影响。
   function beforeHeal(state, target, amount) {
     return !stopped(target) && target?.ai === "ruins_carrier" ? 0 : amount;
   }

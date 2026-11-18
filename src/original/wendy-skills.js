@@ -122,15 +122,14 @@ window.WendySkills = (() => {
       });
   }
 
-  // 【飘浮掩体】锁定技，弃牌阶段触发：我方全体获得等同于温蒂魔力值的护甲，
+  // 【飘浮掩体】锁定技，结束阶段触发：我方全体获得等同于温蒂魔力值的护甲，
   // 卡迪西斯在队伍中时获得 2 倍。与「本次弃了几张牌」完全解耦——
   // 旧实现挂在 afterDiscard 上，温蒂手牌不超上限（无需弃牌）时整段不触发，
   // 且芙萝娅/卡迪西斯按弃牌数双倍，属性加点毫无收益。
   function floatingCover(state, unit, deps = {}) {
     const battle = state?.battle;
     if (!battle || unit?.ref !== "wendy" || !alive(unit)) return false;
-    // 弃牌阶段每回合只结算一次：enterDiscardOrEnd 在手动确认/自动推进链路里
-    // 可能被重复调用，用回合号挡住重复加甲。
+    // 结束阶段每回合只结算一次：steps 在挂起恢复后可能重复进入，用回合号挡住重复加甲。
     if (unit._floatingCoverTurn === battle.turn) return false;
     unit._floatingCoverTurn = battle.turn;
     const rawMagic = (unit.stats?.magic || 0) + (unit.tempMagic || 0);
@@ -155,7 +154,7 @@ window.WendySkills = (() => {
       + gains.reduce((sum, item) => sum + item.gain, 0);
     window.WendyTeacherSkinFX?.cover?.(state, unit, gains);
     window.BattleLog.add(state,
-      `${unit.name} 弃牌阶段触发飘浮掩体，我方全体获得${magic}点护甲`
+      `${unit.name} 结束阶段触发飘浮掩体，我方全体获得${magic}点护甲`
       + `${cadicis ? `，${cadicis.name}获得2倍护甲` : ""}。`);
     return true;
   }

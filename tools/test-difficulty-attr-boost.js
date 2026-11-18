@@ -1,8 +1,8 @@
-// 验证「全角色/全怪物基础属性翻倍后，难度倍率改为线性加成」。
+// 验证「四档难度的生命/攻击/魔力/速度四项属性统一加成」。
 //
-// 规格：冒险 +40%/+30%/+20%（生命/输出/速度），其后逐档 +40/+30/+20 个百分点，
-// 即 hp 1.4→1.8→2.2→2.6、power 1.3→1.6→1.9→2.2、speed 1.2→1.4→1.6→1.8，
-// 普通级保持 1.00。精英与首领使用同一套倍率。
+// 规格：冒险 +50%、勇士 +100%、王者 +150%、英雄 +200%（整数百分比 150/200/250/300），
+// 生命/输出/速度三键同值（输出同时作用于攻击与魔力），普通级保持 100%。
+// 精英与首领使用同一套倍率；配置中的整数百分比在结算时统一除以 100。
 //
 // 关键点：不能只核对配置数字，必须走 GameData.scaleEnemyStats 算出
 // 真实敌人的 hp/attack/magic/speed，确认倍率真的落地到数值上；
@@ -32,16 +32,16 @@ function load(file) {
 
 const D = window.GameData.difficulties;
 
-// 新规格：生命/输出/速度逐档线性加成（普通级不动）
+// 新规格：四项属性统一逐档 +50 个百分点（普通级不动）
 const SPEC = {
-  normal:    { hp: 1,   power: 1,   speed: 1 },
-  adventure: { hp: 1.4, power: 1.3, speed: 1.2 },
-  warrior:   { hp: 1.8, power: 1.6, speed: 1.4 },
-  king:      { hp: 2.2, power: 1.9, speed: 1.6 },
-  hell:      { hp: 2.6, power: 2.2, speed: 1.8 },
+  normal:    { hp: 100, power: 100, speed: 100 },
+  adventure: { hp: 150, power: 150, speed: 150 },
+  warrior:   { hp: 200, power: 200, speed: 200 },
+  king:      { hp: 250, power: 250, speed: 250 },
+  hell:      { hp: 300, power: 300, speed: 300 },
 };
 const TIERS = ["adventure", "warrior", "king", "hell"];
-const STEP = { hp: 0.4, power: 0.3, speed: 0.2 };
+const STEP = { hp: 50, power: 50, speed: 50 };
 
 let pass = 0, fail = 0;
 function ok(cond, name, extra) {
@@ -49,7 +49,7 @@ function ok(cond, name, extra) {
   else { fail++; console.log(`  ❌ ${name}${extra !== undefined ? "  ← " + JSON.stringify(extra) : ""}`); }
 }
 
-console.log("=== A. 倍率表：四档线性加成，普通级不动 ===");
+console.log("=== A. 倍率表：四档四项属性统一加成，普通级不动 ===");
 for (const id of ["normal", ...TIERS]) {
   for (const type of ["normal", "elite", "boss"]) {
     const cur = D[id].enemy[type];
@@ -58,10 +58,10 @@ for (const id of ["normal", ...TIERS]) {
       `${id}/${type} 倍率 = ${exp.hp}/${exp.power}/${exp.speed}`, cur);
   }
 }
-// 线性步长：每档比上一档恰好 +0.4 / +0.3 / +0.2
+// 线性步长：每档比上一档恰好 +50 个百分点
 for (const k of Object.keys(STEP)) {
   const seq = [D.normal.enemy.normal[k], ...TIERS.map(id => D[id].enemy.normal[k])];
-  ok(seq.every((v, i) => i === 0 || Math.abs(v - seq[i - 1] - STEP[k]) < 1e-9),
+  ok(seq.every((v, i) => i === 0 || v - seq[i - 1] === STEP[k]),
     `${k} 逐档步长 = ${STEP[k]}`, seq);
 }
 
@@ -84,7 +84,7 @@ for (const id of TIERS) {
     const mult = SPEC[id];
     for (const k of KEYS) {
       const factor = k === "hp" ? mult.hp : (k === "speed" ? mult.speed : mult.power);
-      const expected = k === "hp" ? Math.ceil(base[k] * factor) : Math.round(base[k] * factor);
+      const expected = k === "hp" ? Math.ceil(base[k] * factor / 100) : Math.round(base[k] * factor / 100);
       ok(scaled[k] === expected,
         `${id}/${type} ${k}: ${base[k]} × ${factor} → ${scaled[k]}`, { scaled: scaled[k], expected });
     }
@@ -98,7 +98,7 @@ console.log(`  基准 BOSS hp=${boss.hp}`);
 for (const id of TIERS) {
   const n = window.GameData.scaleEnemyStats(boss, D[id], "boss");
   const r = n.hp / boss.hp;
-  ok(Math.abs(r - SPEC[id].hp) <= 0.01, `${id} BOSS hp: ${boss.hp} → ${n.hp}（比值 ${r.toFixed(4)}）`, { now: n.hp, expect: SPEC[id].hp });
+  ok(Math.abs(r - SPEC[id].hp / 100) <= 0.01, `${id} BOSS hp: ${boss.hp} → ${n.hp}（比值 ${r.toFixed(4)}）`, { now: n.hp, expect: SPEC[id].hp });
 }
 
 console.log("=== C3. 四个副本的敌人全部生效（逐副本实测且随难度递增）===");
@@ -122,17 +122,17 @@ for (const id of TIERS) {
   const m = String(D[id].attrText).match(/生命(\d+)%/);
   const p = String(D[id].attrText).match(/输出(\d+)%/);
   const s = String(D[id].attrText).match(/速度(\d+)%/);
-  ok(m && Math.abs(+m[1] - D[id].enemy.normal.hp * 100) <= 1, `${id} attrText 生命值与实际一致`, { text: D[id].attrText, real: D[id].enemy.normal.hp * 100 });
-  ok(p && Math.abs(+p[1] - D[id].enemy.normal.power * 100) <= 1, `${id} attrText 输出值与实际一致`, { text: D[id].attrText, real: D[id].enemy.normal.power * 100 });
-  ok(s && Math.abs(+s[1] - D[id].enemy.normal.speed * 100) <= 1, `${id} attrText 速度值与实际一致`, { text: D[id].attrText, real: D[id].enemy.normal.speed * 100 });
+  ok(m && Math.abs(+m[1] - D[id].enemy.normal.hp) <= 1, `${id} attrText 生命值与实际一致`, { text: D[id].attrText, real: D[id].enemy.normal.hp });
+  ok(p && Math.abs(+p[1] - D[id].enemy.normal.power) <= 1, `${id} attrText 输出值与实际一致`, { text: D[id].attrText, real: D[id].enemy.normal.power });
+  ok(s && Math.abs(+s[1] - D[id].enemy.normal.speed) <= 1, `${id} attrText 速度值与实际一致`, { text: D[id].attrText, real: D[id].enemy.normal.speed });
 }
 
 console.log("=== E. 非属性项未被误改（奖励/精英率/掉落/经验）===");
 const EXPECT_OTHER = {
-  adventure: { eliteRate: .3, reward: 1.35, xp: 1.15, dropRate: .4 },
-  warrior:   { eliteRate: .4, reward: 1.75, xp: 1.35, dropRate: .5 },
-  king:      { eliteRate: .5, reward: 2.2, xp: 1.6, dropRate: .6 },
-  hell:      { eliteRate: .6, reward: 2.75, xp: 1.9, dropRate: .7 },
+  adventure: { eliteRate: 30, reward: 135, xp: 115, dropRate: 40 },
+  warrior:   { eliteRate: 40, reward: 175, xp: 135, dropRate: 50 },
+  king:      { eliteRate: 50, reward: 220, xp: 160, dropRate: 60 },
+  hell:      { eliteRate: 60, reward: 275, xp: 190, dropRate: 70 },
 };
 for (const [id, exp] of Object.entries(EXPECT_OTHER)) {
   for (const [k, v] of Object.entries(exp)) {

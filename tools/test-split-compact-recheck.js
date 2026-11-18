@@ -175,7 +175,10 @@ for (const [consumer, deps] of Object.entries(depsByConsumer)) {
   // 基线固定到 227 后，228~231 的文案演进允许变化；其余字符串必须守恒。
   // 公告渲染模板随条目扩充改写过，与拆分/压缩无关，按内容精确识别而非放宽整段。
   const allow = new Set(["满血角色不可指定", "恢复生命值"]);
-  const isVersionText = x => x.includes('class="update-notice"');
+  // 公告日期（iso / label / badge 三种写法）随每期更新演进，与拆分/压缩无关；
+  // 基线固定为 227 版（11-13），后续期次改日期不应被判成字符串丢失。
+  const isDateText = x => /^2026[-.年]\d{1,2}[-.月]\d{1,2}日?$/.test(x);
+  const isVersionText = x => x.includes('class="update-notice"') || isDateText(x);
   miss.filter(x => !allow.has(x) && !isVersionText(x))
     .forEach(x => stringMissing.push(`${consumer}:${x.slice(0, 60)}`));
 }

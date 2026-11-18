@@ -15,11 +15,13 @@ window.GameEconomy = Object.freeze({
     // 任务界面/商店手动刷新任务列表的固定费用（莉莉丝元）。
     refreshCost: 500,
   }),
+  // 所有副本的莉莉丝元获得统一减少 30%：基础值为原值 ×70%（90/130→63/91、280→196、
+  // 500→350、220→154，恰为整数）；难度倍率与副本倍率不变，节点结算仍按整数四舍五入。
   dungeonGold: Object.freeze({
-    normal: Object.freeze([90, 130]),
-    elite: 280,
-    boss: 500,
-    chest: 220,
+    normal: Object.freeze([63, 91]),
+    elite: 196,
+    boss: 350,
+    chest: 154,
   }),
   missionRewards: Object.freeze({
     machine_factory: Object.freeze({

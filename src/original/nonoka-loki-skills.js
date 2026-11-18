@@ -54,7 +54,7 @@ window.NonokaLokiSkills = (() => {
       && !window.BattleHealTargetRules.healSkillValue(
         state.battle, actor, { idolKiss: true, _costCard: heart }, target)) return false;
     actor.usedIdolKiss = true; actor.hand.splice(index, 1); window.BattleCards?.put(state.battle, actor, heart, "discard", { showDiscard: true }); card.suit = heart.suit;
-    const amount = visibleHand(actor).length + deps.statOf(actor, "magic");
+    const amount = window.BattleHpValue.healPctStacks(actor, 10, visibleHand(actor).length) + deps.statOf(actor, "magic");
     line(state, actor, "偶像之吻", target);
     window.NonokaIdolSkinFX?.kiss?.(state, actor, target);
     const selfHealed = heal(state, actor, amount, actor, deps);

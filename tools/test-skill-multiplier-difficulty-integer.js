@@ -27,7 +27,11 @@ function codeOf(f) {
     if (!s.includes(from)) throw new Error("REVERT=round must hit arrogance line");
     s = s.replace(from, "Object.keys(multipliers).forEach(k => u.stats[k] = b[k] * multipliers[k]);");
   }
-  if (REVERT === "notice" && f === "update-notice.js") s = s.replace('iso: "2026-11-17"', 'iso: "2026-11-13"');
+  if (REVERT === "notice" && f === "update-notice.js") {
+    const from = 'iso: "2026-11-18"';
+    if (!s.includes(from)) throw new Error("REVERT=notice must hit current iso date");
+    s = s.replace(from, 'iso: "2026-11-13"');
+  }
   return (CODE[f] = s);
 }
 
@@ -47,10 +51,10 @@ const LOAD = [
 for (const f of LOAD) vm.runInContext(codeOf(f), ctx, { filename: f });
 const W = ctx.GameDataWorld;
 const diffKeys = ["normal", "adventure", "warrior", "king", "hell"];
-const OLD = {
-  normal: { hp: 1, power: 1, speed: 1 }, adventure: { hp: 1.4, power: 1.3, speed: 1.2 },
-  warrior: { hp: 1.8, power: 1.6, speed: 1.4 }, king: { hp: 2.2, power: 1.9, speed: 1.6 },
-  hell: { hp: 2.6, power: 2.2, speed: 1.8 },
+const TARGET = {
+  normal: { hp: 1, power: 1, speed: 1 }, adventure: { hp: 1.5, power: 1.5, speed: 1.5 },
+  warrior: { hp: 2, power: 2, speed: 2 }, king: { hp: 2.5, power: 2.5, speed: 2.5 },
+  hell: { hp: 3, power: 3, speed: 3 },
 };
 T("A1 五档难度齐备", diffKeys.length === 5 && diffKeys.every(k => W.difficulties[k]));
 diffKeys.forEach(k => {
@@ -58,8 +62,8 @@ diffKeys.forEach(k => {
   T(`A2 ${d.name} 配置全为整数百分比`, ["eliteRate", "reward", "xp", "dropRate"].every(key => isInt(d[key]))
     && ["hp", "power", "speed"].every(key => isInt(cfg[key])),
     { eliteRate: d.eliteRate, reward: d.reward, xp: d.xp, dropRate: d.dropRate, cfg });
-  T(`A3 ${d.name} 百分比还原后等于原倍率`,
-    cfg.hp / 100 === OLD[k].hp && cfg.power / 100 === OLD[k].power && cfg.speed / 100 === OLD[k].speed);
+  T(`A3 ${d.name} 百分比还原后等于本次目标倍率`,
+    cfg.hp / 100 === TARGET[k].hp && cfg.power / 100 === TARGET[k].power && cfg.speed / 100 === TARGET[k].speed);
   T(`A4 ${d.name} 概率与奖励还原在合法区间`,
     d.eliteRate / 100 > 0 && d.eliteRate / 100 <= 1 && d.dropRate / 100 > 0 && d.dropRate / 100 <= 1
     && d.reward / 100 >= 1 && d.xp / 100 >= 1);
@@ -77,7 +81,7 @@ for (const e of allEnemies) {
   }
 }
 T("A5 全部怪物×5档缩放输出为整数", bad.length === 0, bad.slice(0, 5));
-T("A6 缩放结果与原小数倍率逐项一致", mismatch.length === 0, mismatch.slice(0, 5));
+T("A6 缩放结果与整数百分比公式逐项一致", mismatch.length === 0, mismatch.slice(0, 5));
 T("A7 怪物池覆盖三副本且非空", allEnemies.length >= 30, allEnemies.length);
 
 // ---------- B. 消费方与金币倍率 ----------
@@ -126,10 +130,13 @@ T("C11 满血加成等价 1.5 倍四舍五入", unit.stats.attack === 14 && unit
 
 // ---------- D. 公告 ----------
 const notice = codeOf("update-notice.js"), recent = codeOf("update-notice-recent.js");
-T("D1 最新日期三处均为 2026-11-17", /iso: "2026-11-17"/.test(notice) && /label: "2026年11月17日"/.test(notice) && /badge: "2026\.11\.17"/.test(notice));
-T("D2 首期标题为 11月17日", recent.includes('title: "2026年11月17日 · 今日更新"'));
+T("D1 最新日期三处均为 2026-11-18", /iso: "2026-11-18"/.test(notice) && /label: "2026年11月18日"/.test(notice) && /badge: "2026\.11\.18"/.test(notice));
+T("D2 首期标题为 11月18日", recent.includes('title: "2026年11月18日 · 今日更新"'));
 T("D3 summary 写进【终极刀魔】", notice.includes("【终极刀魔】"));
-T("D4 summary 写进【角色强化】四选一", notice.includes("【角色强化】") && notice.includes("四选一"));
+// 旧说明清理后摘要只写当前生效口径，条目本身保留在 recent 首期。
+T("D4 角色强化四选一条目在首期、摘要不复述旧批次",
+  recent.includes("【角色强化】") && recent.includes("四选一")
+  && !notice.includes("此前新增第 34 名可玩角色") && !notice.includes("本次再把【技能倍率】"));
 T("D5 首期保留诺亚新技能完整条目", recent.includes("新增主动技【终极刀魔】（怪面诺亚）"));
 T("D6 首期保留角色强化完整条目", recent.includes("新增【角色强化】系统"));
 T("D7 首期新增本轮倍率/曲线条目", recent.includes("技能倍率与难度曲线统一改为整数百分比参数"));

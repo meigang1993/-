@@ -104,7 +104,7 @@ for (const missionId of MISSIONS) {
       candidates += exp.type === "default" ? 4 : 1; // default 每层 3~5 个节点，按 4 估算
       if (L >= eliteFrom) eliteCapable += exp.type === "default" ? 4 : 1;
     }
-    const expectRate = candidates ? (eliteCapable / candidates) * diff.eliteRate : 0;
+    const expectRate = candidates ? (eliteCapable / candidates) * diff.eliteRate / 100 : 0;
 
     for (let r = 0; r < ROUNDS; r++) {
       const state = { party: [], log: [], unlockedDifficulties: DIFFS };

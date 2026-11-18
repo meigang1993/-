@@ -127,6 +127,14 @@ function makeCtx() {
     clean,
     healCap: (u, a) => Math.max(0, Math.min(clean(a), clean(u.maxHp) - clean(u.hp))),
     applyHeal: (u, v) => { u.hp = clean(u.hp) + clean(v); },
+    // 240 版起全部 N% 统一按「当前属性」口径，夹具与真实 hp-value.js 同口径。
+    currentStat: (u, k, self = 0) => Math.max(0, clean((u?.stats?.[k] || 0)
+      + (k === "attack" ? (u?.tempAttack || 0) : k === "magic" ? (u?.tempMagic || 0) : 0) - clean(self))),
+    pctStacks: (base, pct, n) => Math.max(1, Math.round(clean(base) * clean(pct) / 100)) * Math.max(0, Math.round(clean(n))),
+    statStacks: (base, n) => Math.max(1, Math.round(clean(base) * 10 / 100)) * Math.max(0, Math.round(clean(n))),
+    healStacks: (maxHp, cards) => Math.max(1, Math.round(clean(maxHp) * 10 / 100)) * Math.max(0, Math.round(clean(cards))),
+    healPctStacks: (a, pct, n) => Math.max(1, Math.round(clean(a?.maxHp ?? a?.stats?.maxHp ?? 0) * clean(pct) / 100))
+      * Math.max(0, Math.round(clean(n))),
   };
   sb.EnemySkills = {
     beforeHeal: () => undefined, clearHolyScar: () => {}, onHeal: () => {},

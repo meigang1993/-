@@ -107,7 +107,7 @@ window.EnemySkills = (() => {
     machine.endTurn(unit);
     if (unit.ai !== "elrana_clone") return;
     const red = unit.hand.filter(card => !card._pendingDraw && !black(card)).length;
-    const value = red + stat(unit, "magic");
+    const value = window.BattleHpValue.healPctStacks(unit, 10, red) + stat(unit, "magic");
     const healed = window.BattleHpValue.healCap(unit, value);
     if (!healed) return;
     window.BattleHpValue.applyHeal(unit, healed);

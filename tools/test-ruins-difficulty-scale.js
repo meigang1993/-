@@ -87,16 +87,16 @@ T("四项平均值符合设计（全属性翻倍后 HP136 攻20.5 魔18 速33.5�
   assert.strictEqual(avg("speed"), 33.5, `速度均值 ${avg("speed")}`);
 });
 
-// 3. 缩放公式逐难度验证（hp=ceil, 攻魔速=round）
+// 3. 缩放公式逐难度验证（整数百分比 /100；hp=ceil, 攻魔速=round）
 Object.entries(diffs).forEach(([key, d]) => {
   const r = d.enemy.normal;
   T(`${d.name}：四怪 hp/攻/魔/速 缩放公式正确`, () => {
     grunts.forEach(e => {
       const s = W.scaleEnemyStats(e, d, "normal");
-      assert.strictEqual(s.hp, Math.ceil(e.hp * r.hp), `${e.name} hp ${s.hp}≠${Math.ceil(e.hp * r.hp)}`);
-      assert.strictEqual(s.attack, Math.round(e.attack * r.power), `${e.name} attack ${s.attack}`);
-      assert.strictEqual(s.magic, Math.round(e.magic * r.power), `${e.name} magic ${s.magic}`);
-      assert.strictEqual(s.speed, Math.round(e.speed * r.speed), `${e.name} speed ${s.speed}`);
+      assert.strictEqual(s.hp, Math.ceil(e.hp * r.hp / 100), `${e.name} hp ${s.hp}≠${Math.ceil(e.hp * r.hp / 100)}`);
+      assert.strictEqual(s.attack, Math.round(e.attack * r.power / 100), `${e.name} attack ${s.attack}`);
+      assert.strictEqual(s.magic, Math.round(e.magic * r.power / 100), `${e.name} magic ${s.magic}`);
+      assert.strictEqual(s.speed, Math.round(e.speed * r.speed / 100), `${e.name} speed ${s.speed}`);
     });
   });
 });

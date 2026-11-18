@@ -26,9 +26,14 @@ window.HoshinoYiSkills = (() => {
     if (currentColor) actor.hoshinoLastColor = currentColor;
     if (suits.includes(card.suit)) {
       if (actor.hoshinoMissionResult === "success" && previousSuit && previousSuit !== card.suit) {
-        actor.tempAttack = (actor.tempAttack || 0) + 1;
-        actor.tempMagic = (actor.tempMagic || 0) + 1;
-        window.BattleLog.add(state, `${actor.name}使用不同花色的牌，梦想真理令其本回合攻击力和魔力各+1。`);
+        const H = window.BattleHpValue;
+        const atkGain = H.pctStacks(H.currentStat(actor, "attack", actor.hoshinoGrantAttack || 0), 10, 1);
+        const magGain = H.pctStacks(H.currentStat(actor, "magic", actor.hoshinoGrantMagic || 0), 10, 1);
+        actor.tempAttack = (actor.tempAttack || 0) + atkGain;
+        actor.tempMagic = (actor.tempMagic || 0) + magGain;
+        actor.hoshinoGrantAttack = (actor.hoshinoGrantAttack || 0) + atkGain;
+        actor.hoshinoGrantMagic = (actor.hoshinoGrantMagic || 0) + magGain;
+        window.BattleLog.add(state, `${actor.name}使用不同花色的牌，梦想真理令其本回合攻击力+${atkGain}、魔力+${magGain}（各+10%当前属性，同快照线性叠加）。`);
       }
       actor.hoshinoLastSuit = card.suit;
       actor.hoshinoSuitSet = [...new Set([...(actor.hoshinoSuitSet || []), card.suit])];

@@ -19,13 +19,13 @@ const T = (name, cond, extra) => {
   return !!cond;
 };
 
-// 期望：四档线性加成（冒险 +40/+30/+20，逐档 +40/+30/+20 个百分点），普通级不变
+// 期望：四档四项属性统一 +50%/+100%/+150%/+200%，普通级不变
 const EXPECT = {
   "普通级": null,
-  "冒险级": { hp: 140, power: 130, speed: 120 },
-  "勇士级": { hp: 180, power: 160, speed: 140 },
-  "王者级": { hp: 220, power: 190, speed: 160 },
-  "英雄级": { hp: 260, power: 220, speed: 180 },
+  "冒险级": { hp: 150, power: 150, speed: 150 },
+  "勇士级": { hp: 200, power: 200, speed: 200 },
+  "王者级": { hp: 250, power: 250, speed: 250 },
+  "英雄级": { hp: 300, power: 300, speed: 300 },
 };
 
 (async () => {
@@ -58,7 +58,7 @@ const EXPECT = {
       continue;
     }
     const m = c.attr.match(/生命(\d+)%\s*\/?\s*输出(\d+)%\s*\/?\s*速度(\d+)%/);
-    T(`${c.name} attrText 含三档百分比`, !!m, { got: c.attr });
+    T(`${c.name} attrText 含三项百分比`, !!m, { got: c.attr });
     if (m) {
       T(`${c.name} 生命 ${m[1]}% = ${exp.hp}%`, +m[1] === exp.hp, { got: +m[1], expect: exp.hp });
       T(`${c.name} 输出 ${m[2]}% = ${exp.power}%`, +m[2] === exp.power, { got: +m[2], expect: exp.power });

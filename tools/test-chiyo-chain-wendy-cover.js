@@ -8,7 +8,7 @@ const vm = require("vm");
 const ROOT = path.join(__dirname, "../src/original");
 const REVERT = process.env.REVERT || "";
 const CHIYO_DESC = "锁定技，当你使用单体【杀】牌指定目标时，你进行连续判定：若判定为红色牌，你继续判定；若判定为黑色牌，则停止判定。停止判定后，你使用的此【杀】牌根据本次判定出的红色牌数量，额外对目标使用等量的虚拟【杀（普攻）】。若连击过程中目标死亡，剩余未使用的连击次数可指定另一名敌方角色为目标。";
-const WENDY_DESC = "锁定技，弃牌阶段，我方全体角色获得等同于你魔力值的护甲值。若卡迪西斯在队伍中，卡迪西斯获得2倍护甲值。";
+const WENDY_DESC = "锁定技，结束阶段，我方全体角色获得等同于你魔力值的护甲值。若卡迪西斯在队伍中，卡迪西斯获得2倍护甲值。";
 
 let pass = 0;
 const reds = [];
@@ -43,10 +43,10 @@ function patched(file) {
     assert.notStrictEqual(out, src, "REVERT=magic must hit magic computation");
     return out;
   }
-  if (REVERT === "phase" && file === "battle-discard-flow.js") {
-    const out = src.replace("window.WendyCadicisSkills?.floatingCover?.(state, unit, { pushFloat: combat.pushFloat });",
+  if (REVERT === "phase" && file === "battle-end-phase.js") {
+    const out = src.replace('() => { if (unit?.ref === "wendy") window.WendyCadicisSkills?.floatingCover?.(state, unit, { pushFloat: combat.pushFloat }); return true; },',
       "void 0;");
-    assert.notStrictEqual(out, src, "REVERT=phase must hit discard-phase hook");
+    assert.notStrictEqual(out, src, "REVERT=phase must hit end-phase hook");
     return out;
   }
   return src;
@@ -276,9 +276,12 @@ function testWendy() {
 function testDiscardPhase() {
   const flowSrc = patched("battle-discard-flow.js");
   const noaSrc = read("noa-charm-discard.js");
-  T("E1 弃牌阶段入口调用 floatingCover",
-    /enterDiscardOrEnd[\s\S]{0,700}floatingCover/.test(flowSrc)
-    && flowSrc.includes("window.WendyCadicisSkills?.floatingCover?.("));
+  const endSrc = patched("battle-end-phase.js");
+  T("E1 结束阶段 steps 调用 floatingCover 且吞掉返回值",
+    endSrc.includes('unit?.ref === "wendy"')
+    && endSrc.includes("WendyCadicisSkills?.floatingCover?.(")
+    && /return true; \},/.test(endSrc)
+    && !flowSrc.includes("floatingCover?.("));
   T("E2 discardCards 不再按弃牌数调 afterDiscard",
     !flowSrc.includes("afterDiscard?.("));
   T("E3 淫气改造溢出弃牌不触发飘浮掩体",
@@ -309,9 +312,9 @@ function testDiscardPhase() {
     }).enterDiscardOrEnd(state([wendy], []), wendy);
     return calls;
   }
-  T("E4 温蒂无需弃牌(need=0)的回合也触发", runFlow(0).length === 1);
-  T("E5 温蒂需要弃牌的回合同样触发一次", runFlow(2).length === 1);
-  T("E6 母亲怀表跳过弃牌阶段时不触发", runFlow(0, { watch: true }).length === 0);
+  T("E4 弃牌流程不再触发飘浮掩体(need=0)", runFlow(0).length === 0);
+  T("E5 温蒂需要弃牌的回合也不在弃牌流程触发", runFlow(2).length === 0);
+  T("E6 母亲怀表跳过弃牌阶段也不在弃牌流程触发", runFlow(0, { watch: true }).length === 0);
 }
 
 // ---------- F/G：台词、描述、公告、文档 ----------

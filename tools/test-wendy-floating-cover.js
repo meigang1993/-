@@ -1,6 +1,6 @@
-// 温蒂【飘浮掩体】调整后回归：弃牌阶段按温蒂魔力值给全队护甲，卡迪西斯 2 倍。
+// 温蒂【飘浮掩体】调整后回归：结束阶段按温蒂魔力值给全队护甲，卡迪西斯 2 倍。
 // 旧口径「每弃 1 张 → 全体各 1 点、芙萝娅/卡迪西斯双倍」已整体废弃；
-// 触发点从 discardCards（实际弃牌后）移到弃牌阶段入口，无需弃牌的回合也生效。
+// 触发点从弃牌阶段移到温蒂自己的结束阶段，母亲怀表跳过弃牌的回合同样生效。
 const fs = require("fs");
 const vm = require("vm");
 
@@ -44,9 +44,11 @@ window.BattleCards = { putMany() {}, put() {} };
 window.UnderwaterTrainSkills = { canDiscard: () => true };
 let coverCalls = [];
 
+window.BattleTurnState = { cleanupTurn() {} };
 load("./src/original/wendy-skills.js");
 load("./src/original/battle-discard-flow.js");
 load("./src/original/battle-discard-overflow.js");
+load("./src/original/battle-end-phase.js");
 
 const origCover = window.WendySkills.floatingCover;
 const alive = (ref, extra = {}) => ({
@@ -79,8 +81,8 @@ function floatDeps() {
   } } };
 }
 
-// 真实 BattleDiscardFlow.enterDiscardOrEnd 挂点：把聚合入口换成记录用的转发，
-// 内部仍调用真实的 floatingCover 实现。
+// 真实 BattleDiscardFlow.enterDiscardOrEnd 挂点（现在只用于验证「弃牌阶段不再触发」）：
+// 把聚合入口换成记录用的转发，内部仍调用真实的 floatingCover 实现。
 function runFlow(need, opts = {}) {
   const sc = scene(opts);
   const calls = [];
@@ -184,16 +186,51 @@ T("对照：非温蒂 / 阵亡温蒂不触发", () => {
   assert(wendy.block === 0 && ally.block === 0, "no armor gained");
 });
 
-// —— 弃牌阶段挂点 ——
-T("弃牌阶段入口触发飘浮掩体（温蒂无需弃牌也一样）", () => {
-  const sc = runFlow(0);
+// —— 结束阶段挂点 ——
+function runEndPhase(opts = {}) {
+  const sc = scene(opts);
+  const calls = [];
+  const prev = window.WendyCadicisSkills;
+  window.WendyCadicisSkills = {
+    floatingCover: (st, unit, deps) => {
+      calls.push(unit.uid);
+      return origCover(st, unit, deps);
+    },
+  };
+  window.BattleEndPhase({
+    allUnits: () => [],
+    combat: { pushFloat() {}, damage() {} },
+    draw: () => [],
+  }).run(sc.state, sc.wendy);
+  window.WendyCadicisSkills = prev;
+  return { ...sc, calls };
+}
+T("温蒂自己的结束阶段触发飘浮掩体（全队获得魔力值护甲）", () => {
+  const sc = runEndPhase();
   assert(sc.calls.length === 1, `must call once, got ${sc.calls.length}`);
   assert(sc.wendy.block === 5, `got ${sc.wendy.block}`);
 });
-T("弃牌阶段需要选牌时同样先结算一次", () => {
-  const sc = runFlow(2);
-  assert(sc.calls.length === 1 && sc.wendy.block === 5,
-    `got ${JSON.stringify(sc.calls)}/${sc.wendy.block}`);
+T("结束阶段步骤吞掉返回值，不挂起后续步骤", () => {
+  const sc = runEndPhase();
+  assert(sc.calls.length === 1 && sc.state.battle.endPhaseStep === undefined,
+    `got ${JSON.stringify(sc.calls)}/${sc.state.battle.endPhaseStep}`);
+});
+T("弃牌流程不再触发飘浮掩体（弃 0 / 弃 2 均不触发）", () => {
+  assert(runFlow(0).calls.length === 0 && runFlow(2).calls.length === 0,
+    "discard flow must not call floatingCover");
+});
+T("非温蒂单位的结束阶段不触发", () => {
+  const sc = scene();
+  const calls = [];
+  const prev = window.WendyCadicisSkills;
+  window.WendyCadicisSkills = { floatingCover: () => { calls.push(1); return true; } };
+  window.BattleEndPhase({
+    allUnits: () => [],
+    combat: { pushFloat() {}, damage() {} },
+    draw: () => [],
+  }).run(sc.state, { ...sc.wendy, ref: "lokar" });
+  window.WendyCadicisSkills = prev;
+  assert(calls.length === 0, `got ${calls.length}`);
 });
 T("溢出弃牌（BattleDiscardOverflow）不触发飘浮掩体", () => {
   const { state, wendy } = scene();

@@ -10,29 +10,29 @@ window.BattleCardSpecials = (deps, ctx) => {
     const n = actor.hand.filter(c => c.suit === "♥" && !c._pendingDraw).length;
     actor.usedExtract = true;
     window.BattleLines?.skill(state, actor, "榨取精华", target);
-    const magicBonus = Math.max(0, Number(actor.stats?.magic) || 0) * .5 * n;
+    const magicBonus = window.BattleHpValue.pctStacks(window.BattleHpValue.currentStat(actor, "magic"), 50, n);
     actor.tempMagic = (actor.tempMagic || 0) + magicBonus; actor.extractMagicAttack = true;
     window.CharacterSkinFX?.extractEssence?.(state, actor, target, n);
     if (!n) { log(state, `${actor.name} 发动榨取精华：当前没有可见红桃，魔力不变，本回合物理攻击牌仍转换为魔法攻击。`); return; }
     const hpBefore = target.hp; ctx.holdVisual(target); window.BattleHpValue.applyDamage(target, n); window.SakuraRisaSkills?.preventDeath?.(state, target); window.BattleStats?.damage?.(state.battle, actor, target, Math.min(hpBefore, n), hpBefore); ctx.pushFloat(state.battle, target.uid, "hp-loss", n, false, 0, ctx.visualOf(target)); if (target.side === "enemy" && target.hp <= 0 && !window.SakuraRisaSkills?.pendingRevival?.(target) && target.id && !state.battle.defeatedEnemyIds.includes(target.id)) state.battle.defeatedEnemyIds.push(target.id);
     const drawn = deps.draw(actor, n, state.battle);
     const drawText = window.BattleDrawFeedback.action(actor, n, drawn);
-    log(state, `${actor.name} 榨取${target.name}精华：目标损失${n}生命，${drawText}，本回合魔力+${n * 50}%（+${magicBonus}），所有物理攻击牌转换为魔法攻击。`);
+    log(state, `${actor.name} 榨取${target.name}精华：目标损失${n}生命，${drawText}，本回合魔力按当前属性+${n * 50}%（+${magicBonus}），所有物理攻击牌转换为魔法攻击。`);
   }
   function bloodPact(state, actor) {
     if (actor.usedBloodPact) return;
     const { i, ok } = ctx.selectedHand(state, actor);
     if (!ok) { log(state, `${actor.name} 发动热血契约失败：没有选择可消耗手牌。`); return; }
     actor.usedBloodPact = true; const consumed = ctx.moveHand(state, actor, i, "consumed"); const drawn = deps.draw(actor, 3, state.battle);
-    const bonus = actor.consumed.length; actor.tempAttack = (actor.tempAttack || 0) + bonus;
+    const bonus = window.BattleHpValue.pctStacks(window.BattleHpValue.currentStat(actor, "attack"), 10, actor.consumed.length); actor.tempAttack = (actor.tempAttack || 0) + bonus;
     window.CharacterSkinFX?.bloodPact?.(state, actor, bonus);
     window.BattleLines?.skill(state, actor, "热血契约");
-    log(state, `${actor.name} 消耗${consumed.name}发动热血契约：${window.BattleDrawFeedback.action(actor, 3, drawn)}，本回合攻击力+${bonus}。`);
+    log(state, `${actor.name} 消耗${consumed.name}发动热血契约：${window.BattleDrawFeedback.action(actor, 3, drawn)}，本回合攻击力+${bonus}（每张消耗牌按当前属性+10%）。`);
   }
-  function healUnit(state, actor, target, card) { const pct = card.name === "愈魔瓶" ? .3 : card.name === "伤口处理" ? .1 : (card.healPct || 0), flat = card.name === "愈魔瓶" || card.name === "伤口处理" ? 0 : (card.heal || 0), statHeal = card.healScale ? ctx.statOf(actor, card.healScale) : 0, v = Math.ceil((target.maxHp || 0) * pct) + flat + statHeal, healed = window.BattleHpValue.clean(window.EnemySkills?.beforeHeal?.(state, target, v, actor, card, ctx.damage) ?? window.BattleHpValue.healCap(target, v)); if (healed > 0) { window.BattleHpValue.applyHeal(target, healed); window.BattleStats?.heal?.(state.battle, actor, healed); } ctx.pushFloat(state.battle, target.uid, "heal", healed); if (healed) { clearHolyScar(state, target); window.EnemySkills?.onHeal?.(state, deps.draw); window.ElranaAceNanaliSkills?.afterHeal?.(state, target, deps, actor); window.HitwellSkills?.afterHeal?.(state, target, healed, { pushFloat: ctx.pushFloat }); window.BertisGerlotSkills?.refreshArrogance?.(state); } log(state, `${actor.name} 对${target.name}使用${card.name}，恢复${healed}点生命。`); }
+  function healUnit(state, actor, target, card) { const pct = card.name === "愈魔瓶" ? .3 : card.name === "伤口处理" ? .1 : (card.healPct || 0), flat = card.name === "愈魔瓶" || card.name === "伤口处理" ? 0 : (card.heal || 0), statHeal = card.healScale ? ctx.statOf(actor, card.healScale) : 0, v = window.BattleHpValue.healPctStacks(actor, pct * 100, 1) + flat + statHeal, healed = window.BattleHpValue.clean(window.EnemySkills?.beforeHeal?.(state, target, v, actor, card, ctx.damage) ?? window.BattleHpValue.healCap(target, v)); if (healed > 0) { window.BattleHpValue.applyHeal(target, healed); window.BattleStats?.heal?.(state.battle, actor, healed); } ctx.pushFloat(state.battle, target.uid, "heal", healed); if (healed) { clearHolyScar(state, target); window.EnemySkills?.onHeal?.(state, deps.draw); window.ElranaAceNanaliSkills?.afterHeal?.(state, target, deps, actor); window.HitwellSkills?.afterHeal?.(state, target, healed, { pushFloat: ctx.pushFloat }); window.BertisGerlotSkills?.refreshArrogance?.(state); } log(state, `${actor.name} 对${target.name}使用${card.name}，恢复${healed}点生命。`); }
   function healTeam(state, actor, card, repeatTarget = null) {
     const statHeal = card.healScale ? ctx.statOf(actor, card.healScale) : 0;
-    const targets = ctx.sameSideUnits(state.battle, actor).filter(u => u.hp > 0).map(u => ({ uid: u.uid, amount: Math.ceil(u.maxHp * card.teamHealPct) + statHeal }));
+    const targets = ctx.sameSideUnits(state.battle, actor).filter(u => u.hp > 0).map(u => ({ uid: u.uid, amount: window.BattleHpValue.healPctStacks(actor, card.teamHealPct * 100, 1) + statHeal }));
     return continueTeamHeal(state, { actorUid: actor.uid, targetUid: repeatTarget?.uid, card, targets, index: 0, any: false });
   }
   function continueTeamHeal(state, prompt) {

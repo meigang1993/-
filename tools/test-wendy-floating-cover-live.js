@@ -1,6 +1,6 @@
 // 温蒂【飘浮掩体】实机回归（技能调整后）：按温蒂魔力值给全队护甲，卡迪西斯 2 倍。
 // 旧断言全部基于「每弃 1 张 → 全体各 1 点、芙萝娅/卡迪西斯双倍」，已整体重写。
-// 验证 bundle 真实装配：聚合入口、台词数据、弃牌阶段挂点、幂等、溢出弃牌排除。
+// 验证 bundle 真实装配：聚合入口、台词数据、结束阶段挂点、弃牌阶段不再触发、幂等、溢出弃牌排除。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
@@ -61,7 +61,7 @@ const coverTpl = `(() => {
   };
 })()`;
 
-// 真实 BattleDiscardFlow.enterDiscardOrEnd 挂点（need=0：温蒂无需弃牌）
+// 真实 BattleDiscardFlow.enterDiscardOrEnd：改到结束阶段后，弃牌流程不应再结算护甲
 const flowTpl = `(() => {
   const st = window.state, b = st.battle;
   const wendy = b.allies[0];
@@ -126,14 +126,54 @@ const flowTpl = `(() => {
   T("普通台词为「我的魔法是飘浮」",
     /我的魔法是飘浮/.test(line.plain || ""), line);
 
-  // —— 弃牌阶段入口：无需弃牌的回合也触发 ——
+  // —— 弃牌流程不再触发（技能已改到结束阶段）——
   await page.evaluate(setupTpl);
   const f = await page.evaluate(flowTpl);
   const fByRef = Object.fromEntries(f.blocks.map(x => [x.ref, x.block]));
-  T("弃牌阶段入口触发飘浮掩体（弃 0 张也生效）",
-    fByRef.wendy === 5 && fByRef.rokar === 5, f.blocks);
-  T("弃牌阶段入口同样给卡迪西斯 2 倍", fByRef.cadicis === 10, f.blocks);
-  T("入口战报出现飘浮掩体", f.log.length >= 1, f.log);
+  T("弃牌流程不再触发飘浮掩体（弃 0 张也不加甲）",
+    fByRef.wendy === 0 && fByRef.rokar === 0 && fByRef.cadicis === 0, f.blocks);
+  T("弃牌流程不再写飘浮掩体战报", f.log.length === 0, f.log);
+
+  // —— 真实结束阶段运行：隔离其它结束阶段技能，只验温蒂步骤 ——
+  await page.evaluate(setupTpl);
+  const endRun = await page.evaluate(`(() => {
+    const st = window.state, b = st.battle;
+    const wendy = b.allies[0];
+    const keys = ["NonokaLokiSkills", "GuestCharacterSkills", "HoshinoSkills", "GerdaSkills",
+      "BertisGerlotSkills", "CharacterSkinFX", "EnemySkills", "UnderwaterTrainSkills",
+      "ElranaAceNanaliSkills", "ArtinaMariaSkills", "AbeKarunaDivaSkills", "AbeKarunaBubbleSkills",
+      "AngelicaLukaSkills", "NoaSideEffectSkills", "RuinsCardSkills", "MieryulaTimeStop", "BattleTurnState"];
+    const saved = {};
+    keys.forEach(k => { saved[k] = window[k]; window[k] = undefined; });
+    window.BattleTurnState = { cleanupTurn() {} };
+    let calls = 0;
+    const prev = window.WendyCadicisSkills;
+    const orig = prev.floatingCover;
+    window.WendyCadicisSkills = Object.assign({}, prev, {
+      floatingCover: (...args) => { calls += 1; return orig(...args); },
+    });
+    let ok = true;
+    try {
+      window.BattleEndPhase({
+        allUnits: () => [],
+        combat: { pushFloat() {}, damage() {} },
+        draw: () => [],
+      }).run(st, wendy);
+    } catch (e) { ok = false; }
+    keys.forEach(k => { window[k] = saved[k]; });
+    window.WendyCadicisSkills = prev;
+    return {
+      ok, calls,
+      stepCleared: b.endPhaseStep === undefined,
+      blocks: b.allies.slice(0, 4).map(a => ({ ref: a.ref, block: a.block || 0 })),
+    };
+  })()`);
+  const eByRef = Object.fromEntries(endRun.blocks.map(x => [x.ref, x.block]));
+  T("温蒂自己的结束阶段真实触发飘浮掩体（含卡迪西斯 2 倍）",
+    endRun.ok && endRun.calls === 1 && eByRef.wendy === 5
+    && eByRef.rokar === 5 && eByRef.cadicis === 10, endRun);
+  T("结束阶段步骤吞掉返回值、不挂起后续步骤",
+    endRun.ok && endRun.stepCleared, endRun);
 
   // —— 幂等：同一回合重复调用不加第二次 ——
   const idem = await page.evaluate(`(() => {
@@ -157,7 +197,7 @@ const flowTpl = `(() => {
   T("对照：非温蒂不触发",
     JSON.stringify(ctrl.before) === JSON.stringify(ctrl.after), ctrl);
 
-  // —— 对照：溢出弃牌不触发（技能只在弃牌阶段入口） ——
+  // —— 对照：溢出弃牌不触发（技能只在温蒂自己的结束阶段） ——
   const ovf = await page.evaluate(`(() => {
     const st = window.state, b = st.battle;
     const wendy = b.allies[0];

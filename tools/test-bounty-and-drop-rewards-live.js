@@ -101,7 +101,7 @@ const T = (name, cond, extra) => {
       const Ops = window.LocalCoreDungeonOps;
       const normal = window.GameData.difficulties.normal;
       const origin = normal.dropRate;
-      normal.dropRate = 1; // 夹具：必掉，便于统计分布
+      normal.dropRate = 100; // 夹具：整数百分比，100 = 必掉，便于统计分布
       const mk = owned => ({
         chars: [], resources: { gold: 0, essence: 0, relics: owned },
         pendingRun: { gold: 0, essence: 0, cards: [], relics: [] },

@@ -23,6 +23,9 @@ window.BattleEndPhase = deps => {
       () => window.AbeKarunaDivaSkills?.endTurn?.(state, unit),
       () => window.AbeKarunaBubbleSkills?.endTurn?.(state, unit),
       () => window.AngelicaLukaSkills?.endTurn?.(state, unit),
+      // 【飘浮掩体】改在温蒂自己的结束阶段触发；必须吞掉返回值：steps 里
+      // 任何一步返回 false 都会挂起后续步骤，而 floatingCover 在不满足条件时返回 false。
+      () => { if (unit?.ref === "wendy") window.WendyCadicisSkills?.floatingCover?.(state, unit, { pushFloat: combat.pushFloat }); return true; },
       () => window.NoaSideEffectSkills?.endTurn?.(state, unit, { damage: combat.damage, pushFloat: combat.pushFloat }),
       // 【淫气改造】只在出牌阶段（phase 4）生效，结束阶段不补牌/不弃牌。
       () => window.RuinsCardSkills?.clearVulnerable?.(state, unit),

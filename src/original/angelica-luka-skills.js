@@ -75,7 +75,7 @@ window.AngelicaLukaSkills = (() => {
     const drawText = window.BattleDrawFeedback?.action?.(actor, spent, drawn)
       ?? `摸${drawn}张牌`;
     window.BattleLog.add(state, `${actor.name} ${drawText}。`);
-    const heal = Math.round(spent * (actor.maxHp || 0) * 0.1);
+    const heal = window.BattleHpValue.healPctStacks(actor, 10, spent);
     const healed = window.BattleHpValue.healCap(actor, heal);
     if (healed > 0) {
       window.BattleHpValue.applyHeal(actor, healed);
@@ -85,7 +85,7 @@ window.AngelicaLukaSkills = (() => {
       window.EnemySkills?.onHeal?.(state, deps?.draw);
       window.ElranaAceNanaliSkills?.afterHeal?.(state, actor, deps);
       window.BertisGerlotSkills?.refreshArrogance?.(state);
-      window.BattleLog.add(state, `${actor.name} 恢复${healed}点生命（${spent}枚×生命上限${actor.maxHp}的10%）。`);
+      window.BattleLog.add(state, `${actor.name} 恢复${healed}点生命（${spent}枚×当前生命上限${actor.maxHp}的10%）。`);
     } else {
       window.BattleLog.add(state, `${actor.name} 生命已满，未恢复生命。`);
     }

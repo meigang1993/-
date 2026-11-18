@@ -30,7 +30,7 @@ window.ArtinaMariaSkills = (() => {
     actor.mariaMarks ||= 0;
     actor.mariaUseCount ||= 0;
     actor.mariaNext ||= 1;
-    // 神数标记：每使用一张牌 +1，攻击力与魔力各 +1，回合结束时全部移去。
+    // 神数标记：每使用一张牌 +1，攻击力与魔力各 +10%，回合结束时全部移去。
     actor.mariaMarks += 1;
     // 使用牌「目标数」：本阶段使用的牌数达到目标数时，摸「等同于目标数」张牌，
     // 随后使用的牌数重新计数，并把目标数 +1。
@@ -50,12 +50,19 @@ window.ArtinaMariaSkills = (() => {
     // 神数加成以「实际贡献」记账：先扣回上次神数贡献，再加上当前贡献。
     // 若直接赋值（= mariaMarks）会抹掉热血契约等其他临时加成来源，
     // 导致这些加成在玛利亚出牌后凭空消失。
-    const grant = actor.mariaGrant || 0;
-    const baseAtk = Math.max(0, (actor.tempAttack || 0) - grant);
-    const baseMag = Math.max(0, (actor.tempMagic || 0) - grant);
-    actor.tempAttack = baseAtk + actor.mariaMarks;
-    actor.tempMagic = baseMag + actor.mariaMarks;
-    actor.mariaGrant = actor.mariaMarks;
+    const grantAtk = actor.mariaGrantAttack ?? actor.mariaGrant ?? 0;
+    const grantMag = actor.mariaGrantMagic ?? actor.mariaGrant ?? 0;
+    const baseAtk = Math.max(0, (actor.tempAttack || 0) - grantAtk);
+    const baseMag = Math.max(0, (actor.tempMagic || 0) - grantMag);
+    // 每枚标记按「当前属性」（扣回本技能自身贡献后的同一快照）+10%，线性叠加不累乘。
+    // 攻/魔两份加成可能不同，分开记账；旧档只有 mariaGrant 时用 ?? 回退，避免重复叠加。
+    const H = window.BattleHpValue;
+    const bonusAtk = H.pctStacks(H.currentStat(actor, "attack", grantAtk), 10, actor.mariaMarks);
+    const bonusMag = H.pctStacks(H.currentStat(actor, "magic", grantMag), 10, actor.mariaMarks);
+    actor.tempAttack = baseAtk + bonusAtk;
+    actor.tempMagic = baseMag + bonusMag;
+    actor.mariaGrantAttack = bonusAtk;
+    actor.mariaGrantMagic = bonusMag;
   }
   function modifySlashDamage(state, actor, target, amount, card) {
     if (actor?.ref !== "artina" || !isSlash(card) || card.virtual) return amount;
@@ -118,6 +125,7 @@ window.ArtinaMariaSkills = (() => {
       unit.mariaMarks = 0; unit.mariaUseCount = 0;
       unit.mariaNext = 1; unit.mariaTier = 1;
       unit.tempAttack = 0; unit.tempMagic = 0; unit.mariaGrant = 0;
+      delete unit.mariaGrantAttack; delete unit.mariaGrantMagic;
       unit.mariaPhaseMarked = false;
       unit.usedMariaHonorBlessing = false;
     }

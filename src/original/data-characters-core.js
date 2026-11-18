@@ -5,7 +5,7 @@ window.GameDataCharactersCore = [
     evaluation: "持续进攻型物理核心。使用实体【杀】与【与我一战】可补充手牌和杀意，热血契约提供回合内攻击成长，狂风绝息斩负责集中释放手中的全部【杀】。",
     skills: [
       { name: "战斗之勇", type: "passive", text: "锁定技，当你使用一张实体【杀】或【与我一战】时，你从摸牌堆摸1张牌。若摸到【杀】或【与我一战】，你恢复1点杀意。" },
-      { name: "热血契约", type: "active", text: "出牌阶段限一次，你可以将1张手牌置入消耗牌堆，然后摸3张牌，并于本回合获得X点攻击力（X为你消耗牌堆中的牌数）。", card: { name: "热血契约", type: "tactic", bloodPact: true, targetless: true, icon: "⚔️", text: "将1张手牌置入消耗牌堆，摸3张牌，并于本回合获得等同于消耗牌堆牌数的攻击力。" } },
+      { name: "热血契约", type: "active", text: "出牌阶段限一次，你可以将1张手牌置入消耗牌堆，然后摸3张牌，并于本回合每张消耗牌令攻击力+10%（按当前攻击力四舍五入，单张至少1点）。", card: { name: "热血契约", type: "tactic", bloodPact: true, targetless: true, icon: "⚔️", text: "将1张手牌置入消耗牌堆，摸3张牌，并于本回合获得等同于消耗牌堆牌数的攻击力。" } },
       { name: "狂风绝息斩", type: "active", icon: "🔺", text: "限定技，出牌阶段，你依次使用手牌中的所有单体【杀】，并随机循环指定存活的敌方角色为目标；这些【杀】不消耗杀意（群体【杀】不参与）。", card: { name: "狂风绝息斩", type: "tactic", lokarWindSlash: true, targetless: true, icon: "🔺", text: "依次使用手牌中的所有单体【杀】，随机循环指定敌方目标，且不消耗杀意。" } }
     ]
   },
@@ -16,7 +16,7 @@ window.GameDataCharactersCore = [
     skills: [
       { name: "追魂之刃", type: "passive", text: "锁定技，当你使用的实体【杀】被【闪】抵消后，你额外再次使用此牌1次。此次使用不消耗手牌和杀意，且不能再次触发此技能。" },
       { name: "锁魂镰刀", type: "passive", text: "锁定技，当你使用实体单体【杀】造成生命值伤害后，你对所有存活的敌方角色各造成等同于你魔力的无视护甲伤害。若有角色因此死亡，重复此效果，至多重复4次（虚拟【杀】不触发）。" },
-      { name: "榨取精华", type: "active", icon: "🔵", text: "准备阶段限一次，你可以令一名友方男性角色失去X点生命值，然后你摸X张牌；每张红桃牌令你本回合魔力增加50%（按发动时的基础魔力加算，X为你手牌中的红桃牌数）。本回合内，你使用的所有物理攻击牌均转换为魔法攻击。", card: { name: "榨取精华", type: "tactic", extract: true, icon: "🔵", text: "令一名友方男性角色失去等同于你红桃手牌数的生命值并摸等量牌；每张红桃牌令你本回合魔力增加50%，且本回合使用的所有物理攻击牌均转换为魔法攻击。" } }
+      { name: "榨取精华", type: "active", icon: "🔵", text: "准备阶段限一次，你可以令一名友方男性角色失去X点生命值，然后你摸X张牌；每张红桃牌令你本回合魔力增加50%（按发动时的当前魔力加算，X为你手牌中的红桃牌数）。本回合内，你使用的所有物理攻击牌均转换为魔法攻击。", card: { name: "榨取精华", type: "tactic", extract: true, icon: "🔵", text: "令一名友方男性角色失去等同于你红桃手牌数的生命值并摸等量牌；每张红桃牌令你本回合魔力增加50%，且本回合使用的所有物理攻击牌均转换为魔法攻击。" } }
     ]
   },
   {
@@ -44,7 +44,7 @@ window.GameDataCharactersCore = [
     skills: [
       { name: "新月之歌", type: "passive", icon: "⭐", text: "锁定技，你的回合内，每当你首次使用一种花色的实体牌时，记录该花色并摸1张牌。结束阶段，你摸X张牌，然后可以将X张手牌交给一名其他友方角色；若手牌不足X张则全部交出（X为本回合记录的花色数）。" },
       { name: "模仿之音", type: "active", icon: "⚔️", text: "准备阶段，你可以指定一名其他角色。直到回合结束，你造成伤害时的伤害来源视为该角色；该角色每使用或打出1张牌后，友方手牌数最少的角色摸1张牌。", card: { name: "模仿之音", type: "tactic", mimicVoice: true, icon: "⚔️", text: "指定一名其他角色，直到回合结束，你造成伤害时的伤害来源视为该角色。" } },
-      { name: "偶像之吻", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以弃置1张红桃牌并指定一名其他友方角色，你与其各恢复X点生命值（X为你弃牌后的手牌数+你的魔力）。", card: { name: "偶像之吻", type: "tactic", idolKiss: true, allyTarget: true, icon: "⚔️", text: "弃置1张红桃牌，你与一名其他友方角色各恢复等同于你剩余手牌数+魔力的生命值。" } }
+      { name: "偶像之吻", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以弃置1张红桃牌并指定一名其他友方角色，你与其各恢复X点生命值（X为你弃牌后每张手牌按你当前最大生命值10%计算之和+你的魔力）。", card: { name: "偶像之吻", type: "tactic", idolKiss: true, allyTarget: true, icon: "⚔️", text: "弃置1张红桃牌，你与一名其他友方角色各恢复等同于你剩余手牌数+魔力的生命值。" } }
     ]
   },
   {
@@ -73,7 +73,7 @@ window.GameDataCharactersCore = [
     stats: { attack: 5, magic: 10, speed: 13, maxHp: 118, bloodlust: 1, handLimit: 3, drawPerTurn: 1, initialDraw: 2 },
     evaluation: "战术牌生成与团队护甲辅助。读书的智慧从友方战术牌中补牌，解答迷惑定向制造临时战术牌，飘浮掩体按自身魔力值为全队提供护甲。",
     skills: [
-      { name: "飘浮掩体", type: "passive", icon: "⭐", text: "锁定技，弃牌阶段，我方全体角色获得等同于你魔力值的护甲值。若卡迪西斯在队伍中，卡迪西斯获得2倍护甲值。" },
+      { name: "飘浮掩体", type: "passive", icon: "⭐", text: "锁定技，结束阶段，我方全体角色获得等同于你魔力值的护甲值。若卡迪西斯在队伍中，卡迪西斯获得2倍护甲值。" },
       { name: "读书的智慧", type: "passive", icon: "⭐", text: "锁定技，当一名友方角色使用一张非技能战术牌时，你摸1张牌。" },
       { name: "解答迷惑", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以选择1张战术牌并获得1张同名临时牌，然后可以将其交给一名其他友方角色。此牌离开手牌后进入消耗牌堆。若交给芙萝娅，此技能本回合可额外发动1次。", card: { name: "解答迷惑", type: "tactic", wendyTutor: true, targetless: true, icon: "⚔️", text: "获得1张所选战术牌的同名临时牌，并可将其交给一名其他友方角色；此牌离开手牌后进入消耗牌堆。" } }
     ]

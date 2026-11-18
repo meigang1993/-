@@ -103,19 +103,19 @@ function build(revert = "") {
   return { state, mona, ally, scaled, relics };
 }
 const baseHp = monaBase.hp;
-const expHp = Math.ceil(baseHp * 2.6);
-const expAttack = Math.round(monaBase.attack * 2.2);
-const expSpeed = Math.round(monaBase.speed * 1.8);
+const expHp = Math.ceil(baseHp * 3);
+const expAttack = Math.round(monaBase.attack * 3);
+const expSpeed = Math.round(monaBase.speed * 3);
 
 // ── A 段：英雄级倍率与饰品挂载 ───────────────────────────────
 {
   const { state, mona, scaled, relics } = build();
   T("A1", "难度名为「英雄级」", hell.name === "英雄级", { name: hell.name });
-  T("A2", "界面倍率文案为 生命260%/输出220%/速度180%",
-    /生命260%.*输出220%.*速度180%/.test(hell.attrText), { attrText: hell.attrText });
+  T("A2", "界面倍率文案为 生命300%/输出300%/速度300%",
+    /生命300%.*输出300%.*速度300%/.test(hell.attrText), { attrText: hell.attrText });
   T("A3", "英雄级开启 enemyRelics（精英与BOSS携带掉落饰品）",
     hell.enemyRelics === true, { enemyRelics: hell.enemyRelics });
-  T("A4", "莫娜属性按 2.6/2.2/1.8 缩放",
+  T("A4", "莫娜属性按 300% 统一缩放",
     scaled.hp === expHp && scaled.attack === expAttack && scaled.speed === expSpeed,
     { scaled, expHp, expAttack, expSpeed });
   T("A5", "enemyRelics(mona_eagle_captain) 恰好是重做的两件",
@@ -324,9 +324,9 @@ const expSpeed = Math.round(monaBase.speed * 1.8);
     { battleRelics: mona.battleRelics, revert });
   T("G3", "反向：正常态状态牌不入手牌（撤 charm/nonequip 应打红）",
     !mona.hand.includes(status), { hand: mona.hand.length, revert });
-  T("G4", "英雄级倍率常量为 2.6 / 2.2 / 1.8",
-    hell.enemy.boss.hp === 2.6 && hell.enemy.boss.power === 2.2
-    && hell.enemy.boss.speed === 1.8, { boss: hell.enemy.boss });
+  T("G4", "英雄级倍率常量为 300 整数百分比",
+    hell.enemy.boss.hp === 300 && hell.enemy.boss.power === 300
+    && hell.enemy.boss.speed === 300, { boss: hell.enemy.boss });
 }
 
 console.log(`\n结论 ${pass}/${total}${red.length ? `  红项: ${red.join(",")}` : ""}`);

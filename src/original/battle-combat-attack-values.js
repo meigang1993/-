@@ -42,9 +42,15 @@ window.BattleCombatAttackValues = api => {
   function applyBerserkGrowth(state, actor, card) {
     if (!card?.berserkKill || card._berserkGrowthApplied) return;
     card._berserkGrowthApplied = true;
-    actor.stats.attack = (actor.stats.attack || 0) + 1;
+    const H = window.BattleHpValue;
+    // 线性叠加：以首次发动时的「当前属性」为固定快照，每次只加同一份额，不链式累乘。
+    if (!Number.isFinite(actor.berserkBaseAttack)) {
+      actor.berserkBaseAttack = H.currentStat(actor, "attack");
+    }
+    const gain = H.pctStacks(actor.berserkBaseAttack, 10, 1);
+    actor.stats.attack = (actor.stats.attack || 0) + gain;
     window.BattleLog.add(state,
-      `${actor.name} 使用暴走杀，本场战斗攻击力+1，当前为${actor.stats.attack}。`);
+      `${actor.name} 使用暴走杀，本场战斗攻击力按当前属性+10%（+${gain}），当前为${actor.stats.attack}。`);
   }
 
   function modifyAttackAmount(state, actor, target, card, amount) {

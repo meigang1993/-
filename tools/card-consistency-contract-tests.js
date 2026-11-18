@@ -98,7 +98,7 @@ module.exports = ({ assert, fs }) => {
     ["杀（普攻）", "等同于你的攻击力的物理伤害"],
     ["魔杀", "发动魔法攻击"],
     ["魔杀", "等同于你的魔力的物理伤害"],
-    ["愈魔瓶", "（其最大生命值的30%+你的魔力）点生命值"],
+    ["愈魔瓶", "（你当前最大生命值的30%+你的魔力）点生命值"],
     ["雷杀", "若此牌造成生命值伤害"],
     ["灵魂锁链", "指定2名敌方角色为目标"],
     ["灵魂锁链", "【杀】造成的生命值伤害"],
@@ -187,7 +187,7 @@ module.exports = ({ assert, fs }) => {
     assert(codex(name).text.includes("物理伤害"),
       `${name} must state its physical damage attribute`);
   });
-  assert(codex("暴走杀").text.includes("本场战斗的攻击力+1"),
+  assert(codex("暴走杀").text.includes("本场战斗的攻击力按当前属性+10%"),
     "Berserk Slash must describe its battle-long attack growth");
 
   assert.strictEqual(window.CardUtils.isCounterableTactic({

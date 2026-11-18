@@ -3,13 +3,13 @@ const shoup4Defs = [
   { name: "魔杀", type: "slash", scale: "magic", attackType: "magic", suits: { "♠": 4, "♥": 4, "♣": 4, "♦": 4 }, text: "指定一名敌方角色为目标，对其发动魔法攻击，造成等同于你的魔力的物理伤害。使用此牌需消耗1点杀意。" },
   { name: "闪", type: "response", suits: { "♥": 8, "♦": 8 }, text: "当你成为【杀】的目标时，你可以使用此牌，抵消该【杀】对你造成的此次伤害。" },
   { name: "蓄力", type: "tactic", charge: 1, targetless: true, suits: { "♠": 3, "♣": 3 }, text: "本回合内，你使用的下一张【杀】造成的伤害×2。此效果可叠加。" },
-  { name: "愈魔瓶", type: "consume", healPct: .3, healScale: "magic", allyTarget: true, suits: { "♥": 3, "♦": 3 }, text: "指定一名已受伤的友方角色为目标，其恢复（其最大生命值的30%+你的魔力）点生命值。满血角色不可指定。双击或拖出手牌区时，默认对自己使用；自己满血时自动转给受伤队友。" },
+  { name: "愈魔瓶", type: "consume", healPct: .3, healScale: "magic", allyTarget: true, suits: { "♥": 3, "♦": 3 }, text: "指定一名已受伤的友方角色为目标，其恢复（你当前最大生命值的30%+你的魔力）点生命值。满血角色不可指定。双击或拖出手牌区时，默认对自己使用；自己满血时自动转给受伤队友。" },
 ];
 const initialShopCardNames = ["魔力提炼", "拆解", "束缚陷阱", "封印术", "与我一战", "机枪扫杀", "物资补给", "看破", "生命之泉", "偷窃", "灵魂锁链", "魔弹特攻", "借刀杀人", "魔王军入侵"];
 const starterSuits = { "♥": 1, "♦": 1, "♣": 1, "♠": 1 };
 const eliteCardDefs = [
   { name: "毒杀", price: 700, type: "slash", scale: "attack", poison: true, suits: { "♠": 1, "♣": 1 }, text: "指定一名敌方角色为目标，对其造成等同于你的攻击力的毒属性伤害。若此牌造成生命值伤害，目标获得1层“毒”。每枚“毒”标记在目标回合开始时造成施加者攻击力30%的毒属性伤害（四舍五入，至少1点，按施加时攻击力快照叠加结算）。" },
-  { name: "伤口处理", price: 400, type: "tactic", healPct: .1, healScale: "attack", allyTarget: true, suits: { "♥": 1, "♦": 1 }, text: "指定一名已受伤的友方角色为目标，其恢复（其最大生命值的10%+你的攻击力）点生命值。满血角色不可指定。双击或拖出手牌区时，默认对自己使用；自己满血时自动转给受伤队友。" },
+  { name: "伤口处理", price: 400, type: "tactic", healPct: .1, healScale: "attack", allyTarget: true, suits: { "♥": 1, "♦": 1 }, text: "指定一名已受伤的友方角色为目标，其恢复（你当前最大生命值的10%+你的攻击力）点生命值。满血角色不可指定。双击或拖出手牌区时，默认对自己使用；自己满血时自动转给受伤队友。" },
   { name: "与我一战", price: 600, type: "tactic", duel: true, scale: "attack", suits: starterSuits, text: "指定一名敌方角色为目标。目标先打出1张【杀（普攻）】，然后你与其轮流打出1张【杀（普攻）】，直至任一方未打出。未打出的角色受到最后打出牌的角色造成的等同于其攻击力的物理伤害。" },
   { name: "魔力提炼", price: 1000, type: "tactic", drawCards: 2, targetless: true, suits: starterSuits, text: "你摸2张牌。" },
   { name: "拆解", price: 800, type: "tactic", discardTarget: true, suits: starterSuits, text: "指定一名有手牌的其他角色为目标，弃置其1张手牌；状态牌被拆除后立即进入消耗牌堆。" },
@@ -22,7 +22,7 @@ const eliteCardDefs = [
   { name: "刺杀", price: 500, type: "slash", scale: "attack", assassinate: true, suits: { "♠": 1, "♣": 1 }, text: "指定一名敌方角色为目标，弃置其1张手牌，然后对其造成等同于你的攻击力的物理伤害。" },
   { name: "看破", price: 1000, type: "response", counterTactic: true, suits: starterSuits, text: "当敌方角色使用战术牌时，你可以使用此牌，令该战术牌无效；虚拟战术牌和转换战术牌也可以被此牌无效化。" },
   { name: "组合进攻", price: 800, type: "tactic", comboAttack: true, suits: { "♥": 1, "♣": 1 }, text: "指定一名敌方角色为目标，并选择一名其他友方角色。你与该友方角色依次对目标使用1张虚拟【杀（普攻）】；这2次攻击分别结算，目标可分别响应。此牌本身不造成伤害。" },
-  { name: "生命之泉", price: 900, type: "consume", teamHealPct: .3, healScale: "magic", targetless: true, suits: starterSuits, text: "所有友方角色各恢复（其最大生命值的30%+你的魔力）点生命值。" },
+  { name: "生命之泉", price: 900, type: "consume", teamHealPct: .3, healScale: "magic", targetless: true, suits: starterSuits, text: "所有友方角色各恢复（你当前最大生命值的30%+你的魔力）点生命值。" },
   { name: "偷窃", price: 700, type: "tactic", stealCard: true, suits: starterSuits, text: "指定一名有手牌的其他角色为目标，获得其1张手牌；状态牌被偷走后立即进入消耗牌堆，不会转移。" },
   { name: "灵魂锁链", price: 1000, type: "tactic", soulChain: true, suits: starterSuits, text: "指定2名敌方角色为目标；若敌方仅剩1名角色，则指定该角色。目标获得“锁魂”标记，持续1轮。当一名带有“锁魂”标记的角色受到【杀】造成的生命值伤害后，同阵营其他带有“锁魂”标记的角色受到等量同属性伤害。" },
   { name: "魔法对决", price: 600, type: "tactic", attackType: "magic", magicDuel: true, suits: { "♠": 1, "♥": 1 }, text: "指定一名敌方角色为目标。目标先打出1张【魔杀】，然后你与其轮流打出1张【魔杀】，直至任一方未打出。未打出的角色受到最后打出牌的角色发动的魔法攻击，受到等同于该角色魔力的物理伤害。" },
@@ -30,7 +30,7 @@ const eliteCardDefs = [
   { name: "借刀杀人", price: 1000, type: "tactic", borrowSlash: true, suits: starterSuits, text: "选择一名其他友方角色，再指定一名敌方角色为目标，选择前者1张单体【杀】对后者使用；此次使用不触发“使用【杀】”类技能。若前者没有单体【杀】，选择其1张手牌交给你。" },
   { name: "魔王军入侵", price: 1200, type: "tactic", attackType: "magic", hybridAttack: true, demonInvasion: true, targetless: true, suits: starterSuits, text: "指定所有敌方角色为目标，对其各发动兼具物理与魔法属性的复合攻击，造成等同于你的攻击力与魔力之和的伤害。每名目标可打出1张单体【杀】，抵消其受到的此次伤害；开启手动响应时，由玩家选择是否打出。" },
   { name: "双重打杀", price: 1000, type: "slash", scale: "attack", fixedRepeats: 2, suits: { "♥": 1, "♦": 1 }, text: "指定一名敌方角色为目标，连续对其造成2次物理伤害，每次伤害等同于你的攻击力。" },
-  { name: "暴走杀", price: 1000, type: "slash", scale: "attack", berserkKill: true, suits: { "♠": 1, "♥": 1 }, text: "每使用1次此牌，你本场战斗的攻击力+1。指定一名敌方角色为目标，对其造成等同于你的攻击力的物理伤害。" },
+  { name: "暴走杀", price: 1000, type: "slash", scale: "attack", berserkKill: true, suits: { "♠": 1, "♥": 1 }, text: "每使用1次此牌，你本场战斗的攻击力按当前属性+10%（以首次发动时的攻击力为快照线性叠加，不累乘）。指定一名敌方角色为目标，对其造成等同于你的攻击力的物理伤害。" },
   { name: "咬杀", price: 1000, type: "slash", scale: "attack", biteKill: true, suits: { "♠": 1, "♥": 1 }, text: "指定一名敌方角色为目标，对其造成等同于你的攻击力的物理伤害。若此牌造成生命值伤害，你恢复等量生命值。" },
   { name: "放血", price: 1200, type: "tactic", bloodletting: true, targetless: true, suits: { "♣": 1, "♦": 1 }, text: "你失去相当于最大生命值10%的生命值（向下取整，至少1点，且不会因此低于1点生命值），然后摸1张牌并恢复1点杀意。" },
   { name: "圣杀", price: 1300, type: "slash", scale: "attack", holy: true, suits: { "♠": 1, "♦": 1 }, text: "指定一名敌方角色为目标，对其造成等同于你的攻击力的圣属性伤害。若此牌造成生命值伤害，目标获得“圣痕”标记。带有“圣痕”标记的角色受到圣属性伤害时，该伤害×2；其恢复生命值后移去“圣痕”标记。" },

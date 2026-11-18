@@ -33,7 +33,7 @@ window.GameData = {
   ],
   difficulties: {
     normal: {
-      reward: 1, xp: 1, dropRate: 0,
+      reward: 100, xp: 100, dropRate: 0,
       enemy: { normal: { hp: 1, power: 1, speed: 1 } },
     },
   },

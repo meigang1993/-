@@ -59,6 +59,12 @@ const timeouts = Object.freeze({
   "test-enhance-combat-live.js": 240,
   "test-all-stats-integer.js": 120,
   "test-skill-multiplier-difficulty-integer.js": 120,
+  "test-difficulty-gold-cut.js": 120,
+  // 压缩过的核心伤害结算 × 238 难度倍率（5 组源码级反向）
+  "test-difficulty-damage-resolution-recheck.js": 120,
+  // 副本置灰在 7 条真实回大厅路径下解除（6 组源码级反向）
+  "test-enhance-hall-unblock.js": 120,
+  "test-enhance-hall-unblock-live.js": 240,
 // 卡牌阵营归属固定：uid 反查 / 重洗复用 / 原主离场漂移 / REVERT=fix 反向
 "test-card-faction-ownership.js": 120,
   // originSide 随主存档压缩 / 读档重建，含两条写盘路径与 2 组源码级反向
@@ -138,6 +144,11 @@ const timeouts = Object.freeze({
   "test-skill-heal-target-recheck.js": 120,
   // 单体恢复牌实机：startup 装配 / DOM 高亮 / chooseTarget / 提示文案
   "test-single-heal-target-live.js": 180,
+  "test-skill-percent-bonus.js": 120,
+  // 全技能作弊压测：真实加载 11 个产品模块 + 234 目标/200 连打/1000 份，7 组反向
+  "test-all-modified-skills-cheat.js": 120,
+  // 回血技能真实结算作弊：4 个技能 handler + 1000 张牌/1e9 上限/1000 枚标记，REVERT=heal 反向
+  "test-skill-heal-real-settlement-cheat.js": 120,
 });
 
 const timeoutFor = (file, fallback) => timeouts[file] || fallback;
@@ -181,6 +192,7 @@ const groups = Object.freeze({
     "test-balance-values.js",
     "test-all-stats-integer.js",
   "test-skill-multiplier-difficulty-integer.js",
+    "test-difficulty-gold-cut.js",
     "test-character-progression.js",
     "test-playable-roster-integrity.js",
     "test-receipt-ledgers.js",
@@ -246,6 +258,9 @@ const groups = Object.freeze({
   "test-enhance-save-load.js",
   "test-enhance-combat-effect.js",
   "test-enhance-combat-live.js",
+  "test-difficulty-damage-resolution-recheck.js",
+  "test-enhance-hall-unblock.js",
+  "test-enhance-hall-unblock-live.js",
   ],
   battle: [
     "test-visual-hp-residue-live.js",
@@ -451,6 +466,9 @@ const groups = Object.freeze({
     "test-noa-ultimate-blade-effect-relics.js",
     "test-noa-ultimate-blade-relic-recheck.js",
     "test-split-compact-recheck.js",
+    "test-skill-percent-bonus.js",
+    "test-all-modified-skills-cheat.js",
+    "test-skill-heal-real-settlement-cheat.js",
     "test-angelica-merge-recheck.js",
     "test-merge-skill-side-effects.js",
     "test-merge-skill-final-recheck.js",

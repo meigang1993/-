@@ -14,7 +14,7 @@ window.ElranaHealingSkills = deps => {
     actor.hand.splice(index, 1);
     window.BattleCards?.put(state.battle, actor, cost, "discard", { showDiscard: true });
     const hand = visible(actor);
-    const amount = hand.length + ctx.statOf(actor, "magic");
+    const amount = window.BattleHpValue.healPctStacks(actor, 10, hand.length) + ctx.statOf(actor, "magic");
     const team = hand.length && hand.every(red) ? state.battle.allies.filter(alive) : [target];
     line(state, actor, "回春之手", target);
     const assistToken = { name: "回春之手" };
@@ -96,7 +96,7 @@ window.ElranaHealingSkills = deps => {
 
   function endTurn(state, unit, api) {
     if ((unit?.ref !== "elrana" && unit?.ref !== "little_elrana") || !alive(unit)) return;
-    const amount = visible(unit).filter(red).length + stat(unit, "magic");
+    const amount = window.BattleHpValue.healPctStacks(unit, 10, visible(unit).filter(red).length) + stat(unit, "magic");
     const skill = unit.ref === "little_elrana" ? "再生之躯" : "再生肉体";
     line(state, unit, skill);
     if (unit.hp >= unit.maxHp) {

@@ -264,7 +264,7 @@ const reinTpl = `(() => {
   const E = await page.evaluate(reinTpl);
   console.log("[增援部队]", JSON.stringify(E));
   T("增援部队：自身损失 10% 生命值未被免疫误伤", E.hp === 198, E);
-  T("增援部队：友军复活至 40%", E.revived === 40, E);
+  T("增援部队：友军满血复活", E.revived === 100, E);
 
   const W = checkWiring();
   console.log("[接入点]", JSON.stringify(W));

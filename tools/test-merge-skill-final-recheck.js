@@ -34,9 +34,17 @@ function rootText(rel, opts = {}) {
         `["noa-charm-discard.js", "noa-charm-skills.js"],`);
     }
   }
-  if (REVERT === "notice"
-    && (rel === "src/original/update-notice-recent.js" || rel === "src/original/update-notice-archive.js")) {
-    s = s.replace(/（后续口径已调整：[^）]*）/g, "");
+  // 公告旧口径说明已删除；反向验证时把被删文本注入回去，验证断言不是空转。
+  if (REVERT === "notice") {
+    if (rel === "src/original/update-notice-recent.js") {
+      s += "\n// 反向注入：每份 +10% 基础属性 ·（后续口径已调整：旧口径回归）\n";
+    }
+    if (rel === "src/original/update-notice-archive.js") {
+      s += "\n// 反向注入：（后续口径已调整：旧口径回归）\n";
+    }
+    if (rel === "src/original/update-notice.js") {
+      s += "\n// 反向注入：此前新增第 34 名可玩角色 · 本次再把【技能倍率】\n";
+    }
   }
   if (REVERT === "desc" && !opts.skipDesc) {
     if (rel === "src/original/data-characters-extra.js") {
@@ -91,20 +99,29 @@ function src(file, skipDesc = false) {
     /\["noa-side-effect-skills\.js", "noa-charm-discard\.js", "noa-charm-skills\.js"\]/.test(relations));
 }
 
-// B 历史公告：保留历史原文，但补「后续口径已调整」说明
+// B 公告：旧口径说明已删除，历史事实条目与当前生效条目保留
 {
   const recent = rootText("src/original/update-notice-recent.js");
   const archive = rootText("src/original/update-notice-archive.js");
-  T("B1 11月10【改造副作用】历史条目带后续合并说明",
+  const meta = rootText("src/original/update-notice.js");
+  T("B1 早批 239 口径条目已删除",
+    !/每份 \+10% 基础属性/.test(recent) && !/均按原口径不变/.test(recent));
+  T("B2 recent 不再有「后续口径已调整」注脚", !/后续口径已调整/.test(recent));
+  T("B3 archive 不再有「后续口径已调整」注脚", !/后续口径已调整/.test(archive));
+  T("B4 历史事实条目正文保留",
     /【改造副作用】实装/.test(recent)
-    && /后续口径已调整：该技能已删除，效果并入【淫气改造】/.test(recent));
-  T("B2 历史【猩红暴走】条目带后续合并说明",
-    /安洁莉卡新增主动技【猩红暴走】/.test(archive)
-    && /后续口径已调整：该主动技已删除，效果并入【狂战意志】/.test(archive));
-  T("B3 历史逐段口径条目带当前说明",
-    /取消“多段或连击伤害时逐段结算”/.test(archive)
-    && /当前【狂战意志】按角色说明含/.test(archive));
-  T("B4 今日公告仍写明两次删除与合并",
+    && /安洁莉卡新增主动技【猩红暴走】/.test(archive)
+    && /取消“多段或连击伤害时逐段结算”/.test(archive));
+  T("B5 公告摘要不再复述旧批次",
+    !/此前新增第 34 名可玩角色/.test(meta)
+    && !/本次再把【技能倍率】/.test(meta)
+    && !/完成角色数据、两张立绘/.test(meta));
+  T("B6 当前生效口径条目齐全",
+    /【增援部队】（装甲运输车）复活口径调整/.test(recent)
+    && /【飘浮掩体】（温蒂）触发阶段调整/.test(recent)
+    && /【暴走杀】成长改为百分比/.test(recent)
+    && /全部属性百分比统一为「当前属性」口径（A）/.test(recent));
+  T("B7 今日公告仍写明两次删除与合并",
     /删除独立主动技【猩红暴走】/.test(recent)
     && /删除独立技能【改造副作用】/.test(recent));
 }

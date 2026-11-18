@@ -8,10 +8,11 @@ window.GreenHat = (() => {
     if (!unit?.stats) return 0;
     const count = countOf(unit);
     if (!Number.isFinite(unit.greenHatAttackBase)) {
-      const base = Math.max(0, (unit.stats.attack || 0) - count);
-      unit.greenHatAttackBase = rounded(base);
-      unit.greenHatAttackBonus = rounded(base * ATTACK_RATE * count);
-      unit.stats.attack = rounded(base + unit.greenHatAttackBonus);
+      const H = window.BattleHpValue;
+      const base = Math.max(0, H.currentStat(unit, "attack", unit.greenHatAttackBonus || 0));
+      unit.greenHatAttackBase = base;
+      unit.greenHatAttackBonus = H.pctStacks(base, 30, count);
+      unit.stats.attack = base + unit.greenHatAttackBonus;
     }
     unit.greenHat = count;
     delete unit.envy;
@@ -22,7 +23,7 @@ window.GreenHat = (() => {
   function grant(unit) {
     const count = normalize(unit);
     if (!unit?.stats || count >= MAX) return false;
-    const gain = rounded(unit.greenHatAttackBase * ATTACK_RATE);
+    const gain = window.BattleHpValue.pctStacks(unit.greenHatAttackBase, 30, 1);
     unit.greenHat = count + 1;
     unit.greenHatAttackBonus = rounded((unit.greenHatAttackBonus || 0) + gain);
     unit.stats.attack = rounded((unit.stats.attack || 0) + gain);

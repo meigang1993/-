@@ -72,14 +72,14 @@ window.RuinsEliteSkills = (() => {
   function reinforce(state, unit) {
     const dead = (state.battle.enemies || []).filter(enemy => enemy.hp <= 0 && enemy !== unit);
     if (!dead.length) return;
-    dead.forEach(enemy => { enemy.hp = Math.max(1, Math.ceil((enemy.maxHp || 1) * 0.4)); });
+    dead.forEach(enemy => { enemy.hp = window.BattleHpValue.maxHp(enemy); });
     const loss = dead.length * Math.ceil((unit.maxHp || 1) * 0.1);
     const before = unit.hp;
     window.BattleHpValue.applyDamage(unit, loss);
     const lost = before - unit.hp;
     if (lost > 0) window.BattleSystem?.pushFloat?.(state.battle, unit.uid, "hp-loss", lost);
     window.BattleLines?.skill?.(state, unit, "增援部队");
-    log(state, `${unit.name} 发动增援部队，复活${dead.length}名友军，损失${lost}点生命。`);
+    log(state, `${unit.name} 发动增援部队，满血复活${dead.length}名友军，损失${lost}点生命。`);
   }
 
   // 潜影背刺：结束阶段发动（描述即为「结束阶段」）。
@@ -135,7 +135,7 @@ window.RuinsEliteSkills = (() => {
     return carrierArmor()?.modifyDamage?.(state, target, amount, card) ?? amount;
   }
 
-  // 增援部队的 10% 生命损失是直接改写 unit.hp（不走治疗链），故不受本条影响。
+  // 增援部队的满血复活与 10% 生命损失都是直接改写 unit.hp（不走治疗链），故不受本条影响。
   function beforeHeal(state, target, amount) {
     return carrierArmor()?.beforeHeal?.(state, target, amount) ?? amount;
   }

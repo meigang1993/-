@@ -175,24 +175,40 @@ Object.entries(expectedEnemies).forEach(([id, expected]) => {
   assert.deepStrictEqual(enemyStats(id), expected, `${id} balance stats changed`);
 });
 // 四副本 × 五难度的平均实际属性目标表（2026-11-09 全属性翻倍 + 线性难度倍率重定后重算）
-// 旧条件「机械工厂速度不超过 8 / 兽人速度不超过 17」是按 1.06～1.27 的旧速度倍率标定的，
-// 速度倍率提高到 1.12～1.58 后已无法表达先手压力的设计意图，改为直接锁定缩放后的平均属性。
+// 旧条件「机械工厂速度不超过 8 / 兽人速度不超过 17」是按旧速度倍率标定的，
+// 四档倍率改为四项属性统一 +50%/+100%/+150%/+200% 后，改为直接锁定缩放后的平均属性。
 (() => {
   const average = (list, key) => list.reduce((sum, item) => sum + item[key], 0) / list.length;
   const difficulties = Object.values(GameDataWorld.difficulties);
-  // 基线重定：怪物基础属性翻倍，四档难度倍率改为线性加成；普通级均值也随之翻倍。
+  // 基线重定：怪物基础属性翻倍，四档难度改为四项属性统一倍率；普通级均值也随之翻倍。
   const targets = {
     魔国机械工厂: [GameDataMachineFactoryEnemies, [
-      [161, 11, 11, 16], [225, 15, 14, 19], [290, 18, 17, 22], [355, 22, 20, 25], [418, 25, 23, 28],
+      [161, 11, 11, 16],
+      [241, 17, 16, 24],
+      [322, 23, 21, 32],
+      [402, 28, 27, 39],
+      [483, 34, 32, 47],
     ]],
     水下列车: [GameDataUnderwaterTrainEnemies, [
-      [297, 16, 13, 26], [416, 21, 17, 31], [535, 25, 21, 36], [653, 30, 25, 41], [772, 35, 29, 46],
+      [297, 16, 13, 26],
+      [445, 24, 20, 39],
+      [594, 32, 26, 52],
+      [742, 39, 33, 64],
+      [890, 47, 39, 77],
     ]],
     兽人地下城: [GameDataFutureEnemies.orc_dungeon, [
-      [367, 20, 18, 30], [515, 26, 24, 37], [662, 32, 30, 43], [809, 38, 35, 49], [955, 44, 40, 55],
+      [367, 20, 18, 30],
+      [551, 30, 28, 46],
+      [735, 40, 37, 61],
+      [919, 50, 46, 76],
+      [1102, 60, 55, 91],
     ]],
     废墟沙城: [GameDataRuinsSandCityEnemies, [
-      [423, 24, 20, 33], [592, 31, 26, 39], [761, 38, 32, 46], [930, 46, 38, 52], [1099, 53, 44, 59],
+      [423, 24, 20, 33],
+      [634, 36, 30, 49],
+      [845, 48, 40, 65],
+      [1057, 60, 51, 82],
+      [1268, 72, 61, 98],
     ]],
 
   };
@@ -210,9 +226,9 @@ Object.entries(expectedEnemies).forEach(([id, expected]) => {
       });
     });
   });
-  // 结构性护栏：用倍率比值锁定「冒险/勇士/王者/英雄 = +40%/+80%/+120%/+160% 生命」这一设计意图。
+  // 结构性护栏：用倍率比值锁定「冒险/勇士/王者/英雄 = 四项属性 +50%/+100%/+150%/+200%」这一设计意图。
   // 以相对比值表达，敌人个体数值调整时不会腐坏，只在难度倍率被改动时才报错。
-  const hpRatios = [1.4, 1.8, 2.2, 2.6];
+  const hpRatios = [1.5, 2, 2.5, 3];
   Object.entries(targets).forEach(([dungeon, [list]]) => {
     const scaledHp = index => average(
       list.map(enemy => GameDataWorld.scaleEnemyStats(enemy, difficulties[index], enemy.type)), "hp",
@@ -262,19 +278,18 @@ assert.deepStrictEqual(GameDataWorld.statDefs.map(([id, name]) => [id, name]), [
   ["initialDraw", "初始摸牌"],
 ]);
 assert.deepStrictEqual(GameEconomy.dungeonGold, {
-  normal: [90, 130], elite: 280, boss: 500, chest: 220,
+  normal: [63, 91], elite: 196, boss: 350, chest: 154,
 });
 assert.strictEqual(GameEconomy.shop.deleteCost, 700);
 assert.strictEqual(GameEconomy.relic.smeltGold, 180);
 
 const difficulties = Object.values(GameDataWorld.difficulties);
-assert.deepStrictEqual(difficulties.map(item => item.reward), [1, 1.35, 1.75, 2.2, 2.75]);
-assert.deepStrictEqual(difficulties.map(item => item.xp), [1, 1.15, 1.35, 1.6, 1.9]);
-// 难度倍率按线性加成重定：冒险 +40%/+30%/+20%，逐档 +40/+30/+20 个百分点，
-// 即 1.4/1.3/1.2 → 1.8/1.6/1.4 → 2.2/1.9/1.6 → 2.6/2.2/1.8。
-assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.hp), [1, 1.4, 1.8, 2.2, 2.6]);
-assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.power), [1, 1.3, 1.6, 1.9, 2.2]);
-assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.2, 1.4, 1.6, 1.8]);
+assert.deepStrictEqual(difficulties.map(item => item.reward), [100, 135, 175, 220, 275]);
+assert.deepStrictEqual(difficulties.map(item => item.xp), [100, 115, 135, 160, 190]);
+// 难度倍率按四项属性统一加成重定：普通 100%，四档依次为 150/200/250/300（+50 个百分点逐档）。
+assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.hp), [100, 150, 200, 250, 300]);
+assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.power), [100, 150, 200, 250, 300]);
+assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [100, 150, 200, 250, 300]);
 
 // 难度倍率严格递增（生命 / 输出 / 速度），XP 维持原表
 (() => {
@@ -285,9 +300,9 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.
   assert.ok(strictlyUp(hp), `难度生命倍率未严格递增: ${hp.join("→")}`);
   assert.ok(strictlyUp(power), `难度输出倍率未严格递增: ${power.join("→")}`);
   assert.ok(strictlyUp(speed), `难度速度倍率未严格递增: ${speed.join("→")}`);
-  assert.strictEqual(difficulties[4].enemy.normal.speed, 1.8,
-    `英雄级速度倍率应为 1.8，实际 ${difficulties[4].enemy.normal.speed}`);
-  assert.deepStrictEqual(difficulties.map(item => item.xp), [1, 1.15, 1.35, 1.6, 1.9]);
+  assert.strictEqual(difficulties[4].enemy.normal.speed, 300,
+    `英雄级速度倍率应为 300，实际 ${difficulties[4].enemy.normal.speed}`);
+  assert.deepStrictEqual(difficulties.map(item => item.xp), [100, 115, 135, 160, 190]);
   // elite / boss 与 normal 同倍率，避免只改了普通档导致精英不跟随
   ["elite", "boss"].forEach(kind => {
     assert.deepStrictEqual(difficulties.map(item => item.enemy[kind].hp), hp,
@@ -300,10 +315,10 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.
 // attrText 与倍率一致（界面展示不得停留在旧倍率）
 (() => {
   const expected = [
-    ["冒险级", "生命140%/输出130%/速度120%"],
-    ["勇士级", "生命180%/输出160%/速度140%"],
-    ["王者级", "生命220%/输出190%/速度160%"],
-    ["英雄级", "生命260%/输出220%/速度180%/精英与BOSS携带掉落饰品技能"],
+    ["冒险级", "生命150%/输出150%/速度150%"],
+    ["勇士级", "生命200%/输出200%/速度200%"],
+    ["王者级", "生命250%/输出250%/速度250%"],
+    ["英雄级", "生命300%/输出300%/速度300%/精英与BOSS携带掉落饰品技能"],
   ];
   expected.forEach(([name, text]) => {
     const d = difficulties.find(item => item.name === name);
@@ -336,6 +351,7 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.
   // 11-09 新增第 34 名怪面诺亚并补齐专属成长表（输出倾向：攻击 11 档 41.2）。
   // 11-09 全角色初始属性与成长、全怪物基础属性统一翻倍，成长档位单位同步翻倍。
   // 11-17 全部角色与怪物属性统一四舍五入取整，成长快照、生命/输出比与先手阈值同步重定。
+  // 11-18 四档难度改为四项属性统一倍率、副本节点金币统一下调 30%，均值表与金币基线同步重定。
   assert.strictEqual(digest,
     "d7a08d4e858f7de74dd1d40e5d530a4f797bd665cbff408722883259ec0e4c28",
     "0～20 级角色成长数据被改动（快照不匹配，若有意调整请更新摘要）");
@@ -373,11 +389,11 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [1, 1.
 difficulties.forEach(difficulty => {
   allEnemies.forEach(enemy => {
     const scaled = GameDataWorld.scaleEnemyStats(enemy, difficulty, enemy.type);
-    assert.strictEqual(scaled.attack, Math.round(enemy.attack * difficulty.enemy[enemy.type].power),
+    assert.strictEqual(scaled.attack, Math.round(enemy.attack * difficulty.enemy[enemy.type].power / 100),
       `${enemy.id} ${difficulty.name} attack scaling mismatch`);
-    assert.strictEqual(scaled.magic, Math.round(enemy.magic * difficulty.enemy[enemy.type].power),
+    assert.strictEqual(scaled.magic, Math.round(enemy.magic * difficulty.enemy[enemy.type].power / 100),
       `${enemy.id} ${difficulty.name} magic scaling mismatch`);
-    assert.strictEqual(scaled.speed, Math.round(enemy.speed * difficulty.enemy[enemy.type].speed),
+    assert.strictEqual(scaled.speed, Math.round(enemy.speed * difficulty.enemy[enemy.type].speed / 100),
       `${enemy.id} ${difficulty.name} speed scaling mismatch`);
   });
 });

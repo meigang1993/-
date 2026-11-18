@@ -68,13 +68,13 @@ const MISSIONS = [
     badRelic.map(p => p.id));
 
   // ===== 2. 真实结算：强制掉落，检查落到存档 =====
-  // dropRate 决定精英/BOSS 是否掉稀有奖励；为稳定复现，临时把五档都设为 1。
+  // dropRate 决定精英/BOSS 是否掉稀有奖励；为稳定复现，临时把五档都设为 100（整数百分比）。
   const drops = await page.evaluate(async (missions) => {
     const GD = window.GameData;
     const backup = {};
     Object.keys(GD.difficulties).forEach(k => {
       backup[k] = GD.difficulties[k].dropRate;
-      GD.difficulties[k].dropRate = 1;
+      GD.difficulties[k].dropRate = 100;
     });
     const s = window.state;
     const report = [];
