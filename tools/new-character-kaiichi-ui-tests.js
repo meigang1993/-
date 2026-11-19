@@ -40,10 +40,15 @@ module.exports = ({
   HoshinoSkills.handleSpecialCard(resonanceState, kaiichi, targetNonoka, {
     kaiichiMilk: true,
   }, { draw() {}, damage() {} });
+  const greenHatBase = lokiBaseAttack + 2;
+  const greenHatSingle = Math.max(1, Math.round(greenHatBase * 30 / 100));
+  const greenHatBonus = greenHatSingle * 3;
   assert(legacyLoki.greenHat === 3
-    && legacyLoki.stats.attack === Number((lokiBaseAttack * 1.9).toFixed(4))
+    && legacyLoki.greenHatAttackBase === greenHatBase
+    && legacyLoki.greenHatAttackBonus === greenHatBonus
+    && legacyLoki.stats.attack === greenHatBase + greenHatBonus
     && legacyLoki.envy == null && !legacyLoki.statuses.includes("妒火"),
-  "Legacy Envy marks must convert from fixed attack to additive 30% Green Hat bonuses");
+  "Legacy Envy marks must convert from fixed attack to additive 30% current-attribute Green Hat bonuses");
   const yiHealer = unitFromCharacter(yiData, "yi-healer");
   kaiichi.hp = 20;
   kaiichi.hand = [card("原有手牌", "tactic")];

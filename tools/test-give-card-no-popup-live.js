@@ -3,7 +3,7 @@
 // 背景：交牌类技能此前用居中弹窗（armory-popup）列出队友让玩家选，
 // 与【半魅魔血】【新月之歌】【收获分享】【指挥官责任】的「手牌区选牌 +
 // 点击队友交出」口径不一致。本次把仍在弹窗的两处交牌环节统一：
-//   · 艾伦格【战斗演练】—— 交出已结算的牌
+//   · 艾伦格【战斗演练】—— 交出已结算的实体牌
 //   · 温蒂【解答迷惑】—— 选定牌名后交给队友（选牌名仍需弹窗，牌不在手牌区）
 //
 // 验证点：
@@ -149,7 +149,7 @@ const tutorAfterTpl = `(() => {
   // ================= 战斗演练 =================
   const d0 = await page.evaluate(drillTriggerTpl);
   console.log(`[战斗演练-触发] prompt=${d0.prompt} locked=${d0.locked} 牌=${d0.cardName} 艾伦格手牌=${d0.ally0Hand}`);
-  T("战斗演练：使用杀后触发交牌", d0.prompt === true, d0);
+  T("战斗演练：使用实体杀后触发交牌", d0.prompt === true, d0);
   T("战斗演练：触发后界面锁定等待选择", d0.locked === true, d0);
 
   await page.waitForSelector("[data-aileng-drill-skip]", { timeout: 8000 }).catch(() => null);

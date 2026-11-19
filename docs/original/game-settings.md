@@ -654,7 +654,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - `sweep`、`allTargets`或`aoeLineShown`表示全体范围；单独带有`targetless`且没有全体标记的杀牌不属于单体杀。技能的实际效果若只能处理一个目标，文案和运行时必须明确使用`单体【杀】`；未写`单体`的通用杀牌效果必须同时覆盖单体杀与全体杀。
 - 诺诺卡的`新月之歌` must let the player select the exact X visible hand cards to give. A teammate cannot be selected until exactly X valid cards are chosen; cancelling the transfer remains allowed.
 - 诺诺卡的每回合摸牌数固定为基础`2`加角色加成`2`，初始摸牌数固定为基础`4`加角色加成`1`。
-- 艾伦格的`计算下注` resets intent to the current intent maximum, including temporary maximum bonuses. `战斗演练` moves the resolved original card if another effect returned it to hand before the transfer choice; it must never duplicate that card.
+- 艾伦格的`计算下注` resets intent to the current intent maximum, including temporary maximum bonuses. `战斗演练` only triggers after an entity card is used; virtual kills, skill-generated cards and skill payloads must not open the share picker. It moves the resolved original card if another effect returned it to hand before the transfer choice; it must never duplicate that card.
 - 艾斯的`急逃` is limited once per global character turn, not once per 艾斯 turn. It may trigger again when the next unit's turn begins.
 - `索敌雷达` doubles every damage instance of a matching-suit multi-hit Slash while logging the lock trigger once for that card.
 - 机甲牛头怪攻击力固定为4；`铁甲红怒`的防守判定为黑色时不再获得护甲，而是防止该【杀】对机甲牛头怪造成的全部伤害，且机甲牛头怪无需为这次已被防止的伤害使用【闪】；其进攻判定仍以红色为成功，成功时目标不能打出【闪】抵消该【杀】。

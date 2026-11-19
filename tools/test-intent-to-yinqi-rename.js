@@ -1,4 +1,4 @@
-// 247 版：出牌资源文案全库统一复查（历史公告与归档一并替换，零残留）。
+// 247/248 版：出牌资源文案全库统一复查（历史公告与归档一并替换，零残留）。
 // 旧词以 Unicode 转义构造，避免本脚本自身命中全库扫描；注释一律用「旧词」指代。
 // 全库任何文本文件都不允许再出现旧词，历史公告与 bundle 镜像同样零残留。
 // REVERT=card|recent|archive|bundle|docs|ui|current 为源码级反向验证：
@@ -148,12 +148,12 @@ check("E3 bundle 新词总数 >= 150", bundleNew >= 150, { bundleNew });
 check("E4 hall.min.js 新词 >= 8", countNew(HISTORY_BUNDLE) >= 8,
   { n: countNew(HISTORY_BUNDLE) });
 const idx = read("publish/index.html");
-check("E5 index 版本 247 ×13", (idx.match(/20260915-247/g) || []).length === 13);
-check("E6 徽章 v26.0915.247 且 246/248 残留 0",
-  idx.includes("v26.0915.247") && !idx.includes("20260915-246") && !idx.includes("20260915-248"));
+check("E5 index 版本 248 ×13", (idx.match(/20260915-248/g) || []).length === 13);
+check("E6 徽章 v26.0915.248 且 247/249 残留 0",
+  idx.includes("v26.0915.248") && !idx.includes("20260915-247") && !idx.includes("20260915-249"));
 const villa = read("publish/villa.css");
-check("E7 villa.css cache-buster 247 ×4", (villa.match(/20260915-247/g) || []).length === 4,
-  { n: (villa.match(/20260915-246/g) || []).length });
+check("E7 villa.css cache-buster 248 ×4", (villa.match(/20260915-248/g) || []).length === 4,
+  { n: (villa.match(/20260915-247/g) || []).length });
 
 // ---------- F 语法完整性 ----------
 const touched = files.filter(f => f.endsWith(".js") && read(f).includes(NEW));

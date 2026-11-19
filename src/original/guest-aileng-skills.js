@@ -5,6 +5,9 @@ window.GuestAilengSkills = (() => {
   const hasSkill = (unit, name) => (unit?.skills || []).some(skill => skill.name === name);
   const stat = (unit, key) => (unit.stats?.[key] || 0) + (key === "attack" ? (unit.tempAttack || 0) : key === "magic" ? (unit.tempMagic || 0) : 0);
   const line = (state, unit, name, target) => window.BattleLines?.skill(state, unit, name, target);
+  const isEntityCard = card => !!(window.CardUtils?.isEntityCard?.(card)
+    ?? (card && card.type !== "skill" && !card.generatedBySkill && !card.virtual
+      && (!card._skill || !!card._entityConversion))) && !card?._pendingDraw;
   const chargeFallbackText = "出牌阶段限一次，你可以指定一名友方女性角色，你弃置所有红桃牌，令其摸等量牌。若目标为贝丝妲，改为你弃置所有手牌，令贝丝妲摸等量牌，然后你受到等同于贝丝妲魔力的伤害；若你仍存活，你翻面并跳过下一个完整回合。若目标为七位姐姐之一且其对应儿子存活，该儿子获得1枚“绿帽”标记；若目标为娜娜莉或贝丝妲且罗卡尔存活，罗卡尔获得1枚“绿帽”标记。每名角色至多拥有5枚“绿帽”，每枚令手牌上限、淫气上限各+1，攻击力+30%。";
 
   function chargeSkill() {
@@ -67,7 +70,9 @@ window.GuestAilengSkills = (() => {
     if (actor?.ref === "aileng") battleDrill(state, actor, card);
   }
   function battleDrill(state, actor, card) {
-    if (!hasSkill(actor, "战斗演练") || card._skill || (!isSlash(card) && card.type !== "tactic")) return;
+    // 战斗演练只接管玩家真正使用的实体牌：妖刀村雨等虚拟杀、技能生成牌、
+    // 技能卡与非牌伤害载荷都不弹交牌提示，尤其避免在准备阶段把 battle.locked 挂死。
+    if (!hasSkill(actor, "战斗演练") || !isEntityCard(card) || (!isSlash(card) && card.type !== "tactic")) return;
     const receivers = state.battle.allies.filter(unit => unit.uid !== actor.uid && alive(unit));
     if (!receivers.length) return;
     if (actor.side === "ally") { state.battle.ailengDrillPicker = { actorUid: actor.uid, card }; state.battle.locked = true; line(state, actor, "战斗演练"); return; }

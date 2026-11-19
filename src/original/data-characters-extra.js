@@ -89,10 +89,10 @@ window.GameDataCharactersExtra = [
   {
     id: "aileng", name: "艾伦格", gender: "male", face: "艾", art: "./assets/images/aileng-portrait.5b5e628d.webp", avatar: "./assets/images/aileng-portrait.5b5e628d.webp", role: "充能王子", locked: true,
     stats: { attack: 10, magic: 10, speed: 13, maxHp: 124, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
-    evaluation: "手牌循环与牌权转移角色。计算下注重整手牌并可重置淫气，战斗演练把已结算的牌交给队友，征服欲望根据伤害次数或角色死亡觉醒为不同的衍生能力。",
+    evaluation: "手牌循环与牌权转移角色。计算下注重整手牌并可重置淫气，战斗演练把已结算的实体牌交给队友，征服欲望根据伤害次数或角色死亡觉醒为不同的衍生能力。",
     skills: [
       { name: "计算下注", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以弃置至少1张手牌，然后摸等量牌。若你弃置了全部手牌，额外摸1张牌并重置淫气。", card: { name: "计算下注", type: "tactic", targetless: true, elranaBag: true, ailengBet: true, icon: "⚔️", text: "弃置至少1张手牌并摸等量牌；若弃置全部手牌，额外摸1张牌并重置淫气。" } },
-      { name: "战斗演练", type: "passive", icon: "🔵", text: "当你使用的【杀】或战术牌结算完毕后，你可以将该牌交给一名其他友方角色。" },
+      { name: "战斗演练", type: "passive", icon: "🔵", text: "当你使用的实体【杀】或实体战术牌结算完毕后，你可以将该牌交给一名其他友方角色。技能生成的牌、虚拟牌与非实体牌不触发。" },
       { name: "征服欲望", type: "passive", icon: "💰", text: "觉醒技，出牌阶段，若你本回合累计造成伤害超过7次，你获得【战斗之勇】；当场上有任意角色死亡后，你失去【计算下注】并获得【充能精华】。", derivedSkills: [
         { name: "战斗之勇", text: "锁定技，当你使用一张实体【杀】或【与我一战】时，你从摸牌堆摸1张牌。若摸到【杀】或【与我一战】，你恢复1点淫气。" },
         { name: "充能精华", text: "出牌阶段限一次，你可以指定一名友方女性角色，你弃置所有红桃牌，令其摸等量牌。若目标为贝丝妲，改为你弃置所有手牌，令贝丝妲摸等量牌，然后你受到等同于贝丝妲魔力的伤害；若你仍存活，你翻面并跳过下一个完整回合。若目标为七位姐姐之一且其对应儿子存活，该儿子获得1枚“绿帽”标记；若目标为娜娜莉或贝丝妲且罗卡尔存活，罗卡尔获得1枚“绿帽”标记。每名角色至多拥有5枚“绿帽”，每枚令手牌上限、淫气上限各+1，攻击力+30%。" }
