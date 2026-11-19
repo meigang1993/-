@@ -232,16 +232,16 @@ const H = W.BattleHpValue;
   T("E", "写回整数", finiteInt(unit.stats.attack));
 }
 
-// ---------- F：角色强化（作弊 500 次，固定点数且与百分比解耦） ----------
+// ---------- F：角色强化（作弊 150 次，固定点数且与百分比解耦） ----------
 {
   const C = W.CharacterEnhance;
   const ch = { id: "x" };
-  for (let i = 0; i < 500; i += 1) C.step(ch, "attack");
+  for (let i = 0; i < 50; i += 1) C.step(ch, "attack");
   const mid = C.bonusOf(ch).attack;
-  for (let i = 500; i < 1500; i += 1) C.step(ch, "attack");
+  for (let i = 50; i < 150; i += 1) C.step(ch, "attack");
   const bonus = C.bonusOf(ch);
-  T("F", "500 次线性累计固定整数", mid === 500 * C.BONUS.attack && Number.isInteger(mid));
-  T("F", "作弊 1500 次按 MAX_LEVEL 封顶不溢出", Number.isInteger(bonus.attack) && bonus.attack === C.MAX_LEVEL * C.BONUS.attack);
+  T("F", "50 次线性累计固定整数", mid === 50 * C.BONUS.attack && Number.isInteger(mid));
+  T("F", "作弊 150 次按 MAX_LEVEL 封顶不溢出", Number.isInteger(bonus.attack) && bonus.attack === C.MAX_LEVEL * C.BONUS.attack);
   T("F", "withBonus 叠加固定点数（不参与百分比）", C.withBonus({ attack: 100, magic: 5, speed: 11, maxHp: 124 }, { enhance: { attack: 1, magic: 1, speed: 1, maxHp: 1 } }).attack === 101);
   T("F", "副本 / 战斗 / 大厅判定", C.blockedReason({ explore: {}, view: "hall" }) === "副本中不可强化"
     && C.blockedReason({ view: "battle" }) === "战斗中不可强化"

@@ -26,7 +26,7 @@ window.BattleCardActiveRelicsAssassin = (deps, ctx, core) => {
       actor.hand.splice(idx, 1);
       ctx.putMany(state, actor, [picked], "discard");
       markUsed(actor, "usedSuccubusFork", card);
-      log(state, `${actor.name} 发动魅魔钢叉，将一张${picked.suit}${picked.name}当【魅杀】使用且不消耗杀意。`);
+      log(state, `${actor.name} 发动魅魔钢叉，将一张${picked.suit}${picked.name}当【魅杀】使用且不消耗淫气。`);
       window.BattleLines?.skill(state, actor, "魅魔钢叉", target);
       ctx.useCard(state, actor, target, converted);
       return true;
@@ -38,7 +38,7 @@ window.BattleCardActiveRelicsAssassin = (deps, ctx, core) => {
     });
     ctx.moveHand(state, actor, i, "discard");
     markUsed(actor, "usedSuccubusFork", card);
-    log(state, `${actor.name} 发动魅魔钢叉，将一张${chosen.suit}${chosen.name}当【魅杀】使用且不消耗杀意。`);
+    log(state, `${actor.name} 发动魅魔钢叉，将一张${chosen.suit}${chosen.name}当【魅杀】使用且不消耗淫气。`);
     window.BattleLines?.skill(state, actor, "魅魔钢叉", target);
     ctx.useCard(state, actor, target, converted);
     return true;
@@ -72,7 +72,7 @@ window.BattleCardActiveRelicsAssassin = (deps, ctx, core) => {
     if (ok) ctx.moveHand(state, actor, i, "discard");
     else { actor.hand.splice(idx, 1); ctx.putMany(state, actor, [source], "discard"); }
     markUsed(actor, "usedAssassinLatex", card);
-    log(state, `${actor.name} 发动刺客胶衣，将一张${source.suit}${source.name}当【刺杀】使用且不消耗杀意。`);
+    log(state, `${actor.name} 发动刺客胶衣，将一张${source.suit}${source.name}当【刺杀】使用且不消耗淫气。`);
     window.BattleLines?.skill(state, actor, "刺客胶衣", target);
     ctx.useCard(state, actor, target, converted);
     return true;

@@ -1,10 +1,10 @@
-// 全库「免杀意」来源 —— 逐个走**真实触发链路**验证（此前只有格林机枪走过真实链路）。
+// 全库「免淫气」来源 —— 逐个走**真实触发链路**验证（此前只有格林机枪走过真实链路）。
 //
 // 每个来源统一验三步：
-//   1. 真实入口触发（打技能牌 / 调技能函数 / AI 移动），确认当时确实免杀意
-//   2. 检查进弃牌堆（或消耗区）的那张牌上，免杀意标记是否残留
+//   1. 真实入口触发（打技能牌 / 调技能函数 / AI 移动），确认当时确实免淫气
+//   2. 检查进弃牌堆（或消耗区）的那张牌上，免淫气标记是否残留
 //   3. 把该牌从弃牌堆取回手牌（模拟洗牌堆重洗 / 回收类技能），再打出，
-//      确认这次**正常消耗杀意**——不错误免杀意
+//      确认这次**正常消耗淫气**——不错误免淫气
 //
 // 分批：FREE_REAL=A|B|C|D|E|F|G|H|I|J，不设则跑全部。
 require("./repository-toolchain");
@@ -165,11 +165,11 @@ const snap = `(() => {
     const s = await run(page, snap);
     T("A1 大招真实触发", /狂风绝息斩/.test(s.logs || ""), s.logs);
     T("A2 两张单体杀均已打出", (s.discard || []).length >= 2, s.discard);
-    T("A3 打出时免杀意（intent 未扣）", r && r.i1 === r.i0, r);
+    T("A3 打出时免淫气（intent 未扣）", r && r.i1 === r.i0, r);
     T("A4 弃牌堆杀牌无 noIntentCost 残留",
       (s.discard || []).every(c => !c.noIntentCost), s.discard);
     const rr = await run(page, recycleAndReplay("杀（普攻）"));
-    T("A5 回收后再次打出正常消耗杀意",
+    T("A5 回收后再次打出正常消耗淫气",
       rr && rr.recycled && rr.iAfter === rr.iBefore - 1, rr);
   }
 
@@ -187,8 +187,8 @@ const snap = `(() => {
     })()`);
     T("B1 武器库真实触发并发牌", /武器库/.test(s1.logs || "")
       && (s1.allyHand || []).length >= 1, s1);
-    T("B2 发放的杀牌带免杀意", (s1.allyHand || []).some(c => c.free), s1.allyHand);
-    // 队友打出该牌，检查是否免杀意；再检查进的是队友弃牌堆
+    T("B2 发放的杀牌带免淫气", (s1.allyHand || []).some(c => c.free), s1.allyHand);
+    // 队友打出该牌，检查是否免淫气；再检查进的是队友弃牌堆
     const s2 = await run(page, `(() => {
       const st = window.state, b = st.battle, u2 = b.allies[1];
       b.activeUid = u2.uid; b.animQueue = []; b.locked = false; b.phase = 4;
@@ -199,7 +199,7 @@ const snap = `(() => {
       return { i0, i1: u2.intent,
         discard: disc.map(c => ({ n: c.name, noIntentCost: !!c.noIntentCost })) };
     })()`);
-    T("B3 队友打出该牌免杀意", s2 && s2.i1 === s2.i0, s2);
+    T("B3 队友打出该牌免淫气", s2 && s2.i1 === s2.i0, s2);
     T("B4 进弃牌堆无残留", (s2?.discard || []).every(c => !c.noIntentCost), s2?.discard);
   }
 
@@ -228,10 +228,10 @@ const snap = `(() => {
       (s.discard || []).some(c => c.n === "杀（普攻）"), s.discard);
     T("C3 代价牌无 noIntentCost 残留",
       (s.discard || []).every(c => !c.noIntentCost), s.discard);
-    // 免杀意的直接证据：转化产物打出后杀意未扣。缺这条则该段免杀意完全没被盯住。
-    T("C5 转化产物打出时免杀意（intent 未扣）", s && s.i1 === s.i0, s);
+    // 免淫气的直接证据：转化产物打出后淫气未扣。缺这条则该段免淫气完全没被盯住。
+    T("C5 转化产物打出时免淫气（intent 未扣）", s && s.i1 === s.i0, s);
     const rr = await run(page, recycleAndReplay("杀（普攻）"));
-    T("C4 回收后再次打出正常消耗杀意",
+    T("C4 回收后再次打出正常消耗淫气",
       rr && rr.recycled && rr.iAfter === rr.iBefore - 1, rr);
   }
 
@@ -248,13 +248,13 @@ const snap = `(() => {
       const disc = foe.pileStats?.discard || foe.discard || [];
       return { ok: true, prodName: move.card.name,
         // noIntentCost 是在 useCard 内部才打上的，调用前读必然为 false，
-        // 因此以免杀意日志为准（clearPlayFlags 会在进堆前清掉标记）
-        freeLog: (st.battleLog || []).some(l => /撞杀.*不消耗杀意/.test(l)),
+        // 因此以免淫气日志为准（clearPlayFlags 会在进堆前清掉标记）
+        freeLog: (st.battleLog || []).some(l => /撞杀.*不消耗淫气/.test(l)),
         discard: disc.map(c => ({ n: c.name, noIntentCost: !!c.noIntentCost, ramKill: !!c.ramKill })),
         logs: (st.battleLog || []).join(" | ") };
     })()`);
     T("D1 无脑冲撞真实触发", s && s.ok && /无脑冲撞|撞杀/.test(s.logs || ""), s);
-    T("D2 产物【撞杀】免杀意生效", s && s.prodName === "撞杀" && s.freeLog, s);
+    T("D2 产物【撞杀】免淫气生效", s && s.prodName === "撞杀" && s.freeLog, s);
     T("D3 代价牌进弃牌堆且无残留",
       (s?.discard || []).some(c => c.n === "杀（普攻）" && !c.noIntentCost), s?.discard);
   }
@@ -269,7 +269,7 @@ const snap = `(() => {
         logs: (st.battleLog || []).join(" | ") };
     })()`);
     T("E1 冰心双刺剑真实触发", /冰心双刺剑/.test(s1.logs || ""), s1);
-    T("E2 手牌已转为【刺杀】且免杀意",
+    T("E2 手牌已转为【刺杀】且免淫气",
       (s1.hand || []).some(c => c.n === "刺杀" && c.free), s1.hand);
     const s2 = await run(page, `(() => {
       const st = window.state, b = st.battle, u = b.allies[0];
@@ -281,11 +281,11 @@ const snap = `(() => {
         discard: disc.map(c => ({ n: c.name, noIntentCost: !!c.noIntentCost, ice: !!c._iceDagger })),
         logs: (st.battleLog || []).join(" | ") };
     })()`);
-    T("E3 打出时免杀意", s2 && s2.i1 === s2.i0, s2);
+    T("E3 打出时免淫气", s2 && s2.i1 === s2.i0, s2);
     T("E4 进弃牌堆无 noIntentCost 残留",
       (s2?.discard || []).every(c => !c.noIntentCost), s2?.discard);
     const rr = await run(page, recycleAndReplay("杀（普攻）"));
-    T("E5 回收（还原为原牌）后打出正常消耗杀意",
+    T("E5 回收（还原为原牌）后打出正常消耗淫气",
       rr && rr.recycled && rr.iAfter === rr.iBefore - 1, rr);
   }
 
@@ -308,9 +308,9 @@ const snap = `(() => {
     T("F1 魅魔钢叉真实触发", /魅魔钢叉/.test(s.logs || ""), s.logs);
     T("F2 代价牌进弃牌堆无残留",
       (s.discard || []).every(c => !c.noIntentCost), s.discard);
-    T("F4 转化产物打出时免杀意（intent 未扣）", s && s.i1 === s.i0, s);
+    T("F4 转化产物打出时免淫气（intent 未扣）", s && s.i1 === s.i0, s);
     const rr = await run(page, recycleAndReplay("杀（普攻）"));
-    T("F3 回收后再次打出正常消耗杀意",
+    T("F3 回收后再次打出正常消耗淫气",
       rr && rr.recycled && rr.iAfter === rr.iBefore - 1, rr);
   }
 
@@ -333,9 +333,9 @@ const snap = `(() => {
     T("G1 刺客胶衣真实触发", /刺客胶衣/.test(s.logs || ""), s.logs);
     T("G2 代价牌进弃牌堆无残留",
       (s.discard || []).every(c => !c.noIntentCost), s.discard);
-    T("G4 转化产物打出时免杀意（intent 未扣）", s && s.i1 === s.i0, s);
+    T("G4 转化产物打出时免淫气（intent 未扣）", s && s.i1 === s.i0, s);
     const rr = await run(page, recycleAndReplay("杀（普攻）"));
-    T("G3 回收后再次打出正常消耗杀意",
+    T("G3 回收后再次打出正常消耗淫气",
       rr && rr.recycled && rr.iAfter === rr.iBefore - 1, rr);
   }
 
@@ -363,7 +363,7 @@ const snap = `(() => {
         logs: (st.battleLog || []).join(" | ") };
     })()`);
     T("H1 杀欲窥视真实触发", s && s.ok && /杀欲窥视/.test(s.logs || ""), s);
-    T("H2 临时杀牌免杀意", s && s.peekFree && s.i1 === s.i0, s);
+    T("H2 临时杀牌免淫气", s && s.peekFree && s.i1 === s.i0, s);
     T("H3 临时牌进消耗区而非弃牌堆",
       (s?.consumed || []).length >= 1
       && (s?.discard || []).every(c => !c.noIntentCost), s);
@@ -378,9 +378,9 @@ const snap = `(() => {
       foe.hand = [${JSON.stringify(SLASH("杀（普攻）", "♠"))}];
       const i0 = foe.intent;
       const card = foe.hand[0];
-      // 不可手动 prepareSlash：火力压制的转化发生在扣杀意**之后**，
-      // 免杀意靠结算前预判 suppressionFreeIntent（此时标记尚未打上）。
-      // 手动转化会把标记提前打上，预判恒 false，随后照扣杀意 —— 是构造错误不是 BUG。
+      // 不可手动 prepareSlash：火力压制的转化发生在扣淫气**之后**，
+      // 免淫气靠结算前预判 suppressionFreeIntent（此时标记尚未打上）。
+      // 手动转化会把标记提前打上，预判恒 false，随后照扣淫气 —— 是构造错误不是 BUG。
       const free = window.OrcDungeonSkills?.suppressionFreeIntent?.(foe, card);
       window.BattleSystem.useCard(st, foe, b.allies[0], card);
       const disc = foe.pileStats?.discard || foe.discard || [];
@@ -390,10 +390,10 @@ const snap = `(() => {
         logs: (st.battleLog || []).join(" | ") };
     })()`);
     T("I1 火力压制真实触发", /火力压制/.test(s.logs || ""), s.logs);
-    T("I2 转化牌免杀意（锁定技，每次转化均免）", s && s.i1 === s.i0, s);
+    T("I2 转化牌免淫气（锁定技，每次转化均免）", s && s.i1 === s.i0, s);
     T("I3 进弃牌堆时 _beastSuppressionApplied 已清除",
       (s?.discard || []).every(c => !c.beast), s?.discard);
-    T("I4 说明：锁定技每次转化均免杀意，回收后再打出仍免属设计意图", true);
+    T("I4 说明：锁定技每次转化均免淫气，回收后再打出仍免属设计意图", true);
   }
 
   // ---------- J 狼牙杀（安洁莉卡·露卡，clearPlayFlags 故意保留） ----------
@@ -408,17 +408,17 @@ const snap = `(() => {
       return { i0, i1: u.intent,
         discard: disc.map(c => ({ n: c.name, noIntentCost: !!c.noIntentCost, lukaWolfFang: !!c.lukaWolfFang })) };
     })()`);
-    T("J1 狼牙杀打出免杀意", s1 && s1.i1 === s1.i0, s1);
+    T("J1 狼牙杀打出免淫气", s1 && s1.i1 === s1.i0, s1);
     T("J2 弃牌堆保留 noIntentCost（clearPlayFlags 有意豁免）",
       (s1?.discard || []).some(c => c.n === "狼牙杀" && c.noIntentCost), s1?.discard);
     const rr = await run(page, recycleAndReplay("狼牙杀"));
-    T("J3 回收后再打出仍免杀意 —— 与卡面「此牌不消耗杀意」一致，属设计非 BUG",
+    T("J3 回收后再打出仍免淫气 —— 与卡面「此牌不消耗淫气」一致，属设计非 BUG",
       rr && rr.recycled && rr.iAfter === rr.iBefore, rr);
   }
 
   const list = relevantErrors(errors);
   T("无 JS 错误", list.length === 0, list.slice(0, 3));
-  console.log(`\n免杀意真实链路：${pass}/${total}`);
+  console.log(`\n免淫气真实链路：${pass}/${total}`);
   await browser.close();
   process.exit(pass === total ? 0 : 1);
 })();

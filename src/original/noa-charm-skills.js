@@ -1,7 +1,7 @@
 // 怪面诺亚【淫气改造】（锁定技，仅「诺亚自己的」出牌阶段生效：
 //   battle.phase===4 且 battle.activeUid===诺亚 uid）
 //   1. 手牌数始终等于上限：少于摸至上限，多于由玩家弃至上限
-//   2. 使用【杀】不消耗杀意  3. 使用杀台词
+//   2. 使用【杀】不消耗淫气  3. 使用杀台词
 // 上限由【淫气改造】按存活男性队友数动态给出；非出牌阶段、别家回合一律不生效。
 // 溢出弃牌复用弃牌阶段那套（手牌区点选 + 确认弃置），由 battle-discard-flow.js 结算。
 window.NoaCharmSkills = (() => {
@@ -18,15 +18,15 @@ window.NoaCharmSkills = (() => {
   const limitOf = unit => Math.max(0,
     window.NoaSideEffectSkills?.handLimit?.(unit) ?? unit?.stats?.handLimit ?? 0);
   const inPlayPhase = state => state?.battle?.phase === PLAY_PHASE;
-  // phase 4 是全局阶段，别家出牌时同为 4；免杀意/台词/手牌平衡都必须再确认
-  // 当前回合单位就是诺亚本人，否则会在别人回合生效（回合外免杀意、回合外补弃牌）。
+  // phase 4 是全局阶段，别家出牌时同为 4；免淫气/台词/手牌平衡都必须再确认
+  // 当前回合单位就是诺亚本人，否则会在别人回合生效（回合外免淫气、回合外补弃牌）。
   const inOwnPlayPhase = (state, actor) => inPlayPhase(state)
     && !!actor && state?.battle?.activeUid === actor.uid;
   if (!window.NoaCharmDiscard) throw new Error("[noa-charm-discard] 模块未装配：noa-charm-discard.js 必须先于 noa-charm-skills.js 加载");
   const { discardableCards, startCharmDiscard, autoDiscard } = window.NoaCharmDiscard({ limitOf });
 
   // 供 battle-card-playability.js 的 hasNoIntentCost 消费；只认角色本人打出的杀牌，
-  // 且只在出牌阶段生效（其它阶段打出的杀正常消耗杀意）。
+  // 且只在出牌阶段生效（其它阶段打出的杀正常消耗淫气）。
   function noIntentCost(actor, card) {
     if (!inOwnPlayPhase(window.state, actor)) return false;
     return isNoa(actor) && hasSkill(actor, "淫气改造") && isKill(card);

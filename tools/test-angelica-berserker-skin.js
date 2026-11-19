@@ -163,7 +163,7 @@ rampageActor.rageMarks = 0;
 assert(AngelicaLukaSkills.canUseBerserkWill(rampageActor) === false,
   "Berserk Will must be unusable without rage marks");
 
-// 实体【杀】可用 1 枚标记代替 1 点杀意；无标记或虚拟杀不适用。
+// 实体【杀】可用 1 枚标记代替 1 点淫气；无标记或虚拟杀不适用。
 const intentCard = { name: "杀（普攻）", type: "slash" };
 rageActor.rageMarks = 3;
 assert(AngelicaLukaSkills.canPayIntentWithRage(rageActor, intentCard) === true

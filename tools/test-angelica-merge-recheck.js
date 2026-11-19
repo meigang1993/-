@@ -39,7 +39,7 @@ function src(file) { return patched(file); }
 const skills = src("angelica-luka-skills.js");
 {
   const passive = skills.slice(skills.indexOf("function beforeIntentCost"), skills.indexOf("function canUseBerserkWill"));
-  T("A1 被动用标记抵杀意不再播主动技台词",
+  T("A1 被动用标记抵淫气不再播主动技台词",
     !/line\(state, actor, "狂战意志"\)/.test(passive)
     && /line\(state, actor, "狂战意志"\)/.test(skills.slice(skills.indexOf("function berserkWill"))));
 }
@@ -157,7 +157,7 @@ const realDraw = (_u, n) => Array.from({ length: n }, (_, i) => ({ name: `牌${i
 {
   const a = actor(); const s = state(a);
   win.AngelicaLukaSkills.beforeIntentCost(s, a, { name: "杀（普攻）", type: "slash" });
-  T("B9 被动抵杀意消耗 1 枚标记但不播主动技台词",
+  T("B9 被动抵淫气消耗 1 枚标记但不播主动技台词",
     a.rageMarks === 3 && !s.lines.includes("狂战意志")
     && s.log.some(t => t.includes("消耗1枚狂战标记")), { lines: s.lines, log: s.log });
 }

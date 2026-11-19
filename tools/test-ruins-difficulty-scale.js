@@ -44,7 +44,7 @@ console.log("=== 基础值核对 ===");
 grunts.forEach(e => {
   const b = BASE[e.id];
   console.log(`  ${String(e.name).padEnd(12)} hp=${e.hp} 攻=${e.attack} 魔=${e.magic} 速=${e.speed}`
-    + ` 杀意=${e.bloodlust} 手牌=${e.handLimit} 摸牌=2+${e.drawPerTurn} 初始=4+${e.initialDraw}`);
+    + ` 淫气=${e.bloodlust} 手牌=${e.handLimit} 摸牌=2+${e.drawPerTurn} 初始=4+${e.initialDraw}`);
 });
 
 console.log("\n=== 各难度缩放结果（废墟沙城普通怪） ===");
@@ -55,7 +55,7 @@ Object.entries(diffs).forEach(([key, d]) => {
     const s = W.scaleEnemyStats(e, d, "normal");
     console.log(`   ${String(e.name).padEnd(12)} hp=${String(s.hp).padStart(3)}`
       + ` 攻=${String(s.attack).padStart(2)} 魔=${String(s.magic).padStart(2)} 速=${String(s.speed).padStart(2)}`
-      + ` 杀意=${s.bloodlust} 手牌=${s.handLimit}`);
+      + ` 淫气=${s.bloodlust} 手牌=${s.handLimit}`);
   });
 });
 
@@ -103,7 +103,7 @@ Object.entries(diffs).forEach(([key, d]) => {
 
 // 4. 非缩放字段在各难度下保持不变
 Object.entries(diffs).forEach(([key, d]) => {
-  T(`${d.name}：杀意/手牌/摸牌/初始摸牌 不被缩放`, () => {
+  T(`${d.name}：淫气/手牌/摸牌/初始摸牌 不被缩放`, () => {
     grunts.forEach(e => {
       const s = W.scaleEnemyStats(e, d, "normal");
       ["bloodlust", "handLimit", "drawPerTurn", "initialDraw"].forEach(k => {
@@ -135,10 +135,10 @@ T("坦克炮弹伤害 = 攻击力×2（全属性翻倍后普通级每人 40）",
   assert.strictEqual(normal.attack * 2 * 4, 160, `四坦克齐射 ${normal.attack * 2 * 4}≠160`);
 });
 
-// 7. 无人机杀意降为 1（限制同回合连施毒+麻痹）
-T("攻击型无人机杀意 = 1", () => {
+// 7. 无人机淫气降为 1（限制同回合连施毒+麻痹）
+T("攻击型无人机淫气 = 1", () => {
   const drone = grunts.find(e => e.id === "attack_drone");
-  assert.strictEqual(drone.bloodlust, 1, `无人机杀意 ${drone.bloodlust}≠1`);
+  assert.strictEqual(drone.bloodlust, 1, `无人机淫气 ${drone.bloodlust}≠1`);
 });
 
 // 8. 缩放不得改变技能机制（技能数量与文本保持一致）

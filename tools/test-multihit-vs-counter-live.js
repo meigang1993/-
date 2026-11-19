@@ -189,7 +189,7 @@ async function runDragonCase(browser, errors, key, logNeedle, extraNeedle = null
     const e = b.enemies[1], a0 = b.allies[0];
     b.activeUid = e.uid; b.phase = 4; b.locked = false; b.animQueue = [];
     b.selectedCardIndex = null; b.selectedSkillCard = null; b.pendingTargetUid = null;
-    // 杀意只给 1 点：给多了敌方会自动连出第 2 张杀，变成两次独立攻击，
+    // 淫气只给 1 点：给多了敌方会自动连出第 2 张杀，变成两次独立攻击，
     // 受击触发计数随之翻倍，与「多段放大」混淆（实测 intent=9 时 drill=2）。
     e.intent = 1;
     // playActiveCard 有 actor.side !== "ally" 的硬校验，敌方走不通；

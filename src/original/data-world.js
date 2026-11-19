@@ -11,7 +11,7 @@ if (!Array.isArray(window.GameDataRuinsSandCityEnemies) || window.GameDataRuinsS
 window.GameDataWorld = {
   statDefs: [
     ["attack", "攻击力"], ["magic", "魔力"], ["speed", "速度"], ["maxHp", "生命值"],
-    ["bloodlust", "杀意上限"], ["handLimit", "手牌上限"],
+    ["bloodlust", "淫气上限"], ["handLimit", "手牌上限"],
     ["drawPerTurn", "每回合摸牌"], ["initialDraw", "初始摸牌"],
   ],
   scaleEnemyStats(base, diff, type) {

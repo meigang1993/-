@@ -1,12 +1,12 @@
 // 米尔尤拉 全技能 · 严格实战回归
 //   ⚔️ 渴血杀戮：指定我方一名男性角色，对其造成等同于攻击力的伤害；之后选择一项「杀」牌的
-//                牌名，视为使用一张该牌名的虚拟牌，此牌不消耗杀意。本回合每项限一次。
+//                牌名，视为使用一张该牌名的虚拟牌，此牌不消耗淫气。本回合每项限一次。
 //   ⭐ 无谋霸姬：锁定技，战术牌对她无效，她无法使用战术牌；若手牌中没有战术牌，
 //                使用实体牌或虚拟牌造成的伤害为 2 倍（技能伤害不翻倍）。
 //   🔺 神奇怀表：限定技，指定所有敌方角色施加「时停」；被标记者跳过回合、不可响应、
 //                技能失效；在她下一个回合开始时标记消失。
 //
-// 断言实际效果：血量真的掉、杀意真的不扣、伤害真的翻倍、时停真的让敌人跳回合。
+// 断言实际效果：血量真的掉、淫气真的不扣、伤害真的翻倍、时停真的让敌人跳回合。
 require("./repository-toolchain");
 const path = require("path");
 const { chromium } = require("playwright");
@@ -65,7 +65,7 @@ const bloodthirstDamageTpl = `(() => {
     picker: !!b.mieryulaBloodthirstPicker, locked: !!b.locked };
 })()`;
 
-// 第二段：选牌名 → 点敌人 → 虚拟牌生效且不消耗杀意
+// 第二段：选牌名 → 点敌人 → 虚拟牌生效且不消耗淫气
 const bloodthirstVirtualTpl = `(() => {
   const st = window.state, b = st.battle;
   const m = b.allies[0];
@@ -207,7 +207,7 @@ async function run() {
   T("渴血杀戮：可选牌名非空", vt.poolCount > 0 && !!vt.pick, vt);
   T("渴血杀戮：选择牌名成功", vt.okChoose === true, vt);
   T("渴血杀戮：虚拟牌对敌人造成伤害", vt.used === true && vt.afterHp < vt.beforeHp, vt);
-  T("渴血杀戮：此牌不消耗杀意", vt.afterBlood === vt.beforeBlood, vt);
+  T("渴血杀戮：此牌不消耗淫气", vt.afterBlood === vt.beforeBlood, vt);
   T("渴血杀戮：结算后选牌界面关闭", vt.picker === false && vt.locked === false, vt);
   T("渴血杀戮：本回合该牌名不再可选", vt.usedAgain === false, vt);
 

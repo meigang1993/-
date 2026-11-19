@@ -1,5 +1,5 @@
 // 安倍卡露娜三技能实机回归：同频歌姬（同色连唱补牌 + 头像花色）、
-// 记忆泡泡（挂起存入 / 放弃 / 出牌阶段取回 / 免杀意 / 回合结束清空）、
+// 记忆泡泡（挂起存入 / 放弃 / 出牌阶段取回 / 免淫气 / 回合结束清空）、
 // 幸运海螺（存活时队伍经验翻倍）。
 //
 // 分批执行：KARUNA_PART=A|B|C（默认 ALL 跑全部三段）。
@@ -196,7 +196,7 @@ const settle = async (page, ms = 700) => {
     // 新语义：就地使用——选中阶段不扣区、不进手牌，打出才扣。
     T("B13 选中后泡泡区仍 1 张（打出才扣）", b5?.bubbleLen === 1, b5);
     T("B14 牌未进入手牌", !(b5?.hand || []).includes("黑牌D"), b5);
-    T("B15 泡泡区的牌带免杀意标记", b5?.freeFlag === true, b5);
+    T("B15 泡泡区的牌带免淫气标记", b5?.freeFlag === true, b5);
 
     const intentBefore = b5?.intent;
     await evalT(page, `(() => {
@@ -213,7 +213,7 @@ const settle = async (page, ms = 700) => {
     await evalT(page, "window.BattleSystem.skipKarunaBubble(window.state); window.render();",
       8000, "skipBubbleB6");
     const b6 = await evalT(page, snapTpl, 15000, "snapB6");
-    T("B16 使用泡泡区的战术牌不消耗杀意", b6?.intent === intentBefore,
+    T("B16 使用泡泡区的战术牌不消耗淫气", b6?.intent === intentBefore,
       { before: intentBefore, after: b6?.intent });
   }
 

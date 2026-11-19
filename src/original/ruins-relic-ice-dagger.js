@@ -4,7 +4,7 @@
 window.RuinsRelicIceDagger = (() => {
   const log = (state, text) => window.BattleLog?.add?.(state, text);
 
-  // 获得的实体单体【杀】牌转换为【刺杀】，且不消耗杀意。
+  // 获得的实体单体【杀】牌转换为【刺杀】，且不消耗淫气。
   // 口径是「获得」而非「摸到」：影舞步判定收牌、其他角色交牌、偷牌都算获得，
   // 只挂 afterDraw 会把这几类漏掉。
   // 只认实体牌：虚拟【杀】由技能生成，若一并转换会把技能产物当成手牌资源。
@@ -41,7 +41,7 @@ window.RuinsRelicIceDagger = (() => {
     });
     if (count) {
       window.BattleLines?.skill?.(state, unit, "冰心双刺剑");
-      log(state, `${unit.name} 的冰心双刺剑触发，${count}张实体单体【杀】转换为不消耗杀意的【刺杀】。`);
+      log(state, `${unit.name} 的冰心双刺剑触发，${count}张实体单体【杀】转换为不消耗淫气的【刺杀】。`);
     }
     return count;
   }

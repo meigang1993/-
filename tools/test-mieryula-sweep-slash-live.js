@@ -160,7 +160,7 @@ const readResult = () => `(() => {
   // 无谋霸姬：手上没有战术牌时伤害翻倍（4 → 8），故这里断言 8 而非 4。
   T("B5 掉血 = 攻击力 4 × 无谋霸姬翻倍 = 8",
     res.foeHp.every(f => f.loss === 8), res.foeHp);
-  T("B6 杀意未消耗（虚拟牌不消耗杀意）", res.bloodlust === 1, res);
+  T("B6 淫气未消耗（虚拟牌不消耗淫气）", res.bloodlust === 1, res);
   T("B7 picker 已清空", !res.picker, res);
   T("B8 界面解锁", !res.locked, res);
   T("B9 该牌名记入本回合已用", res.used.includes(SWEEP), res);

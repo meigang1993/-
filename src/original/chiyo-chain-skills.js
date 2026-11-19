@@ -24,7 +24,7 @@ window.ChiyoChainSkills = (() => {
     return (list || []).filter(alive).filter(unit => targetable(unit, probe));
   }
 
-  // 虚拟杀不消耗杀意、不进手牌；关闭响应判定与 afterCardPlayed 钩子链，
+  // 虚拟杀不消耗淫气、不进手牌；关闭响应判定与 afterCardPlayed 钩子链，
   // 否则每张虚拟杀都会再触发一批技能（含本链自身）并可能把回合挂死。
   // 用 _skipPlayedSlashFlag 窄标记只抑制 prepareSlash 里的 playedSlashThisTurn
   // 置真（母亲怀表 / 震感手炮的「本回合未出杀」判据不被污染）；不再挂

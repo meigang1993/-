@@ -31,7 +31,7 @@ window.BattleCardActiveRelicsArsenal = (deps, ctx, core) => {
       }
     });
     window.BattleLines?.skill(state, actor, "武器库");
-    log(state, `${actor.name} 发动武器库，为${armed}名友方角色发放了【杀】牌（不消耗杀意）。`);
+    log(state, `${actor.name} 发动武器库，为${armed}名友方角色发放了【杀】牌（不消耗淫气）。`);
     return true;
   }
 

@@ -1,5 +1,5 @@
 // 安倍卡露娜【记忆泡泡】：已结算的实体牌可存入泡泡手牌区，
-// 出牌阶段可就地直接使用，以此法使用的【杀】不消耗杀意；回合结束后该区域清空。
+// 出牌阶段可就地直接使用，以此法使用的【杀】不消耗淫气；回合结束后该区域清空。
 // 区域本身的容量、牌堆摘取与渲染委托给 abe-karuna-bubble-zone.js。
 window.AbeKarunaBubbleSkills = (() => {
   // 惰性取全局：zone 排在本文件之前（ORDER_DEPENDENCIES 校验顺序），
@@ -18,8 +18,8 @@ window.AbeKarunaBubbleSkills = (() => {
       const bubble = zone.bubbleOf(actor);
       const at = bubble.indexOf(card);
       if (at >= 0) bubble.splice(at, 1);
-      // 标记必须随离区一并抹掉：否则牌带着「免杀意」进弃牌堆，被回收类效果
-      // 捞回后再打出会错误免杀意（isIntentFree），且因 _bubbleCast 残留会被
+      // 标记必须随离区一并抹掉：否则牌带着「免淫气」进弃牌堆，被回收类效果
+      // 捞回后再打出会错误免淫气（isIntentFree），且因 _bubbleCast 残留会被
       // 本分支再次拦下、不再提供「放入」机会。此处已在结算完毕之后，
       // 清除不影响本次结算，与 endTurn 清空时的处理保持一致。
       delete card._bubbleFree; delete card._bubbleCast;
@@ -131,10 +131,10 @@ window.AbeKarunaBubbleSkills = (() => {
     const card = bubble[index];
     if (!card) return false;
     // 同一时刻只认一张泡泡牌：换选时先抹掉旧标记，
-    // 避免取消后残留的免杀意标记跟到弃牌堆、被回收后错误生效。
+    // 避免取消后残留的免淫气标记跟到弃牌堆、被回收后错误生效。
     bubble.forEach(item => { delete item._bubbleFree; delete item._bubbleCast; });
-    // 先打免杀意标记再判可打出：泡泡区的【杀】不消耗杀意，
-    // 若先判后打，杀意耗尽时 canPlay 会把本可用的牌挡下。
+    // 先打免淫气标记再判可打出：泡泡区的【杀】不消耗淫气，
+    // 若先判后打，淫气耗尽时 canPlay 会把本可用的牌挡下。
     card._bubbleFree = true;
     card._bubbleCast = true;
     if (window.BattleSystem?.canPlay

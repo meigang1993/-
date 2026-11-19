@@ -8,7 +8,7 @@ window.RuinsHelicopterSkills = (() => {
   const isSlash = card => window.CardUtils?.isKillCard?.(card) || card?.type === "slash";
   const log = (state, text) => window.BattleLog?.add?.(state, text);
 
-  // 战场扫射（⚔️）：将 2 张同花色牌当做【机枪扫杀】使用，不消耗杀意。
+  // 战场扫射（⚔️）：将 2 张同花色牌当做【机枪扫杀】使用，不消耗淫气。
   // 产物必须以实体牌【机枪扫杀】为模板（CardUtils.fromEntity），不能手搓：
   // 手搓的牌没有 type:"slash" 也没有 scale，攻击流程的 attacks 判定不成立，
   // 实测打出后伤害恒为 0；同时缺 allTargets / aoeLineShown，不绘制全体目标线，

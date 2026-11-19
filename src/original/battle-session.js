@@ -36,8 +36,11 @@ window.BattleSession = ({
     return cards;
   }
 
-  function draw(unit, count, battle, eventCollector = null) {
-    if (unit?.drawLockedThisTurn) {
+  // 复活补牌等「纯补给」传 cleanRefill:true：抑制摸牌类饰品、吸魔邪眼转交与封魔锁定，
+  // 保证「摸齐手牌上限」不被外部效果克扣或放大；其它调用方不传 options，行为完全不变。
+  function draw(unit, count, battle, eventCollector = null, options = null) {
+    const clean = !!options?.cleanRefill;
+    if (!clean && unit?.drawLockedThisTurn) {
       return withSignal([], {
         requested: count, drawn: 0, exhausted: true, locked: true, redirected: 0,
       });
@@ -49,7 +52,8 @@ window.BattleSession = ({
       window.BattlePileStats?.reshuffle(unit, setup.shuffle);
       if (!unit.deck.length) continue;
       const card = unit.deck.pop();
-      const recipient = window.SakuraRisaSkills?.drawRecipient?.(unit, battle) || unit;
+      const recipient = clean ? unit
+        : (window.SakuraRisaSkills?.drawRecipient?.(unit, battle) || unit);
       // 吸魔邪眼会把摸到的牌转交给另一名角色；跨阵营转交必须记原主，
       // 否则弃置时会落进接收方牌库，等于永久占有对方阵营的牌。
       if (recipient !== unit && !card.stolenFromUid) card.stolenFromUid = unit.uid;
@@ -69,7 +73,7 @@ window.BattleSession = ({
         count: batch.length,
         cards: batch,
       });
-      window.SakuraRisaSkills?.onDrawRedirected?.(
+      if (!clean) window.SakuraRisaSkills?.onDrawRedirected?.(
         battle, unit, recipient, batch.length);
     });
     // 多角色循环摸牌：队尾一批「不同角色」的 drawBatch 收成一条 drawGroup
@@ -78,7 +82,7 @@ window.BattleSession = ({
     // 开局摸牌走 eventCollector，由 start() 自己包成 initialDrawGroup，
     // 这里不能打包（外层要的是批次数组，不是一个组）。
     if (!eventCollector) window.BattleDrawPacker?.packDrawGroup?.(battle);
-    window.RuinsRelicEffects?.afterDraw?.(
+    if (!clean) window.RuinsRelicEffects?.afterDraw?.(
       window.state?.battle === battle ? window.state : { battle },
       unit, cards, draw, { getCombat });
     return withSignal(cards, {

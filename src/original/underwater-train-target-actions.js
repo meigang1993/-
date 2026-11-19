@@ -9,7 +9,7 @@ window.UnderwaterTrainTargetActions = ({
     targetless: true,
     temporary: false,
     suit: "",
-    text: "状态牌，弃牌阶段不能弃置；使用此牌需消耗1点杀意，不能交给其他角色，可被拆解或偷窃移除。",
+    text: "状态牌，弃牌阶段不能弃置；使用此牌需消耗1点淫气，不能交给其他角色，可被拆解或偷窃移除。",
   });
 
   function prepareKill(state, actor, target, card) {

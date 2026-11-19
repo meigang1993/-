@@ -1,7 +1,7 @@
 // 两处饰品冲突修复的浏览器实测
 //   ① 冰心双刺剑 + 鲨鱼头套：冰心在「获得」阶段把【杀（普攻）】改写成【刺杀】，
 //      鲨鱼头套原本只认牌名仍为【杀（普攻）】的牌，两件同戴时鲨鱼头套被整件废掉。
-//      修复后两件叠加：牌显示为【咬杀】，保留冰心的不消耗杀意，并触发咬杀回血。
+//      修复后两件叠加：牌显示为【咬杀】，保留冰心的不消耗淫气，并触发咬杀回血。
 //   ② 物资货物 × 物资货物：两名友方各戴一件时互推喂牌，牌库被抽干。
 //      修复后只触发一次。（该路径为纯摸牌阶段逻辑，见节点测试
 //      test-ruins-relic-conflicts.js；此处仅确认真实对局里 draw 不再雪崩。）
@@ -104,7 +104,7 @@ const cargoTpl = `(() => {
     console.log(`   获得后手牌 ${JSON.stringify(setup.hand)}，界面显示【${setup.shown}】`);
     T("冰心双刺剑把【杀】转换为【刺杀】", setup.hand[0]?.name === "刺杀", setup.hand);
     T("叠加后界面显示为【咬杀】（鲨鱼头套未被顶掉）", setup.shown === "咬杀", { shown: setup.shown });
-    T("保留冰心的不消耗杀意", setup.hand[0]?.noIntent === true, setup.hand);
+    T("保留冰心的不消耗淫气", setup.hand[0]?.noIntent === true, setup.hand);
 
     const before = await page.evaluate(readTpl);
     await page.evaluate(playTpl);
@@ -115,7 +115,7 @@ const cargoTpl = `(() => {
     T("鲨鱼头套触发日志出现", logs.includes("鲨鱼头套"), { logs });
     T("咬杀回血日志出现", /咬杀恢复\d+点生命/.test(logs), { logs });
     T("我方实际回血（HP 上升）", after.hp > before.hp, { before: before.hp, after: after.hp });
-    T("不消耗杀意（打出后杀意未减少）", after.intent === before.intent,
+    T("不消耗淫气（打出后淫气未减少）", after.intent === before.intent,
       { before: before.intent, after: after.intent });
     T("页面无 JS 错误", errors.length === 0, errors.slice(0, 3));
     await page.close();

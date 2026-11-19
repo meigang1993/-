@@ -14,7 +14,7 @@ window.GameUIHandView = (() => {
       : "";
     const skipTag = actor.skipPlayPhase
       ? `<span class="tag hand-skip-tag">${U.esc(actor.skipPlayReason || "状态牌")}：本回合跳过出牌阶段${actor.noResponse ? "，且无法使用或打出响应牌" : ""}</span>` : "";
-    return `<div class="hand-panel ${battle.locked && !modes.transferLocked ? "locked" : ""}${actor.skipPlayPhase ? " play-locked" : ""}"><div class="hand-head"><b>${U.esc(actor.name)} 的手牌</b><span class="tag">${phaseLabel(context)}</span>${skipTag}<span class="tag">杀意 ${actor.intent || 0}/${intentMax}</span>${charge}${controls}</div>${window.Onboarding?.battleHint?.(context) || ""}<div class="hand-body ${skillLine ? "has-skills" : ""}">${skillLine}${handWrap}${bubbleZone}</div></div>`;
+    return `<div class="hand-panel ${battle.locked && !modes.transferLocked ? "locked" : ""}${actor.skipPlayPhase ? " play-locked" : ""}"><div class="hand-head"><b>${U.esc(actor.name)} 的手牌</b><span class="tag">${phaseLabel(context)}</span>${skipTag}<span class="tag">淫气 ${actor.intent || 0}/${intentMax}</span>${charge}${controls}</div>${window.Onboarding?.battleHint?.(context) || ""}<div class="hand-body ${skillLine ? "has-skills" : ""}">${skillLine}${handWrap}${bubbleZone}</div></div>`;
   }
 
   if (!window.GameUIHandControls) throw new Error("[ui-hand-controls] 模块未装配：ui-hand-controls.js 必须先于 ui-hand-view.js 加载");

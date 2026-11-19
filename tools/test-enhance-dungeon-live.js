@@ -40,7 +40,7 @@ async function intoDungeon(page) {
     };
     s.view = "dungeon";
     s.hallModal = null;
-    s.resources.gold = 5000;
+    s.resources.gold = 10000;
     s.infoUnit = "lokar";
     s.infoTab = "enhance";
     window.render();
@@ -125,17 +125,17 @@ async function intoDungeon(page) {
     await page.evaluate(() => {
       const s = window.state;
       s.explore = null; s.view = "hall"; s.battle = null;
-      s.resources.gold = 5000; s.infoUnit = "lokar"; s.infoTab = "enhance";
+      s.resources.gold = 10000; s.infoUnit = "lokar"; s.infoTab = "enhance";
       window.render();
     });
     const restored = await page.locator("[data-enhance-char]").evaluateAll(bs => bs.map(b => b.disabled));
     check("E1 回据点后四按钮恢复可点", restored.every(d => !d), restored);
     const beforeClick = await readState(page);
     await page.locator('[data-enhance-stat="attack"]').evaluate(el => el.click());
-    await expect.poll(() => page.evaluate(() => window.state.resources.gold)).toBe(4000);
+    await expect.poll(() => page.evaluate(() => window.state.resources.gold)).toBe(5000);
     const afterClick = await readState(page);
-    check("E2 真实点击扣费恰好 1000 且只加攻击力 1 次",
-      afterClick.gold === beforeClick.gold - 1000
+    check("E2 真实点击扣费恰好 5000 且只加攻击力 1 次",
+      afterClick.gold === beforeClick.gold - 5000
       && JSON.stringify(afterClick.levels) === JSON.stringify({ maxHp: 0, attack: 1, magic: 0, speed: 0 }),
       { beforeClick, afterClick });
     check("E3 页面无 JS 错误", errors.length === 0, errors);

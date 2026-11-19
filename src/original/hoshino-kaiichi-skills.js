@@ -101,7 +101,7 @@ window.HoshinoKaiichiSkills = (() => {
     const unit = state.battle.allies.find(item => item.ref === map[target.ref] && alive(item));
     if (!window.GreenHat.grant(unit)) return;
     window.BattleLog.add(state,
-      `${unit.name}因${target.name}获得绿帽标记${unit.greenHat}/5，手牌上限、杀意上限各+1，攻击力+30%。`);
+      `${unit.name}因${target.name}获得绿帽标记${unit.greenHat}/5，手牌上限、淫气上限各+1，攻击力+30%。`);
   }
 
   return {

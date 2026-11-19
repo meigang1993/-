@@ -1,7 +1,7 @@
 // 【怪面诺亚】两技能 × 全库饰品 冲突严格检查（模块级，加载真实挂点）
 //   A 并发挂起：charm 不得与其它玩家提示叠加（霹雳之锤/米勒分享/交牌/半魅魔血…）
 //   B 盖亚妮丝护符 × 淫气改造：摸牌致溢出、状态牌无效、文案与归属、自己人不摸
-//   C 圣鹰剑 × 淫气改造/淫气改造：免杀意+翻倍、技能伤害不翻倍、咬杀、存档退化
+//   C 圣鹰剑 × 淫气改造/淫气改造：免淫气+翻倍、技能伤害不翻倍、咬杀、存档退化
 //   D 克罗研究记录：额外结算不被 charm 挂起吞掉、续跑顺序、两次结算不重复平衡
 //   E 霹雳之锤 × 格林机枪：waitingGreen 与 charm 不互吞
 //   F 全库饰品钩子：诺亚在场不抛异常、balanceHand 排序
@@ -278,7 +278,7 @@ if (SEGS.includes("C")) {
   const { state, b, noa, enemy } = basicState();
   noa.relics = ["圣鹰剑"];
   const k = kill();
-  T("C1 淫气改造：出牌阶段杀牌免杀意", ctx.NoaCharmSkills.noIntentCost(noa, k) === true);
+  T("C1 淫气改造：出牌阶段杀牌免淫气", ctx.NoaCharmSkills.noIntentCost(noa, k) === true);
   ctx.NoaCharmSkills.playKillLine(state, noa, k);
   T("C2 圣鹰剑记录造成过伤害的单体杀", ctx.HolyEagleSwordSkills.recordHit(state, noa, enemy, k, 10) === true);
   T("C3 对同一目标下一张杀翻倍", ctx.HolyEagleSwordSkills.modifyDamage(state, noa, enemy, kill(), 10) === 20);

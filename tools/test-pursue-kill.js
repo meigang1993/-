@@ -17,7 +17,7 @@ const { combat, card, unit, scenario } = require("./pursue-kill-fixtures");
   assert.strictEqual(combat.playActiveCard(state, 0, target.uid), true);
   assert.strictEqual(actor.intent, 1, "enabled 追杀 should not spend intent");
   assert.strictEqual(target.hp, target.maxHp - 1, "追杀 should still resolve normal damage");
-  assert(state.log.includes("追杀不消耗杀意。"), "battle log should report the free 追杀");
+  assert(state.log.includes("追杀不消耗淫气。"), "battle log should report the free 追杀");
   assert(state.log.some(text => text.includes(`对${target.name}造成1伤害`)), "damage log should identify the damaged target");
   assert.strictEqual(actor.pursueFreeThisTurn, true, "the free state should remain for the current turn");
 
@@ -42,7 +42,7 @@ const { combat, card, unit, scenario } = require("./pursue-kill-fixtures");
   assert.strictEqual(actor.intent, 0, "an unenabled 追杀 should spend intent");
   assert.strictEqual(target.hp, target.maxHp, "追杀 can be dodged normally");
   assert(!actor.pursueFreeThisTurn, "a dodged 追杀 must not enable itself");
-  assert(!state.log.includes("追杀不消耗杀意。"), "self-dodged 追杀 must not log a free use");
+  assert(!state.log.includes("追杀不消耗淫气。"), "self-dodged 追杀 must not log a free use");
 }
 
 {
@@ -67,7 +67,7 @@ const { combat, card, unit, scenario } = require("./pursue-kill-fixtures");
   combat.useCard(state, actor, move.target, move.card);
   assert.strictEqual(actor.intent, 0, "AI free 追杀 should not spend intent");
   assert.strictEqual(target.hp, target.maxHp - 1, "AI 追杀 should resolve damage");
-  assert(state.log.includes("追杀不消耗杀意。"), "AI use should log free 追杀");
+  assert(state.log.includes("追杀不消耗淫气。"), "AI use should log free 追杀");
 }
 
 {

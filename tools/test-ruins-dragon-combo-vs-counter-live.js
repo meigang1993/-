@@ -18,7 +18,7 @@ function check(name, cond, extra = "") {
 
 // 敌方（机械AI龙）直接打出一张单体杀命中我方 0 号。
 // 原写法靠点击「结束出牌」推进到敌方回合，但该链路实测停在
-// 「准备阶段，杀意重置为 N/N」不再推进，电钻火花永远不会发动
+// 「准备阶段，淫气重置为 N/N」不再推进，电钻火花永远不会发动
 // （表现为 drill=0 / roll=null，1.1、1.2、3.1 全红）。
 // 改为把行动权交给龙并用 BattleSystem.useCard 打出——AI 出牌同一入口。
 async function dragonPlayKill(page) {

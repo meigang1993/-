@@ -175,7 +175,7 @@ const missileTpl = (targetHand) => `(() => {
   const s = await page.evaluate(setupTpl({}));
   if (s.err) { console.log(`❌ 生成失败: ${JSON.stringify(s)}`); process.exit(1); }
   console.log(`[英雄级属性] ${s.name} hp=${s.hp} 攻击=${s.attack} 魔力=${s.magic} ` +
-    `速度=${s.speed} 手牌上限=${s.handLimit} 杀意=${s.bloodlust} ` +
+    `速度=${s.speed} 手牌上限=${s.handLimit} 淫气=${s.bloodlust} ` +
     `每回合摸牌=${s.drawPerTurn} 初始摸牌=${s.initialDraw}`);
   console.log(`[英雄级饰品] ${JSON.stringify(s.relics)}`);
   // 期望值随「全属性翻倍 + 四项属性统一难度倍率」更新：直升机基础 480/22/20/28，
@@ -185,7 +185,7 @@ const missileTpl = (targetHand) => `(() => {
   T("英雄级：魔力 = round(20 × 3) = 60", s.magic === 60, s);
   T("英雄级：速度 = round(28 × 3) = 84", s.speed === 84, s);
   T("英雄级：手牌上限不参与缩放，仍为 5", s.handLimit === 5, s);
-  T("英雄级：杀意上限不参与缩放，仍为 1", s.bloodlust === 1, s);
+  T("英雄级：淫气上限不参与缩放，仍为 1", s.bloodlust === 1, s);
   T("英雄级：stats.attack 已同步为 66（伤害实际读取的字段）", s.statsAttack === 66, s);
   T("英雄级：每回合摸牌加值不参与缩放，仍为 3", s.drawPerTurn === 3, s);
   T("英雄级：初始摸牌加值不参与缩放，仍为 2", s.initialDraw === 2, s);
@@ -205,7 +205,7 @@ const missileTpl = (targetHand) => `(() => {
   T("战场扫射（英雄级）：带全体目标与 AOE 线",
     Array.isArray(mv.allTargets) && mv.allTargets.length >= 2 && mv.aoe === true, mv);
   T("战场扫射（英雄级）：消耗 2 张同花色手牌", mv.handBefore - mv.handAfter === 2, mv);
-  T("战场扫射（英雄级）：不消耗杀意", mv.noIntent === true, mv);
+  T("战场扫射（英雄级）：不消耗淫气", mv.noIntent === true, mv);
 
   // ===== 战场扫射端到端：伤害应等于英雄级攻击力 66 =====
   await page.evaluate(setupTpl({}));

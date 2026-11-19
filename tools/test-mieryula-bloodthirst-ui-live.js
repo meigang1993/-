@@ -2,7 +2,7 @@
 //
 // 用户反馈要确认两件事：
 //   1. 能不能选牌（牌名弹窗是否正常出现、有哪些选项、已用过的牌名是否置灰）
-//   2. 选定的杀牌能不能选择敌人（点敌方角色后虚拟牌是否真的打出、不消耗杀意）
+//   2. 选定的杀牌能不能选择敌人（点敌方角色后虚拟牌是否真的打出、不消耗淫气）
 //
 // 本测试全程走真实 DOM：点技能按钮 → 点我方男性 → 弹窗出现 → 点牌名 →
 // 弹窗消失、底部提示条出现、敌方被标成可选 → 真实点击敌方单位 → 结算。
@@ -198,7 +198,7 @@ const readResult = () => `(() => {
   const res = await page.evaluate(readResult());
   console.log(`   结果：${JSON.stringify(res)}`);
   T("C1 敌方掉血（虚拟杀牌真的打出）", res.foeHpLoss > 0, res);
-  T("C2 杀意未消耗（虚拟牌不消耗杀意）", res.bloodlust === 1, res);
+  T("C2 淫气未消耗（虚拟牌不消耗淫气）", res.bloodlust === 1, res);
   T("C3 picker 已清空", !res.picker, res);
   T("C4 界面解锁", !res.locked, res);
   T("C5 该牌名记入本回合已用", res.used.includes(pick), res);

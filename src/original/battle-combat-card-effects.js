@@ -7,7 +7,7 @@ window.BattleCombatCardEffects = api => {
   function resolve(state, actor, target, card) {
     if (card.slime) {
       actor.intent = Math.max(0, (actor.intent || 0) - 1);
-      window.BattleLog.add(state, `${actor.name} 消耗1点杀意使用粘液，将其移入消耗牌堆。`);
+      window.BattleLog.add(state, `${actor.name} 消耗1点淫气使用粘液，将其移入消耗牌堆。`);
       return true;
     }
     if (card.statusKey) {
@@ -70,7 +70,7 @@ window.BattleCombatCardEffects = api => {
       const drawn = deps.draw(actor, 1, state.battle);
       actor.intent = Math.min(deps.intentMax(actor), (actor.intent || 0) + 1);
       const drawText = window.BattleDrawFeedback.action(actor, 1, drawn);
-      window.BattleLog.add(state, `${actor.name} 使用放血，损失${loss}点生命，${drawText}并恢复1点杀意。`);
+      window.BattleLog.add(state, `${actor.name} 使用放血，损失${loss}点生命，${drawText}并恢复1点淫气。`);
       specials.repeatTactic(state, actor, target, card);
       return true;
     }

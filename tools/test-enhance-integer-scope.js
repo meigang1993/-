@@ -109,16 +109,16 @@ function uiCtx() {
 
   // ---------- A. 莉莉丝元整数收口（真实结算层） ----------
   const goldCases = [
-    [1000.9, true, 0, "1000.9→1000 可强化，余额 0（不再是 0.9）"],
-    [1000.1, true, 0, "1000.1→1000 可强化，余额 0"],
-    [1001.9, true, 1, "1001.9→1001 可强化，余额 1"],
-    [999.9, false, 999.9, "999.9→999 拒绝，余额不写回"],
+    [5000.9, true, 0, "5000.9→5000 可强化，余额 0（不再是 0.9）"],
+    [5000.1, true, 0, "5000.1→5000 可强化，余额 0"],
+    [5001.9, true, 1, "5001.9→5001 可强化，余额 1"],
+    [4999.9, false, 4999.9, "4999.9→4999 拒绝，余额不写回"],
     [0.5, false, 0.5, "0.5→0 拒绝"],
     [-3.2, false, -3.2, "负数→0 拒绝"],
-    ["1000.9", true, 0, "字符串小数→1000 可强化"],
-    [5000, true, 4000, "正常整数 5000→4000"],
-    [1000, true, 0, "恰好 1000→0"],
-    [999, false, 999, "999 拒绝"],
+    ["5000.9", true, 0, "字符串小数→5000 可强化"],
+    [10000, true, 5000, "正常整数 10000→5000"],
+    [5000, true, 0, "恰好 5000→0"],
+    [4999, false, 4999, "4999 拒绝"],
   ];
   for (let i = 0; i < goldCases.length; i++) {
     const [gold, wantOk, wantGold, name] = goldCases[i];
@@ -128,12 +128,12 @@ function uiCtx() {
       { ok: r.ok, gold: st.resources.gold });
   }
   const CG = ctx.LocalCoreUtils.cleanGold;
-  [["1000.9", 1000], [0.9, 0], [-5, 0], [NaN, 0], [Infinity, 0], [-Infinity, 0],
+  [["5000.9", 5000], [0.9, 0], [-5, 0], [NaN, 0], [Infinity, 0], [-Infinity, 0],
     ["1234.9", 1234], [undefined, 0], [null, 0], [5000, 5000]].forEach(([v, w], i) => {
     T(`A11.${i + 1} cleanGold(${String(v)})=${w}`, CG(v) === w, CG(v));
   });
-  T("A12 成功结算后余额必为整数（1000.9 / 1001.9 / 1000.1）", (() => {
-    for (const g of [1000.9, 1001.9, 1000.1]) {
+  T("A12 成功结算后余额必为整数（5000.9 / 5001.9 / 5000.1）", (() => {
+    for (const g of [5000.9, 5001.9, 5000.1]) {
       const st = mkState(g);
       ctx.LocalCoreCharacterOps.enhanceChar(st, { id: "lokar", stat: "attack" });
       if (!Number.isInteger(st.resources.gold)) return false;
@@ -148,7 +148,7 @@ function uiCtx() {
   T("A15 既有 clampResource/addResource 仍是向下取整（口径未被改写）",
     src("local-core-utils.js").includes("function clampResource(value) {")
     && src("local-core-utils.js").includes("function addResource(current, amount) {")
-    && ctx.LocalCoreUtils.clampResource(1000.9) === 1000
+    && ctx.LocalCoreUtils.clampResource(5000.9) === 5000
     && ctx.LocalCoreUtils.addResource(100, 0.9) === 100);
 
   // ---------- B. 全部属性取整口径 ----------
@@ -230,22 +230,22 @@ function uiCtx() {
     ["catherine", "noa"].every(id => tabOf({ id, name: id, locked: false, side: "ally", level: 3, enhance: {}, stats: {} })));
 
   // ---------- D. 副作用与旧档 ----------
-  T("D1 正常整数链路零变化：恰好 1000 只加一项", (() => {
-    const st = mkState(1000);
+  T("D1 正常整数链路零变化：恰好 5000 只加一项", (() => {
+    const st = mkState(5000);
     ctx.LocalCoreCharacterOps.enhanceChar(st, { id: "lokar", stat: "attack" });
     return st.resources.gold === 0
       && JSON.stringify(E.levelsOf(st.chars[0])) === JSON.stringify({ ...zero(), attack: 1 });
   })());
   {
-    const st = mkState(5000, zero());
+    const st = mkState(10000, zero());
     const r = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "speed" }, st);
-    T("D2 5000 强化后余额 4000、四项只加速度 1",
-      r.ok && st.resources.gold === 4000
+    T("D2 10000 强化后余额 5000、四项只加速度 1",
+      r.ok && st.resources.gold === 5000
       && JSON.stringify(E.levelsOf(st.chars[0])) === JSON.stringify({ ...zero(), speed: 1 }));
   }
   T("D3 旧档小数金币经读档规整为整数", (() => {
-    const s = ctx.LocalCoreUtils.sanitize(mkState(1000.9), "enhanceChar");
-    return s.resources.gold === 1000;
+    const s = ctx.LocalCoreUtils.sanitize(mkState(5000.9), "enhanceChar");
+    return s.resources.gold === 5000;
   })());
   T("D4 ServerCore 连续回写幂等（属性不重复叠加）", (() => {
     const st = mkState(5000, { maxHp: 1, attack: 0, magic: 0, speed: 0 });
@@ -256,14 +256,14 @@ function uiCtx() {
   })());
   T("D5 旧档 enhanceLevel 还原四项各 n 次（整数）",
     JSON.stringify(E.levelsOf({ enhanceLevel: 3 })) === JSON.stringify({ maxHp: 3, attack: 3, magic: 3, speed: 3 }));
-  T("D6 小数金币成功结算只扣一个 1000、不重复扣费", (() => {
-    const st = mkState(1000.9);
+  T("D6 小数金币成功结算只扣一个 5000、不重复扣费", (() => {
+    const st = mkState(5000.9);
     ctx.LocalCoreCharacterOps.enhanceChar(st, { id: "lokar", stat: "magic" });
-    return st.resources.gold === 0 && st.lastEnhance?.cost === 1000
+    return st.resources.gold === 0 && st.lastEnhance?.cost === 5000
       && E.levelOf(st.chars[0], "magic") === 1;
   })());
   {
-    const st = mkState(1000.9);
+    const st = mkState(5000.9);
     await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "magic" }, st);
     T("D7 小数金币成功结算后加成与余额同时正确",
       st.resources.gold === 0 && E.levelOf(st.chars[0], "magic") === 1);

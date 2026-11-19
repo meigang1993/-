@@ -73,7 +73,7 @@ const immuneTpl = `(() => {
     mieryulaLine: /无谋霸姬|耍什么花招/.test(logs) };
 })()`;
 
-// ── B 组：渴血杀戮虚拟牌真实不消耗杀意 ─────────────────────
+// ── B 组：渴血杀戮虚拟牌真实不消耗淫气 ─────────────────────
 const bloodthirstVirtualTpl = `(() => {
   const st = window.state, b = st.battle;
   const m = b.allies[0], male = b.allies[1], foe = b.enemies[0];
@@ -258,7 +258,7 @@ async function run() {
   const vt = await page.evaluate(bloodthirstVirtualTpl);
   T("渴血杀戮：可选牌名非空", vt.poolCount > 0, vt);
   T("渴血杀戮：虚拟牌真实对敌人造成伤害", vt.ok === true && vt.afterHp < vt.beforeHp, vt);
-  T("渴血杀戮：此牌不消耗杀意", vt.afterBlood === vt.beforeBlood2, vt);
+  T("渴血杀戮：此牌不消耗淫气", vt.afterBlood === vt.beforeBlood2, vt);
   T("渴血杀戮：结算后解锁", vt.locked === false && vt.picker === false, vt);
 
   // ── C 组 ──

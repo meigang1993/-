@@ -5,7 +5,7 @@ window.AngelicaLukaSkills = (() => {
   const isEntitySlash = card => window.CardUtils.isKillCard(card)
     && !card.virtual && !card.convertedFrom && !card.withererBerserkKill;
   const line = (state, unit, name, target) => window.BattleLines?.skill(state, unit, name, target);
-  const wolfCard = () => ({ name: "狼牙杀", type: "slash", suit: "", power: 0, scale: "attack", noIntentCost: true, lukaWolfFang: true, text: "指定一名敌方角色为目标，对其造成等同于攻击力的伤害；此牌不消耗杀意。" });
+  const wolfCard = () => ({ name: "狼牙杀", type: "slash", suit: "", power: 0, scale: "attack", noIntentCost: true, lukaWolfFang: true, text: "指定一名敌方角色为目标，对其造成等同于攻击力的伤害；此牌不消耗淫气。" });
   function ensureMightTurn(state, actor) {
     const turn = state?.battle?.turn;
     if (actor.angelicaMightTurn !== turn) {
@@ -43,9 +43,9 @@ window.AngelicaLukaSkills = (() => {
     if (!canPayIntentWithRage(actor, card)) return false;
     actor.rageMarks = Math.max(0, (actor.rageMarks || 0) - 1);
     // 「游戏结束了，看我全力进攻。」是【狂战意志】主动发动台词；被动用 1 枚
-    // 标记抵杀意时不再播，避免每次出杀都喊发动语。
+    // 标记抵淫气时不再播，避免每次出杀都喊发动语。
     window.AngelicaBerserkerSkinFX?.rageSpend?.(state, actor, 1);
-    window.BattleLog.add(state, `${actor.name} 消耗1枚狂战标记代替杀意消耗（剩余${actor.rageMarks}枚）。`);
+    window.BattleLog.add(state, `${actor.name} 消耗1枚狂战标记代替淫气消耗（剩余${actor.rageMarks}枚）。`);
     return true;
   }
   function canUseBerserkWill(actor) {

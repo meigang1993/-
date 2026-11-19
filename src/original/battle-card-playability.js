@@ -36,16 +36,16 @@ window.BattleCardPlayability = deps => {
     const first = actor?.hand?.[picked[0]];
     return !first || standardSuits.has(first.suit) && first.suit === candidate.suit;
   }
-  // 免杀意只认 noIntentCost 标记与专属技能判据：普通实体全体【杀】
-  // （手牌打出的【机枪扫杀】）与单体杀一样消耗1点杀意，符合设定；
+  // 免淫气只认 noIntentCost 标记与专属技能判据：普通实体全体【杀】
+  // （手牌打出的【机枪扫杀】）与单体杀一样消耗1点淫气，符合设定；
   // 由技能/饰品转化而来的全体杀由转化方自行打上 noIntentCost（疯狂射击、
   // 机尾机枪、火力压制等），不会误免、也不会误扣。
   const hasNoIntentCost = (actor, card) => !!(card?.noIntentCost
     || card?.rageKill && actor?.hp < actor?.maxHp
-    // 兽人「火力压制」：单体杀转全体杀后免杀意（技能文本），由转化方预判。
+    // 兽人「火力压制」：单体杀转全体杀后免淫气（技能文本），由转化方预判。
     || window.OrcDungeonSkills?.suppressionFreeIntent?.(actor, card)
     || window.WithererSkills?.noIntentCost?.(actor, card)
-    // 记忆泡泡：从泡泡手牌区直接使用的牌不消耗杀意。
+    // 记忆泡泡：从泡泡手牌区直接使用的牌不消耗淫气。
     || window.AbeKarunaBubbleSkills?.isIntentFree?.(card)
     || window.NoaCharmSkills?.noIntentCost?.(actor, card));
   const canComboAttack = (battle, actor, card) => !card?.comboAttack || !!(battle

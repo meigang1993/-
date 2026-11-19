@@ -67,7 +67,7 @@ T("A5 canPlay 经 blockedByUsage 消费统一登记表",
   /const blockedByUsage = \(actor, card, battle\) =>\s*oncePerTurnRegistry\(\)\.blocked\(actor, card, battle\)/.test(playability)
   && /if \(blockedByUsage\(actor, card, battle\) \|\| blockedByHand\(actor, card, hasHand\)\) return false;/.test(playability));
 T("A6 skillState 对主动技以 canPlay 判定 usable，否则给「次数…不足」",
-  /if \(!window\.BattleSystem\?\.canPlay\?\.\(actor, card, battle\)\) \{\s*return \{ usable: false, reason: "次数、手牌、杀意或目标条件不足" \};/.test(model));
+  /if \(!window\.BattleSystem\?\.canPlay\?\.\(actor, card, battle\)\) \{\s*return \{ usable: false, reason: "次数、手牌、淫气或目标条件不足" \};/.test(model));
 T("A7 activeInfo 把 !usable 传成 disabled，clickable 传 usable",
   /U\.skillName\(\s*skill, index, skillState\.usable,[\s\S]{0,260}?shown\.side === "ally" && skill\.type === "active" && !skillState\.usable/.test(units));
 

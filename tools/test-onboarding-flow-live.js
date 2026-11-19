@@ -158,7 +158,7 @@ const flag = page => page.evaluate(() => JSON.parse(JSON.stringify(
   await page.locator("[data-confirm-target]").first().click();
   await page.waitForTimeout(1200);
   let t4 = await tip();
-  T("提示④结束出牌或已推进", /结束出牌/.test(t4) || /消耗杀意/.test(t4), t4);
+  T("提示④结束出牌或已推进", /结束出牌/.test(t4) || /消耗淫气/.test(t4), t4);
 
   T("首战未弹出榨取精华", await page.locator("[data-skip-extract]").count() === 0);
 

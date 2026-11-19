@@ -2,10 +2,10 @@
 //
 //   A 段：泡泡区的牌**打出后**，牌上是否残留 _bubbleFree / _bubbleCast 标记。
 //         修复前：afterCardPlayed 的 _bubbleCast 分支只做 splice，没清标记，
-//         牌带着「免杀意」标记进弃牌堆。
+//         牌带着「免淫气」标记进弃牌堆。
 //   B 段：残留标记的后果 —— 该牌被回收（捞回手牌）再打出时，
-//         (1) 是否错误免杀意  (2) 是否不再询问「放入」（实体牌本应询问）。
-//   C 段：用【杀】实测免杀意残留的真实影响（intent 是否被错误扣减）。
+//         (1) 是否错误免淫气  (2) 是否不再询问「放入」（实体牌本应询问）。
+//   C 段：用【杀】实测免淫气残留的真实影响（intent 是否被错误扣减）。
 //   D 段：非卡露娜回合（队友出牌阶段，phase 4）—— 泡泡区界面是否仍显示为
 //         「可用」却不响应点击（点了没反应）。
 //   E 段：卡露娜阵亡后 —— 不再询问放入；已有泡泡牌不会卡死。
@@ -199,15 +199,15 @@ const KILL = { name: "泡泡杀", type: "attack", suit: "♣", text: "", targetl
       const card = u.hand.find(c => c.name === "泡泡战术牌");
       return !!window.AbeKarunaBubbleSkills?.isIntentFree?.(card);
     })()`, 15000, "isIntentFree");
-    T("B2 回收后的牌不应仍判定为免杀意", intentFree === false, { intentFree });
+    T("B2 回收后的牌不应仍判定为免淫气", intentFree === false, { intentFree });
 
     s = await playAndWait(page, "泡泡战术牌");
     T("B3 回收后再打出应正常询问「放入」", s.pending, { pending: s.pendingName });
   }
 
-  // ---------- C 段：【杀】免杀意残留的真实影响 ----------
+  // ---------- C 段：【杀】免淫气残留的真实影响 ----------
   if (want("C")) {
-    console.log("\n--- C 段：【杀】免杀意残留（intent 是否被错误扣减）---");
+    console.log("\n--- C 段：【杀】免淫气残留（intent 是否被错误扣减）---");
     const infoC = await evalT(page, setupTpl([KILL]), 20000, "setupC");
     const foeUid = infoC?.foeUid;
     await playAndWait(page, "泡泡杀");
@@ -233,13 +233,13 @@ const KILL = { name: "泡泡杀", type: "attack", suit: "♣", text: "", targetl
     await page.waitForTimeout(300);
     s = await evalT(page, snapTpl, 15000, "snapC2");
     T("C2 泡泡区的【杀】打出后离区", !s.bubble.includes("泡泡杀"), { bubble: s.bubble });
-    T("C3 泡泡区的【杀】不消耗杀意（技能本意）",
+    T("C3 泡泡区的【杀】不消耗淫气（技能本意）",
       s.intent === beforeIntent, { before: beforeIntent, after: s.intent });
     const fk = (s.flags || []).find(x => x.n === "泡泡杀") || {};
-    T("C4 打出的【杀】进弃牌堆时不带免杀意标记",
+    T("C4 打出的【杀】进弃牌堆时不带免淫气标记",
       fk.free === false && fk.cast === false, { flags: s.flags });
 
-    // 回收该杀，再正常打出：这次应当消耗杀意
+    // 回收该杀，再正常打出：这次应当消耗淫气
     const recycled2 = await evalT(page, `(() => {
       const st = window.state, b = st.battle, u = b.allies[0];
       const pile = u.pileStats?.discard || u.discard || [];
@@ -255,7 +255,7 @@ const KILL = { name: "泡泡杀", type: "attack", suit: "♣", text: "", targetl
     } else {
       const intentBefore2 = (await evalT(page, snapTpl, 15000, "snapC3")).intent;
       s = await playAndWait(page, "泡泡杀");
-      T("C5 回收后的【杀】再打出应**消耗**杀意",
+      T("C5 回收后的【杀】再打出应**消耗**淫气",
         s.intent === intentBefore2 - 1, { before: intentBefore2, after: s.intent });
       T("C6 回收后的【杀】再打出应正常询问「放入」", s.pending, { pending: s.pendingName });
     }

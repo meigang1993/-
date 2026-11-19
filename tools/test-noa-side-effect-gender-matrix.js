@@ -35,7 +35,7 @@ const T = (name, cond, extra) => {
 
 const logs = [], lines = [], virtuals = [], damageLog = [], discarded = [];
 const NOA_SKILLS = [
-  { name: "淫气改造", text: "锁定技，出牌阶段内手牌数始终等于手牌上限；使用【杀】牌不消耗杀意。" },
+  { name: "淫气改造", text: "锁定技，出牌阶段内手牌数始终等于手牌上限；使用【杀】牌不消耗淫气。" },
   { name: "淫气改造", text: "锁定技，结束阶段对其他存活男性造成攻击力伤害；每名存活男性手牌上限+1；无存活男性时随机虚拟咬杀并跳过出牌阶段。" },
 ];
 const mkUnit = (ref, gender, hp = 50, extra = {}) => ({

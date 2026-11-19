@@ -1,8 +1,8 @@
-// 实战：群体【杀】杀意消耗全覆盖 + 借刀杀人「状态牌/被控」补测
+// 实战：群体【杀】淫气消耗全覆盖 + 借刀杀人「状态牌/被控」补测
 //
 // 背景（玩家反馈）：
 //   1) 罗卡尔【狂风绝息斩】把群体【杀】也卷进去；
-//   2) 【机枪扫杀】这类 AOE 杀仍扣杀意 —— 要求「检查所有 AOE 杀」；
+//   2) 【机枪扫杀】这类 AOE 杀仍扣淫气 —— 要求「检查所有 AOE 杀」；
 //      （最终口径：普通实体全体【杀】照常扣1点，只有转化/技能产物凭
 //       noIntentCost 免费；曾一度按 isGroupKillCard 全免，与设定相悖已回退。）
 //   3) 【借刀杀人】指定「有状态牌」的队友会卡死。
@@ -79,7 +79,7 @@ const check = (name, ok, detail = "") => {
 
     await reset();
   await reset();
-  console.log("\n【二】行为层：实体全体【杀】杀意口径（普通实体扣，转化产物免）");
+  console.log("\n【二】行为层：实体全体【杀】淫气口径（普通实体扣，转化产物免）");
   const r2 = await page.evaluate(() => {
     const st = window.state, b = st.battle, a = b.allies[0];
     b.enemies.forEach(u => { u.hand = []; u.noResponse = true; });
@@ -110,13 +110,13 @@ const check = (name, ok, detail = "") => {
       sweepVirtual: !!entitySweep.virtual,
     };
   });
-  // 设定：手牌打出的实体全体【杀】消耗1点杀意（3 → 2）；
+  // 设定：手牌打出的实体全体【杀】消耗1点淫气（3 → 2）；
   // 带 noIntentCost 的转化产物仍免费（3 → 3）。
-  check("普通实体【机枪扫杀】消耗1点杀意", r2.sweep.after === 2, `杀意=${r2.sweep.after}`);
-  check("带 noIntentCost 标记的转化产物不消耗杀意（手工构造的转化产物范式）",
+  check("普通实体【机枪扫杀】消耗1点淫气", r2.sweep.after === 2, `淫气=${r2.sweep.after}`);
+  check("带 noIntentCost 标记的转化产物不消耗淫气（手工构造的转化产物范式）",
     r2.converted.after === 3 && !r2.convertedVirtual,
-    `杀意=${r2.converted.after} virtual=${r2.convertedVirtual}`);
-  check("对照组：两者都是群体杀且非虚拟（用例确实走杀意链路）",
+    `淫气=${r2.converted.after} virtual=${r2.convertedVirtual}`);
+  check("对照组：两者都是群体杀且非虚拟（用例确实走淫气链路）",
     r2.convertedVirtual === false && r2.sweepVirtual === false,
     `sweepVirtual=${r2.sweepVirtual} convertedVirtual=${r2.convertedVirtual}`);
 

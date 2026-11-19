@@ -53,7 +53,7 @@ async function intoDungeon(page, patch = {}) {
       ...p,
     };
     s.view = "dungeon"; s.battle = null; s.hallModal = null;
-    s.resources.gold = 5000; s.infoUnit = "lokar"; s.infoTab = "enhance";
+    s.resources.gold = 10000; s.infoUnit = "lokar"; s.infoTab = "enhance";
     window.render();
   }, patch);
   await expect(page.locator('.info-overlay [data-info-tab="enhance"]')).toBeVisible();
@@ -99,20 +99,20 @@ async function intoDungeon(page, patch = {}) {
     const b1 = await buttons(page);
     check("B4 回大厅后四个按钮解除 disabled",
       b1.length === 4 && b1.every(b => !b.disabled), b1);
-    check("B5 按钮文案回到「消耗 1000 · 强化」",
-      b1.every(b => b.text.includes("消耗 1000") && !b.text.includes("不可强化")), b1.map(b => b.text));
+    check("B5 按钮文案回到「消耗 5000 · 强化」",
+      b1.every(b => b.text.includes("消耗 5000") && !b.text.includes("不可强化")), b1.map(b => b.text));
 
     const popup = page.locator(".info-popup");
     if (await popup.count()) await popup.screenshot({ path: SHOT });
     await page.screenshot({ path: SHOT_FULL, fullPage: false });
 
-    // ---- C. 回大厅后真实点击强化：扣 1000、只加攻击 1 次 ----
+    // ---- C. 回大厅后真实点击强化：扣 5000、只加攻击 1 次 ----
     await page.locator('[data-enhance-stat="attack"]').evaluate(el => el.click());
     await expect.poll(() => page.evaluate(() => window.state.resources.gold),
-      { timeout: 10000 }).toBe(4000);
+      { timeout: 10000 }).toBe(5000);
     const d = await snap(page);
-    check("C1 真实点击扣费 1000 且只加攻击力 1 次",
-      d.gold === 4000 && JSON.stringify(d.levels) === JSON.stringify({ maxHp: 0, attack: 1, magic: 0, speed: 0 }), d);
+    check("C1 真实点击扣费 5000 且只加攻击力 1 次",
+      d.gold === 5000 && JSON.stringify(d.levels) === JSON.stringify({ maxHp: 0, attack: 1, magic: 0, speed: 0 }), d);
     check("C2 强化后仍可继续点击其它项",
       (await buttons(page)).every(b => !b.disabled), await buttons(page));
 

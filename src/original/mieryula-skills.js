@@ -60,7 +60,7 @@ window.MieryulaSkills = (() => {
     picker.cardName = name;
     return true;
   }
-  // 玩家点敌方角色后真正打出这张虚拟牌；不消耗杀意。
+  // 玩家点敌方角色后真正打出这张虚拟牌；不消耗淫气。
   function useBloodthirstVirtual(state, targetUid, ctx) {
     const battle = state?.battle;
     const picker = battle?.mieryulaBloodthirstPicker;
@@ -80,7 +80,7 @@ window.MieryulaSkills = (() => {
     actor.mieryulaBloodthirstUsed[name] = true;
     line(state, actor, "渴血杀戮", target);
     window.BattleLog?.add(state,
-      `${actor.name} 将鲜血化作${name}，视为使用一张虚拟${name}且不消耗杀意。`);
+      `${actor.name} 将鲜血化作${name}，视为使用一张虚拟${name}且不消耗淫气。`);
     ctx?.useCard?.(state, actor, target, card);
     return true;
   }

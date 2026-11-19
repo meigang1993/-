@@ -3,7 +3,7 @@
 //   B 结束阶段伤害致死 -> 上限实时下降 -> 下回合出牌阶段开始触发玩家弃置
 //   C 无存活男性 -> 狂暴虚拟咬杀 + 跳过出牌阶段 -> 淫气改造整回合不生效
 //   D 所有「进入出牌阶段」路径必须统一：调 balanceHand + 尊重 skipPlayPhase
-//   E 免杀意即时判定 / 虚拟咬杀 noIntentCost 离区清除，无记忆泡泡式残留
+//   E 免淫气即时判定 / 虚拟咬杀 noIntentCost 离区清除，无记忆泡泡式残留
 //   F 手牌上限消费方一致（标准弃牌阶段与 balanceHand 用同一 handLimit）
 // 反向验证：LINK_REVERT=charm|frenzy|paths|cleanup 时对应断言必须变红。
 const fs = require("fs");
@@ -33,7 +33,7 @@ const mkUnit = (ref, gender, hp = 50, extra = {}) => ({
   skills: [], ...extra,
 });
 const NOA_SKILLS = [
-  { name: "淫气改造", text: "锁定技，出牌阶段内手牌数始终等于手牌上限；使用【杀】牌不消耗杀意。" },
+  { name: "淫气改造", text: "锁定技，出牌阶段内手牌数始终等于手牌上限；使用【杀】牌不消耗淫气。" },
   { name: "淫气改造", text: "锁定技，结束阶段对其他存活男性造成攻击力伤害；每名存活男性手牌上限+1；无存活男性时随机虚拟咬杀并跳过出牌阶段。" },
 ];
 const slash = (name = "杀（普攻）", extra = {}) => ({
@@ -107,9 +107,9 @@ const draw = ctx.BattleSystem.draw;
   noa.hand.pop();
   const n2 = Charm.balanceHand(state, noa, draw);
   T("A3 出牌后补回上限", n2 === 1 && noa.hand.length === 6, { n2, hand: noa.hand.length });
-  T("A4 出牌阶段免杀意", Charm.noIntentCost(noa, slash()) === true);
+  T("A4 出牌阶段免淫气", Charm.noIntentCost(noa, slash()) === true);
   battle.phase = 3;
-  T("A5 非出牌阶段不免杀意", Charm.noIntentCost(noa, slash()) === false);
+  T("A5 非出牌阶段不免淫气", Charm.noIntentCost(noa, slash()) === false);
   battle.phase = 4;
   lines.length = 0;
   Charm.playKillLine(state, noa, slash());
@@ -170,7 +170,7 @@ const draw = ctx.BattleSystem.draw;
   // 主路径：见到 skipPlayPhase 不设 phase=4 -> 淫气改造整回合不生效
   battle.phase = 3;
   lines.length = 0;
-  T("C5 狂暴回合不进 phase4（免杀意判据不生效）",
+  T("C5 狂暴回合不进 phase4（免淫气判据不生效）",
     battle.phase !== 4 && Charm.noIntentCost(noa, slash()) === false);
 }
 
@@ -245,7 +245,7 @@ const draw = ctx.BattleSystem.draw;
   })();
 }
 
-// ================= E 免杀意无残留 =================
+// ================= E 免淫气无残留 =================
 {
   const { state, battle, noa } = fresh(2);
   battle.phase = 4;
@@ -257,7 +257,7 @@ const draw = ctx.BattleSystem.draw;
   if (ctx.BattleCardCleanup?.clearPlayFlags) ctx.BattleCardCleanup.clearPlayFlags(v);
   T("E2 虚拟咬杀离区后 noIntentCost 被清除", v.noIntentCost === undefined, { noIntentCost: v.noIntentCost });
   battle.phase = 6;
-  T("E3 回收后非出牌阶段打出正常消耗杀意", Charm.noIntentCost(noa, v) === false);
+  T("E3 回收后非出牌阶段打出正常消耗淫气", Charm.noIntentCost(noa, v) === false);
 }
 
 // ================= F 上限消费方一致 =================

@@ -158,7 +158,7 @@ test("狂战意志：受到伤害也获得标记，上限10", async ({ page }) =
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test("狂战意志：实体杀可用1枚标记代替1点杀意消耗", async ({ page }) => {
+test("狂战意志：实体杀可用1枚标记代替1点淫气消耗", async ({ page }) => {
   const errors = collectErrors(page);
   await enterBattleWithAngelica(page);
 
@@ -188,7 +188,7 @@ test("狂战意志：实体杀可用1枚标记代替1点杀意消耗", async ({ 
   expect(relevantErrors(errors)).toEqual([]);
 });
 
-test("狂战意志：杀意为0时是否可打出取决于标记，虚拟杀不适用", async ({ page }) => {
+test("狂战意志：淫气为0时是否可打出取决于标记，虚拟杀不适用", async ({ page }) => {
   const errors = collectErrors(page);
   await enterBattleWithAngelica(page);
 

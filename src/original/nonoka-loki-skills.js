@@ -84,7 +84,7 @@ window.NonokaLokiSkills = (() => {
     state.battle.allies.filter(unit => unit.ref === "loki" && unit.hp > 0).forEach(loki => {
       if (!window.GreenHat.grant(loki)) return;
       line(state, loki, "青春草原");
-      window.BattleLog.add(state, `${loki.name} 因${kissed.name}获得绿帽标记${loki.greenHat}/${window.GreenHat.MAX}，手牌上限、杀意上限各+1，攻击力+30%。`);
+      window.BattleLog.add(state, `${loki.name} 因${kissed.name}获得绿帽标记${loki.greenHat}/${window.GreenHat.MAX}，手牌上限、淫气上限各+1，攻击力+30%。`);
     });
   }
   function modifySlashDamage(state, actor, target, amount, card) {

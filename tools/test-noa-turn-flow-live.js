@@ -1,5 +1,5 @@
 // 怪面诺亚 · 实机回合驱动严格检查
-//   A 真实出牌链路：使用【杀】台词字幕、免杀意
+//   A 真实出牌链路：使用【杀】台词字幕、免淫气
 //   B 真实结束阶段：对其他存活男性造成攻击力伤害 +「全部！全部进来！！」字幕
 //   C 真实出牌阶段开始：无存活男性时虚拟【咬杀】+ 跳过出牌阶段
 //   D 他人出牌后的手牌平衡：归属、复制、日志名（严格检查副作用）
@@ -297,7 +297,7 @@ async function segA(browser) {
       return { ok, i0, i1: noa.intent, foeHp: foe.hp };
     });
     T("A1 真实 useCard 链路打出杀牌", played.ok !== false, played);
-    T("A2 淫气改造令杀牌不消耗杀意", played.i1 === played.i0, played);
+    T("A2 淫气改造令杀牌不消耗淫气", played.i1 === played.i0, played);
     let snap = null;
     for (let i = 0; i < 40; i++) {
       snap = await stateOf(page);

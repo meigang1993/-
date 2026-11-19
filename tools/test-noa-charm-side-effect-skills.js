@@ -1,5 +1,5 @@
 // 怪面诺亚【淫气改造】【淫气改造】严格检查（Node 直调，不依赖浏览器）
-// 覆盖：角色模板 / 台词 / 皮肤 / 免杀意 / 手牌恒等 / 动态手牌上限 /
+// 覆盖：角色模板 / 台词 / 皮肤 / 免淫气 / 手牌恒等 / 动态手牌上限 /
 //       结束阶段男性伤害 / 无男性时的虚拟咬杀与跳过出牌 / 解锁链路静态装配。
 // 反向验证：撤掉任一技能判据后，对应断言必须立刻变红。
 const fs = require("fs");
@@ -28,7 +28,7 @@ const unit = (ref, gender, hp = 50, extra = {}) => ({
   skills: [], ...extra,
 });
 const noaSkills = [
-  { name: "淫气改造", type: "passive", text: "锁定技，仅在你的出牌阶段生效：出牌阶段开始时及你每次出牌后，若手牌数少于手牌上限，则摸至上限；若多于手牌上限，由你选择弃至上限。你使用【杀】牌不消耗杀意。" },
+  { name: "淫气改造", type: "passive", text: "锁定技，仅在你的出牌阶段生效：出牌阶段开始时及你每次出牌后，若手牌数少于手牌上限，则摸至上限；若多于手牌上限，由你选择弃至上限。你使用【杀】牌不消耗淫气。" },
   { name: "淫气改造", type: "passive", text: "锁定技，结束阶段，你对我方其他所有存活男性角色各造成等同于你攻击力的伤害。队伍里每有一名男性角色，你的手牌上限+1。若队伍中没有存活的男性角色，出牌阶段开始时，你随机对一名角色（不分敌我）视为使用一张虚拟【咬杀】，之后跳过本回合的出牌阶段。" },
 ];
 ctx.CardUtils = {
@@ -86,10 +86,10 @@ let drawn = 0;
 const draw = (u, n) => { drawn += n; for (let i = 0; i < n; i++) u.hand.push({ name: "摸" + i, type: "tactic" }); };
 
 inPhase([noa()]);
-T("C1 出牌阶段：诺亚的杀牌免杀意", Charm.noIntentCost(noa(), slash) === true);
-T("C2 出牌阶段：诺亚的非杀牌不免杀意", Charm.noIntentCost(noa(), tactic) === false);
-T("C3 出牌阶段：别人打杀不免杀意", Charm.noIntentCost(unit("lokar", "male", 50, { skills: noaSkills }), slash) === false);
-T("C4 出牌阶段：没学过技能不免杀意", Charm.noIntentCost(unit("noa", "female", 50, { skills: [] }), slash) === false);
+T("C1 出牌阶段：诺亚的杀牌免淫气", Charm.noIntentCost(noa(), slash) === true);
+T("C2 出牌阶段：诺亚的非杀牌不免淫气", Charm.noIntentCost(noa(), tactic) === false);
+T("C3 出牌阶段：别人打杀不免淫气", Charm.noIntentCost(unit("lokar", "male", 50, { skills: noaSkills }), slash) === false);
+T("C4 出牌阶段：没学过技能不免淫气", Charm.noIntentCost(unit("noa", "female", 50, { skills: [] }), slash) === false);
 lines.length = 0;
 Charm.playKillLine(ctx.state, noa(), slash);
 T("C5 出牌阶段：使用杀台词在出杀时播放", lines.length === 1 && lines[0].name === "使用杀", lines);
@@ -106,7 +106,7 @@ T("C6 出牌阶段：非杀牌不播使用杀台词", lines.length === 0, lines)
   ctx.state = { battle: battleOf([n], phase) };
   drawn = 0; discarded.length = 0;
   const changed = Charm.balanceHand(ctx.state, n, draw);
-  T(`C7.${idx + 1} 阶段${phase}不生效（免杀意/台词/补牌全停）`,
+  T(`C7.${idx + 1} 阶段${phase}不生效（免淫气/台词/补牌全停）`,
     free === false && lines.length === 0 && changed === 0 && drawn === 0 && n.hand.length === 1,
     { phase, free, lines: lines.length, changed, drawn, hand: n.hand.length });
 });
@@ -237,7 +237,7 @@ T("E6 解锁进度与存档恢复登记", progress.includes('"noa_nursery"') && 
 T("E7 皮肤含默认与10级特殊", skins.includes("noa_default") && skins.includes("noa_level_10_special") && skins.includes("noa-level-10-special.e3c6be5c.webp"));
 T("E8 两个技能文件已进构建清单", bundles.includes("noa-charm-skills.js") && bundles.includes("noa-side-effect-skills.js"));
 T("E9 管家手册清单已同步", fs.readFileSync(path.join(__dirname, "test-butler-manual-goals-live.js"), "utf8").includes('"怪面诺亚"'));
-T("E10 免杀意/使用杀台词挂接入主流程", read("battle-card-playability.js").includes("NoaCharmSkills?.noIntentCost") && read("battle-combat.js").includes("NoaCharmSkills?.playKillLine"));
+T("E10 免淫气/使用杀台词挂接入主流程", read("battle-card-playability.js").includes("NoaCharmSkills?.noIntentCost") && read("battle-combat.js").includes("NoaCharmSkills?.playKillLine"));
 T("E11 手牌平衡只在出牌阶段生效（统一入口 + 出牌后钩子）",
   read("battle-turn-input.js").includes("NoaCharmSkills?.enterPlayPhase")
   && read("noa-charm-skills.js").includes("function enterPlayPhase")

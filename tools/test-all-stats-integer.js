@@ -111,7 +111,7 @@ T("A2 34 角色基值四项全为整数",
   chars.every(c => KEYS.every(k => Number.isInteger(c.stats?.[k]))),
   chars.filter(c => KEYS.some(k => isFrac(c.stats?.[k]))).map(c => c.id));
 T("A3 基值有限且非负", chars.every(c => KEYS.every(k => Number.isFinite(c.stats[k]) && c.stats[k] >= 0)));
-T("A4 杀意/手牌/摸牌字段同样是整数",
+T("A4 淫气/手牌/摸牌字段同样是整数",
   chars.every(c => ["bloodlust", "handLimit", "drawPerTurn", "initialDraw"]
     .every(k => Number.isInteger(c.stats[k]))));
 T("A5 角色 id 唯一", new Set(chars.map(c => c.id)).size === 34);
@@ -160,7 +160,7 @@ T("C5 罗卡尔 0/20 级生命 124/404",
 
 // ---------- D. 角色强化加成 ----------
 const bonusBad = [];
-for (const n of [0, 1, 7, 999]) {
+for (const n of [0, 1, 7, 50]) {
   for (const c of chars) {
     const character = { enhance: Object.fromEntries(KEYS.map(k => [k, n])) };
     const base = P.statsAt(c, 7);

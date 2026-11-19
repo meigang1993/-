@@ -55,7 +55,7 @@ function build(useRaw = false) {
       if (op === "enhanceChar") {
         const c = st.chars.find(x => x.id === payload.id);
         ctx.CharacterEnhance.step(c, payload.stat);
-        st.resources.gold -= 1000;
+        st.resources.gold -= 5000;
         return { ok: true, changed: true };
       }
       if (op === "bankRun" || op === "settleDefeat") return { ok: true };
@@ -106,7 +106,7 @@ function fresh(opts = {}) {
     chars: [{ id: "lokar", name: "罗卡尔", locked: false, level: 1, exp: 0, hp: 124,
       stats: { maxHp: 124, attack: 10, magic: 5, speed: 11 },
       enhance: { maxHp: 0, attack: 0, magic: 0, speed: 0 } }],
-    resources: { gold: 5000 }, log: [], flags: {}, party: ["lokar"],
+    resources: { gold: 10000 }, log: [], flags: {}, party: ["lokar"],
     settings: {}, infoUnit: "lokar", infoTab: "enhance", hallModal: null,
     ...opts,
   };
@@ -145,7 +145,7 @@ function ok(cond, name, extra) {
       "A2 面板四个强化按钮全部 disabled", { disabled: disabledCount(html) });
     ok(html.includes("副本中不可强化"), "A3 面板文案写明副本中不可强化");
     const a = await actionAllowed(ctx, s, calls);
-    ok(a.ret === false && !a.called && s.resources.gold === 5000,
+    ok(a.ret === false && !a.called && s.resources.gold === 10000,
       "A4 副本中绕过按钮不扣费、不调 ServerCore", a);
   }
 
@@ -190,7 +190,7 @@ function ok(cond, name, extra) {
     ok(s.explore === null && s.view === "hall"
       && ctx.CharacterEnhance.blockedReason(s) === ""
       && disabledCount(html) === 0
-      && a.ret === true && a.called && s.resources.gold === 4000,
+      && a.ret === true && a.called && s.resources.gold === 5000,
       name + " 回大厅解除置灰并可真实强化",
       { explore: !!s.explore, view: s.view, blocked: ctx.CharacterEnhance.blockedReason(s),
         disabled: disabledCount(html), ret: a.ret, called: a.called, gold: s.resources.gold });

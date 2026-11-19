@@ -2,11 +2,11 @@ window.GameDataCharactersCore = [
   {
     id: "lokar", name: "罗卡尔", gender: "male", face: "洛", art: "./assets/images/lokar-portrait.914de079.webp", avatar: "./assets/images/lokar-portrait.914de079.webp", role: "恋母勇者",
     stats: { attack: 10, magic: 5, speed: 11, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
-    evaluation: "持续进攻型物理核心。使用实体【杀】与【与我一战】可补充手牌和杀意，热血契约提供回合内攻击成长，狂风绝息斩负责集中释放手中的全部【杀】。",
+    evaluation: "持续进攻型物理核心。使用实体【杀】与【与我一战】可补充手牌和淫气，热血契约提供回合内攻击成长，狂风绝息斩负责集中释放手中的全部【杀】。",
     skills: [
-      { name: "战斗之勇", type: "passive", text: "锁定技，当你使用一张实体【杀】或【与我一战】时，你从摸牌堆摸1张牌。若摸到【杀】或【与我一战】，你恢复1点杀意。" },
+      { name: "战斗之勇", type: "passive", text: "锁定技，当你使用一张实体【杀】或【与我一战】时，你从摸牌堆摸1张牌。若摸到【杀】或【与我一战】，你恢复1点淫气。" },
       { name: "热血契约", type: "active", text: "出牌阶段限一次，你可以将1张手牌置入消耗牌堆，然后摸3张牌，并于本回合每张消耗牌令攻击力+10%（按当前攻击力四舍五入，单张至少1点）。", card: { name: "热血契约", type: "tactic", bloodPact: true, targetless: true, icon: "⚔️", text: "将1张手牌置入消耗牌堆，摸3张牌，并于本回合获得等同于消耗牌堆牌数的攻击力。" } },
-      { name: "狂风绝息斩", type: "active", icon: "🔺", text: "限定技，出牌阶段，你依次使用手牌中的所有单体【杀】，并随机循环指定存活的敌方角色为目标；这些【杀】不消耗杀意（群体【杀】不参与）。", card: { name: "狂风绝息斩", type: "tactic", lokarWindSlash: true, targetless: true, icon: "🔺", text: "依次使用手牌中的所有单体【杀】，随机循环指定敌方目标，且不消耗杀意。" } }
+      { name: "狂风绝息斩", type: "active", icon: "🔺", text: "限定技，出牌阶段，你依次使用手牌中的所有单体【杀】，并随机循环指定存活的敌方角色为目标；这些【杀】不消耗淫气（群体【杀】不参与）。", card: { name: "狂风绝息斩", type: "tactic", lokarWindSlash: true, targetless: true, icon: "🔺", text: "依次使用手牌中的所有单体【杀】，随机循环指定敌方目标，且不消耗淫气。" } }
     ]
   },
   {
@@ -14,7 +14,7 @@ window.GameDataCharactersCore = [
     stats: { attack: 7, magic: 10, speed: 11, maxHp: 96, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "红桃爆发与魔法收割核心。榨取精华以友方男性的生命值换取摸牌，每张红桃令本回合魔力增加50%，并将物理攻击牌转换为魔法攻击；追魂之刃会在实体【杀】被闪后重用原牌，锁魂镰刀负责群体连锁收割。",
     skills: [
-      { name: "追魂之刃", type: "passive", text: "锁定技，当你使用的实体【杀】被【闪】抵消后，你额外再次使用此牌1次。此次使用不消耗手牌和杀意，且不能再次触发此技能。" },
+      { name: "追魂之刃", type: "passive", text: "锁定技，当你使用的实体【杀】被【闪】抵消后，你额外再次使用此牌1次。此次使用不消耗手牌和淫气，且不能再次触发此技能。" },
       { name: "锁魂镰刀", type: "passive", text: "锁定技，当你使用实体单体【杀】造成生命值伤害后，你对所有存活的敌方角色各造成等同于你魔力的无视护甲伤害。若有角色因此死亡，重复此效果，至多重复4次（虚拟【杀】不触发）。" },
       { name: "榨取精华", type: "active", icon: "🔵", text: "准备阶段限一次，你可以令一名友方男性角色失去X点生命值，然后你摸X张牌；每张红桃牌令你本回合魔力增加50%（按发动时的当前魔力加算，X为你手牌中的红桃牌数）。本回合内，你使用的所有物理攻击牌均转换为魔法攻击。", card: { name: "榨取精华", type: "tactic", extract: true, icon: "🔵", text: "令一名友方男性角色失去等同于你红桃手牌数的生命值并摸等量牌；每张红桃牌令你本回合魔力增加50%，且本回合使用的所有物理攻击牌均转换为魔法攻击。" } }
     ]
@@ -53,7 +53,7 @@ window.GameDataCharactersCore = [
     evaluation: "禁用战术牌的纯杀牌输出。手中可见【杀】数量占优时可使杀牌伤害翻倍；青春草原提供永久攻击与资源成长。",
     skills: [
       { name: "智障力大", type: "passive", icon: "⭐", text: "锁定技，你不能使用战术牌。当你使用【杀】造成伤害时，若你手牌中的可见【杀】数加上此次使用的【杀】多于目标手牌中的可见【杀】数，此伤害翻倍。" },
-      { name: "青春草原", type: "passive", icon: "⭐", text: "锁定技，当诺诺卡对其他男性角色发动【偶像之吻】后，你获得1枚“绿帽”标记，至多5枚。每枚标记令你的手牌上限、杀意上限各+1，攻击力+30%。" }
+      { name: "青春草原", type: "passive", icon: "⭐", text: "锁定技，当诺诺卡对其他男性角色发动【偶像之吻】后，你获得1枚“绿帽”标记，至多5枚。每枚标记令你的手牌上限、淫气上限各+1，攻击力+30%。" }
     ]
   },
   {
@@ -90,9 +90,9 @@ window.GameDataCharactersCore = [
   {
     id: "carlos", name: "卡洛斯", gender: "male", face: "卡", art: "./assets/images/carlos-portrait.52b82e3d.webp", avatar: "./assets/images/carlos-portrait.52b82e3d.webp", role: "风女之子", locked: true,
     stats: { attack: 10, magic: 5, speed: 13, maxHp: 110, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 4 },
-    evaluation: "红牌转化与单体追加伤害输出。疯狂射击把红色手牌转为群体杀牌且不消耗杀意，疯狂刺刀根据命中后仍持有的【杀】数量追加多段无视护甲伤害。",
+    evaluation: "红牌转化与单体追加伤害输出。疯狂射击把红色手牌转为群体杀牌且不消耗淫气，疯狂刺刀根据命中后仍持有的【杀】数量追加多段无视护甲伤害。",
     skills: [
-      { name: "疯狂射击", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以将1张红色手牌当【机枪扫杀】使用；【机枪扫杀】为全体【杀】，不消耗杀意。", card: { name: "疯狂射击", type: "tactic", crazyShooting: true, targetless: true, icon: "⚔️", text: "将1张红色手牌当【机枪扫杀】使用；【机枪扫杀】为全体【杀】，不消耗杀意。" } },
+      { name: "疯狂射击", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以将1张红色手牌当【机枪扫杀】使用；【机枪扫杀】为全体【杀】，不消耗淫气。", card: { name: "疯狂射击", type: "tactic", crazyShooting: true, targetless: true, icon: "⚔️", text: "将1张红色手牌当【机枪扫杀】使用；【机枪扫杀】为全体【杀】，不消耗淫气。" } },
       { name: "疯狂刺刀", type: "passive", icon: "⭐", text: "锁定技，当你使用的单体【杀】未被【闪】抵消并造成伤害后（造成护甲值伤害也算），你对目标追加X次等同于你攻击力的无视护甲伤害（X为你当前手牌中的【杀】数）。" }
     ]
   }

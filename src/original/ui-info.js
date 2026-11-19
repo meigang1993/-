@@ -95,7 +95,7 @@ window.GameUIInfo = (U) => {
   function enhancePanel(u) {
     const enhance = window.CharacterEnhance, state = window.state || {};
     const levels = enhance?.levelsOf?.(u) || { maxHp: 0, attack: 0, magic: 0, speed: 0 };
-    const cost = enhance?.COST ?? 1000;
+    const cost = enhance?.COST ?? 5000;
     const gold = Math.max(0, Math.floor(Number(state.resources?.gold) || 0));
     const view = String(state.view || "");
     // 统一判定源在 CharacterEnhance.blockedReason；兜底用于 bundle 漏装旧模块的极端情况。
@@ -113,7 +113,7 @@ window.GameUIInfo = (U) => {
       const label = reason || `消耗 ${cost} · 强化`;
       return `<div><span>${names[key] || key}</span><b>+${U.formatStat(per[key])} / 次</b><strong>累计 +${U.formatStat(per[key] * levels[key])}（${levels[key]} 次）</strong><button class="enhance-action" data-enhance-char="${U.esc(u.id)}" data-enhance-stat="${U.esc(key)}" ${usable ? "" : "disabled"}>${label}</button></div>`;
     }).join("");
-    const hint = `每次消耗 ${cost} 莉莉丝元，选择一项属性永久提升（生命值+3 / 攻击力+1 / 魔力+1 / 速度+1）；各项分别累计，可重复强化。加成对所有战斗生效，升级与读档均保留；副本进行中与战斗中不可强化。`;
+    const hint = `每次消耗 ${cost} 莉莉丝元，选择一项属性永久提升（生命值+3 / 攻击力+1 / 魔力+1 / 速度+1）；各项分别累计，每项最多 50 次，达上限后该项不可再强化。加成对所有战斗生效，升级与读档均保留；副本进行中与战斗中不可强化。`;
     return `${infoTitle(u)}<h3>角色强化</h3><div class="character-enhance"><div class="enhance-level"><b>已强化 ${total} 次</b><span>莉莉丝元 ${gold}</span></div><p class="muted">${hint}</p><div class="enhance-table"><div class="enhance-head"><span>属性</span><b>每次</b><strong>累计</strong><em>操作</em></div>${rows}</div></div>`;
   }
   function relicPanel(u) {

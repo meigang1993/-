@@ -1,6 +1,6 @@
 // 【狂战意志】合并复查：主动效果是否真的「出牌阶段限一次」+ 原锁定技是否仍生效。
 // 真实模块装配（vm），覆盖 UI 状态模型 / 技能入口 / 一次性登记表 / 回合重置 /
-// 被动逐段结算 / 抵杀意 / 力量爆发 / 头像标记，外加静态挂载点核对。
+// 被动逐段结算 / 抵淫气 / 力量爆发 / 头像标记，外加静态挂载点核对。
 // REVERT=phase|once|reset|passive|intent 为源码级反向验证，撤掉对应改动后应精准打红。
 const fs = require("fs");
 const path = require("path");
@@ -55,6 +55,9 @@ const win = {
   BattleHpValue: {
     healCap: (u, n) => Math.max(0, Math.min(n, (u.maxHp || 0) - (u.hp || 0))),
     applyHeal: (u, n) => { u.hp += n; },
+    // 240 版回血改为按施术者当前最大生命 10% 逐张堆叠，夹具同步真实 hp-value.js 口径。
+    healPctStacks: (u, pct, stacks) =>
+      Math.max(1, Math.round((u.maxHp || 0) * pct / 100)) * Math.max(0, stacks | 0),
   },
   BattleDrawFeedback: { action: (_u, _want, drawn) => `摸${drawn}张牌` },
   AngelicaBerserkerSkinFX: { rageGain() {}, rageSpend() {}, berserkWill() {}, might() {} },
@@ -244,7 +247,7 @@ function damageHits(a, target, times, hpLoss = 3) {
 {
   const a = actor({ rageMarks: 2, intent: 1 }), s = state(battle(a));
   const real = { name: "杀（普攻）", type: "slash" };
-  T("C6 实体【杀】可弃 1 枚标记代替杀意",
+  T("C6 实体【杀】可弃 1 枚标记代替淫气",
     win.AngelicaLukaSkills.beforeIntentCost(s, a, real) === true
     && a.rageMarks === 1 && a.intent === 1,
     { marks: a.rageMarks, intent: a.intent });
@@ -255,7 +258,7 @@ function damageHits(a, target, times, hpLoss = 3) {
     && a.rageMarks === 1);
   const free = { name: "杀（普攻）", type: "slash", noIntentCost: true };
   const flow = read("battle-combat-attack-flow.js");
-  T("C8 免费杀先判免杀意、不白白吃掉标记",
+  T("C8 免费杀先判免淫气、不白白吃掉标记",
     /const noIntent = hasNoIntentCost\(actor, card\)/.test(flow)
     && /const ragePaid = noIntent \? false/.test(flow));
 }

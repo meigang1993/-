@@ -89,7 +89,7 @@ function mkBattle(allyCount = 2, opts = {}) {
 }
 
 function aiPick(def, allyCount = 2, opts = {}) {
-  // 杀牌需要杀意（intent）才能打出，而【放血】的 AI 判据恰好相反：
+  // 杀牌需要淫气（intent）才能打出，而【放血】的 AI 判据恰好相反：
   // 它要求 intent 尚有缺口（needsIntent = intent < 上限）才值得用。
   // 两者互斥，故按卡类型给不同的 intent，避免把构造缺陷误判为游戏 BUG。
   const intent = opts.intent ?? (def.type === "slash" ? 3 : 0);

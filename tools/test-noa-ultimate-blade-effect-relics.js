@@ -125,7 +125,7 @@ function makeEnv(opts = {}) {
     // prepareSlash 的 playedSlashThisTurn 守卫行
     vm.runInNewContext(FLAG_LINE, { card, actor, window: ctx });
     if (ctx.CardUtils.isKillCard(card) && !card.virtual) {
-      // spendIntent：本测试不关心杀意，跳过
+      // spendIntent：本测试不关心淫气，跳过
     }
     values.applyAttackRelics(stateIn, actor, target, card);
     const base = 3;

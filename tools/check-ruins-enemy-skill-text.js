@@ -68,9 +68,9 @@ const armor = skillOf(c, "坚硬装甲");
 check("装甲运输车存在【无脑冲撞】", !!ram, { name: c?.name });
 check("无脑冲撞 描述以「锁定技」开头", /^锁定技/.test(ram?.text || ""),
   { head: (ram?.text || "").slice(0, 12) });
-check("无脑冲撞 描述含实体单体【杀】/撞杀/不消耗杀意",
+check("无脑冲撞 描述含实体单体【杀】/撞杀/不消耗淫气",
   /实体单体【杀】/.test(ram?.text || "") && /撞杀/.test(ram?.text || "")
-  && /不消耗杀意/.test(ram?.text || ""));
+  && /不消耗淫气/.test(ram?.text || ""));
 check("坚硬装甲 描述以「锁定技」开头", /^锁定技/.test(armor?.text || ""),
   { head: (armor?.text || "").slice(0, 12) });
 check("坚硬装甲 描述含不会受到任何伤害", /不会受到任何伤害/.test(armor?.text || ""));

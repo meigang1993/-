@@ -238,7 +238,7 @@ const clickStore = async page => {
       return pile.filter(c => ["泡泡牌1", "泡泡牌2", "泡泡牌3"].includes(c.name))
         .map(c => ({ n: c.name, free: !!c._bubbleFree, cast: !!c._bubbleCast }));
     })()`, 15000, "marksE");
-    T("E7b 弃置时清掉泡泡标记（免杀意不残留到弃牌堆）",
+    T("E7b 弃置时清掉泡泡标记（免淫气不残留到弃牌堆）",
       (marks || []).length > 0 && marks.every(m => !m.free && !m.cast), marks);
     T("E8 日志写明进入弃牌堆", /进入弃牌堆/.test(s3?.logs || ""), s3);
     T("E9 界面槽位数归零", s3?.slots === 0, s3);

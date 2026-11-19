@@ -54,7 +54,7 @@ const expectedCharacters = {
   maria: { attack: 10, magic: 10, speed: 13, maxHp: 130, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 1 },
   sonia: { attack: 10, magic: 10, speed: 13, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
   chiyo: { attack: 7, magic: 5, speed: 16, maxHp: 104, bloodlust: 1, handLimit: 4, drawPerTurn: 3, initialDraw: 1 },
-  // 普雷希（第 31 名）：0 级生命 112（翻倍前 56）、杀意 1、手牌上限 4；摸牌为「基础 2+1」「初始 4+1」，
+  // 普雷希（第 31 名）：0 级生命 112（翻倍前 56）、淫气 1、手牌上限 4；摸牌为「基础 2+1」「初始 4+1」，
   // 与其余角色同口径，基础表内仍记 drawPerTurn 1 / initialDraw 1。
   preshi: { attack: 10, magic: 10, speed: 11, maxHp: 112, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 },
   // 米尔尤拉（第 32 名）：0 级生命 104（翻倍前 52）、魔力 4（翻倍前 2）；高阶成长表落在统一档位网格上。
@@ -273,7 +273,7 @@ assert.strictEqual(
 
 assert.deepStrictEqual(GameDataWorld.statDefs.map(([id, name]) => [id, name]), [
   ["attack", "攻击力"], ["magic", "魔力"], ["speed", "速度"],
-  ["maxHp", "生命值"], ["bloodlust", "杀意上限"],
+  ["maxHp", "生命值"], ["bloodlust", "淫气上限"],
   ["handLimit", "手牌上限"], ["drawPerTurn", "每回合摸牌"],
   ["initialDraw", "初始摸牌"],
 ]);

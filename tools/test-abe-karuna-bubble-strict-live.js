@@ -1,12 +1,12 @@
-// 安倍卡露娜【记忆泡泡】严格回归（重点：取回的【杀】是否真免杀意）。
+// 安倍卡露娜【记忆泡泡】严格回归（重点：取回的【杀】是否真免淫气）。
 //
-// 背景：既有 test-abe-karuna-skills-live.js 的 B16 用「战术牌」验证"不消耗杀意"。
+// 背景：既有 test-abe-karuna-skills-live.js 的 B16 用「战术牌」验证"不消耗淫气"。
 // 但 spendIntent() 只在攻击流程里对【杀】类牌扣减，战术牌根本不进该逻辑——
 // 那条断言在 _bubbleFree 失效时依然会绿，属恒真断言，无法发现真 BUG。
 // 本测试改用【杀】牌，并在 intent=0 的极端状态下验证"仍可打出且打出后仍为 0"，
-// 这是玩家真正能感知的免杀意。
+// 这是玩家真正能感知的免淫气。
 //
-// 分批：KARUNA_BUB=P（免杀意）、M（上限3）、E（回合结束清空）、S（放弃/基本）。
+// 分批：KARUNA_BUB=P（免淫气）、M（上限3）、E（回合结束清空）、S（放弃/基本）。
 require("./repository-toolchain");
 const path = require("path");
 const { chromium } = require("playwright");
@@ -119,11 +119,11 @@ const clickBubbleBtn = async (page, which) => {
   const setup = await evalT(page, setupTpl, 15000, "setup");
   T("前置：敌人 2 名", setup?.foes === 2, setup);
   T("前置：手牌 5 张", setup?.hand === 5, setup);
-  T("前置：杀意 1", setup?.intent === 1, setup);
+  T("前置：淫气 1", setup?.intent === 1, setup);
 
-  // ── P 取回的【杀】免杀意（核心）────────────────────────────
+  // ── P 取回的【杀】免淫气（核心）────────────────────────────
   if (want("P")) {
-    // 先存一张战术牌，再存【杀】；此时出杀已消耗杀意，intent 归 0。
+    // 先存一张战术牌，再存【杀】；此时出杀已消耗淫气，intent 归 0。
     let s = await playAndWait(page, "泡泡牌1");
     T("P1 出战术牌后挂起", s?.pending === true, s);
     s = await clickBubbleBtn(page, "store");
@@ -131,7 +131,7 @@ const clickBubbleBtn = async (page, which) => {
 
     s = await playAndWait(page, "泡泡杀");
     T("P3 出杀后挂起", s?.pending === true, s);
-    T("P4 出杀已消耗杀意至 0", s?.intent === 0, s);
+    T("P4 出杀已消耗淫气至 0", s?.intent === 0, s);
     s = await clickBubbleBtn(page, "store");
     T("P5 泡泡区 2 张（含杀）", s?.bubbleLen === 2, s);
     T("P6 杀已离开弃牌堆", s && !s.discard.includes("泡泡杀"), s);
@@ -152,7 +152,7 @@ const clickBubbleBtn = async (page, which) => {
       const c = (u.bubbleCards || []).find(x => x.name === "泡泡杀");
       return { free: !!c?._bubbleFree, cast: !!c?._bubbleCast, name: c?.name || "" };
     })()`, 15000, "snapFree");
-    T("P9 泡泡区的杀带免杀意与来源标记",
+    T("P9 泡泡区的杀带免淫气与来源标记",
       freeFlag?.free === true && freeFlag?.cast === true
       && freeFlag?.name === "泡泡杀", freeFlag);
 
@@ -170,15 +170,15 @@ const clickBubbleBtn = async (page, which) => {
         selSkill: b.selectedSkillCard?.name || "" };
     })()`, 15000, "snapPlayable");
     // 严格：只认 canPlay 返回值。此前用 `|| selectedName` 兜底，
-    // 撤销免杀意判据后 selectCard 仍会成功，导致该断言恒真。
-    T("P10 杀意 0 时泡泡区的杀仍可选中使用", playable?.free === true && playable?.pickable === true, playable);
+    // 撤销免淫气判据后 selectCard 仍会成功，导致该断言恒真。
+    T("P10 淫气 0 时泡泡区的杀仍可选中使用", playable?.free === true && playable?.pickable === true, playable);
 
-    // 真正打出，验证杀意未被扣成负数、且确未消耗。
+    // 真正打出，验证淫气未被扣成负数、且确未消耗。
     const after = await evalT(page, `(() => {
       const st = window.state, b = st.battle, u = b.allies[0];
       const c = (u.bubbleCards || []).find(x => x.name === "泡泡杀" && x._bubbleFree);
       if (!c) return { played: false };
-      // 杀意抬到 2：intent 为 0 时再扣也仍是 0，无法区分"没扣"与"扣了"。
+      // 淫气抬到 2：intent 为 0 时再扣也仍是 0，无法区分"没扣"与"扣了"。
       u.intent = 2;
       const before = u.intent;
       window.BattleSystem.useCard(st, u, b.enemies[0], c);
@@ -189,9 +189,9 @@ const clickBubbleBtn = async (page, which) => {
     await evalT(page, "window.BattleEffects?.whenIdle?.()", 8000, "whenIdleP");
     await page.waitForTimeout(300);
     const s2 = await evalT(page, snapTpl, 15000, "snapP12");
-    T("P12 杀意 2 打出后仍为 2（未消耗）", s2?.intent === 2, s2);
-    T("P13 战报标记为不消耗杀意",
-      (s2?.logs || "").includes("不消耗杀意"), s2 && { logs: s2.logs.slice(-200) });
+    T("P12 淫气 2 打出后仍为 2（未消耗）", s2?.intent === 2, s2);
+    T("P13 战报标记为不消耗淫气",
+      (s2?.logs || "").includes("不消耗淫气"), s2 && { logs: s2.logs.slice(-200) });
     // 打出后又会挂起，必须跳过，避免后续段落卡死。
     await evalT(page, "window.BattleSystem.skipKarunaBubble(window.state); window.render();",
       8000, "skipP");

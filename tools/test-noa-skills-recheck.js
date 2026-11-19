@@ -3,7 +3,7 @@
 //   I 溢出但一张都弃不了：不得写「一次性弃置 。」空战报
 //   J 摸牌信号（耗尽 / 封魔 / 转交）在补齐循环里仍生效
 //   L beginPlayPhase 同回合重复调用幂等（不重复咬杀）
-//   M 既有边界复核：负攻击夹 0、眩晕不狂暴、虚拟牌缺失不跳过、免杀意离区
+//   M 既有边界复核：负攻击夹 0、眩晕不狂暴、虚拟牌缺失不跳过、免淫气离区
 // 支持 NOA_RECHECK=H,I,J,L,M 分批；REVERT=counted|empty 源码级反向验证。
 const fs = require("fs");
 const path = require("path");
@@ -211,17 +211,17 @@ if (has("M")) {
   const r = ctx.NoaSideEffectSkills.beginPlayPhase(s2, n2);
   ctx.CardUtils.fromEntity = saved;
   T("M2 虚拟牌缺失不跳过出牌阶段", r === false && !n2.skipPlayPhase, { r, skip: n2.skipPlayPhase });
-  // 免杀意是即时判定，不往牌上写标记
+  // 免淫气是即时判定，不往牌上写标记
   const n3 = noa(); const b3 = battle({ allies: [n3], enemies: [] });
   ctx.state = { battle: b3, log: [] };
   const k = card("杀");
   const free = ctx.NoaCharmSkills.noIntentCost(n3, k);
-  T("M3 免杀意生效", free === true, { free });
-  T("M4 免杀意不往牌上写标记", JSON.stringify(k) === JSON.stringify(card("杀")), { k });
+  T("M3 免淫气生效", free === true, { free });
+  T("M4 免淫气不往牌上写标记", JSON.stringify(k) === JSON.stringify(card("杀")), { k });
   // 非出牌阶段不生效
   const b4 = battle({ allies: [n3], enemies: [], phase: 3 });
   ctx.state = { battle: b4, log: [] };
-  T("M5 非出牌阶段不免杀意", ctx.NoaCharmSkills.noIntentCost(n3, card("杀")) === false);
+  T("M5 非出牌阶段不免淫气", ctx.NoaCharmSkills.noIntentCost(n3, card("杀")) === false);
   // 目标池排除自己
   const n5 = noa(); const b5 = battle({ allies: [n5], enemies: [] });
   const s5 = { battle: b5, log: [] }; ctx.state = s5;

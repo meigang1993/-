@@ -149,6 +149,11 @@ const timeouts = Object.freeze({
   "test-all-modified-skills-cheat.js": 120,
   // 回血技能真实结算作弊：4 个技能 handler + 1000 张牌/1e9 上限/1000 枚标记，REVERT=heal 反向
   "test-skill-heal-real-settlement-cheat.js": 120,
+  // 243 版：增援复活手牌 BUG 修复 + 摸至手牌上限；强化 5000 元 / 每项 50 次（5 组源码级反向）
+  "test-reinforce-enhance-243.js": 120,
+  // 245 版：出牌资源旧名→淫气全量文案统一，全库残留扫描 + 6 组源码级反向
+  "test-intent-to-yinqi-rename.js": 120,
+  "test-intent-to-yinqi-live.js": 180,
 });
 
 const timeoutFor = (file, fallback) => timeouts[file] || fallback;
@@ -165,6 +170,8 @@ const groups = Object.freeze({
     "test-enemy-once-per-turn-ai.js",
     "test-kaiichi-blood-card-damage-only.js",
     "test-asar-content-smoke.js",
+    "test-intent-to-yinqi-rename.js",
+    "test-intent-to-yinqi-live.js",
   ],
   storage: [
     "test-battle-start-save.js",
@@ -251,6 +258,7 @@ const groups = Object.freeze({
   "test-character-enhance.js",
   "test-character-enhance-recheck.js",
   "test-character-enhance-live.js",
+  "test-reinforce-enhance-243.js",
   "test-enhance-dungeon-guard.js",
   "test-enhance-dungeon-live.js",
   "test-enhance-integer-scope.js",

@@ -189,7 +189,7 @@ const playAndStore = async (page, cardName, store) => {
     T("B4 点一次敌人即结算（无需再点确定）", s.foeHp[0] < hpBefore, { before: hpBefore, after: s.foeHp[0] });
     T("B5 用掉的牌离开泡泡区", !s.bubble.includes("泡泡杀"), s);
     T("B6 牌进入弃牌堆", s.discard.includes("泡泡杀"), s);
-    T("B7 免杀意（泡泡区使用前后杀意不变）", s.intent === intentBefore, { before: intentBefore, after: s.intent });
+    T("B7 免淫气（泡泡区使用前后淫气不变）", s.intent === intentBefore, { before: intentBefore, after: s.intent });
     T("B8 用后不再触发「放入」", s.pending === false && !s.log.includes("放入泡泡手牌区"), s);
     T("B9 泡泡区剩 1 张", s.bubbleLen === 1, s);
     T("B10 结算后解锁", s.locked === false, s);
@@ -231,7 +231,7 @@ const playAndStore = async (page, cardName, store) => {
     if (used) {
       T("C2 首次点敌人即结算（二次点击无机会）", true);
       T("C3 结算命中被点的敌人 1", s.foeHp[1] === 86, s.foeHp);
-      T("C4 免杀意（第二次出杀不扣杀意）", s.intent === 2, { intent: s.intent });
+      T("C4 免淫气（第二次出杀不扣淫气）", s.intent === 2, { intent: s.intent });
       T("C5 不再触发放入", s.pending === false, s);
     } else {
       await page.click("[data-confirm-target]");

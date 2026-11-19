@@ -35,7 +35,7 @@ const injectTpl = cardName => `(() => {
 
 // 敌方直接打出手中那张战术牌。
 // 原本依赖「我方点结束出牌 → 敌方 AI 行动」，实测该链路停在
-// 「准备阶段，杀意重置为 N/N」不再推进，看破窗口永远不会出现；
+// 「准备阶段，淫气重置为 N/N」不再推进，看破窗口永远不会出现；
 // 而脚本末尾恒 exit(0)，于是"窗口=false"也被计成通过（假通过）。
 // 改为把行动权交给敌方并用 BattleSystem.useCard 打出（AI 出牌同一入口）。
 async function enemyPlayCard(page, idx) {

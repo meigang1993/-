@@ -16,7 +16,7 @@ async function enhanceCharacter(id, stat, actionState = state, actionCurrent = n
   const after = enhance?.levelOf?.(actionState.chars.find(x => x.id === id), stat) || 0;
   const key = enhance?.NAMES?.[stat] || "属性";
   const bonus = enhance?.BONUS?.[stat] ?? 0;
-  log(`角色强化完成：${c?.name || "角色"} 的${key}第 ${after} 次强化（${key}+${bonus}），消耗 ${enhance?.COST ?? 1000} 莉莉丝元。`);
+  log(`角色强化完成：${c?.name || "角色"} 的${key}第 ${after} 次强化（${key}+${bonus}），消耗 ${enhance?.COST ?? 5000} 莉莉丝元。`);
   await persist({ flush: true });
   render();
   return true;

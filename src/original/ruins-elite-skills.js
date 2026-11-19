@@ -7,6 +7,8 @@ window.RuinsEliteSkills = (() => {
   const stat = (unit, key) => (unit.stats?.[key] || 0)
     + (key === "attack" ? unit.tempAttack || 0 : 0);
   const log = (state, text) => window.BattleLog?.add?.(state, text);
+  // 摸牌兜底：BattleSystem.draw 未装配时仍按同一口径从本单位摸牌堆补齐。
+  const refill = (state, u, n) => { for (let i = 0; i < n; i += 1) { window.BattlePileStats?.reshuffle?.(u); const c = u.deck?.pop(); if (!c) break; if (state.battle?.animQueue) c._pendingDraw = true; u.hand.push(c); } };
 
   // 暗幕隐身（锁定技）：有黑色牌时不会成为「实体单体【杀】牌」的目标。
   // 只挡实体牌：虚拟杀（技能/饰品「视为使用一张杀」、fromEntity / useVirtualKill
@@ -72,14 +74,29 @@ window.RuinsEliteSkills = (() => {
   function reinforce(state, unit) {
     const dead = (state.battle.enemies || []).filter(enemy => enemy.hp <= 0 && enemy !== unit);
     if (!dead.length) return;
-    dead.forEach(enemy => { enemy.hp = window.BattleHpValue.maxHp(enemy); });
+    // 死亡弃牌挂在 checkDefeat 的 hp<=0 过滤上：死亡浮字未播完（pendingFatalAnim）
+    // 会整段跳过，而增援先把 hp 抬回正数，那次补弃便永远轮不到；deathDiscarded 残留
+    // 还会让再次阵亡不再弃牌。统一在此补弃 + 清标记，再以纯补给摸至手牌上限。
+    const draw = window.BattleSystem?.draw;
+    dead.forEach(enemy => {
+      const cards = (enemy.hand || []).splice(0);
+      if (cards.length) window.BattleCards?.putMany?.(state.battle, enemy, cards, "discard", { skipAfterHandLost: true });
+      delete enemy.deathDiscarded;
+      enemy.hp = window.BattleHpValue.maxHp(enemy);
+      const limit = window.NoaSideEffectSkills?.handLimit?.(enemy)
+        ?? Math.max(0, Math.floor(Number(enemy.stats?.handLimit) || 0));
+      const need = Math.max(0, limit - visible(enemy).length);
+      // 纯补给：不触发摸牌类饰品，也不被吸魔邪眼转交或封魔克扣。
+      if (need) draw ? draw(enemy, need, state.battle, null, { cleanRefill: true })
+        : refill(state, enemy, need);
+    });
     const loss = dead.length * Math.ceil((unit.maxHp || 1) * 0.1);
     const before = unit.hp;
     window.BattleHpValue.applyDamage(unit, loss);
     const lost = before - unit.hp;
     if (lost > 0) window.BattleSystem?.pushFloat?.(state.battle, unit.uid, "hp-loss", lost);
     window.BattleLines?.skill?.(state, unit, "增援部队");
-    log(state, `${unit.name} 发动增援部队，满血复活${dead.length}名友军，损失${lost}点生命。`);
+    log(state, `${unit.name} 发动增援部队，满血复活${dead.length}名友军，弃置其所有手牌并摸至手牌上限，损失${lost}点生命。`);
   }
 
   // 潜影背刺：结束阶段发动（描述即为「结束阶段」）。

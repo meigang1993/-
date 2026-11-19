@@ -5,7 +5,7 @@
 //                ②手牌全场最多 → 造成/受到伤害 2 倍（并列最多也算）
 //   ⚔️ 女王榨取：伤害 = 魔力值；只对我方男性生效（女性/敌方/自己均不生效且不消耗次数）
 //
-// 另验：角色表属性（生命56/杀意1/手牌4/每回合摸牌3/初始摸牌5）与四条台词。
+// 另验：角色表属性（生命56/淫气1/手牌4/每回合摸牌3/初始摸牌5）与四条台词。
 require("./repository-toolchain");
 const path = require("path");
 const { chromium } = require("playwright");
@@ -210,7 +210,7 @@ const lineHookTpl = `(() => {
 
   const d = await page.evaluate(dataTpl);
   T("① 生命值 112（全属性翻倍后）", d.maxHp === 112, d);
-  T("① 杀意上限 1", d.bloodlust === 1, d);
+  T("① 淫气上限 1", d.bloodlust === 1, d);
   T("① 手牌上限 4", d.handLimit === 4, d);
   T("① 每回合摸牌 基础2+1 = 3", d.turnDraw === 3, d);
   T("① 初始摸牌 基础4+1 = 5", d.initialDraw === 5, d);

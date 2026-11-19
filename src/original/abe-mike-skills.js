@@ -65,7 +65,7 @@ window.AbeMikeSkills = (() => {
     window.BattleCards?.putMany?.(state.battle, actor, shown.filter(c => !gained.includes(c)), "discard");
     window.BattleLines?.skill(state, actor, "猛龙断空斩");
     if (shown.length) reveal(state, "猛龙断空斩", shown);
-    window.BattleLog.add(state, `${actor.name} 展示牌堆顶${shown.length}张，获得${gained.length}张单体杀牌，本回合不受杀意限制。`);
+    window.BattleLog.add(state, `${actor.name} 展示牌堆顶${shown.length}张，获得${gained.length}张单体杀牌，本回合不受淫气限制。`);
     return true;
   }
   function endTurn(state, unit, damage) {

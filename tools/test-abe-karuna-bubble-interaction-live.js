@@ -289,7 +289,7 @@ const probeTpl = (sel, scroll) => `(() => {
         cast: !!card?._bubbleCast };
     })()`, 15000, "snapC5");
     T("C5 选中的正是泡泡区第 1 张", sel?.name === "泡泡牌1", sel);
-    T("C6 该牌带免杀意标记", sel?.free === true, sel);
+    T("C6 该牌带免淫气标记", sel?.free === true, sel);
     T("C7 该牌带泡泡来源标记", sel?.cast === true, sel);
 
     const useBtn = await evalT(page, probeTpl("[data-confirm-target]"), 15000, "probeUse");

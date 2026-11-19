@@ -354,7 +354,7 @@ async function runEnemyTurn(page, label) {
     const w = b.enemies[0];
     b.enemies.length = 1;
     w.hp = 300;
-    // AI 在出牌阶段会把红桃当杀打出（杀意 2 + 钢叉 1 ≈ 用掉 3 张），
+    // AI 在出牌阶段会把红桃当杀打出（淫气 2 + 钢叉 1 ≈ 用掉 3 张），
     // 故放宽手牌上限并塞 5 张，确保结束阶段仍有红桃可弃。
     (w.stats = w.stats || {}).handLimit = 99;
     w.hand = [

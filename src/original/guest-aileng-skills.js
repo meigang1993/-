@@ -5,7 +5,7 @@ window.GuestAilengSkills = (() => {
   const hasSkill = (unit, name) => (unit?.skills || []).some(skill => skill.name === name);
   const stat = (unit, key) => (unit.stats?.[key] || 0) + (key === "attack" ? (unit.tempAttack || 0) : key === "magic" ? (unit.tempMagic || 0) : 0);
   const line = (state, unit, name, target) => window.BattleLines?.skill(state, unit, name, target);
-  const chargeFallbackText = "出牌阶段限一次，你可以指定一名友方女性角色，你弃置所有红桃牌，令其摸等量牌。若目标为贝丝妲，改为你弃置所有手牌，令贝丝妲摸等量牌，然后你受到等同于贝丝妲魔力的伤害；若你仍存活，你翻面并跳过下一个完整回合。若目标为七位姐姐之一且其对应儿子存活，该儿子获得1枚“绿帽”标记；若目标为娜娜莉或贝丝妲且罗卡尔存活，罗卡尔获得1枚“绿帽”标记。每名角色至多拥有5枚“绿帽”，每枚令手牌上限、杀意上限各+1，攻击力+30%。";
+  const chargeFallbackText = "出牌阶段限一次，你可以指定一名友方女性角色，你弃置所有红桃牌，令其摸等量牌。若目标为贝丝妲，改为你弃置所有手牌，令贝丝妲摸等量牌，然后你受到等同于贝丝妲魔力的伤害；若你仍存活，你翻面并跳过下一个完整回合。若目标为七位姐姐之一且其对应儿子存活，该儿子获得1枚“绿帽”标记；若目标为娜娜莉或贝丝妲且罗卡尔存活，罗卡尔获得1枚“绿帽”标记。每名角色至多拥有5枚“绿帽”，每枚令手牌上限、淫气上限各+1，攻击力+30%。";
 
   function chargeSkill() {
     const text = GameData.characters?.find(character => character.id === "aileng")?.skills?.find(skill => skill.name === "征服欲望")?.derivedSkills?.find(skill => skill.name === "充能精华")?.text || chargeFallbackText;
@@ -42,7 +42,7 @@ window.GuestAilengSkills = (() => {
     const drawn = deps.draw(actor, count, state.battle, batches);
     batches.forEach(batch => state.battle?.animQueue?.push({ ...batch, stagger: 0 }));
     if (all) actor.intent = deps.intentMax(actor);
-    line(state, actor, "计算下注"); window.BattleLog.add(state, `${actor.name} 发动计算下注，弃置${indexes.length}张牌并${window.BattleDrawFeedback.action(actor, count, drawn)}${all ? "，重置杀意" : ""}。`);
+    line(state, actor, "计算下注"); window.BattleLog.add(state, `${actor.name} 发动计算下注，弃置${indexes.length}张牌并${window.BattleDrawFeedback.action(actor, count, drawn)}${all ? "，重置淫气" : ""}。`);
     return true;
   }
   function ailengCharge(state, actor, target, deps, ctx) {
@@ -61,7 +61,7 @@ window.GuestAilengSkills = (() => {
   function applyGreenHat(state, target) {
     const map = { angelica: "luka", nonoka: "loki", elrana: "ace", manny: "miller", wendy: "cadicis", flora: "carlos", bertis: "gerlot", nanali: "lokar", besta: "lokar" };
     const id = map[target.ref], unit = state.battle.allies.find(item => item.ref === id && alive(item)); if (!window.GreenHat.grant(unit)) return;
-    window.BattleLog.add(state, `${unit.name} 因${target.name}获得绿帽标记${unit.greenHat}/5，手牌上限、杀意上限各+1，攻击力+30%。`);
+    window.BattleLog.add(state, `${unit.name} 因${target.name}获得绿帽标记${unit.greenHat}/5，手牌上限、淫气上限各+1，攻击力+30%。`);
   }
   function afterCardPlayed(state, actor, card) {
     if (actor?.ref === "aileng") battleDrill(state, actor, card);
@@ -101,7 +101,7 @@ window.GuestAilengSkills = (() => {
   function conquerHit(state, actor) {
     actor.ailengDamageHits = (actor.ailengDamageHits || 0) + 1;
     if (actor.ailengDamageHits <= 7 || !hasSkill(actor, "征服欲望")) return;
-    replaceSkill(actor, ["征服欲望"], { name: "战斗之勇", type: "passive", icon: "⭐", text: "锁定技，当你使用实体【杀】或使用【与我一战】时，你从摸牌堆摸一张牌。若以此法摸到【杀】或【与我一战】，你恢复1点杀意。" });
+    replaceSkill(actor, ["征服欲望"], { name: "战斗之勇", type: "passive", icon: "⭐", text: "锁定技，当你使用实体【杀】或使用【与我一战】时，你从摸牌堆摸一张牌。若以此法摸到【杀】或【与我一战】，你恢复1点淫气。" });
     line(state, actor, "征服欲望成功"); window.BattleLog.add(state, `${actor.name} 征服欲望成功，获得战斗之勇。`);
   }
   function onDeath(state) {

@@ -91,7 +91,7 @@ window.UICommonSkillModel = () => {
       };
     }
     if (!window.BattleSystem?.canPlay?.(actor, card, battle)) {
-      return { usable: false, reason: "次数、手牌、杀意或目标条件不足" };
+      return { usable: false, reason: "次数、手牌、淫气或目标条件不足" };
     }
     return { usable: true, reason: "可发动" };
   }

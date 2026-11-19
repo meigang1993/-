@@ -19,7 +19,7 @@ window.CarlosSkills = (() => {
     window.BattleLines?.skill(state, actor, "疯狂射击");
     window.BattleLog.add(state,
       `${actor.name} 将${cost.suit}${cost.name}转化为机枪扫杀使用。`);
-    // 疯狂射击转化出的【机枪扫杀】不消耗杀意：noIntentCost 在 spendIntent
+    // 疯狂射击转化出的【机枪扫杀】不消耗淫气：noIntentCost 在 spendIntent
     // 内由 hasNoIntentCost 读取，先于狂战标记抵扣，故不会白白吃掉狂战标记。
     ctx.useCard(state, actor, actor, window.CardUtils.convertAs(
       "机枪扫杀", cost,

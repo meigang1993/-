@@ -313,7 +313,7 @@ const discardRevertTpl = `(() => {
   console.log(`  日志 ${JSON.stringify(sd.logs.slice(0, 3))}`);
   T("影舞步：获得的黑色【杀】转换为【刺杀】",
     sd.hand.length === 2 && sd.hand.every(c => c.name === "刺杀"), sd);
-  T("影舞步：转换产物不消耗杀意",
+  T("影舞步：转换产物不消耗淫气",
     sd.hand.length === 2 && sd.hand.every(c => c.noIntent), sd);
   T("影舞步：转换产物保留 temporary/void（仍是本回合临时牌）",
     sd.hand.length === 2 && sd.hand.every(c => c.temp && c.void), sd);
@@ -341,7 +341,7 @@ const discardRevertTpl = `(() => {
   console.log(`  日志 ${JSON.stringify(gv.logs.slice(0, 3))}`);
   T("交牌：收到的实体单体【杀】转换为【刺杀】",
     gv.hand.length === 1 && gv.hand[0].name === "刺杀", gv);
-  T("交牌：转换产物不消耗杀意",
+  T("交牌：转换产物不消耗淫气",
     gv.hand.length === 1 && gv.hand[0].noIntent, gv);
   T("交牌：改写牌面后手牌仍持有原牌对象（手牌数统计不漏加）",
     gv.sameObject === true, gv);
@@ -366,7 +366,7 @@ const discardRevertTpl = `(() => {
   console.log(`[摸牌] 手牌 ${JSON.stringify(dw.hand)}`);
   T("摸牌：实体单体【杀】仍转换为【刺杀】（原路径未被改坏）",
     dw.hand.length === 1 && dw.hand[0].name === "刺杀", dw);
-  T("摸牌：转换产物不消耗杀意",
+  T("摸牌：转换产物不消耗淫气",
     dw.hand.length === 1 && dw.hand[0].noIntent, dw);
 
   // ---------- ④ 偷牌 ----------
@@ -387,7 +387,7 @@ const discardRevertTpl = `(() => {
   console.log(`  日志 ${JSON.stringify(stl.logs.slice(0, 3))}`);
   T("偷牌：偷到的实体单体【杀】转换为【刺杀】",
     stl.hand.length === 1 && stl.hand[0].name === "刺杀", stl);
-  T("偷牌：转换产物不消耗杀意",
+  T("偷牌：转换产物不消耗淫气",
     stl.hand.length === 1 && stl.hand[0].noIntent, stl);
   T("偷牌：转换产物带 convertedFrom（保留来源牌名）",
     stl.hand.length === 1 && stl.hand[0].conv === "杀（普攻）", stl);
@@ -458,7 +458,7 @@ const discardRevertTpl = `(() => {
   const gr2Hit = gr2Give.some(r => (r.after || []).some(c => c.name === "刺杀" && c.noIntent));
   T("交牌还原：队友装备时先还原再重新转换为【刺杀】",
     gr2Ice.length >= 1 || gr2Hit, gr2);
-  T("交牌还原：重新转换后仍不消耗杀意",
+  T("交牌还原：重新转换后仍不消耗淫气",
     (gr2Ice.length >= 1 && gr2Ice[0].noIntent) || gr2Hit, gr2);
 
   // ---------- ⑦ 弃置还原 ----------

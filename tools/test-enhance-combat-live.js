@@ -51,9 +51,9 @@ const readStatsDom = page => page.evaluate(() => {
     check("A1 强化前面板能读到生命/攻击/魔力/速度四项",
       ["生命值", "攻击力", "魔力", "速度"].every(k => Number.isFinite(before[k])), before);
 
-    // ---------- B. 真实点击四项强化（每项 1000 莉莉丝元） ----------
+    // ---------- B. 真实点击四项强化（每项 5000 莉莉丝元） ----------
     await page.evaluate(() => {
-      window.state.resources.gold = 5000;
+      window.state.resources.gold = 25000;
       window.state.infoTab = "enhance";
       window.render();
     });
@@ -71,7 +71,7 @@ const readStatsDom = page => page.evaluate(() => {
     const gold = await page.evaluate(() => window.state.resources.gold);
     check("B1 四项各强化 1 次",
       KEYS.every(k => afterLevels[k] === 1), afterLevels);
-    check("B2 恰好扣费 4000（余额 1000）", gold === 1000, gold);
+    check("B2 恰好扣费 20000（余额 5000）", gold === 5000, gold);
 
     // ---------- C. 强化后面板数值真的变化 ----------
     await page.evaluate(() => { window.state.infoTab = "stats"; window.render(); });

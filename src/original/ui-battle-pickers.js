@@ -26,7 +26,7 @@ window.GameUIBattlePickers = U => {
     const names = window.MieryulaSkills?.availableSlashNames?.(window.state,
       battle.allies.concat(battle.enemies).find(u => u.uid === picker.uid)) || [];
     const pool = window.MieryulaSkills?.slashPool?.(window.state) || [];
-    return `<div class="armory-popup"><div class="armory-card"><h2>渴血杀戮</h2><p class="muted">选择一项“杀”牌的牌名，随后点击一名敌方角色，视为使用一张该牌名的虚拟牌（不消耗杀意）。本回合每项限一次。</p><div class="armory-options" ${scrollKey(`mieryula:${picker.uid}:cards`)}>${pool.map(card => {
+    return `<div class="armory-popup"><div class="armory-card"><h2>渴血杀戮</h2><p class="muted">选择一项“杀”牌的牌名，随后点击一名敌方角色，视为使用一张该牌名的虚拟牌（不消耗淫气）。本回合每项限一次。</p><div class="armory-options" ${scrollKey(`mieryula:${picker.uid}:cards`)}>${pool.map(card => {
       const used = !names.includes(card.name);
       return `<button class="armory-option${used ? " disabled" : ""}" ${used ? "disabled" : ""} data-mieryula-slash="${U.esc(card.name)}"><b>${U.esc(card.name)}</b><span>${U.esc(card.text || "")}</span></button>`;
     }).join("")}</div><button class="armory-skip" data-mieryula-skip="1">不发动</button></div></div>`;

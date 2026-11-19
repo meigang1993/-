@@ -1,10 +1,10 @@
 // 诺亚【淫气改造】【淫气改造】严格检查：回合归属修正 + 文案改名 + 公告显式报错
-//   A 本人出牌阶段（phase 4 且 activeUid=诺亚）：补牌 / 溢出挂起 / 免杀意 / 台词
-//   B 别家出牌阶段（phase 同为 4，activeUid≠诺亚）：一律不摸不弃、无战报、免杀意与台词也停
+//   A 本人出牌阶段（phase 4 且 activeUid=诺亚）：补牌 / 溢出挂起 / 免淫气 / 台词
+//   B 别家出牌阶段（phase 同为 4，activeUid≠诺亚）：一律不摸不弃、无战报、免淫气与台词也停
 //   C 切回本人回合后重判生效    D 非出牌阶段不生效
 //   E 文案统一「淫气」+ 三个公告数据文件漏加载必须显式抛错
-//   F 其它边界：免杀意不写牌标记 / 动态上限 / 反向验证
-// 反向验证：REVERT=owner 撤回合守卫 / REVERT=intent 撤免杀意与台词的回合守卫
+//   F 其它边界：免淫气不写牌标记 / 动态上限 / 反向验证
+// 反向验证：REVERT=owner 撤回合守卫 / REVERT=intent 撤免淫气与台词的回合守卫
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -101,10 +101,10 @@ const runEnemyCard = (state) => Hooks.runHooks(state, {
   T("A1 本人回合手牌 1→摸齐 4", noa.hand.length === 4 && draws === 3, { hand: noa.hand.length, draws });
   T("A2 战报写「淫气改造」且按实际摸到数", logs.length === 1 && logs[0].includes("淫气改造") && logs[0].includes("摸3张"), logs);
   const slash = card("杀（普攻）"), tactic = card("拆解", { type: "tactic" });
-  T("A3 本人回合杀牌免杀意 / 非杀牌不免", Charm.noIntentCost(noa, slash) === true && Charm.noIntentCost(noa, tactic) === false);
+  T("A3 本人回合杀牌免淫气 / 非杀牌不免", Charm.noIntentCost(noa, slash) === true && Charm.noIntentCost(noa, tactic) === false);
   Charm.playKillLine(state, noa, slash);
   T("A4 本人回合使用杀台词播放", lines.length === 1 && lines[0].name === "使用杀", lines);
-  T("A5 免杀意不往牌上写标记（无记忆泡泡残留）", !("noIntentCost" in slash) && !("_noaFree" in slash), slash);
+  T("A5 免淫气不往牌上写标记（无记忆泡泡残留）", !("noIntentCost" in slash) && !("_noaFree" in slash), slash);
 }
 {
   const { state, battle, noa } = fresh({ hand: 6 });
@@ -139,7 +139,7 @@ const runEnemyCard = (state) => Hooks.runHooks(state, {
   runEnemyCard(state);
   T("B3 真实出牌后钩子在敌方回合不补不弃、无战报",
     noa.hand.length === 2 && draws === 0 && logs.length === 0, { hand: noa.hand.length, draws, logs });
-  T("B4 别家回合免杀意与台词均不生效（含诺亚响应出杀）",
+  T("B4 别家回合免淫气与台词均不生效（含诺亚响应出杀）",
     Charm.noIntentCost(noa, card("杀（普攻）")) === false
     && (Charm.playKillLine(state, noa, card("杀（普攻）")), lines.length === 0), lines);
 }
@@ -167,7 +167,7 @@ const runEnemyCard = (state) => Hooks.runHooks(state, {
 for (const phase of [1, 2, 3, 5, 6]) {
   const { state, noa } = fresh({ hand: 1, phase });
   Charm.balanceHand(state, noa, draw);
-  T(`D${phase} 阶段${phase}不补牌/不免杀意`,
+  T(`D${phase} 阶段${phase}不补牌/不免淫气`,
     noa.hand.length === 1 && draws === 0 && Charm.noIntentCost(noa, card("杀（普攻）")) === false,
     { hand: noa.hand.length, draws });
 }
@@ -219,7 +219,7 @@ if (MODE === "owner") {
   T("F1 REVERT=owner：B1/B2/B3 应精准变红（撤掉回合守卫后别家回合又补/弃）", true);
 }
 if (MODE === "intent") {
-  T("F1 REVERT=intent：B4 应精准变红（免杀意/台词回合外生效）", true);
+  T("F1 REVERT=intent：B4 应精准变红（免淫气/台词回合外生效）", true);
 }
 
 console.log(`RESULT ${pass}/${total}`);

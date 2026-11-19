@@ -1,6 +1,6 @@
 // 专项核实：两件饰品是否真的实现了效果
 //  粉色魅魔装（XX型凋零者1312号掉落）：红色牌对你无效；你使用的红色牌不可响应。
-//  冰心双刺剑（内英组杀手希尔德掉落）：你获得的单体【杀】牌转换为不消耗杀意的【刺杀】。
+//  冰心双刺剑（内英组杀手希尔德掉落）：你获得的单体【杀】牌转换为不消耗淫气的【刺杀】。
 // 静态扫描显示这两件饰品名在全部逻辑代码中出现 0 次（其余 38 件都有钩子），
 // 本脚本用真实浏览器验证其描述是否成立。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
@@ -99,7 +99,7 @@ const peekTpl = `(() => {
     200 - pink2.foeHp > 0 && (pink2.foeHand || []).some(n => /闪/.test(n)),
     { loss: 200 - pink2.foeHp, foeHand: pink2.foeHand, logs: pink2.logs.slice(0, 5) });
 
-  // ===== 冰心双刺剑：摸到的实体单体杀转为不消耗杀意的【刺杀】 =====
+  // ===== 冰心双刺剑：摸到的实体单体杀转为不消耗淫气的【刺杀】 =====
   // 描述限定「你摸到的实体单体【杀】牌」才转换，转换发生在 afterDraw 钩子里。
   // 因此必须走真实摸牌路径（BattleSystem.draw）；把手牌直接塞进 hand 不会
   // 触发 afterDraw，测的是"打出未转换的杀"，与描述口径不符。
@@ -115,7 +115,7 @@ const peekTpl = `(() => {
     window.BattleSystem.draw(a, 1, b);
     window.render();
     return {
-      hand: a.hand.map(c => c.name + (c.noIntentCost ? "[免杀意]" : "")),
+      hand: a.hand.map(c => c.name + (c.noIntentCost ? "[免淫气]" : "")),
       names: a.hand.map(c => c.name),
       logs: (st.log || []).slice(0, 8).map(String),
     };
@@ -128,10 +128,10 @@ const peekTpl = `(() => {
 
   const withIce = await page.evaluate(drawKillTpl(["冰心双刺剑"]));
   console.log(`[冰心双刺剑] 摸到实体单体杀后手牌 ${JSON.stringify(withIce.hand)}，日志 ${JSON.stringify((withIce.logs || []).slice(0, 2))}`);
-  T("冰心双刺剑：摸到的实体单体【杀】转换为【刺杀】且不消耗杀意",
-    withIce.hand.some(n => n.startsWith("刺杀") && n.includes("[免杀意]")), withIce);
+  T("冰心双刺剑：摸到的实体单体【杀】转换为【刺杀】且不消耗淫气",
+    withIce.hand.some(n => n.startsWith("刺杀") && n.includes("[免淫气]")), withIce);
 
-  // ===== 打出转换后的刺杀：确认不消耗杀意 =====
+  // ===== 打出转换后的刺杀：确认不消耗淫气 =====
   const icePlay = await page.evaluate(`(() => {
     const st = window.state, b = st.battle;
     const a = b.allies[0], e = b.enemies[${FOE}];
@@ -145,8 +145,8 @@ const peekTpl = `(() => {
   })()`);
   await page.waitForTimeout(900);
   const icePlayCost = (icePlay.before ?? 0) - (icePlay.after ?? 0);
-  console.log(`[冰心双刺剑] 打出刺杀 杀意 ${icePlay.before}→${icePlay.after}（消耗 ${icePlayCost}）`);
-  T("冰心双刺剑：转换后的【刺杀】打出不消耗杀意",
+  console.log(`[冰心双刺剑] 打出刺杀 淫气 ${icePlay.before}→${icePlay.after}（消耗 ${icePlayCost}）`);
+  T("冰心双刺剑：转换后的【刺杀】打出不消耗淫气",
     icePlay.ok === true && icePlayCost === 0, icePlay);
 
   await page.close();

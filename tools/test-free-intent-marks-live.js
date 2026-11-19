@@ -1,14 +1,14 @@
-// 全库「免杀意」标记的残留与回收危害检查。
+// 全库「免淫气」标记的残留与回收危害检查。
 //
 // 背景：【记忆泡泡】曾出现同类 BUG —— 牌打出后 _bubbleFree/_bubbleCast 未清除，
-// 牌带着「免杀意」标记进弃牌堆；弃牌堆被洗回牌库或被技能取回后，
-// 再打出会错误地不消耗杀意（且不再询问放入）。
+// 牌带着「免淫气」标记进弃牌堆；弃牌堆被洗回牌库或被技能取回后，
+// 再打出会错误地不消耗淫气（且不再询问放入）。
 //
-// 本测试把同类风险推广到全库所有免杀意来源：
-//   1. 打出免杀意实体【杀】，确认当时确实免杀意（intent 未扣）
-//   2. 检查进弃牌堆时牌上是否残留免杀意标记
+// 本测试把同类风险推广到全库所有免淫气来源：
+//   1. 打出免淫气实体【杀】，确认当时确实免淫气（intent 未扣）
+//   2. 检查进弃牌堆时牌上是否残留免淫气标记
 //   3. 把该牌从弃牌堆取回手牌（模拟洗牌 / 回收类技能）再打出，
-//      确认这次**正常消耗杀意**（不错误免杀意）
+//      确认这次**正常消耗淫气**（不错误免淫气）
 //
 // 覆盖来源（battle-card-playability.js 的 hasNoIntentCost）：
 //   noIntentCost 直接标记（格林机枪 / 狂风绝息斩 / 武器库 / 猛龙断空斩 /
@@ -51,7 +51,7 @@ const evalT = async (page, expr, ms = 15000, label = "evaluate") => {
   }
 };
 
-// 构造：我方首名角色持一张实体【杀】，杀意充足，敌人不可响应。
+// 构造：我方首名角色持一张实体【杀】，淫气充足，敌人不可响应。
 const setupTpl = (card, opts = {}) => `(() => {
   const st = window.state, b = st.battle;
   b.animQueue = []; b.locked = false; b.phase = 4;
@@ -144,22 +144,22 @@ const playAndSnap = async (page, name) => {
   return evalT(page, snapTpl, 15000, `snap:${name}`);
 };
 
-// 单一来源的完整三步：免杀意生效 → 进堆无残留 → 回收再打出正常扣杀意。
+// 单一来源的完整三步：免淫气生效 → 进堆无残留 → 回收再打出正常扣淫气。
 const checkSource = async (page, label, card, opts = {}) => {
   await evalT(page, setupTpl(card, opts), 20000, `setup:${label}`);
   const before = await evalT(page, snapTpl, 15000, `before:${label}`);
   const s1 = await playAndSnap(page, card.name);
-  T(`${label} 1 打出时免杀意生效（intent 未扣）`,
+  T(`${label} 1 打出时免淫气生效（intent 未扣）`,
     s1.intent === before.intent,
     { before: before.intent, after: s1.intent, logs: s1.logs.slice(-90) });
   T(`${label} 2 牌进了弃牌堆`, s1.discard.includes(card.name),
     { discard: s1.discard });
   const mark = (s1.marks || []).find(m => m.n === card.name) || {};
-  // 会造成错误免杀意的标记：hasNoIntentCost 实际读取的那些。
+  // 会造成错误免淫气的标记：hasNoIntentCost 实际读取的那些。
   const lethal = Object.entries(mark).filter(([k, v]) =>
     v === true && ["noIntentCost", "withererBerserkKill", "withererPeekSlash",
       "bubbleFree", "beastApplied"].includes(k));
-  T(`${label} 3 进弃牌堆时会造成免杀意的标记已清除`,
+  T(`${label} 3 进弃牌堆时会造成免淫气的标记已清除`,
     lethal.length === 0, { lethal: lethal.map(([k]) => k), mark });
   // rageKill / pursueKill 是卡牌固有属性（卡牌表定义），本就该留在牌上；
   // mikeDragonSlash 不参与 hasNoIntentCost 判定，仅用于回合重置清理，
@@ -168,7 +168,7 @@ const checkSource = async (page, label, card, opts = {}) => {
     v === true && !["n", "rageKill", "pursueKill"].includes(k)
     && !lethal.some(([lk]) => lk === k));
   if (leaked.length) {
-    console.log(`   ℹ️  ${label} 无害残留标记（不参与免杀意判定）：`
+    console.log(`   ℹ️  ${label} 无害残留标记（不参与免淫气判定）：`
       + leaked.map(([k]) => k).join("、"));
   }
 
@@ -178,7 +178,7 @@ const checkSource = async (page, label, card, opts = {}) => {
     return;
   }
   const s2 = await playAndSnap(page, card.name);
-  T(`${label} 4 回收后再打出正常消耗杀意（不错误免杀意）`,
+  T(`${label} 4 回收后再打出正常消耗淫气（不错误免淫气）`,
     s2.intent === 1,
     { intent: s2.intent, logs: s2.logs.slice(-90) });
 };
@@ -216,19 +216,19 @@ const KILL = (extra = {}) => Object.assign({
 
   // ---------- D 段：固有属性类（怒杀 / 追杀），本就按牌面与单位状态动态判定 ----------
   if (want("D")) {
-    console.log("\n--- D 段：怒杀 rageKill（hp<maxHp 时免杀意）---");
+    console.log("\n--- D 段：怒杀 rageKill（hp<maxHp 时免淫气）---");
     // 怒杀是卡牌固有属性，不依赖运行时标记：回收后若已回满血则应正常消耗。
     await evalT(page, setupTpl(KILL({ rageKill: true }), { hp: 60 }), 20000, "setupD");
     const b0 = await evalT(page, snapTpl, 15000, "beforeD");
     const s1 = await playAndSnap(page, "测试杀");
-    T("D1 怒杀在 hp<maxHp 时免杀意", s1.intent === b0.intent,
+    T("D1 怒杀在 hp<maxHp 时免淫气", s1.intent === b0.intent,
       { before: b0.intent, after: s1.intent });
     await evalT(page, recycleTpl("测试杀"), 15000, "recycleD");
-    // 回满血后怒杀不再免杀意，应正常扣 1 点。
+    // 回满血后怒杀不再免淫气，应正常扣 1 点。
     await evalT(page, "window.state.battle.allies[0].hp = window.state.battle.allies[0].maxHp;",
       15000, "healD");
     const s2 = await playAndSnap(page, "测试杀");
-    T("D2 回满血后怒杀正常消耗杀意（说明是动态判定、非残留标记）",
+    T("D2 回满血后怒杀正常消耗淫气（说明是动态判定、非残留标记）",
       s2.intent === 1, { intent: s2.intent });
 
     console.log("\n--- D 段：追杀 pursueKill + pursueFreeThisTurn ---");
@@ -236,13 +236,13 @@ const KILL = (extra = {}) => Object.assign({
       { extraUnit: "u.pursueFreeThisTurn = true;" }), 20000, "setupD2");
     const b1 = await evalT(page, snapTpl, 15000, "beforeD2");
     const s3 = await playAndSnap(page, "测试杀");
-    T("D3 追杀在本回合标记下免杀意", s3.intent === b1.intent,
+    T("D3 追杀在本回合标记下免淫气", s3.intent === b1.intent,
       { before: b1.intent, after: s3.intent });
     await evalT(page, recycleTpl("测试杀"), 15000, "recycleD2");
     await evalT(page, "window.state.battle.allies[0].pursueFreeThisTurn = false;",
       15000, "clearD2");
     const s4 = await playAndSnap(page, "测试杀");
-    T("D4 标记清空后追杀正常消耗杀意", s4.intent === 1, { intent: s4.intent });
+    T("D4 标记清空后追杀正常消耗淫气", s4.intent === 1, { intent: s4.intent });
   }
 
   // ---------- E 段：记忆泡泡（已修 BUG 的回归）----------
@@ -252,7 +252,7 @@ const KILL = (extra = {}) => Object.assign({
       { ref: "abe_karuna", name: "安倍卡露娜" }), 20000, "setupE");
     const b0 = await evalT(page, snapTpl, 15000, "beforeE");
     const s1 = await playAndSnap(page, "测试杀");
-    T("E1 泡泡牌打出时免杀意", s1.intent === b0.intent,
+    T("E1 泡泡牌打出时免淫气", s1.intent === b0.intent,
       { before: b0.intent, after: s1.intent });
     const m = (s1.marks || []).find(x => x.n === "测试杀") || {};
     T("E2 进弃牌堆时 _bubbleFree 已清除（上轮修复点）",
@@ -275,11 +275,11 @@ const KILL = (extra = {}) => Object.assign({
     T("F2 主牌进弃牌堆时 noIntentCost 已清除", mA.noIntentCost === false, { mA });
     T("F3 追加牌进弃牌堆时 noIntentCost 已清除", mB.noIntentCost === false, { mB });
 
-    // 回收追加牌再打出：应正常消耗杀意。
+    // 回收追加牌再打出：应正常消耗淫气。
     const rc = await evalT(page, recycleTpl("乙杀"), 15000, "recycleF1");
     T("F4 追加牌已回收到手牌（否则下条断言会假通过）", rc === true, { rc });
     const s2 = await playAndSnap(page, "乙杀");
-    T("F5 追加牌回收后再打出正常消耗杀意", s2.intent === 1,
+    T("F5 追加牌回收后再打出正常消耗淫气", s2.intent === 1,
       { intent: s2.intent, logs: s2.logs.slice(-120) });
 
     // 【狂风绝息斩】（罗卡尔）未在此做真实触发：CharacterSkillAccess.canActor

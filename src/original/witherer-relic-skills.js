@@ -27,7 +27,7 @@ window.WithererRelicSkills = (() => {
     const blocked = team.filter(u => u.drawLockedThisTurn).length;
     team.forEach(u => drawRandomSlash(state, u));
     window.BattleLog.add(state,
-      `${actor.name} 使用战争号角，杀意重置并令我方角色随机获得杀牌${blocked ? `；${blocked}名封魔角色无法摸牌` : ""}。`);
+      `${actor.name} 使用战争号角，淫气重置并令我方角色随机获得杀牌${blocked ? `；${blocked}名封魔角色无法摸牌` : ""}。`);
     return true;
   }
   function drawRandomSlash(state, unit) {
@@ -69,7 +69,7 @@ window.WithererRelicSkills = (() => {
     unit.stats.bloodlust = Math.min(99, (unit.stats.bloodlust || 1) + gain);
     unit.stats.drawPerTurn = (unit.stats.drawPerTurn || 0) + gain;
     window.BattleLines?.skill(state, unit, "鲜血之忆");
-    window.BattleLog.add(state, `${unit.name} 的鲜血之忆触发，杀意上限和每回合摸牌各+${gain}。`);
+    window.BattleLog.add(state, `${unit.name} 的鲜血之忆触发，淫气上限和每回合摸牌各+${gain}。`);
   }
   function prepare(state, unit, damage) {
     applyBloodMemory(state, unit);

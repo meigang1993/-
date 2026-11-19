@@ -1,13 +1,15 @@
-// 角色强化：每次消耗 1000 莉莉丝元，只永久提升玩家选择的一项属性。
+// 角色强化：每次消耗 5000 莉莉丝元，只永久提升玩家选择的一项属性。
 // 加成不写进 stats 累加，而是由「各项次数 × 单次加成」在每次属性重算时覆盖式叠加，
 // 因此升级、读档、迁移、ServerCore 回写等所有重算路径都幂等，不会重复加。
 window.CharacterEnhance = (() => {
-  const COST = 1000;
-  const MAX_LEVEL = 999; // 每项属性各自的上限；某项满级不影响其它项
+  const COST = 5000;
+  const MAX_LEVEL = 50; // 每项属性各自的上限；旧档超限次数不保留，读档/落盘一律收敛到此值
   const BONUS = Object.freeze({ maxHp: 3, attack: 1, magic: 1, speed: 1 });
   const statKeys = Object.freeze(["maxHp", "attack", "magic", "speed"]);
   const NAMES = Object.freeze({ maxHp: "生命值", attack: "攻击力", magic: "魔力", speed: "速度" });
 
+  // 旧存档（含 enhanceLevel 旧字段）里超过 50 次的部分一律不保留：
+  // 读档与 compactSaveData 落盘都走这里，写回的四元组每项最多 50 次。
   function cleanLevel(value) {
     const raw = Math.floor(Number(value) || 0);
     if (!Number.isFinite(raw) || raw <= 0) return 0;

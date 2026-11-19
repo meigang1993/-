@@ -82,7 +82,7 @@ window.GameUIBattleUnits = (U, I) => {
   function unitBody(unitData, battle) {
     const status = statusIcons(unitData);
     const intentMax = Math.min(99, Math.max(1, (unitData.stats?.bloodlust || 1) + (unitData.intentMaxBonus || 0)));
-    const intent = `<span class="intent-flame ${(unitData.intent || 0) <= 0 ? "empty" : ""}" title="杀意：${unitData.intent || 0}/${intentMax}">${unitData.intent || 0}/${intentMax}</span>`;
+    const intent = `<span class="intent-flame ${(unitData.intent || 0) <= 0 ? "empty" : ""}" title="淫气：${unitData.intent || 0}/${intentMax}">${unitData.intent || 0}/${intentMax}</span>`;
     const moonSuits = (unitData.newMoonSuits || []).map(U.esc).join(" ");
     const moon = unitData.newMoonSuits?.length
       ? `<div class="target-mark moon-suits" title="新月之歌记录花色：${moonSuits}">${moonSuits}</div>`

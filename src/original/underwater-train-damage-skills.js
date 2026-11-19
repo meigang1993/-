@@ -55,7 +55,7 @@ window.UnderwaterTrainDamageSkills = ({ alive, singleSlash, visible }) => {
     mordio.rageExpireTurn = (mordio.actionCount || 0) + 1;
     window.BattleLines?.skill(state, mordio, "狂鲨之怒", actor);
     window.BattleLog.add(state,
-      `${mordio.name} 的狂鲨之怒触发，杀意上限+1。`);
+      `${mordio.name} 的狂鲨之怒触发，淫气上限+1。`);
   }
 
   function splash(state, actor, amount, damage, excludeUid) {

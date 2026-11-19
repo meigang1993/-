@@ -1,10 +1,10 @@
-// 实战：罗卡尔【狂风绝息斩】范围 + 全体【杀】杀意消耗
+// 实战：罗卡尔【狂风绝息斩】范围 + 全体【杀】淫气消耗
 // BUG1：大招描述为「依次使用手牌中的所有【杀】」，实现却用名称正则
 //       （type==="slash" 或名字以「杀」结尾）选取，把群体杀（机枪扫杀/流星杀）
 //        一并卷入。群体杀走全体结算，与「随机循环指定存活敌方角色为目标」
 //        的单体语义矛盾 → 改为只选单体【杀】。
-// BUG2：群体【杀】与单体杀同样扣 1 点杀意。一次打全体却按单体的代价计价，
-//        且玩家侧没有提示 → 全体【杀】改为不消耗杀意，并同步卡面与相关技能文本。
+// BUG2：群体【杀】与单体杀同样扣 1 点淫气。一次打全体却按单体的代价计价，
+//        且玩家侧没有提示 → 全体【杀】改为不消耗淫气，并同步卡面与相关技能文本。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
@@ -75,10 +75,10 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   check("战术/响应/消耗牌仍不动",
     r1.after.includes("魔王军入侵") && r1.after.includes("无谋冲拳")
       && r1.after.includes("愈魔瓶") && r1.after.includes("与我一战"));
-  check("大招不消耗杀意", r1.intent === 3, `杀意=${r1.intent}`);
+  check("大招不消耗淫气", r1.intent === 3, `淫气=${r1.intent}`);
   check("战报文案同步为「单体杀牌」", /单体杀牌/.test(r1.log || ""), r1.log || "");
 
-  console.log("\n【二】普通实体全体【杀】消耗杀意，转化产物不消耗");
+  console.log("\n【二】普通实体全体【杀】消耗淫气，转化产物不消耗");
   const r2 = await page.evaluate(() => {
     const st = window.state, b = st.battle;
     const a = b.allies[0];
@@ -94,7 +94,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
       a.hand = [card];
       window.BattleSystem.useCard(st, a, enemy, card);
       return { after: a.intent,
-        logs: (st.log || []).map(String).filter(s => /杀意/.test(s)) };
+        logs: (st.log || []).map(String).filter(s => /淫气/.test(s)) };
     };
     return {
       gatling: run(mk("机枪扫杀", "slash", { sweep: true, targetless: true }), 2),
@@ -106,15 +106,15 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
         { sweep: true, targetless: true, noIntentCost: true, convertedFrom: "闪" }), 2),
     };
   });
-  // 设定：手牌打出的实体全体【杀】与单体杀一样消耗1点杀意；
+  // 设定：手牌打出的实体全体【杀】与单体杀一样消耗1点淫气；
   // 只有转化/技能产物带 noIntentCost 才免费。
-  check("普通实体【机枪扫杀】消耗1点杀意", r2.gatling.after === 1, JSON.stringify(r2.gatling));
-  check("普通实体【流星杀】消耗1点杀意", r2.meteor.after === 1, JSON.stringify(r2.meteor));
+  check("普通实体【机枪扫杀】消耗1点淫气", r2.gatling.after === 1, JSON.stringify(r2.gatling));
+  check("普通实体【流星杀】消耗1点淫气", r2.meteor.after === 1, JSON.stringify(r2.meteor));
   check("对照组：单体【杀（普攻）】仍消耗1点",
     r2.single.after === 1, JSON.stringify(r2.single));
   check("对照组：单体属性杀【火杀】仍消耗1点",
     r2.fire.after === 1, JSON.stringify(r2.fire));
-  check("对照组：疯狂射击转化牌仍不消耗杀意",
+  check("对照组：疯狂射击转化牌仍不消耗淫气",
     r2.crazy.after === 2, JSON.stringify(r2.crazy));
 
   console.log(`\n合计 ${pass} 通过 / ${fail} 失败   页面错误 ${errors.length}`);

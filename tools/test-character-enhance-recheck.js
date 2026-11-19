@@ -1,4 +1,4 @@
-// 【角色强化】严格复查：新口径「花 1000 只加一项属性」的 BUG / 副作用排查。
+// 【角色强化】严格复查：新口径「花 5000 只加一项属性、每项 50 次」的 BUG / 副作用排查。
 // 与 test-character-enhance.js 独立实现，避免共用断言一起错。REVERT 为源码级反向验证。
 const fs = require("fs");
 const path = require("path");
@@ -100,15 +100,15 @@ function mkState(gold, enhance) {
 
 (async () => {
   // ---------- A. 模块与数值 ----------
-  T("A1 花费固定 1000", E.COST === 1000);
-  T("A2 上限按项、四项独立", E.MAX_LEVEL === 999 && E.statKeys.length === 4);
+  T("A1 花费固定 5000", E.COST === 5000);
+  T("A2 上限按项、四项独立", E.MAX_LEVEL === 50 && E.statKeys.length === 4);
   T("A3 单次加成表正确", KEYS.every(k => E.BONUS[k] === BONUS[k]));
   T("A4 levelsOf 对畸形入参不抛错",
     JSON.stringify(E.levelsOf({ enhance: null })) === JSON.stringify(zero())
     && JSON.stringify(E.levelsOf({ enhance: [] })) === JSON.stringify(zero()));
   T("A5 levelsOf 裁剪负数/超上限/字符串",
     JSON.stringify(E.levelsOf({ enhance: { maxHp: -1, attack: 1e9, magic: "4", speed: 2.9 } }))
-      === JSON.stringify({ maxHp: 0, attack: 999, magic: 4, speed: 2 }));
+      === JSON.stringify({ maxHp: 0, attack: 50, magic: 4, speed: 2 }));
   T("A6 旧档 enhanceLevel=4 等价四项各 4 次",
     JSON.stringify(E.levelsOf({ enhanceLevel: 4 }))
       === JSON.stringify({ maxHp: 4, attack: 4, magic: 4, speed: 4 }));
@@ -131,16 +131,16 @@ function mkState(gold, enhance) {
 
   // ---------- B. 真实链路：四项逐项强化、互不串 ----------
   const ctx = coreCtx();
-  const st = mkState(20000);
+  const st = mkState(100000);
   ctx.state = st;
   const seq = ["attack", "maxHp", "magic", "speed", "attack", "magic", "magic"];
   const lv = zero();
-  let gold = 20000;
+  let gold = 100000;
   let allGood = true;
   for (const key of seq) {
     const before = JSON.stringify(E.levelsOf(st.chars[0]));
     const r = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: key }, st);
-    lv[key] += 1; gold -= 1000;
+    lv[key] += 1; gold -= 5000;
     const after = E.levelsOf(st.chars[0]);
     if (!r.ok || JSON.stringify(after) !== JSON.stringify(lv)
       || st.resources.gold !== gold
@@ -157,35 +157,35 @@ function mkState(gold, enhance) {
   T("B5 同一 core 重复 apply 不重复叠加", JSON.stringify(pick(st.chars[0].stats)) === beforeRepeat);
 
   // ---------- C. 边界与守卫 ----------
-  const rich = mkState(5000);
+  const rich = mkState(25000);
   const richLv = JSON.stringify(E.levelsOf(rich.chars[0]));
   T("C1 缺失 stat（余额充足）拒绝且不扣费",
     (await ctx.ServerCore.call("enhanceChar", { id: "lokar" }, rich)).ok === false
-    && rich.resources.gold === 5000 && JSON.stringify(E.levelsOf(rich.chars[0])) === richLv);
+    && rich.resources.gold === 25000 && JSON.stringify(E.levelsOf(rich.chars[0])) === richLv);
   T("C2 伪造 stat（余额充足）拒绝且不扣费",
     (await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "all" }, rich)).ok === false
-    && rich.resources.gold === 5000 && JSON.stringify(E.levelsOf(rich.chars[0])) === richLv);
+    && rich.resources.gold === 25000 && JSON.stringify(E.levelsOf(rich.chars[0])) === richLv);
   T("C3 原型链键 __proto__ 拒绝且不污染",
     (await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "__proto__" }, rich)).ok === false
-    && rich.resources.gold === 5000);
-  const exact = mkState(1000);
-  T("C4 恰好 1000 可强化",
+    && rich.resources.gold === 25000);
+  const exact = mkState(5000);
+  T("C4 恰好 5000 可强化",
     (await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "speed" }, exact)).ok === true
     && exact.resources.gold === 0);
-  const poor = mkState(999);
-  T("C5 999 不可强化且不扣费",
+  const poor = mkState(4999);
+  T("C5 4999 不可强化且不扣费",
     (await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "speed" }, poor)).ok === false
-    && poor.resources.gold === 999);
-  const lockState = mkState(1000); lockState.chars[0].locked = true;
+    && poor.resources.gold === 4999);
+  const lockState = mkState(5000); lockState.chars[0].locked = true;
   T("C6 未解锁拒绝且不扣费",
     (await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "speed" }, lockState)).ok === false
-    && lockState.resources.gold === 1000);
-  const capped = mkState(3000, { maxHp: 999, attack: 0, magic: 0, speed: 0 });
+    && lockState.resources.gold === 5000);
+  const capped = mkState(15000, { maxHp: 50, attack: 0, magic: 0, speed: 0 });
   const cap1 = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "maxHp" }, capped);
   const cap2 = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "attack" }, capped);
   T("C7 该项满级拒绝", cap1.ok === false);
-  T("C8 某项满级不影响其它项", cap2.ok === true && capped.resources.gold === 2000
-    && E.levelOf(capped.chars[0], "attack") === 1 && E.levelOf(capped.chars[0], "maxHp") === 999);
+  T("C8 某项满级不影响其它项", cap2.ok === true && capped.resources.gold === 10000
+    && E.levelOf(capped.chars[0], "attack") === 1 && E.levelOf(capped.chars[0], "maxHp") === 50);
   T("C9 金币为负/NaN 一律拒绝不扣费",
     (await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "magic" }, mkState(NaN))).ok === false);
   const hall = src("hall-enhance-actions.js");
@@ -223,7 +223,7 @@ function mkState(gold, enhance) {
   T("D8 满级升级重算仍按各项保留",
     JSON.stringify(pick(grantChar.stats)) === JSON.stringify(want(ctx, ctx.CharacterProgression.maxLevel,
       { maxHp: 1, attack: 0, magic: 2, speed: 0 })));
-  const sani = ctx.LocalCoreUtils.sanitize(mkState(1000, { maxHp: 1, attack: 2, magic: 0, speed: 0 }), "enhanceChar");
+  const sani = ctx.LocalCoreUtils.sanitize(mkState(5000, { maxHp: 1, attack: 2, magic: 0, speed: 0 }), "enhanceChar");
   T("D9 core 快照保留 enhance 且不重复叠加",
     JSON.stringify(E.levelsOf(sani.chars[0])) === JSON.stringify({ maxHp: 1, attack: 2, magic: 0, speed: 0 })
     && JSON.stringify(pick(sani.chars[0].stats)) === JSON.stringify(want(ctx, 3, { maxHp: 1, attack: 2, magic: 0, speed: 0 })));
@@ -239,7 +239,7 @@ function mkState(gold, enhance) {
   load(uiCtx, "ui-info.js");
   const UI = uiCtx.GameUIInfo(U);
   const u = { id: "lokar", name: "罗卡尔", locked: false, level: 3, enhance: { maxHp: 2, attack: 0, magic: 1, speed: 0 }, stats: {} };
-  uiCtx.state = { view: "hall", resources: { gold: 5000 }, chars: [u] };
+  uiCtx.state = { view: "hall", resources: { gold: 25000 }, chars: [u] };
   const html = UI.infoPanel(u, "enhance");
   T("E1 四个按钮各带自己的 stat", KEYS.every(k => html.includes(`data-enhance-stat="${k}"`)));
   T("E2 每个按钮都指向该角色 id", (html.match(/data-enhance-char="lokar"/g) || []).length === 4);
@@ -248,8 +248,8 @@ function mkState(gold, enhance) {
   T("E4 累计显示按各项次数", html.includes("累计 +6") && html.includes("累计 +1") && html.includes("已强化 3 次"));
   T("E5 「立绘」页签确已删除", !html.includes('data-info-tab="specialArt"'));
   T("E6 文案写明选择一项", html.includes("选择一项属性"));
-  uiCtx.state = { view: "hall", resources: { gold: 5000 }, chars: [{ ...u, enhance: { maxHp: 999, attack: 0, magic: 0, speed: 0 } }] };
-  const capHtml = UI.infoPanel({ ...u, enhance: { maxHp: 999, attack: 0, magic: 0, speed: 0 } }, "enhance");
+  uiCtx.state = { view: "hall", resources: { gold: 25000 }, chars: [{ ...u, enhance: { maxHp: 50, attack: 0, magic: 0, speed: 0 } }] };
+  const capHtml = UI.infoPanel({ ...u, enhance: { maxHp: 50, attack: 0, magic: 0, speed: 0 } }, "enhance");
   T("E7 满级项单独置灰，其余三项可点",
     /data-enhance-stat="maxHp"[^>]*disabled/.test(capHtml)
     && (capHtml.match(/data-enhance-stat="(attack|magic|speed)"[^>]*disabled/g) || []).length === 0);
@@ -265,10 +265,12 @@ function mkState(gold, enhance) {
   for (const f of fs.readdirSync(path.join(ROOT, "src/original"))) {
     const p = path.join(ROOT, "src/original", f);
     if (!fs.statSync(p).isFile() || !f.endsWith(".js")) continue;
+    // 公告是变更说明文案，「旧 enhanceLevel 字段不再写回」属正常表述，不是运行时残留。
     if (fs.readFileSync(p, "utf8").includes("enhanceLevel")
-      && !["character-enhance.js", "store-compact.js", "server-core-apply.js"].includes(f)) scan.push(f);
+      && !["character-enhance.js", "store-compact.js", "server-core-apply.js",
+        "update-notice-recent.js"].includes(f)) scan.push(f);
   }
-  T("F1 enhanceLevel 只出现在新档兼容/旧字段清除三处", scan.length === 0, scan);
+  T("F1 enhanceLevel 只出现在运行时兼容三处与公告说明文案", scan.length === 0, scan);
   T("F2 旧「一次加四项」文案已清零",
     !src("update-notice-recent.js").includes("永久提升四项核心属性")
     && !src("ui-info.js").includes("永久提升四项核心属性"));

@@ -4,7 +4,7 @@ window.GameCombatRoles = (() => {
     "控制": { className: "control", text: "弃牌、封锁、转移或限制行动" },
     "辅助/续航": { className: "support", text: "补牌、治疗、护甲或增益队友" },
     "防御/嘲讽": { className: "defense", text: "承伤、替伤、反制或吸引攻击" },
-    "成长/资源": { className: "growth", text: "积累标记、牌权、杀意或后期资源" },
+    "成长/资源": { className: "growth", text: "积累标记、牌权、淫气或后期资源" },
   });
   const byId = Object.freeze({
     lokar: ["输出"],

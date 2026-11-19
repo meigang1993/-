@@ -108,9 +108,9 @@ gameplay values and behavior remain here rather than being duplicated in
 - Completing a dungeon bounty grants its reward directly without opening a separate task-reward settlement popup.
 - The X button on every unlock-story modal is a completion action, not a dismiss-only action. It runs the same durable unlock path as the event's primary button and closes only after that path is dispatched.
 - Every canonical playable character must retain at least one valid unlock path. Skin purchases immediately equip the purchased skin, and owned default and paid skins must remain freely switchable afterward.
-- 2026年7月24日角色平衡调整：贝尔蒂丝满生命时攻击力与魔力为基础值的1.5倍，杀意上限与手牌上限仍各为基础值的2倍；芙萝娅神速飞剑按行动回合记录目标，同一目标每回合最多触发一次；索尼娅的暴走与极速核心机制不变。温蒂当前摸牌加成为每回合`1`、初始`2`。
+- 2026年7月24日角色平衡调整：贝尔蒂丝满生命时攻击力与魔力为基础值的1.5倍，淫气上限与手牌上限仍各为基础值的2倍；芙萝娅神速飞剑按行动回合记录目标，同一目标每回合最多触发一次；索尼娅的暴走与极速核心机制不变。温蒂当前摸牌加成为每回合`1`、初始`2`。
 - 26名角色的初始面板与15级生命成长保持不变；攻击/魔力按基础成长的`3x`总量执行，速度按`2.5x`总量执行。没有跨角色共用的15级终值上限；完整初始属性与15级成长总量以四个角色数据源和`src/original/character-progression.js`为准。
-- 2026年8月10日角色调整：芙萝娅基础杀意上限改为`1`，`神速之袭`在准备阶段和结束阶段各限一次，同一回合可分别发动；准备阶段发动仍跳过本回合判定阶段和摸牌阶段，结束阶段发动后芙萝娅翻面并跳过下一个完整回合。`神速之袭`的翻面与击杀摸牌必须等本次攻击动画完成后一次性提交；只有该虚拟【刺杀】首次直接命中的实际生命伤害令实际受伤目标死亡时才摸牌，后续连锁伤害不计，待复活目标不计，最后一名敌人仍须先发放该奖励再进入胜利结算。摸牌中途异常必须回滚牌堆、手牌、随机游标、日志和待播事件，并保留结算事件供后续重试；重复提交或已经替换的旧战斗不得再次摸牌、翻面或回写状态。贝丝妲魔偶基础魔力改为`3`。卡洛斯基础攻击力改为`3`、基础杀意上限改为`1`。
+- 2026年8月10日角色调整：芙萝娅基础淫气上限改为`1`，`神速之袭`在准备阶段和结束阶段各限一次，同一回合可分别发动；准备阶段发动仍跳过本回合判定阶段和摸牌阶段，结束阶段发动后芙萝娅翻面并跳过下一个完整回合。`神速之袭`的翻面与击杀摸牌必须等本次攻击动画完成后一次性提交；只有该虚拟【刺杀】首次直接命中的实际生命伤害令实际受伤目标死亡时才摸牌，后续连锁伤害不计，待复活目标不计，最后一名敌人仍须先发放该奖励再进入胜利结算。摸牌中途异常必须回滚牌堆、手牌、随机游标、日志和待播事件，并保留结算事件供后续重试；重复提交或已经替换的旧战斗不得再次摸牌、翻面或回写状态。贝丝妲魔偶基础魔力改为`3`。卡洛斯基础攻击力改为`3`、基础淫气上限改为`1`。
 - Same-screen party selection must update roster cards in place: selecting or removing a character preserves both the complete card DOM node and its portrait, keeps card geometry and modal scroll stable, and updates only classes, status text, and the party count. Roster cards must keep `content-visibility: visible` so offscreen intrinsic-size estimates cannot cause vertical jumps. This rule is data-driven and applies automatically to every current and future unlocked character; it must never rely on a hard-coded character list.
 - Test-battle character and enemy selection cards must keep `content-visibility: visible`. Their long two-column grids are rerendered after each selection; deferred intrinsic sizing makes offscreen cards switch between estimated and real heights during scroll restoration, causing visible vertical jumps.
 - Deferred dungeon and battle styles must remain inactive until every stylesheet for that scene has loaded successfully, then activate together before the scene renders. Each stylesheet gets one short automatic retry after a transient load failure; two consecutive failures still abort scene startup. A failed partial load must not leak half-applied scene styles into the hall, and the dungeon shell must not continue translating after the dungeon becomes visible or after returning to the hall.
@@ -136,10 +136,10 @@ gameplay values and behavior remain here rather than being duplicated in
 - 【拆解】 and 【偷窃】 may target any other living character with a visible hand, including a teammate. A friendly target's hand is shown face-up for manual selection; an opposing target's hand remains hidden. Enemy AI may target its own teammates and prioritizes removing a teammate's status card. Any status card removed or stolen by a card or stealing skill immediately enters its original holder's consumed pile and never transfers to the thief.
 - Canonical turn order is preparation, judgement, draw, play, discard, then end phase. Effects that say `结束阶段` trigger only after discard has completed or been skipped. Cards drawn or transferred during the end phase do not create a second discard phase.
 - 罗卡尔与艾伦格衍生技能`战斗之勇`在实体【杀】或【与我一战】成功使用后，从使用者所属阵营的共享摸牌堆摸1张牌；`公共牌库`仅指战斗外永久卡组，不得再用于该技能描述。
-- 罗卡尔皮肤“恋母勇者”拥有专属技能特效：战斗之勇使用深红气焰、摸牌飞行和恢复杀意时的金色粒子红眼反馈；热血契约显示燃烧手牌、贝丝妲轮廓持剑虚影和本回合攻击红色拖尾，虚影强度随消耗牌堆数量提高；狂风绝息斩显示杀牌剑刃风暴、三圈冲击波、暗紫命中与落地裂痕，击倒目标时追加残留紫色电弧。仅装备该皮肤时触发，热血契约持续表现于罗卡尔回合结束时清除。
+- 罗卡尔皮肤“恋母勇者”拥有专属技能特效：战斗之勇使用深红气焰、摸牌飞行和恢复淫气时的金色粒子红眼反馈；热血契约显示燃烧手牌、贝丝妲轮廓持剑虚影和本回合攻击红色拖尾，虚影强度随消耗牌堆数量提高；狂风绝息斩显示杀牌剑刃风暴、三圈冲击波、暗紫命中与落地裂痕，击倒目标时追加残留紫色电弧。仅装备该皮肤时触发，热血契约持续表现于罗卡尔回合结束时清除。
 - 贝丝妲魔偶皮肤“机铠魔偶”拥有专属技能特效：追魂之刃显示核心闪光、虚拟杀与锁链束缚；锁魂镰刀显示玫红魔力镰刀、环形横扫和目标裂痕，连续击杀触发的每轮横扫颜色逐轮加深；榨取精华显示能量触须、核心充能和武器光晕，对非罗卡尔男性使用时改为更深紫红和更强束缚。仅装备该皮肤时触发，榨取精华持续表现于贝丝妲魔偶回合结束时清除。
 - 贝丝妲魔偶基础魔力与基础手牌上限固定为`3`。榨取精华每张可见红桃牌令其本回合魔力增加50%，按发动时的当前魔力加算，不乘算其它百分比来源；待摸牌动画完成前的红桃不计数。即使发动时没有可见红桃，本回合物理攻击牌转为魔法攻击仍生效；目标生命流失与等量摸牌按可见红桃数结算。转换后的物理攻击牌伤害预览按当前魔力刷新。
-- 贝丝妲魔偶的追魂之刃固定为：实体【杀】被【闪】抵消后，额外再次使用原牌1次；此次使用保留原牌名称、伤害属性和效果，不额外消耗手牌或杀意，且不能再次触发追魂之刃。
+- 贝丝妲魔偶的追魂之刃固定为：实体【杀】被【闪】抵消后，额外再次使用原牌1次；此次使用保留原牌名称、伤害属性和效果，不额外消耗手牌或淫气，且不能再次触发追魂之刃。
 - Economy values: `src/original/economy-config.js` is the single client configuration source for shop defaults, card deletion, relic smelting, shop stock size, dungeon gold rewards, mission multipliers, and task bonus gold ranges.
 - `src/original/economy-config.js` 将初始莉莉丝元固定为 `0`。新游戏从 `0` 莉莉丝元开始，已有存档保留其原有余额；运行时缺失或无效的莉莉丝元统一回退为 `0`，不得重新赠送初始资金。
 - Economy balance: dungeon reward multipliers by difficulty are `1 / 1.35 / 1.75 / 2.2 / 2.75`; mission gold multipliers remain `1 / 1.25 / 1.7` for 魔国机械工厂 / 水下列车 / 兽人地下城. Base node gold is `90-130 / 280 / 500 / 220` for normal / elite / boss / chest. Representative normal-run rewards are derived from configured route layers instead of hard-coded combat counts; the one-rest routes currently average about `2582.5` for 水下列车 and `2907` for 兽人地下城. Task bonus ranges remain `500-900 / 800-1400 / 1200-2000`. Character progression no longer consumes Lilith gold. Card deletion costs `700`, and relic smelting grants `180`.
@@ -238,7 +238,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 数量、数值和百分比统一使用阿拉伯数字，例如 `1张`、`2点`、`30%`；固定目标句式中的 `一名` 和序数表达 `下一张` 保留中文。牌名统一使用 `【】`，标记名统一使用中文引号 `“”`。
 - 所有正式卡牌、卡牌转换形态和由卡牌生成的虚拟攻击均没有固定基础伤害。卡牌伤害只读取其声明的攻击力、魔力、护甲、动态成长值和倍率；角色技能自身的固定伤害不受此规则影响。
 - 【暴走杀】每使用1次，使用者本场战斗的攻击力按首次发动时的当前攻击力+10%（同快照线性叠加、不累乘），并立即按提升后的攻击力结算本次伤害；已使用但被目标效果取消的【暴走杀】仍获得此次攻击力成长。该成长直接写入战斗单位攻击力，不在回合结束时清零。
-- 奥菲莉亚的`女王之尾`只作用于物理单体【杀】，覆盖实体、虚拟和转换来源，但明确禁止“使用【杀】”触发的强制出牌除外。结算期间该牌本身改为魔力缩放和魔法攻击类别，飞牌、公开出牌记录、伤害判定与反馈均按魔法攻击处理；实体牌结算完成后恢复原始字段。整张牌结算后若实际造成生命值伤害，弃置目标1张可见手牌；同一次用牌无论包含多少段伤害都只弃置1张，状态牌离手时按统一规则进入消耗牌堆。弃置到【杀】时，以不再次消耗手牌和杀意的方式对同一个目标再次使用原【杀】，并保留原牌的实体或虚拟身份，不存在固定32次追击上限。重复使用仍走完整响应与伤害流程，目标死亡、战斗锁定或不再弃到【杀】时停止。
+- 奥菲莉亚的`女王之尾`只作用于物理单体【杀】，覆盖实体、虚拟和转换来源，但明确禁止“使用【杀】”触发的强制出牌除外。结算期间该牌本身改为魔力缩放和魔法攻击类别，飞牌、公开出牌记录、伤害判定与反馈均按魔法攻击处理；实体牌结算完成后恢复原始字段。整张牌结算后若实际造成生命值伤害，弃置目标1张可见手牌；同一次用牌无论包含多少段伤害都只弃置1张，状态牌离手时按统一规则进入消耗牌堆。弃置到【杀】时，以不再次消耗手牌和淫气的方式对同一个目标再次使用原【杀】，并保留原牌的实体或虚拟身份，不存在固定32次追击上限。重复使用仍走完整响应与伤害流程，目标死亡、战斗锁定或不再弃到【杀】时停止。
 - 伤害和恢复公式统一使用清晰的等值或全角括号表达，例如 `造成等同于你的攻击力的物理伤害`、`造成等同于你的魔力的物理伤害`、`恢复（其最大生命值的30%+你的魔力）点生命值`。不得使用 `1点+攻击力`、`攻击力+护甲值点` 等旧写法。
 - 单体和群体目标统一写为 `指定一名敌方角色为目标`、`指定一名友方角色为目标`、`指定所有敌方角色为目标`。多目标数量直接写阿拉伯数字。
 - 主动牌使用 `使用此牌`。响应语义按结算方式区分：【闪】响应【杀】与【看破】响应战术牌属于`使用`；【杀】响应【与我一战】或【魔王军入侵】，以及【无谋冲拳】【佯攻】【弹反】【后空翻】属于`打出`。描述顺序固定为目标与主要效果在前，响应限制、后续触发、持续时间和操作提示在后。
@@ -277,7 +277,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - Role positioning: she uses 杀欲窥视 to copy every visible kill card held by one selected enemy without revealing that enemy's hand. Each copy keeps the original name and suit, is temporary with the consume property, and costs no intent. She then enters 暴走 or 极速 based on hand color. During her play phase, if current hand colors satisfy the other form's condition, she can actively switch again at any time. The selected state lasts until her next turn begins unless actively switched.
 - Draw settings: 每回合摸牌数 is base 2 + 3; 初始摸牌数 is base 4 + 2.
 - 暴走: all red hand cards, including response cards, visibly display as 【杀（普攻）】 and can be actively used as no-intent-cost 普攻杀, creating stable offensive pressure. Active selection, targeting, animation, and resolution must use the converted normal-kill form rather than the original card's target or effect flags. This display conversion is transient: the original card fields are restored after resolution, and the preview disappears immediately after switching away from 暴走 or when the state expires at the next turn start.
-- Intent rule: 暴走 red cards and 杀欲窥视 copied kill cards must remain playable at 0 杀意 because both are no-intent-cost kill effects.
+- Intent rule: 暴走 red cards and 杀欲窥视 copied kill cards must remain playable at 0 淫气 because both are no-intent-cost kill effects.
 - 极速: black cards used by XX型凋零者1124号 are unresponsive, and black cards can also be used as 闪 or 看破, improving offense pressure, defense, and counterplay.
 - Unresponsive rule: 不可响应 blocks 闪, 看破, and the proxy dodge effect 为我护驾 using 闪 to cancel the card.
 - Switch rule: 暴走与极速 is no longer once per turn. Red cards greater than or equal to black cards selects 暴走; black cards greater than red cards selects 极速. It can be used again whenever this would change the current form.
@@ -406,7 +406,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - Skill logic files: `src/original/guest-aileng-skills.js`, exposed through `src/original/guest-characters-skills.js`
 - 征服欲望的角色面板与图鉴必须展开显示衍生技能【战斗之勇】和【充能精华】的完整描述。
 - 充能精华: 艾伦格指定一名友方女性角色，自身弃置所有红桃牌并令目标摸等量牌；目标为贝丝妲时，改为艾伦格弃置所有手牌并令贝丝妲摸等量牌。对七位姐姐之一发动时，若其对应儿子在队伍中且存活，该儿子获得1枚“绿帽”标记；对娜娜莉或贝丝妲发动时，若罗卡尔在队伍中且存活，罗卡尔获得1枚“绿帽”标记。对贝丝妲发动时，艾伦格随后承受等同于贝丝妲当前魔力的伤害；若伤害结算后仍存活，艾伦格翻面并跳过下一个完整回合。角色详情、战斗技能和技能牌描述统一读取该规范效果，旧版动态技能对象也必须刷新。
-- “绿帽”标记与洛基的青春草原使用相同效果和上限：至多5枚，每枚令手牌上限、杀意上限各+1，并按当前攻击力（扣本标记系统自身贡献）增加30%；多枚同快照线性加算，5枚共增加150%攻击力。
+- “绿帽”标记与洛基的青春草原使用相同效果和上限：至多5枚，每枚令手牌上限、淫气上限各+1，并按当前攻击力（扣本标记系统自身贡献）增加30%；多枚同快照线性加算，5枚共增加150%攻击力。
 - 充能精华台词固定为：普通目标“我这个……能补充魔力”；贝丝妲魔偶目标“很久没用你了”；娜娜莉目标“你看起来好像……二姐……”，娜娜莉回应“看来，受姨妈催熟记忆影响，我还是比较喜欢舅舅大人你”；贝丝妲目标“大姐，我还是很喜欢你，因为你真的很像母亲”，贝丝妲回应“是吗？那就把存货，全部交出来吧”。
 - 贝丝妲魔偶对艾伦格发动榨取精华时，台词固定为“哥哥，好久没见到你了，什么时候让我回到你身边？”。
 - 临时衍生技能【取粮】只在战斗操作区提供给符合条件的其他友方角色，不在这些角色的详情面板或图鉴中追加为固有技能；【快速生长】本身必须展开显示【取粮】的完整描述。
@@ -628,7 +628,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 所有我方角色主动技能必须只匹配一个规范主动技能身份，并由当前战斗中仍存活、持有同名且携带对应规范技能牌的当前行动角色发动；同时携带多个主动技能标记的混合伪造牌、只有同名但缺失规范技能牌的损坏技能对象、没有当前行动权的角色都直接拒绝。准备阶段技能只接受其准备窗口，出牌阶段技能只接受出牌阶段。自用技能只接受发动者本人，敌方目标、任意其他角色、其他友方、友方男性和友方女性目标分别按技能公开描述校验，倒下或不属于当前战斗的目标一律拒绝。需要单张费用或多张费用的技能必须确认所选实体手牌仍存在、可见且满足花色/牌型要求。任一角色、技能所有权、行动权、阶段、目标、次数、资源或费用校验失败，都必须在公共出牌区、战斗日志、出牌计数、手牌移动、使用标记和派生效果之前返回失败。上述统一契约由`src/original/character-skill-access.js`、`battle-card-playability.js`与`battle-combat.js`共同负责。
 - 受限手牌费用必须在同一共享规则下同时约束手牌禁用态、点击/拖拽选择和最终结算，不得只在发动末端报错。当前规则为：【偶像之吻】仅可选`♥`牌，【疯狂射击】仅可选`♥/♦`红牌，【鬼王扑克】仅可选非战术牌，【军令状】首张必须为标准花色且第二张必须与其花色完全相同；已选的【军令状】费用牌仍可点击取消。非法候选不得改写已选索引、待定目标或多选列表，脚本调用和旧状态仍须在最终结算再次拒绝。
 - 曼妮军火库衍生的`巴特雷`属于角色衍生技能，来源固定为`derived`，不得伪装成饰品技能或进入饰品主动技选择链。诺诺卡的`新月之歌`固定为被动技能，角色主动技可用性与AI不得保留不存在的`newMoonSong`主动牌分支。
-- 索尼娅与凋零者的`杀欲窥视`为主动技且每回合限一次；指定一名敌方角色后，直接复制其每张可见【杀】为同名同花色的临时消耗牌，不打开或排队任何展示手牌界面。复制牌保留`generatedBySkill`来源且不消耗杀意。首次执行后，可用性层、AI与执行器都必须读取`usedWithererPeek`并拒绝同回合再次发动，重复调用不得再次生成临时【杀】。
+- 索尼娅与凋零者的`杀欲窥视`为主动技且每回合限一次；指定一名敌方角色后，直接复制其每张可见【杀】为同名同花色的临时消耗牌，不打开或排队任何展示手牌界面。复制牌保留`generatedBySkill`来源且不消耗淫气。首次执行后，可用性层、AI与执行器都必须读取`usedWithererPeek`并拒绝同回合再次发动，重复调用不得再次生成临时【杀】。
 - 技能图标按已确认语义保持：普通主动技`⚔️`、自动锁定技默认`⭐`、可选触发/响应技可使用`🔵`、限定技`🔺`、觉醒/使命技`💰`、转换技`🔄`。已记录的专用图标优先，例如榨取精华固定为`🔵`；不能仅根据`type`字段批量覆盖这些例外。
 - 芙萝娅的`神速之翼`、`神速飞剑`，卡迪西斯的`重火力支援`，拉芙的`鬼牌狂欢`均为自动锁定技，固定使用`⭐`。我方的`复仇之刃`、`终焉回旋斩`、`刺刀AK47`及`血色刺伞`为蓝色触发技，由玩家决定是否发动；敌方的`剑盾反攻`等反击效果也使用蓝色触发技图标和文案，但仍由敌方 AI 自动决定。机器魅魔的`爱之鞭挞`由准备阶段自动执行，数据类型固定为`passive`并使用`⭐`，不得显示为可主动发动的`⚔️`技能。
 - 卡迪西斯的`重火力支援`只由其使用实体【杀】触发，对所有存活敌人造成等同于其攻击力的无视护甲伤害。该附加伤害继承触发【杀】的毒、雷、火、圣、暗、冰等伤害属性及物理/魔法类别，用于伤害反馈和对应防御判定；不重复附加原【杀】的中毒、感电、圣痕等后续状态效果。
@@ -701,7 +701,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 形象固定为暗红血意支配的成年狂战女性：暗红长发遮住半张脸，露出的竖瞳带有灼红能量，脸颊裂痕与脖颈锁骨沿线流动红色光流，半透明鳞片状血甲游动覆盖身体，右手凝成巨剑，左手保留三根红色尖刺，颈后到尾椎悬浮脊椎残影。不得改成明亮圣骑士、金发蓝瞳、普通火焰战士或无暗红能量识别点的形象。
 - 专属特效控制器为`src/original/angelica-berserker-skin-fx.js`，注册在 battle-presentation bundle；样式注册于`src/original/runtime-battle-styles.js`的`angelica-berserker`映射，指向`publish/angelica-berserker-skin.css`。
 - 出场演出由战斗开始事件单次排队：中央先显出搏动的暗红巨剑轮廓，随后血意环、红雾粒子与安洁莉卡立绘一同升起，剑光在角色前方凝成。
-- `力量爆发`（每张实体【杀】结算完成后叠加+50%伤害，回合结束清空）显示血甲收紧、巨剑膨胀与粗壮暗红剑柱；`狂战意志`受击或造成伤害时获得血色印记（受击更强），消耗1枚狂战标记代替1点杀意消耗时显示印记炸裂、血雾回流与能量脉冲，并化为本回合攻击血色拖尾（`angelica-berserker-rage-trail`连线，由`battle-damage-utils.js`在攻击时触发）；`狂战意志`主动发动时按设计稿分阶段显示血甲收束、标记逐枚炸裂、插地冲击波与地面龟裂、猩红巨人虚影凝聚并渗透治愈、血雨洒落，每弃置1枚标记触发一次自脚下上浮的暗红脉冲光环，多枚时连续触发且颜色逐圈加深，最终在胸口汇聚成猩红核心后沉入体内。
+- `力量爆发`（每张实体【杀】结算完成后叠加+50%伤害，回合结束清空）显示血甲收紧、巨剑膨胀与粗壮暗红剑柱；`狂战意志`受击或造成伤害时获得血色印记（受击更强），消耗1枚狂战标记代替1点淫气消耗时显示印记炸裂、血雾回流与能量脉冲，并化为本回合攻击血色拖尾（`angelica-berserker-rage-trail`连线，由`battle-damage-utils.js`在攻击时触发）；`狂战意志`主动发动时按设计稿分阶段显示血甲收束、标记逐枚炸裂、插地冲击波与地面龟裂、猩红巨人虚影凝聚并渗透治愈、血雨洒落，每弃置1枚标记触发一次自脚下上浮的暗红脉冲光环，多枚时连续触发且颜色逐圈加深，最终在胸口汇聚成猩红核心后沉入体内。
 - 胜利结算显示帝血弑天专属立绘区、CSS 巨剑、血色碎片粒子与台词"帝血未冷，下一场继续。"；与其他专属皮肤同队时，仍只展示实际贡献排名最高者的一套专属胜利画面和音效。
 - 测试战斗可试用该皮肤（与其他史诗皮肤规则一致）；`tools/test-angelica-berserker-skin.js`注册于 presentation 组。
 
@@ -711,7 +711,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 罗卡尔等级特殊立绘 ID 固定为`lokar_level_10_special`，使用正式压缩素材`publish/assets/generated/lokar-level-10-special.2be685ee.webp`；品质为特殊、价格为0、`unlockLevel`为10，并按统一等级特殊立绘机制解锁和装备。
 - 形象固定为成年男性恶魔战士：凌乱银白短发、红色眼睛、黑红弯角、宽大的黑红破损蝠翼；穿黑色皮革战斗长衣、束带长裤、手套和长靴，胸前佩戴红色晶石。
 - 武器固定为黑红魔纹双手大剑，剑身与护手带红色能量纹路；背景固定为红光照明的黑暗哥特工业要塞。不得改成少年体型、无角无翼、浅色圣骑士、现代便装或无剑形象。
-- 专属技能特效保持现有规则：战斗之勇使用深红气焰、摸牌飞行和恢复杀意时的金色粒子红眼反馈；热血契约显示燃烧手牌、贝丝妲轮廓持剑虚影和本回合攻击红色拖尾；狂风绝息斩显示杀牌剑刃风暴、冲击波、暗紫命中、落地裂痕与击倒后的残留紫色电弧。
+- 专属技能特效保持现有规则：战斗之勇使用深红气焰、摸牌飞行和恢复淫气时的金色粒子红眼反馈；热血契约显示燃烧手牌、贝丝妲轮廓持剑虚影和本回合攻击红色拖尾；狂风绝息斩显示杀牌剑刃风暴、冲击波、暗紫命中、落地裂痕与击倒后的残留紫色电弧。
 
 ### 贝丝妲魔偶皮肤：机铠魔偶
 

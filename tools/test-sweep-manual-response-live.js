@@ -3,7 +3,7 @@
 // 构造要点（此前版本噪声太大，AI 会随机出别的牌、混进其它伤害源）：
 //   - 只留一个敌人可行动，并 hook BattleAI.choose 强制其打出被测牌
 //     （验证目标是"响应弹窗流程"，不是 AI 决策，故强制出牌是合理构造）
-//   - 其余敌人手牌清空、杀意置 0，排除额外伤害源
+//   - 其余敌人手牌清空、淫气置 0，排除额外伤害源
 //   - 遇到贝丝妲「榨取精华」阻塞则点跳过
 //
 // 检查点：
@@ -44,7 +44,7 @@ const inject = (cardName, mode) => `(() => {
   const card = findCard(${JSON.stringify(cardName)});
   if (!card) return { missing: true };
   const e1 = b.enemies[1] || b.enemies[0];
-  // 其余敌人：清空手牌、杀意 0，避免额外出牌与伤害
+  // 其余敌人：清空手牌、淫气 0，避免额外出牌与伤害
   b.enemies.forEach(e => {
     e.hand = []; e.killIntent = 0;
     e.stats = e.stats || {}; e.stats.killIntent = 0;

@@ -62,7 +62,7 @@ window.BertisGerlotSkills = (() => {
     ctx.damage(state, target, stat(actor, "attack") * mult, "苦肉鞭笞", actor, { name: "苦肉鞭笞", type: "skill", ignoreResponse: true, skipDamageModify: true });
     const count = 2 * mult, drawn = deps.draw(actor, count, state.battle);
     actor.intent = Math.min(intentMax(actor), (actor.intent || 0) + mult);
-    window.BattleLog.add(state, `${actor.name} 发动苦肉鞭笞，${mult > 1 ? `${target.name}使效果翻倍，` : ""}${window.BattleDrawFeedback.action(actor, count, drawn)}并恢复${mult}点杀意。`);
+    window.BattleLog.add(state, `${actor.name} 发动苦肉鞭笞，${mult > 1 ? `${target.name}使效果翻倍，` : ""}${window.BattleDrawFeedback.action(actor, count, drawn)}并恢复${mult}点淫气。`);
     return true;
   }
   function takeFood(state, actor, deps) {

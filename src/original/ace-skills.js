@@ -25,7 +25,7 @@ window.AceSkills = deps => {
     });
     line(state, actor, "贡献计划", target);
     window.BattleLog.add(state,
-      `${actor.name} 发动贡献计划，将${cards.length}张手牌交给${target.name}，其下回合杀意上限+1。`);
+      `${actor.name} 发动贡献计划，将${cards.length}张手牌交给${target.name}，其下回合淫气上限+1。`);
     return true;
   }
 
@@ -35,7 +35,7 @@ window.AceSkills = deps => {
     unit.intentMaxBonus = (unit.intentMaxBonus || 0) + boost;
     unit.aceIntentBoost = 0;
     window.BattleLog.add(state,
-      `${unit.name} 的贡献计划生效，本回合杀意上限+${boost}。`);
+      `${unit.name} 的贡献计划生效，本回合淫气上限+${boost}。`);
     return boost;
   }
 

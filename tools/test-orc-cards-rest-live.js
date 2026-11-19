@@ -2,7 +2,7 @@
 // 确定性：直接调用 BattleSystem.useCard 打出（不依赖 AI 决策）
 // 覆盖：
 //   火杀  → 火属性伤害 + 随机令目标1张手牌获得「燃烧」
-//   追杀  → 单体物理伤害（实体杀未造成伤害时本回合不消耗杀意）
+//   追杀  → 单体物理伤害（实体杀未造成伤害时本回合不消耗淫气）
 //   弹反  → 响应牌：成为单体【杀】目标时可打出并与来源猜拳
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";

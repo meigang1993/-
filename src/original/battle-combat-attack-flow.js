@@ -60,7 +60,7 @@ window.BattleCombatAttackFlow = (api, values) => {
 
   function spendIntent(state, actor, card) {
     const noIntent = hasNoIntentCost(actor, card);
-    // 本就不消耗杀意的杀牌不应白白吃掉狂战标记：先判定免费，再尝试抵扣。
+    // 本就不消耗淫气的杀牌不应白白吃掉狂战标记：先判定免费，再尝试抵扣。
     const ragePaid = noIntent ? false
       : (!stopped(actor) && !!window.AngelicaLukaSkills?.beforeIntentCost?.(state, actor, card));
     const noCost = noIntent || ragePaid;
@@ -76,8 +76,8 @@ window.BattleCombatAttackFlow = (api, values) => {
     }
     if (ragePaid) return;
     window.BattleLog.add(state, noCost
-      ? `${card.name}不消耗杀意。`
-      : `杀意消耗${spent}点，剩余${actor.intent}。`);
+      ? `${card.name}不消耗淫气。`
+      : `淫气消耗${spent}点，剩余${actor.intent}。`);
   }
 
   // 时停取值：这里只用于「跳过钩子」，缺模块时按未时停处理（不额外改变行为）。

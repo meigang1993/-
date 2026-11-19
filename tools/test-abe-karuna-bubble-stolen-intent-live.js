@@ -1,11 +1,11 @@
-// 安倍卡露娜【记忆泡泡】× 偷来的敌方【杀】—— 免杀意标记残留检查：
+// 安倍卡露娜【记忆泡泡】× 偷来的敌方【杀】—— 免淫气标记残留检查：
 //
 //   A 段：偷来的杀牌打出 → 进原主（敌人）弃牌堆 → 「放入」进泡泡区 →
-//         从泡泡区使用时确实免杀意（intent 未扣）。
+//         从泡泡区使用时确实免淫气（intent 未扣）。
 //   B 段：用掉后，牌按归属进**原主**弃牌堆 —— 关键：_bubbleFree / _bubbleCast
 //         是否已清除？偷牌走 put() 归属路由，与自己的牌不是同一条路径，
 //         必须单独验，不能靠"自己的牌已验过"推断。
-//   C 段：回收后再打出必须正常扣杀意（标记若残留会错误免杀意）。
+//   C 段：回收后再打出必须正常扣淫气（标记若残留会错误免淫气）。
 //   D 段：对照 —— 非偷来的杀牌走自己弃牌堆，同样应清除。
 //   E 段：反向验证 —— 撤掉离区清除，B/C 必须变红（证明断言非空转）。
 //
@@ -74,7 +74,7 @@ const setupTpl = (cards, opts = {}) => `(() => {
   return { hand: u.hand.length, foeUid: foe.uid };
 })()`;
 
-// 重点：把原主弃牌堆里那张牌的免杀意标记也快照出来
+// 重点：把原主弃牌堆里那张牌的免淫气标记也快照出来
 const snapTpl = `(() => {
   const st = window.state, b = st.battle, u = b.allies[0], foe = b.enemies[0];
   const fd = (foe.pileStats?.discard || foe.discard || []);
@@ -150,7 +150,7 @@ const clickBubbleBtn = async (page, sel) => {
   await page.waitForTimeout(400);
 };
 
-// 把原主弃牌堆里的牌捞回手牌，再打出，看是否错误免杀意
+// 把原主弃牌堆里的牌捞回手牌，再打出，看是否错误免淫气
 const recycleAndPlayTpl = (name, suit) => `(() => {
   const st = window.state, b = st.battle, u = b.allies[0], foe = b.enemies[0];
   const fd = (foe.pileStats?.discard || foe.discard || []);
@@ -166,8 +166,8 @@ const recycleAndPlayTpl = (name, suit) => `(() => {
   return { found: true, before, after: u.intent, free: !!card._bubbleFree };
 })()`;
 
-// 牌名必须真叫「杀」：杀意消耗判定认牌名，用假名会导致"没扣杀意"恒真、
-// 免杀意断言全部空转（已实测确认）。偷来的与自己的用花色区分。
+// 牌名必须真叫「杀」：淫气消耗判定认牌名，用假名会导致"没扣淫气"恒真、
+// 免淫气断言全部空转（已实测确认）。偷来的与自己的用花色区分。
 const KILL    = { name: "杀", type: "kill", suit: "♦", text: "", targetless: false };
 const OWNKILL = { name: "杀", type: "kill", suit: "♠", text: "", targetless: false };
 const K_SUIT = "♦", O_SUIT = "♠";
@@ -179,9 +179,9 @@ const K_SUIT = "♦", O_SUIT = "♠";
   await openGame(page);
   await startRegressionBattle(page);
 
-  // ---------- A 段：偷来的杀牌 → 放入 → 泡泡区使用，免杀意应生效 ----------
+  // ---------- A 段：偷来的杀牌 → 放入 → 泡泡区使用，免淫气应生效 ----------
   if (want("A")) {
-    console.log("\n--- A 段：偷来的杀牌放入泡泡区并使用（免杀意应生效）---");
+    console.log("\n--- A 段：偷来的杀牌放入泡泡区并使用（免淫气应生效）---");
     await evalT(page, setupTpl([KILL], { stolen: true }), 20000, "setupA");
     let s = await playAndWait(page, "杀");
     T("A1 偷来的杀牌打出后进原主弃牌堆", s.foeDiscard.includes("杀"),
@@ -198,13 +198,13 @@ const K_SUIT = "♦", O_SUIT = "♠";
     T("A5 泡泡区的偷来杀牌可被真实点选", r && r.ok1 === true, { r });
     T("A6 泡泡区的杀牌确已打出（离区，否则 A7 恒真）",
       s.bubbleLen === 0, { bubble: s.bubble });
-    T("A7 泡泡区使用时免杀意（intent 未扣；牌名为真「杀」否则恒真）",
+    T("A7 泡泡区使用时免淫气（intent 未扣；牌名为真「杀」否则恒真）",
       s.intent === before, { before, after: s.intent });
   }
 
   // ---------- B 段：用掉后原主弃牌堆里的标记 ----------
   if (want("B")) {
-    console.log("\n--- B 段：用掉后进原主弃牌堆，免杀意标记是否已清除 ---");
+    console.log("\n--- B 段：用掉后进原主弃牌堆，免淫气标记是否已清除 ---");
     let s = await evalT(page, snapTpl, 15000, "snapB");
     const m = (s.foeMarks || []).find(x => x.n === "杀" && x.s === K_SUIT);
     T("B1 用掉后按归属回原主弃牌堆", !!m, { foeMarks: s.foeMarks });
@@ -214,15 +214,15 @@ const K_SUIT = "♦", O_SUIT = "♠";
     T("B5 用掉后不再询问放入（无循环）", !s.pending, { pending: s.pending });
   }
 
-  // ---------- C 段：回收后再打出必须扣杀意 ----------
+  // ---------- C 段：回收后再打出必须扣淫气 ----------
   if (want("C")) {
-    console.log("\n--- C 段：回收后再打出必须正常扣杀意 ---");
+    console.log("\n--- C 段：回收后再打出必须正常扣淫气 ---");
     const r = await evalT(page, recycleAndPlayTpl("杀", K_SUIT), 15000, "recycleC");
     await page.waitForTimeout(700);
     await evalT(page, "window.BattleEffects?.whenIdle?.()", 8000, "whenIdleC");
     T("C1 回收成功（在原主弃牌堆找到该牌）", r && r.found === true, { r });
-    T("C2 回收时牌上已无免杀意标记", r && r.free === false, { r });
-    T("C3 再打出正常消耗杀意（未错误免杀意）",
+    T("C2 回收时牌上已无免淫气标记", r && r.free === false, { r });
+    T("C3 再打出正常消耗淫气（未错误免淫气）",
       r && r.after === r.before - 1, { r });
   }
 
@@ -239,7 +239,7 @@ const K_SUIT = "♦", O_SUIT = "♠";
     const md = (s.myMarks || []).find(x => x.n === "杀" && x.s === O_SUIT);
     T("D2 泡泡区的杀牌确已打出（离区，否则 D3 恒真）",
       s.bubbleLen === 0, { bubble: s.bubble });
-    T("D3 泡泡区使用时免杀意", s.intent === before, { before, after: s.intent });
+    T("D3 泡泡区使用时免淫气", s.intent === before, { before, after: s.intent });
     T("D4 进弃牌堆后已无 _bubbleFree", md && md.free === false, { md });
     T("D5 进弃牌堆后已无 _bubbleCast", md && md.cast === false, { md });
   }

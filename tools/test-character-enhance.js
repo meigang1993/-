@@ -1,5 +1,5 @@
 // 角色强化系统契约检查：面板 / 结算链路 / 属性幂等 / 存档往返 / 装配登记。
-// 新口径：每次花 1000 莉莉丝元只提升玩家指定的一项属性（四项分别累计）。
+// 新口径：每次花 5000 莉莉丝元只提升玩家指定的一项属性（四项分别累计）。
 // REVERT=cost|bonus|compact|ui|scope|grant|stat|cap|legacy 为源码级反向验证。
 const fs = require("fs");
 const path = require("path");
@@ -22,7 +22,7 @@ function text(rel) {
     s = s.replace(from, to);
   };
   if (REVERT === "cost" && rel.endsWith("character-enhance.js")) {
-    swap("const COST = 1000;", "const COST = 1;");
+    swap("const COST = 5000;", "const COST = 1;");
   }
   if (REVERT === "bonus" && rel.endsWith("character-enhance.js")) {
     swap("const bonus = bonusOf(character);", "const bonus = { maxHp: 0, attack: 0, magic: 0, speed: 0 };");
@@ -85,7 +85,7 @@ function coreCtx() {
   return ctx;
 }
 const E = coreCtx().CharacterEnhance;
-T("A1 单次花费 1000 莉莉丝元", E.COST === 1000, { cost: E.COST });
+T("A1 单次花费 5000 莉莉丝元", E.COST === 5000, { cost: E.COST });
 T("A2 各项单次加成 生命+3 / 攻+1 / 魔+1 / 速+1",
   E.BONUS.maxHp === 3 && E.BONUS.attack === 1 && E.BONUS.magic === 1 && E.BONUS.speed === 1, E.BONUS);
 T("A3 四项键位与成长表一致", JSON.stringify(E.statKeys) === JSON.stringify(["maxHp", "attack", "magic", "speed"]));
@@ -135,12 +135,12 @@ function expectedStats(ctx, level, lv) {
 const pick = s => ({ maxHp: s.maxHp, attack: s.attack, magic: s.magic, speed: s.speed });
 (async () => {
   const ctx = coreCtx();
-  const state = makeState(2500);
+  const state = makeState(12500);
   ctx.state = state;
   const r1 = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "attack" }, state);
   const c = state.chars[0];
   T("B1 强化攻击力成功", r1.ok === true && r1.changed === true, r1);
-  T("B2 扣费恰好 1000", state.resources.gold === 1500, { gold: state.resources.gold });
+  T("B2 扣费恰好 5000", state.resources.gold === 7500, { gold: state.resources.gold });
   T("B3 只写入攻击力次数，其余三项为 0",
     JSON.stringify(E.levelsOf(c)) === JSON.stringify({ maxHp: 0, attack: 1, magic: 0, speed: 0 }), E.levelsOf(c));
   T("B4 属性只有攻击力 +1，其余不变",
@@ -150,7 +150,7 @@ const pick = s => ({ maxHp: s.maxHp, attack: s.attack, magic: s.magic, speed: s.
   T("B6 结算后旧字段已清除（双口径不并存）", !("enhanceLevel" in c));
 
   const r2 = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "maxHp" }, state);
-  T("B7 再强化生命值成功且再扣 1000", r2.changed === true && state.resources.gold === 500);
+  T("B7 再强化生命值成功且再扣 5000", r2.changed === true && state.resources.gold === 2500);
   T("B8 两项分别累计、互不串",
     JSON.stringify(E.levelsOf(c)) === JSON.stringify({ maxHp: 1, attack: 1, magic: 0, speed: 0 }), E.levelsOf(c));
   T("B9 属性按两项各自加成重算",
@@ -162,28 +162,28 @@ const pick = s => ({ maxHp: s.maxHp, attack: s.attack, magic: s.magic, speed: s.
   T("B10 余额不足拒绝且不扣费", r3.ok === false && state.resources.gold === goldBefore
     && JSON.stringify(E.levelsOf(c)) === before);
   // 属性键守卫必须在余额充足时单独验，否则只会命中余额守卫形成空转断言。
-  const rich = makeState(5000);
+  const rich = makeState(25000);
   const richBefore = JSON.stringify(E.levelsOf(rich.chars[0]));
   T("B11 缺少属性键拒绝且不扣费（余额充足）",
     (await ctx.ServerCore.call("enhanceChar", { id: "lokar" }, rich)).ok === false
-    && rich.resources.gold === 5000 && JSON.stringify(E.levelsOf(rich.chars[0])) === richBefore);
+    && rich.resources.gold === 25000 && JSON.stringify(E.levelsOf(rich.chars[0])) === richBefore);
   T("B12 伪造属性键拒绝且不扣费（余额充足）",
     (await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "all" }, rich)).ok === false
-    && rich.resources.gold === 5000 && JSON.stringify(E.levelsOf(rich.chars[0])) === richBefore);
+    && rich.resources.gold === 25000 && JSON.stringify(E.levelsOf(rich.chars[0])) === richBefore);
   T("B13 无效角色拒绝且不扣费（余额充足）",
     (await ctx.ServerCore.call("enhanceChar", { id: "nobody", stat: "magic" }, rich)).ok === false
-    && rich.resources.gold === 5000);
-  const locked = makeState(1000); locked.chars[0].locked = true;
+    && rich.resources.gold === 25000);
+  const locked = makeState(5000); locked.chars[0].locked = true;
   T("B14 未解锁角色拒绝且不扣费",
     (await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "magic" }, locked)).ok === false
-    && locked.resources.gold === 1000);
-  const capped = makeState(2000);
+    && locked.resources.gold === 5000);
+  const capped = makeState(10000);
   capped.chars[0].enhance = { maxHp: E.MAX_LEVEL, attack: 0, magic: 0, speed: 0 };
   const r6 = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "maxHp" }, capped);
   const goldAfterR6 = capped.resources.gold;
   const r7 = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "magic" }, capped);
-  T("B15 该项满级拒绝且不扣费", r6.ok === false && goldAfterR6 === 2000);
-  T("B16 某项满级不影响其它项继续强化", r7.ok === true && capped.resources.gold === 1000
+  T("B15 该项满级拒绝且不扣费", r6.ok === false && goldAfterR6 === 10000);
+  T("B16 某项满级不影响其它项继续强化", r7.ok === true && capped.resources.gold === 5000
     && E.levelOf(capped.chars[0], "magic") === 1);
   T("B17 操作作用域只含 resources/chars",
     JSON.stringify(ctx.LocalCoreUtils.operationScope("enhanceChar"))
@@ -222,7 +222,7 @@ const pick = s => ({ maxHp: s.maxHp, attack: s.attack, magic: s.magic, speed: s.
     JSON.stringify(E.levelsOf(legacyMigrated)) === JSON.stringify({ maxHp: 3, attack: 3, magic: 3, speed: 3 })
     && JSON.stringify(pick(legacyMigrated.stats))
       === JSON.stringify(expectedStats(ctx, 4, { maxHp: 3, attack: 3, magic: 3, speed: 3 })));
-  const s2 = makeState(1000);
+  const s2 = makeState(5000);
   s2.chars[0].enhance = { ...lv2 };
   s2.chars[0].stats = ctx.CharacterEnhance.withBonus(
     { ...baseStats, ...ctx.CharacterProgression.statsAt(tpl, 3) }, s2.chars[0]);
@@ -252,7 +252,7 @@ const pick = s => ({ maxHp: s.maxHp, attack: s.attack, magic: s.magic, speed: s.
   const UI = uiCtx.GameUIInfo(U);
   const u = { id: "lokar", name: "罗卡尔", role: "输出", locked: false, level: 3,
     enhance: { maxHp: 1, attack: 0, magic: 0, speed: 0 }, stats: expectedStats(ctx, 3, { maxHp: 1 }) };
-  uiCtx.state = { view: "hall", resources: { gold: 1200 }, chars: [u] };
+  uiCtx.state = { view: "hall", resources: { gold: 12000 }, chars: [u] };
   const html = UI.infoPanel(u, "enhance");
   T("D1 面板含角色强化页签", html.includes('data-info-tab="enhance"') && html.includes("角色强化"));
   T("D2 立绘页签已删除", !html.includes('data-info-tab="specialArt"') && !html.includes("达到等级后自动解锁"));
@@ -264,10 +264,10 @@ const pick = s => ({ maxHp: s.maxHp, attack: s.attack, magic: s.magic, speed: s.
   T("D5 余额足够时四个按钮均可点",
     (html.match(/data-enhance-stat="[a-zA-Z]+"[^>]*disabled/g) || []).length === 0);
   T("D6 面板写明「选择一项」与四项加成",
-    html.includes("选择一项属性") && html.includes("1000") && html.includes("生命值")
+    html.includes("选择一项属性") && html.includes("5000") && html.includes("生命值")
     && html.includes("攻击力") && html.includes("魔力") && html.includes("速度"));
   T("D7 右侧立绘回退为默认头像", html.includes("face-ok") && !html.includes("special-art-lock"));
-  uiCtx.state = { view: "hall", resources: { gold: 999 }, chars: [u] };
+  uiCtx.state = { view: "hall", resources: { gold: 4999 }, chars: [u] };
   const poor = UI.infoPanel(u, "enhance");
   T("D8 余额不足四个按钮全置灰且提示",
     (poor.match(/data-enhance-stat="[a-zA-Z]+"[^>]*disabled/g) || []).length === 4

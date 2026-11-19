@@ -87,7 +87,7 @@ function caseIceShark() {
   const shownB = window.UnderwaterTrainSkills.displayBiteCard(st, b, cardB);
   T("冰心+鲨鱼头套：鲨鱼头套生效（不再是死的）",
     shownA.biteKill === true && shownA.name === "咬杀", { biteKill: shownA.biteKill, name: shownA.name });
-  T("叠加后保留冰心的不消耗杀意", shownA.noIntentCost === true, { noIntentCost: shownA.noIntentCost });
+  T("叠加后保留冰心的不消耗淫气", shownA.noIntentCost === true, { noIntentCost: shownA.noIntentCost });
   T("叠加后保留刺杀的弃置手牌效果", shownA.assassinate === true, { assassinate: shownA.assassinate });
   T("对照组：仅鲨鱼头套时正常把【杀（普攻）】视为【咬杀】",
     shownB.biteKill === true && shownB.name === "咬杀", { biteKill: shownB.biteKill, name: shownB.name });

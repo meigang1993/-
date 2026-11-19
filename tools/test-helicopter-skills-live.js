@@ -1,5 +1,5 @@
 // 武装直升机 · 实战回归
-//   ⚔️ 战场扫射：出牌阶段，将2张同花色牌当做【机枪扫杀】使用，不消耗杀意
+//   ⚔️ 战场扫射：出牌阶段，将2张同花色牌当做【机枪扫杀】使用，不消耗淫气
 //   ⭐ 继续压制：锁定技，当你使用的【杀】牌被【闪】抵消时，你摸1张牌
 //   螺旋桨（触发）：出牌阶段，当你摸牌时，你可以随机对敌方一名角色视为使用一张虚拟【杀（普攻）】
 //   导弹发射器（被动）：你使用的【杀】牌指定目标时，目标角色需要额外弃置1张【杀】牌才能响应【闪】
@@ -230,7 +230,7 @@ const missileTpl = (targetHand) => `(() => {
   T("战场扫射：产物带全体目标（allTargets）", Array.isArray(mv.allTargets) && mv.allTargets.length >= 2, mv);
   T("战场扫射：产物绘制全体目标线（aoeLineShown）", mv.aoe === true, mv);
   T("战场扫射：消耗 2 张同花色手牌", mv.handBefore - mv.handAfter === 2, mv);
-  T("战场扫射：不消耗杀意", mv.noIntent === true, mv);
+  T("战场扫射：不消耗淫气", mv.noIntent === true, mv);
 
   // ===== 战场扫射端到端 =====
   await page.evaluate(setupTpl({}));

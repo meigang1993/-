@@ -224,7 +224,7 @@ function state(b) { return { battle: b, log: [], lines: [] }; }
     { draw() {}, damage: { scheduleAfterDamage: fn => fn() } });
   T("B8a 原锁定技保留：造成伤害后获得 1 枚狂战标记", a.rageMarks === 1, { marks: a.rageMarks });
   const ret = win.AngelicaLukaSkills.beforeIntentCost(s, a, { name: "杀（普攻）", type: "slash" });
-  T("B8b 原锁定技保留：实体杀可弃 1 枚标记代替杀意",
+  T("B8b 原锁定技保留：实体杀可弃 1 枚标记代替淫气",
     ret === true && a.rageMarks === 0 && s.log.some(t => t.includes("消耗1枚狂战标记")),
     { ret, marks: a.rageMarks });
 }

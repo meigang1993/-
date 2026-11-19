@@ -75,7 +75,7 @@ window.GameDataFutureRelics = {
     icon: "舌",
     skillType: "active",
     stats: {},
-    effect: "出牌阶段限一次，你没有杀意后，你可以指定敌方一名角色，视为对其使用一张【勒杀】。",
+    effect: "出牌阶段限一次，你没有淫气后，你可以指定敌方一名角色，视为对其使用一张【勒杀】。",
     lore: "混沌女神为了寻找儿子灵魂，派出了大量实力强大的XX级凋零者女儿，寻找儿子灵魂转生者，就算毁灭人类也无所谓。",
     source: "【兽人地下城】XX型凋零者1124号 (BOSS)",
     enemy: "xx_witherer_1124",

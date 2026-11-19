@@ -2,10 +2,10 @@ window.GameDataCharactersExtra = [
   {
     id: "bertis", name: "贝尔蒂丝", gender: "female", face: "贝", art: "./assets/images/bertis-portrait.f9fc0d13.webp", avatar: "./assets/images/bertis-portrait.f9fc0d13.webp", role: "束缚公主", locked: true, unlockCost: 18,
     stats: { attack: 10, magic: 10, speed: 11, maxHp: 130, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
-    evaluation: "满生命强化与团队资源核心。傲慢雌小鬼在满生命时强化多项属性，苦肉鞭笞以友方伤害换取手牌和杀意，快速生长持续积累共享“粮食”。",
+    evaluation: "满生命强化与团队资源核心。傲慢雌小鬼在满生命时强化多项属性，苦肉鞭笞以友方伤害换取手牌和淫气，快速生长持续积累共享“粮食”。",
     skills: [
-      { name: "傲慢雌小鬼", type: "passive", icon: "⭐", text: "锁定技，当你的生命值为满时，你的攻击力和魔力变为基础值的1.5倍，杀意上限和手牌上限各翻倍。" },
-      { name: "苦肉鞭笞", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以指定一名其他友方角色，对其造成等同于你攻击力的伤害，然后你摸2张牌并恢复1点杀意。若目标为杰洛特或诺诺卡，伤害、摸牌数和恢复的杀意均翻倍。", card: { name: "苦肉鞭笞", type: "tactic", bertisWhip: true, allyTarget: true, icon: "⚔️", text: "对一名其他友方角色造成攻击力伤害，然后摸2张牌并恢复1点杀意；对杰洛特或诺诺卡时全部效果翻倍。" } },
+      { name: "傲慢雌小鬼", type: "passive", icon: "⭐", text: "锁定技，当你的生命值为满时，你的攻击力和魔力变为基础值的1.5倍，淫气上限和手牌上限各翻倍。" },
+      { name: "苦肉鞭笞", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以指定一名其他友方角色，对其造成等同于你攻击力的伤害，然后你摸2张牌并恢复1点淫气。若目标为杰洛特或诺诺卡，伤害、摸牌数和恢复的淫气均翻倍。", card: { name: "苦肉鞭笞", type: "tactic", bertisWhip: true, allyTarget: true, icon: "⚔️", text: "对一名其他友方角色造成攻击力伤害，然后摸2张牌并恢复1点淫气；对杰洛特或诺诺卡时全部效果翻倍。" } },
       { name: "快速生长", type: "passive", icon: "⭐", text: "锁定技，结束阶段，你获得1枚“粮食”标记；每当一名角色因伤害死亡后，你获得3枚“粮食”标记。其他友方角色获得临时技能【取粮】。", derivedSkills: [{ name: "取粮", text: "出牌阶段限一次，你可以移去1枚队伍共享的“粮食”标记，然后摸2张牌。" }] }
     ]
   },
@@ -22,10 +22,10 @@ window.GameDataCharactersExtra = [
   {
     id: "angelica", name: "安洁莉卡", gender: "female", face: "安", art: "./assets/images/angelica-portrait.96fc74ac.webp", avatar: "./assets/images/angelica-portrait.96fc74ac.webp", role: "红刃公主", locked: true, unlockCost: 14,
     stats: { attack: 10, magic: 5, speed: 11, maxHp: 154, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 2 },
-    evaluation: "实体杀牌叠加增伤与承伤蓄力核心。力量爆发在每张实体【杀】结算完成后为其叠加+50%伤害增益（作用于后续所有伤害），狂战意志在每次伤害后积累“狂战”标记、可代替杀意消耗，并可主动把标记一次性转化为过牌与回复。",
+    evaluation: "实体杀牌叠加增伤与承伤蓄力核心。力量爆发在每张实体【杀】结算完成后为其叠加+50%伤害增益（作用于后续所有伤害），狂战意志在每次伤害后积累“狂战”标记、可代替淫气消耗，并可主动把标记一次性转化为过牌与回复。",
     skills: [
       { name: "力量爆发", type: "passive", icon: "⭐", text: "锁定技，每当你使用的实体【杀】牌结算完成后，你获得一层力量爆发：本回合内你造成的伤害+50%（可叠加，第1张杀结算后+50%、第2张后+100%、第3张后+150%，以此类推）。本回合结束后增益清空。虚拟【杀】牌或转换【杀】牌不触发该增益。" },
-      { name: "狂战意志", type: "active", icon: "⚔️", text: "锁定技，当你造成或受到伤害后，你获得1枚“狂战”标记（多段或连击伤害时逐段结算）。你使用实体【杀】牌时，可弃1枚“狂战”标记代替1点杀意消耗。“狂战”标记数量在头像旁以“狂战×N”显示，上限为10枚。出牌阶段限一次，你可以弃置所有“狂战”标记，摸等量的牌，然后回复X点生命值，X为你以此法弃置的“狂战”标记数×你生命值上限的10%。", card: { name: "狂战意志", type: "tactic", berserkWill: true, targetless: true, icon: "⚔️", text: "弃置所有“狂战”标记，摸等量的牌，然后回复X点生命值，X为你以此法弃置的“狂战”标记数×你生命值上限的10%。" } }
+      { name: "狂战意志", type: "active", icon: "⚔️", text: "锁定技，当你造成或受到伤害后，你获得1枚“狂战”标记（多段或连击伤害时逐段结算）。你使用实体【杀】牌时，可弃1枚“狂战”标记代替1点淫气消耗。“狂战”标记数量在头像旁以“狂战×N”显示，上限为10枚。出牌阶段限一次，你可以弃置所有“狂战”标记，摸等量的牌，然后回复X点生命值，X为你以此法弃置的“狂战”标记数×你生命值上限的10%。", card: { name: "狂战意志", type: "tactic", berserkWill: true, targetless: true, icon: "⚔️", text: "弃置所有“狂战”标记，摸等量的牌，然后回复X点生命值，X为你以此法弃置的“狂战”标记数×你生命值上限的10%。" } }
     ]
   },
   {
@@ -60,11 +60,11 @@ window.GameDataCharactersExtra = [
   {
     id: "ace", name: "艾斯", gender: "male", face: "斯", art: "./assets/images/ace-portrait.115ef71b.webp", avatar: "./assets/images/ace-portrait.115ef71b.webp", role: "医生之子", locked: true,
     stats: { attack: 10, magic: 5, speed: 11, maxHp: 130, bloodlust: 1, handLimit: 5, drawPerTurn: 1, initialDraw: 2 },
-    evaluation: "防守夺牌与手牌转移辅助。勾爪陷阱在成功响应敌方牌后夺取手牌，急逃为空手状态提供应急补牌，贡献计划将全部手牌和下回合杀意上限交给队友。",
+    evaluation: "防守夺牌与手牌转移辅助。勾爪陷阱在成功响应敌方牌后夺取手牌，急逃为空手状态提供应急补牌，贡献计划将全部手牌和下回合淫气上限交给队友。",
     skills: [
       { name: "勾爪陷阱", type: "passive", icon: "⭐", text: "锁定技，当你使用响应牌抵消敌方角色对你使用的牌后，你获得该角色1张手牌；若夺得的是状态牌，则改为移除并消耗之。" },
       { name: "急逃", type: "passive", icon: "⭐", text: "锁定技，每回合限一次，当敌方角色使用单体【杀】指定你为目标时，若你没有手牌，你摸2+X张牌（X为你的每回合摸牌数）。" },
-      { name: "贡献计划", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以将所有手牌交给一名其他友方角色，令其下个回合的杀意上限+1。", card: { name: "贡献计划", type: "tactic", aceContribution: true, allyTarget: true, icon: "⚔️", text: "将所有手牌交给一名其他友方角色，令其下个回合的杀意上限+1。" } }
+      { name: "贡献计划", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以将所有手牌交给一名其他友方角色，令其下个回合的淫气上限+1。", card: { name: "贡献计划", type: "tactic", aceContribution: true, allyTarget: true, icon: "⚔️", text: "将所有手牌交给一名其他友方角色，令其下个回合的淫气上限+1。" } }
     ]
   },
   {
@@ -79,23 +79,23 @@ window.GameDataCharactersExtra = [
   {
     id: "ophelia", name: "奥菲莉亚", gender: "female", face: "奥", art: "./assets/images/ophelia-portrait.10278309.webp", avatar: "./assets/images/ophelia-portrait.10278309.webp", role: "人鱼公主", locked: true,
     stats: { attack: 5, magic: 12, speed: 11, maxHp: 104, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
-    evaluation: "物理单体杀牌转换与护驾防守核心。女王之尾将物理单体杀牌改为魔力结算，并在弃到杀牌时连续追击，为我护驾转移闪避或伤害责任，食人鱼公主通过死亡与击杀永久提高杀意上限。",
+    evaluation: "物理单体杀牌转换与护驾防守核心。女王之尾将物理单体杀牌改为魔力结算，并在弃到杀牌时连续追击，为我护驾转移闪避或伤害责任，食人鱼公主通过死亡与击杀永久提高淫气上限。",
     skills: [
       { name: "女王之尾", type: "passive", icon: "⭐", text: "锁定技，你使用的物理单体【杀】视为魔法攻击并改为以魔力结算。若此牌造成生命值伤害，弃置目标1张牌；若弃置的是【杀】，你对同一个目标再次使用此【杀】。" },
       { name: "为我护驾", type: "passive", icon: "🔵", text: "当你成为【杀】的目标且没有【闪】时，你必须指定一名其他友方角色替你使用【闪】；若其没有【闪】，则改为替你承受此次伤害。若指定罗卡尔，其摸2张牌；若指定艾伦格，其摸4张牌。" },
-      { name: "食人鱼公主", type: "passive", icon: "⭐", text: "锁定技，当一名角色因伤害死亡时，你于本场战斗获得1点杀意上限。若该角色由你击杀，你额外获得1点杀意上限并重置杀意；若死亡角色为罗卡尔或艾伦格，你摸3张牌。" }
+      { name: "食人鱼公主", type: "passive", icon: "⭐", text: "锁定技，当一名角色因伤害死亡时，你于本场战斗获得1点淫气上限。若该角色由你击杀，你额外获得1点淫气上限并重置淫气；若死亡角色为罗卡尔或艾伦格，你摸3张牌。" }
     ]
   },
   {
     id: "aileng", name: "艾伦格", gender: "male", face: "艾", art: "./assets/images/aileng-portrait.5b5e628d.webp", avatar: "./assets/images/aileng-portrait.5b5e628d.webp", role: "充能王子", locked: true,
     stats: { attack: 10, magic: 10, speed: 13, maxHp: 124, bloodlust: 1, handLimit: 5, drawPerTurn: 2, initialDraw: 1 },
-    evaluation: "手牌循环与牌权转移角色。计算下注重整手牌并可重置杀意，战斗演练把已结算的牌交给队友，征服欲望根据伤害次数或角色死亡觉醒为不同的衍生能力。",
+    evaluation: "手牌循环与牌权转移角色。计算下注重整手牌并可重置淫气，战斗演练把已结算的牌交给队友，征服欲望根据伤害次数或角色死亡觉醒为不同的衍生能力。",
     skills: [
-      { name: "计算下注", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以弃置至少1张手牌，然后摸等量牌。若你弃置了全部手牌，额外摸1张牌并重置杀意。", card: { name: "计算下注", type: "tactic", targetless: true, elranaBag: true, ailengBet: true, icon: "⚔️", text: "弃置至少1张手牌并摸等量牌；若弃置全部手牌，额外摸1张牌并重置杀意。" } },
+      { name: "计算下注", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以弃置至少1张手牌，然后摸等量牌。若你弃置了全部手牌，额外摸1张牌并重置淫气。", card: { name: "计算下注", type: "tactic", targetless: true, elranaBag: true, ailengBet: true, icon: "⚔️", text: "弃置至少1张手牌并摸等量牌；若弃置全部手牌，额外摸1张牌并重置淫气。" } },
       { name: "战斗演练", type: "passive", icon: "🔵", text: "当你使用的【杀】或战术牌结算完毕后，你可以将该牌交给一名其他友方角色。" },
       { name: "征服欲望", type: "passive", icon: "💰", text: "觉醒技，出牌阶段，若你本回合累计造成伤害超过7次，你获得【战斗之勇】；当场上有任意角色死亡后，你失去【计算下注】并获得【充能精华】。", derivedSkills: [
-        { name: "战斗之勇", text: "锁定技，当你使用一张实体【杀】或【与我一战】时，你从摸牌堆摸1张牌。若摸到【杀】或【与我一战】，你恢复1点杀意。" },
-        { name: "充能精华", text: "出牌阶段限一次，你可以指定一名友方女性角色，你弃置所有红桃牌，令其摸等量牌。若目标为贝丝妲，改为你弃置所有手牌，令贝丝妲摸等量牌，然后你受到等同于贝丝妲魔力的伤害；若你仍存活，你翻面并跳过下一个完整回合。若目标为七位姐姐之一且其对应儿子存活，该儿子获得1枚“绿帽”标记；若目标为娜娜莉或贝丝妲且罗卡尔存活，罗卡尔获得1枚“绿帽”标记。每名角色至多拥有5枚“绿帽”，每枚令手牌上限、杀意上限各+1，攻击力+30%。" }
+        { name: "战斗之勇", text: "锁定技，当你使用一张实体【杀】或【与我一战】时，你从摸牌堆摸1张牌。若摸到【杀】或【与我一战】，你恢复1点淫气。" },
+        { name: "充能精华", text: "出牌阶段限一次，你可以指定一名友方女性角色，你弃置所有红桃牌，令其摸等量牌。若目标为贝丝妲，改为你弃置所有手牌，令贝丝妲摸等量牌，然后你受到等同于贝丝妲魔力的伤害；若你仍存活，你翻面并跳过下一个完整回合。若目标为七位姐姐之一且其对应儿子存活，该儿子获得1枚“绿帽”标记；若目标为娜娜莉或贝丝妲且罗卡尔存活，罗卡尔获得1枚“绿帽”标记。每名角色至多拥有5枚“绿帽”，每枚令手牌上限、淫气上限各+1，攻击力+30%。" }
       ] }
     ]
   },
@@ -104,7 +104,7 @@ window.GameDataCharactersExtra = [
     stats: { attack: 7, magic: 12, speed: 9, maxHp: 96, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "黑色手牌驱动的暗属性魔力输出。黑暗之力扩充黑牌容量并转换部分杀牌结算，终焉鬼影斩批量释放黑牌，终焉回旋斩在闪避后按黑色【杀】数量反击。",
     skills: [
-      { name: "终焉鬼影斩", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以依次将所有黑色手牌当【魔杀】使用，随机指定敌方角色为目标；这些【魔杀】不消耗杀意。", card: { name: "终焉鬼影斩", type: "tactic", targetless: true, bestaEndSlash: true, icon: "⚔️", text: "依次将所有黑色手牌当不消耗杀意的【魔杀】使用，并随机指定敌方目标。" } },
+      { name: "终焉鬼影斩", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以依次将所有黑色手牌当【魔杀】使用，随机指定敌方角色为目标；这些【魔杀】不消耗淫气。", card: { name: "终焉鬼影斩", type: "tactic", targetless: true, bestaEndSlash: true, icon: "⚔️", text: "依次将所有黑色手牌当不消耗淫气的【魔杀】使用，并随机指定敌方目标。" } },
       { name: "黑暗之力", type: "passive", icon: "⭐", text: "锁定技，你的黑色牌不计入手牌上限。你使用的黑色且以攻击力结算的【杀】附加暗属性，并改为以魔力结算。" },
       { name: "终焉回旋斩", type: "trigger", icon: "🔵", text: "当你使用【闪】抵消【杀】后，你可以视为使用X张指定所有敌方角色为目标的虚拟【魔杀】（X为你手牌中的黑色【杀】数量）。" }
     ]
@@ -144,9 +144,9 @@ window.GameDataCharactersExtra = [
   {
     id: "mieryula", name: "米尔尤拉", gender: "female", face: "尤", art: "./assets/images/mieryula-portrait.38ce3440.webp", avatar: "./assets/images/mieryula-portrait.38ce3440.webp", role: "嗜血公主", locked: true, combatRoles: ["输出"],
     stats: { attack: 8, magic: 4, speed: 10, maxHp: 104, bloodlust: 1, handLimit: 3, drawPerTurn: 2, initialDraw: 1 },
-    evaluation: "以队友鲜血换取额外出牌的高攻输出。渴血杀戮对友方男性造成伤害后换取一张不消耗杀意的虚拟杀牌，无谋霸姬让她彻底放弃战术牌并换来稳定的伤害翻倍，神奇怀表提供一次全场时停的控场窗口。",
+    evaluation: "以队友鲜血换取额外出牌的高攻输出。渴血杀戮对友方男性造成伤害后换取一张不消耗淫气的虚拟杀牌，无谋霸姬让她彻底放弃战术牌并换来稳定的伤害翻倍，神奇怀表提供一次全场时停的控场窗口。",
     skills: [
-      { name: "渴血杀戮", type: "active", icon: "⚔️", text: "出牌阶段，你可以指定我方一名男性角色，对其造成等同于你攻击力的伤害。之后你可以选择一项“杀”牌的牌名，视为使用一张该牌名的虚拟牌，此牌不消耗杀意。本回合每项限一次。", card: { name: "渴血杀戮", type: "tactic", mieryulaBloodthirst: true, allyTarget: true, icon: "⚔️", text: "指定我方一名男性角色，对其造成等同于你攻击力的伤害，之后选择一项“杀”牌的牌名，视为使用一张该牌名的虚拟牌，此牌不消耗杀意。" } },
+      { name: "渴血杀戮", type: "active", icon: "⚔️", text: "出牌阶段，你可以指定我方一名男性角色，对其造成等同于你攻击力的伤害。之后你可以选择一项“杀”牌的牌名，视为使用一张该牌名的虚拟牌，此牌不消耗淫气。本回合每项限一次。", card: { name: "渴血杀戮", type: "tactic", mieryulaBloodthirst: true, allyTarget: true, icon: "⚔️", text: "指定我方一名男性角色，对其造成等同于你攻击力的伤害，之后选择一项“杀”牌的牌名，视为使用一张该牌名的虚拟牌，此牌不消耗淫气。" } },
       { name: "无谋霸姬", type: "passive", icon: "⭐", text: "锁定技，战术牌对你无效，你无法使用战术牌。若你手牌中没有战术牌，你使用实体牌或虚拟牌造成的伤害为2倍。" },
       { name: "神奇怀表", type: "active", icon: "🔺", text: "限定技，出牌阶段，你可以指定所有敌方角色，对其施加“时停”标记。拥有此标记的角色跳过其回合，不可响应，禁用技能等负面效果。每个被标记的角色跳过一次回合后，其身上的标记消失。", card: { name: "神奇怀表", type: "tactic", mieryulaTimeStop: true, targetless: true, icon: "🔺", text: "指定所有敌方角色并施加“时停”标记：被标记的角色跳过其回合、不可响应且技能失效，每个被标记者跳过一次回合后标记消失。" } }
     ]

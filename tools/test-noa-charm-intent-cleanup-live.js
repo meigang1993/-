@@ -1,14 +1,14 @@
-// 怪面诺亚【淫气改造】× 免杀意离区残留 · 真实链路严格检查
+// 怪面诺亚【淫气改造】× 免淫气离区残留 · 真实链路严格检查
 //
 // 背景：【记忆泡泡】曾出现同类 BUG —— 牌打出后 _bubbleFree/_bubbleCast 未清除，
-// 捞回后再打出错误免杀意。淫气改造的免杀意是「角色 + 出牌阶段 + 杀牌」动态判据，
-// 不给牌打标记；本测试用真实 useCard 链路确认：杀牌离开手牌区后不残留免杀意，
-// 换人 / 换阶段 / 回收再打出都按正常规则消耗杀意。
+// 捞回后再打出错误免淫气。淫气改造的免淫气是「角色 + 出牌阶段 + 杀牌」动态判据，
+// 不给牌打标记；本测试用真实 useCard 链路确认：杀牌离开手牌区后不残留免淫气，
+// 换人 / 换阶段 / 回收再打出都按正常规则消耗淫气。
 //
-//   A 诺亚打出杀（免杀意）→ 弃牌堆无标记 → 捞回给队友打出正常扣杀意
-//   B 杀牌经淫气改造弃置离手 → 弃牌堆无标记 → 捞回给队友打出正常扣杀意
-//   C 对照：同一出牌阶段内诺亚自己回收再打出仍免杀意（锁定技设计，不是残留）
-//   D 反向验证：把判据改成恒 true（模拟「标记跟着牌走」），A/B 的扣杀意断言必须变红
+//   A 诺亚打出杀（免淫气）→ 弃牌堆无标记 → 捞回给队友打出正常扣淫气
+//   B 杀牌经淫气改造弃置离手 → 弃牌堆无标记 → 捞回给队友打出正常扣淫气
+//   C 对照：同一出牌阶段内诺亚自己回收再打出仍免淫气（锁定技设计，不是残留）
+//   D 反向验证：把判据改成恒 true（模拟「标记跟着牌走」），A/B 的扣淫气断言必须变红
 //
 // 分批：NOA_IC=A|B|C|D，不设则跑全部。
 require("./repository-toolchain");
@@ -73,7 +73,7 @@ const base = (o = {}) => `(() => {
   u.discard = u.pileStats.discard; u.consumed = u.pileStats.consumed;
   u.deck = [];
   if (u2) {
-    u2.name = "队友"; u2.gender = "male"; u2.ref = "lokar";
+    u2.name = "队友"; u2.gender = ${o.maleAlly === false ? '"female"' : '"male"'}; u2.ref = "lokar";
     u2.stats = { attack: 8, magic: 3, speed: 2, maxHp: 100, bloodlust: 3, handLimit: 9 };
     u2.hp = u2.maxHp = 100; u2.block = 0; u2.intent = 2; u2.intentMax = 3;
     u2.skills = []; u2.battleRelics = []; u2.hand = [];
@@ -127,9 +127,9 @@ async function segA(browser) {
   const { page, errors } = await boot(browser);
   try {
     const s0 = await run(page, base({ hand: [KILL()] }), "A-setup");
-    T("A0 场景：诺亚出牌阶段、手牌 1 张杀、杀意 2", s0 && s0.hand === 1 && s0.intent === 2 && s0.phase === 4, s0);
+    T("A0 场景：诺亚出牌阶段、手牌 1 张杀、淫气 2", s0 && s0.hand === 1 && s0.intent === 2 && s0.phase === 4, s0);
 
-    // 真实打出：诺亚的杀不消耗杀意
+    // 真实打出：诺亚的杀不消耗淫气
     const played = await run(page, `(() => {
       const st = window.state, b = st.battle, u = b.allies[0];
       const card = u.hand.find(c => c.name === "杀（普攻）");
@@ -137,7 +137,7 @@ async function segA(browser) {
       window.BattleSystem.useCard(st, u, b.enemies[0], card);
       return { i0, i1: u.intent, hand: u.hand.length };
     })()`, "A-play");
-    T("A1 诺亚打出杀免杀意（2 → 2）", played && played.i1 === played.i0, played);
+    T("A1 诺亚打出杀免淫气（2 → 2）", played && played.i1 === played.i0, played);
 
     const disc = await run(page, `(() => {
       const st = window.state, u = st.battle.allies[0];
@@ -147,14 +147,14 @@ async function segA(browser) {
     })()`, "A-disc");
     const killed = (disc || []).find(x => x.n === "杀（普攻）");
     T("A2 杀牌进弃牌堆（真实离区，不是留在手里）", !!killed, disc);
-    T("A3 弃牌堆杀牌无任何免杀意标记残留",
+    T("A3 弃牌堆杀牌无任何免淫气标记残留",
       !!killed && marksOf(null).every(k => killed.m[k] === false), killed);
 
-    // 捞回给队友打出：必须正常扣 1 点杀意
+    // 捞回给队友打出：必须正常扣 1 点淫气
     const rec = await run(page, recycleAndReplay("杀（普攻）", 1), "A-recycle");
     T("A4 回收成功且判据对队友为 false（不跟着牌走）",
       rec && rec.recycled && rec.noaJudge === false, rec);
-    T("A5 队友回收再打出正常消耗 1 点杀意",
+    T("A5 队友回收再打出正常消耗 1 点淫气",
       rec && rec.iBefore - rec.iAfter === 1, rec);
 
     // 附加：手动打上 noIntentCost 的杀牌离区后，通用 clearPlayFlags 必须抹掉
@@ -184,7 +184,9 @@ async function segB(browser) {
     const hand = [KILL("杀（普攻）", "♠"), KILL("杀（普攻）", "♥"),
       { name: "试牌1", type: "tactic", suit: "♠" }, { name: "试牌2", type: "tactic", suit: "♥" },
       { name: "试牌3", type: "tactic", suit: "♣" }, { name: "试牌4", type: "tactic", suit: "♦" }];
-    const s0 = await run(page, base({ hand }), "B-setup");
+    // B 段按「手牌上限 4」构造：把队友改为非男性，避免【淫气改造】按存活男性数
+    // 把上限抬到 5（历史夹具滞后，不是产品 BUG；A/C/D 段仍按默认男性队友）。
+    const s0 = await run(page, base({ hand, maleAlly: false }), "B-setup");
     T("B0 场景：手牌 6 > 上限 4", s0 && s0.hand === 6, s0);
 
     // 触发淫气改造溢出：标准弃牌阶段同款（手牌区选牌 + 确认弃置）
@@ -218,12 +220,12 @@ async function segB(browser) {
         const m = {}; keys.forEach(k => { m[k] = !!c[k]; }); return { n: c.name, m };
       });
     })()`, "B-disc");
-    T("B4 弃置离区的杀牌无任何免杀意标记残留",
+    T("B4 弃置离区的杀牌无任何免淫气标记残留",
       (disc || []).filter(x => x.n === "杀（普攻）").length === 2
       && disc.filter(x => x.n === "杀（普攻）").every(x => marksOf(null).every(k => x.m[k] === false)), disc);
 
     const rec = await run(page, recycleAndReplay("杀（普攻）", 1), "B-recycle");
-    T("B5 捞回给队友打出正常消耗 1 点杀意",
+    T("B5 捞回给队友打出正常消耗 1 点淫气",
       rec && rec.recycled && rec.iBefore - rec.iAfter === 1, rec);
 
     // 非出牌阶段：诺亚自己打杀也要正常扣（判据按阶段，不按牌）
@@ -238,7 +240,7 @@ async function segB(browser) {
       window.BattleSystem.useCard(st, u, b.enemies[0], card);
       return { i0, i1: u.intent };
     })()`, "B-other-phase");
-    T("B6 非出牌阶段诺亚打杀正常消耗 1 点杀意",
+    T("B6 非出牌阶段诺亚打杀正常消耗 1 点淫气",
       other && other.i0 - other.i1 === 1, other);
 
     const errs = relevantErrors ? relevantErrors(errors) : errors;
@@ -256,15 +258,15 @@ async function segC(browser) {
       window.BattleSystem.useCard(st, u, b.enemies[0], card);
       return u.intent;
     })()`, "C-play");
-    // 同一出牌阶段内由诺亚自己捞回：锁定技仍免杀意（设计如此，不是标记残留）
+    // 同一出牌阶段内由诺亚自己捞回：锁定技仍免淫气（设计如此，不是标记残留）
     const rec = await run(page, recycleAndReplay("杀（普攻）", 0), "C-recycle");
-    T("C1 诺亚本人同阶段回收再打出仍免杀意（设计：判据跟着角色与阶段）",
+    T("C1 诺亚本人同阶段回收再打出仍免淫气（设计：判据跟着角色与阶段）",
       rec && rec.recycled && rec.noaJudge === true && rec.iBefore === rec.iAfter, rec);
     const disc = await run(page, `(() => {
       const u = window.state.battle.allies[0];
       return (u.pileStats?.discard || u.discard || []).map(c => ({ n: c.name, free: !!c.noIntentCost }));
     })()`, "C-disc");
-    T("C2 即便本人打出，牌上也不写标记（免杀意不是牌属性）",
+    T("C2 即便本人打出，牌上也不写标记（免淫气不是牌属性）",
       (disc || []).every(x => x.free === false), disc);
     const errs = relevantErrors ? relevantErrors(errors) : errors;
     T("C3 无页面错误", !errs || errs.length === 0, errs);
@@ -274,8 +276,8 @@ async function segC(browser) {
 async function segD(browser) {
   const { page, errors } = await boot(browser);
   try {
-    // 反向态：判据改成恒 true，模拟「牌上残留免杀意标记 / 判据跟着牌走」。
-    // 若断言有效，A/B 中「队友回收后正常扣杀意」这一类必须变红。
+    // 反向态：判据改成恒 true，模拟「牌上残留免淫气标记 / 判据跟着牌走」。
+    // 若断言有效，A/B 中「队友回收后正常扣淫气」这一类必须变红。
     await page.evaluate(() => { window.NoaCharmSkills.noIntentCost = () => true; });
     const s0 = await run(page, base({ hand: [KILL()] }), "D-setup");
     T("D0 反向态已生效（判据对队友恒 true）", await evalT(page, `(() => {
@@ -288,7 +290,7 @@ async function segD(browser) {
       return u.intent;
     })()`, "D-play");
     const rec = await run(page, recycleAndReplay("杀（普攻）", 1), "D-recycle");
-    T("D1 反向态下队友回收再打出被错误免杀意（iAfter === iBefore，正向 A5/B5 应红）",
+    T("D1 反向态下队友回收再打出被错误免淫气（iAfter === iBefore，正向 A5/B5 应红）",
       rec && rec.iBefore === rec.iAfter, rec);
     T("D2 反向态下判据对队友仍为 true（正向 A4 应红）",
       rec && rec.noaJudge === true, rec);

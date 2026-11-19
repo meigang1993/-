@@ -3,8 +3,8 @@
 //   🔵 影舞步：准备阶段连续判定，黑色收入手中、红色停止
 //   🔵 潜影背刺：结束阶段，有黑色牌时指定敌方一名角色，造成等同攻击力的物理伤害
 //   🔵 影舞步：连续判定不再限张数（原实现硬编码上限 6 张）
-//   冰心双刺剑：摸到的实体单体【杀】转换为不消耗杀意的【刺杀】
-//   刺客胶衣：出牌阶段限一次，黑色牌当【刺杀】使用且不消耗杀意
+//   冰心双刺剑：摸到的实体单体【杀】转换为不消耗淫气的【刺杀】
+//   刺客胶衣：出牌阶段限一次，黑色牌当【刺杀】使用且不消耗淫气
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
@@ -62,7 +62,7 @@ const peekTpl = `(() => {
     foeHp: e.hp, allyHp: a.hp, allyIntent: a.intent,
     foeHand: (e.hand || []).filter(c => !c._pendingDraw).map(c => c.suit + c.name),
     allyHand: (a.hand || []).filter(c => !c._pendingDraw)
-      .map(c => c.name + (c.noIntentCost ? "[免杀意]" : "")),
+      .map(c => c.name + (c.noIntentCost ? "[免淫气]" : "")),
     logs: (st.log || []).slice(0, 40).map(String),
   };
 })()`;
@@ -110,7 +110,7 @@ const peekTpl = `(() => {
     e.deck = [{ name: "杀", type: "slash", suit: "♠", scale: "attack" }];
     e.discard = []; e.hand = [];
     window.RuinsEliteSkills.prepare(st, e);
-    return { hand: e.hand.map(c => c.suit + c.name + (c.noIntentCost ? "[免杀意]" : "")),
+    return { hand: e.hand.map(c => c.suit + c.name + (c.noIntentCost ? "[免淫气]" : "")),
              logs: (st.log || []).slice(0, 6).map(String) };
   })()`);
   console.log(`[影舞步·黑] 手牌 ${JSON.stringify(danceBlack.hand)}`);
@@ -212,7 +212,7 @@ const peekTpl = `(() => {
   T("影舞步：全黑牌库能正常终止且不重复判同一张",
     danceLoop.hand === 12 && danceLoop.ms < 3000, danceLoop);
 
-  // ===== 冰心双刺剑：摸到的实体单体杀转为不消耗杀意的刺杀 =====
+  // ===== 冰心双刺剑：摸到的实体单体杀转为不消耗淫气的刺杀 =====
   await page.evaluate(setupTpl([], ["冰心双刺剑"], []));
   const ice = await page.evaluate(`(() => {
     const st = window.state, b = st.battle;
@@ -221,14 +221,14 @@ const peekTpl = `(() => {
     a.discard = []; a.hand = [];
     const drawn = window.BattleSystem.draw(a, 1, b) || [];
     return { drawn: drawn.map(c => c.name),
-             hand: a.hand.map(c => c.name + (c.noIntentCost ? "[免杀意]" : "")),
+             hand: a.hand.map(c => c.name + (c.noIntentCost ? "[免淫气]" : "")),
              logs: (st.log || []).slice(0, 8).map(String) };
   })()`);
   console.log(`[冰心双刺剑] 手牌 ${JSON.stringify(ice.hand)} 日志 ${JSON.stringify(ice.logs.slice(0,2))}`);
-  T("冰心双刺剑：摸到的实体单体【杀】转换为【刺杀】且不消耗杀意",
-    ice.hand.some(n => n.startsWith("刺杀") && n.includes("[免杀意]")), ice);
+  T("冰心双刺剑：摸到的实体单体【杀】转换为【刺杀】且不消耗淫气",
+    ice.hand.some(n => n.startsWith("刺杀") && n.includes("[免淫气]")), ice);
 
-  // ===== 冰心双刺剑：打出转换后的刺杀不消耗杀意 =====
+  // ===== 冰心双刺剑：打出转换后的刺杀不消耗淫气 =====
   const icePlay = await page.evaluate(`(() => {
     const st = window.state, b = st.battle;
     const a = b.allies[0], e = b.enemies[${FOE}];
@@ -239,8 +239,8 @@ const peekTpl = `(() => {
     return { ok, before, after: a.intent, foeHp: e.hp };
   })()`);
   await page.waitForTimeout(900);
-  console.log(`[冰心双刺剑] 杀意 ${icePlay.before}→${icePlay.after}，敌 hp=${icePlay.foeHp}`);
-  T("冰心双刺剑：转换后的【刺杀】打出不消耗杀意",
+  console.log(`[冰心双刺剑] 淫气 ${icePlay.before}→${icePlay.after}，敌 hp=${icePlay.foeHp}`);
+  T("冰心双刺剑：转换后的【刺杀】打出不消耗淫气",
     icePlay.before === icePlay.after, icePlay);
 
   // ===== 刺客胶衣：黑色牌当【刺杀】使用 =====
@@ -262,8 +262,8 @@ const peekTpl = `(() => {
              logs: (st.log || []).slice(0, 8).map(String) };
   })()`);
   await page.waitForTimeout(900);
-  console.log(`[刺客胶衣] ok=${latex.ok} 杀意 ${latex.before}→${latex.after}`);
-  T("刺客胶衣：可将黑色牌当【刺杀】使用且不消耗杀意",
+  console.log(`[刺客胶衣] ok=${latex.ok} 淫气 ${latex.before}→${latex.after}`);
+  T("刺客胶衣：可将黑色牌当【刺杀】使用且不消耗淫气",
     latex.noSkill !== true && latex.picked === true && latex.cost === true
     && latex.aimed === true
     && latex.ok === true && latex.before === latex.after

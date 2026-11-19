@@ -46,7 +46,7 @@ window.AbeKarunaBubbleZone = (() => {
     if (!battle || unit?.ref !== "abe_karuna") return;
     const bubble = unit.bubbleCards;
     if (!bubble?.length) return;
-    // 标记随清空一并抹掉，否则免杀意会跟着牌进弃牌堆、被回收后错误生效。
+    // 标记随清空一并抹掉，否则免淫气会跟着牌进弃牌堆、被回收后错误生效。
     bubble.forEach(card => { delete card._bubbleFree; delete card._bubbleCast; });
     const cards = bubble.splice(0, bubble.length);
     // 消耗牌回消耗区：若随清空落进弃牌堆等于洗回牌库、凭空多发一张。

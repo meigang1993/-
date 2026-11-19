@@ -23,7 +23,7 @@ window.BattlePrepareSequence = deps => {
       const step = battle.prepareStep;
       if (step === 0) {
         battle.prepareStep += 1;
-        record(state, `${unit.name} 准备阶段，杀意重置为${unit.intent}/${intentMax(unit)}。`);
+        record(state, `${unit.name} 准备阶段，淫气重置为${unit.intent}/${intentMax(unit)}。`);
         window.BattleStatusCards?.resolveResistance?.(state, unit);
         window.BakarSkills?.tickBurning?.(state, unit, combat.directDamage, combat.damage);
       } else if (step === 1) {

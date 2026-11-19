@@ -145,7 +145,7 @@ function testChain() {
     api.afterCardPlayed(st, a, e0, card);
     T("B1 原目标存活时 3 张虚拟杀全部打原目标",
       calls.length === 3 && calls.every(c => c.targetUid === "e0"), calls.map(c => c.targetUid));
-    T("B2 虚拟杀为杀（普攻）且关闭响应/钩子链/杀意消耗",
+    T("B2 虚拟杀为杀（普攻）且关闭响应/钩子链/淫气消耗",
       calls.every(c => c.card.name === "杀（普攻）" && c.card.noIntentCost && c.card.ignoreResponse
         && c.card.skipAfterCardPlayed && c.card._chiyoChainVirtual && c.card.void));
     T("B2b 链标记用完即清，不残留进存档",

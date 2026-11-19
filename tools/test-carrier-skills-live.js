@@ -1,11 +1,11 @@
 // 装甲运输车 · 实战回归
 //   ⭐ 无脑冲撞：出牌阶段，摸到或获得的实体单体【杀】转换为【撞杀】并自动使用，
-//      随机指定敌方一名角色，不消耗杀意
+//      随机指定敌方一名角色，不消耗淫气
 //   ⭐ 坚硬装甲：不会受到任何伤害
 //   🔵 增援部队：准备阶段当有其它角色死亡后，复活全部已死亡的其他角色，
 //      每复活一名损失 10% 生命值，直到自己死亡
 //   物资货物（被动）：摸牌阶段，你摸牌时其他角色根据你摸的牌数摸等量的牌
-//   武器库（主动）：出牌阶段限一次，我方所有其他角色各摸 1 张【杀】，不消耗杀意
+//   武器库（主动）：出牌阶段限一次，我方所有其他角色各摸 1 张【杀】，不消耗淫气
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
@@ -139,7 +139,7 @@ const arsenalTpl = `(() => {
   console.log(`[无脑冲撞] name=${ram.name} armoredRam=${ram.armoredRam} noIntent=${ram.noIntent} target=${ram.hasTarget}`);
   T("无脑冲撞：实体单体【杀】转换为【撞杀】牌", ram.has === true && ram.name === "撞杀", ram);
   T("无脑冲撞：转换产物具备撞杀效果（armoredRam）", ram.armoredRam === true, ram);
-  T("无脑冲撞：不消耗杀意", ram.noIntent === true, ram);
+  T("无脑冲撞：不消耗淫气", ram.noIntent === true, ram);
   T("无脑冲撞：随机指定敌方一名角色", ram.hasTarget === true, ram);
 
   // ===== 无脑冲撞端到端 =====

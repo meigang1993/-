@@ -239,7 +239,7 @@ const reinTpl = `(() => {
     B2.evtCards >= 1 && B2.receivers.every(r => r.pending === 0 && r.visible === r.hand), B2);
   // 必须同时看 visible===hand：只看 hand 数的话，牌带 _pendingDraw 时 hand>=1 仍成立，
   // 但玩家看不见也用不了——撤销修复后这条会假通过。
-  T("武器库：友方收到且可见可用的不消耗杀意【杀】",
+  T("武器库：友方收到且可见可用的不消耗淫气【杀】",
     B2.receivers.some(r => r.hand >= 1 && r.visible === r.hand && r.pending === 0), B2.receivers);
 
   await page.evaluate(setupTpl);

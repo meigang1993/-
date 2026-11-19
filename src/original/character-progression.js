@@ -46,7 +46,7 @@ window.CharacterProgression = (() => {
     artina: { maxHp: 234, attack: 67, magic: 25, speed: 44 },
     maria: { maxHp: 327, attack: 45, magic: 49, speed: 36 },
     // 怪面诺亚（第 34 名）：输出倾向。攻击取 11 档（82.4，与米尔尤拉并列全表最高攻击成长），
-    // 结束阶段伤害按攻击力结算，与【淫气改造】杀牌免杀意的输出定位一致；
+    // 结束阶段伤害按攻击力结算，与【淫气改造】杀牌免淫气的输出定位一致；
     // 魔力压到 3 档，生命 28 档、速度 12 档居中。全部落在统一档位网格上。
     noa: { maxHp: 327, attack: 82, magic: 25, speed: 44 },
   });

@@ -57,7 +57,7 @@ console.log("=== 废墟沙城 普通怪技能 实现检查 ===\n");
   check("1.2 基础属性", def?.attack === 20 && def?.magic === 16 && def?.speed === 30
     && def?.hp === 136 && def?.bloodlust === 1 && def?.handLimit === 4
     && def?.drawPerTurn === 2 && def?.initialDraw === 2,
-    `攻${def?.attack} 魔${def?.magic} 速${def?.speed} 血${def?.hp} 杀意${def?.bloodlust} 手牌${def?.handLimit} 摸${def?.drawPerTurn}+${def?.initialDraw}`);
+    `攻${def?.attack} 魔${def?.magic} 速${def?.speed} 血${def?.hp} 淫气${def?.bloodlust} 手牌${def?.handLimit} 摸${def?.drawPerTurn}+${def?.initialDraw}`);
   check("1.3 性别/所属", def?.gender === "male", `gender=${def?.gender}`);
 
   const state = createState();
@@ -226,7 +226,7 @@ console.log("=== 废墟沙城 普通怪技能 实现检查 ===\n");
   check("4.2 基础属性", def?.attack === 20 && def?.magic === 20 && def?.speed === 40
     && def?.hp === 104 && def?.bloodlust === 1 && def?.handLimit === 3
     && def?.drawPerTurn === 2 && def?.initialDraw === 1,
-    `攻${def?.attack} 魔${def?.magic} 速${def?.speed} 血${def?.hp} 杀意${def?.bloodlust} 手牌${def?.handLimit}`);
+    `攻${def?.attack} 魔${def?.magic} 速${def?.speed} 血${def?.hp} 淫气${def?.bloodlust} 手牌${def?.handLimit}`);
 
   const state = createState();
   const actor = mkGrunt("attack_drone");

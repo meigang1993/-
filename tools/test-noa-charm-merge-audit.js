@@ -51,7 +51,7 @@ const data = src("data-new-characters.js");
 }
 T("A2 合并后描述含四段效果",
   /出牌阶段开始时及你每次出牌后/.test(data)
-  && /使用【杀】牌不消耗杀意/.test(data)
+  && /使用【杀】牌不消耗淫气/.test(data)
   && /结束阶段，你对我方其他所有存活男性角色各造成等同于你攻击力的伤害/.test(data)
   && /若队伍中没有存活的男性角色，出牌阶段开始时/.test(data));
 T("A3 角色评价不再提独立技能名",
@@ -204,7 +204,7 @@ const damage = (s, target, amount, reason, unit, card) =>
 {
   const n = noa(); const b = battle({ allies: [n] });
   win.state = { battle: b };
-  T("B11 原锁定技仍在：自己出牌阶段免杀意，别家回合不生效",
+  T("B11 原锁定技仍在：自己出牌阶段免淫气，别家回合不生效",
     win.NoaCharmSkills.noIntentCost(n, { name: "杀（普攻）", type: "slash" }) === true
     && win.NoaCharmSkills.noIntentCost(n, { name: "闪", type: "tactic" }) === false);
   win.state = { battle: Object.assign({}, b, { activeUid: "e0" }) };

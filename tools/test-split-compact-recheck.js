@@ -154,10 +154,14 @@ T("A7 11 个 bundle 产物包含新模块全局名", bundleMissing.length === 0,
 T("A8 每个新模块都被消费方引用", depList.every(d => guards.some(g => g.dep === d)), depList.filter(d => !guards.some(g => g.dep === d)));
 
 // ── B 函数体等价（HEAD 版 vs 拆分后 主+子） ──────────────────────────────────
+// 245 版出牌资源名词全局统一；基线固定为 227 版（旧名词），比较前只把基线里的
+// 旧名词换成新名词，工作树保持原样（库里原有的「淫气改造」不能反向改写）。
+const OLD_WORD = "\u6740\u610f", NEW_WORD = "淫气";
+const normWord = s => s.split(OLD_WORD).join(NEW_WORD);
 const bodyMismatch = [], stringMissing = [], depFnChecked = [], depFnNew = [];
 for (const [consumer, deps] of Object.entries(depsByConsumer)) {
   let hs;
-  try { hs = head(consumer); } catch (e) { bodyMismatch.push(`${consumer}:HEAD读取失败 ${e.message}`); continue; }
+  try { hs = normWord(head(consumer)); } catch (e) { bodyMismatch.push(`${consumer}:HEAD读取失败 ${e.message}`); continue; }
   const hb = bodies(hs);
   deps.forEach(dep => {
     let ds = read(dep);

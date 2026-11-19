@@ -3,7 +3,7 @@
 //   B 管家手册魅魔目标：列出怪面诺亚
 //   C 第三次全军覆没剧情：对话、完成按钮、只开放兑换不直接入栏
 //   D 孕育殿堂：100 精华宝珠唤醒
-//   E 真实开局：登场台词、特殊立绘、手牌恒等与动态上限、杀牌免杀意
+//   E 真实开局：登场台词、特殊立绘、手牌恒等与动态上限、杀牌免淫气
 require("./repository-toolchain");
 const path = require("path");
 const { chromium } = require("playwright");
@@ -192,7 +192,7 @@ const INTRO = "啊啊……身体好热";
       line: (introDebug?.line || "").slice(0, 60),
     });
 
-    // 【淫气改造】只在出牌阶段（phase 4）生效，免杀意判据还读 window.state。
+    // 【淫气改造】只在出牌阶段（phase 4）生效，免淫气判据还读 window.state。
     // 串行跑时战斗可能仍停在登场字幕等待态；先解字幕锁、把行动权交给诺亚、
     // 进入出牌阶段并清掉溢出弃牌挂起，再采集 E4~E6 的快照。
     await page.evaluate(() => {
@@ -274,7 +274,7 @@ const INTRO = "啊啊……身体好热";
       b.phase = 4; b.activeUid = noa.uid; b.locked = false;
       return !!window.NoaCharmSkills?.noIntentCost?.(noa, { name: "杀（普攻）", type: "slash" });
     });
-    T("E6 杀牌免杀意判据已装配", freeNow === true, { ...battle, freeNow });
+    T("E6 杀牌免淫气判据已装配", freeNow === true, { ...battle, freeNow });
     // 串行跑时战斗可能仍停在登场字幕/等待态（行头像区没渲染完，DOM 里只有 3 张
     // img），单跑恰好已推进才过。先解除字幕锁、把行动权交给诺亚并重新渲染，
     // 再在整页找立绘 img 且要求真实解码；不装皮肤时仍必须找不到（反向验证）。

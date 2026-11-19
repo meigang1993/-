@@ -3,7 +3,7 @@
 // 背景：battle-damage-triggers.js 的 afterDamage 里，绝大多数分支都带了时停判据，
 // 但 `window.WithererSkills?.afterDamage?.(...)` 是裸调 —— 没有 tsStopped 包裹。
 // 凋零者是**敌方**单位（会被时停标记），所以这条漏判会让以下效果在被时停时照常触发：
-//   · 鲜血之忆   → 掉血后提升杀意上限与每回合摸牌（witherer-relic-skills.js）
+//   · 鲜血之忆   → 掉血后提升淫气上限与每回合摸牌（witherer-relic-skills.js）
 //   · 勒脖标记   → 勒杀命中后挂持续伤害标记
 //   · 长舌头     → 吸取目标手牌上限
 //   · 1124号镰刀 → 击杀后获得额外回合
@@ -131,7 +131,7 @@ const readTpl = () => `(() => {
   T("A0 时停标记已施加到凋零者身上", exp.c.marked === true, exp.c);
   T("A1 时停后：【鲜血之忆】不再触发",
     exp.r.blood.length === 0, exp.r);
-  T("A2 时停后：杀意上限未被提升（仍为初始 1）",
+  T("A2 时停后：淫气上限未被提升（仍为初始 1）",
     exp.r.bloodlust === 1, exp.r);
   T("A3 时停本身不免疫伤害（伤害照常结算）",
     exp.r.withererHp <= 74, exp.r);

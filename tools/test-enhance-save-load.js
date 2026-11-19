@@ -121,7 +121,7 @@ function want(ctx, tpl, level, lv) {
     speed: Math.round((base.speed + (lv.speed || 0)) * 100) / 100,
   };
 }
-function mkState(enhance, gold = 20000) {
+function mkState(enhance, gold = 100000) {
   const chars = TPL.map((t, i) => ({
     id: t.id, name: t.name, locked: false, level: 3, exp: 0, hp: 200, stats: {},
     ...(i === 0 && enhance !== undefined ? { enhance: clone(enhance) } : {}),
@@ -168,7 +168,7 @@ function loadOf(ctx, saved) {
   T("A4 落盘不存 stats（读档重算口径）", c0.stats === undefined);
   T("A5 落盘保留 hp/locked/level/exp",
     Number.isFinite(c0.hp) && c0.locked === false && c0.level === 3 && c0.exp === 0);
-  T("A6 金币整数且与结算一致", Number.isSafeInteger(saved.resources.gold) && saved.resources.gold === 20000 - 7000);
+  T("A6 金币整数且与结算一致", Number.isSafeInteger(saved.resources.gold) && saved.resources.gold === 100000 - 35000);
   T("A7 存档带纪元标记", saved.saveEpoch === 1);
   T("A8 JSON 往返字节一致", JSON.stringify(clone(saved)) === JSON.stringify(saved));
   T("A9 未强化角色四元组全 0",
@@ -257,7 +257,7 @@ function loadOf(ctx, saved) {
   T("D4 checkpoint 读档加成恢复",
     JSON.stringify(pick(battleLoaded.stats)) === JSON.stringify(want(ctx, TPL[0], 3, { maxHp: 2, attack: 1, magic: 0, speed: 0 })));
 
-  const goldState = mkState(zero(), 1000.9);
+  const goldState = mkState(zero(), 5000.9);
   T("D5 小数金币存档被既有 validateRaw 护栏拒绝", (() => {
     try { ctx.snap.prepareSaveSnapshot(clone(goldState), { trusted: true }); return false; }
     catch (e) { return e.code === "INVALID_SAVE_STRUCTURE"; }

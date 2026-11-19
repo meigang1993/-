@@ -22,7 +22,7 @@ async function openEnhance(page) {
     const s = window.state;
     s.view = "hall";
     s.hallModal = null;
-    s.resources.gold = 5000;
+    s.resources.gold = 25000;
     s.infoUnit = "lokar";
     s.infoTab = "enhance";
     window.render();
@@ -74,9 +74,9 @@ const readState = page => page.evaluate(() => {
     // B. 真实点击：一次只加一项
     const before = await readState(page);
     await page.locator('[data-enhance-stat="attack"]').evaluate(el => el.click());
-    await expect.poll(() => page.evaluate(() => window.state.resources.gold)).toBe(4000);
+    await expect.poll(() => page.evaluate(() => window.state.resources.gold)).toBe(20000);
     const afterAttack = await readState(page);
-    check("B1 点击攻击力扣费恰好 1000", afterAttack.gold === before.gold - 1000);
+    check("B1 点击攻击力扣费恰好 5000", afterAttack.gold === before.gold - 5000);
     check("B2 只增加攻击力 1 点，其余三项不变",
       afterAttack.stats.attack === before.stats.attack + 1
       && afterAttack.stats.maxHp === before.stats.maxHp
@@ -90,7 +90,7 @@ const readState = page => page.evaluate(() => {
     check("B5 满血 hp 跟随新上限", afterAttack.hp === afterAttack.stats.maxHp);
 
     await page.locator('[data-enhance-stat="maxHp"]').evaluate(el => el.click());
-    await expect.poll(() => page.evaluate(() => window.state.resources.gold)).toBe(3000);
+    await expect.poll(() => page.evaluate(() => window.state.resources.gold)).toBe(15000);
     const afterHp = await readState(page);
     check("B6 再点生命值：只加 3 点生命、攻击力保持 1 点加成",
       afterHp.stats.maxHp === before.stats.maxHp + 3
@@ -103,13 +103,13 @@ const readState = page => page.evaluate(() => {
       (await page.locator('[data-enhance-stat="attack"]').evaluate(el => el.disabled)) === false);
 
     // C. 余额与战斗置灰
-    await page.evaluate(() => { window.state.resources.gold = 999; window.render(); });
+    await page.evaluate(() => { window.state.resources.gold = 4999; window.render(); });
     const poorDisabled = await page.locator("[data-enhance-char]").evaluateAll(bs => bs.map(b => b.disabled));
     check("C1 余额不足四按钮全置灰", poorDisabled.every(Boolean), poorDisabled);
     check("C2 置灰时提示原因", (await page.locator(".character-enhance").textContent()).includes("莉莉丝元不足"));
     // 战斗中守卫：切 view 但不触发全局 render（战斗视图需完整 battle 对象，伪造会崩）。
     // 此时 DOM 里的按钮仍是上一次大厅渲染的可点状态，正好验证「绕过置灰按钮」的兜底。
-    await page.evaluate(() => { window.state.resources.gold = 5000; window.render(); });
+    await page.evaluate(() => { window.state.resources.gold = 25000; window.render(); });
     const guarded = await page.evaluate(async () => {
       const s = window.state;
       const before = s.resources.gold;

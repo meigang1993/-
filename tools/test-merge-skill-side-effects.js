@@ -221,7 +221,7 @@ T("B7 不动其它单位、其它牌与敌方",
   const a = { uid: "a1", ref: "angelica", rageMarks: 1, hp: 10, maxHp: 40, side: "ally" };
   const s = { battle: { turn: 1, phase: 4, activeUid: "a1", log: [] }, log: [] };
   const slash = { name: "杀（普攻）", type: "slash" };
-  T("D2 抵杀意与主动发动共用同一标记池",
+  T("D2 抵淫气与主动发动共用同一标记池",
     A.beforeIntentCost(s, a, slash) === true && a.rageMarks === 0
     && A.canUseBerserkWill(a) === false);
   T("D3 标记上限 10 不会被突破", (() => {

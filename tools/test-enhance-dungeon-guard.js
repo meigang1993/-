@@ -206,17 +206,17 @@ function actionCtx() {
   // ---------- D. 其它 BUG 与副作用复查（真实结算层） ----------
   const ctx = coreCtx();
   {
-    const st = mkState(1000);
+    const st = mkState(5000);
     const r = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "attack" }, st);
-    T("D1 恰好 1000 可强化：扣费 1000、只加攻击 1",
+    T("D1 恰好 5000 可强化：扣费 5000、只加攻击 1",
       r.ok && st.resources.gold === 0
       && JSON.stringify(E.levelsOf(st.chars[0])) === JSON.stringify({ ...zero(), attack: 1 })
       && JSON.stringify(pick(st.chars[0].stats)) === JSON.stringify(want(ctx, 3, { ...zero(), attack: 1 })));
   }
   {
-    const st = mkState(999);
+    const st = mkState(4999);
     const r = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "speed" }, st);
-    T("D2 999 拒绝且不扣费不加属性", !r.ok && st.resources.gold === 999
+    T("D2 4999 拒绝且不扣费不加属性", !r.ok && st.resources.gold === 4999
       && JSON.stringify(E.levelsOf(st.chars[0])) === JSON.stringify(zero()));
   }
   {
@@ -237,7 +237,7 @@ function actionCtx() {
     const r1 = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "maxHp" }, st);
     const r2 = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "speed" }, st);
     T("D5 某项满级只挡该项，其它三项照常强化",
-      !r1.ok && r2.ok && st.resources.gold === 4000 && E.levelOf(st.chars[0], "speed") === 1);
+      !r1.ok && r2.ok && st.resources.gold === 0 && E.levelOf(st.chars[0], "speed") === 1);
   }
   T("D6 旧档 enhanceLevel=3 还原成四项各 3 次",
     JSON.stringify(E.levelsOf({ enhanceLevel: 3 })) === JSON.stringify({ maxHp: 3, attack: 3, magic: 3, speed: 3 }));

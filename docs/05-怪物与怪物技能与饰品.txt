@@ -7,7 +7,7 @@
 
 【一、怪物基础属性说明】
 
-怪物属性字段：hp / attack / magic / speed / bloodlust(杀意上限) /
+怪物属性字段：hp / attack / magic / speed / bloodlust(淫气上限) /
 handLimit(手牌上限) / drawPerTurn(每回合摸牌额外) / initialDraw(初始摸牌额外)
 怪物同样使用共享基础摸牌数 2 和共享基础初始摸牌数 4。
 难度成长倍率见"01-完整项目.txt"难度系统。
@@ -32,7 +32,7 @@ handLimit(手牌上限) / drawPerTurn(每回合摸牌额外) / initialDraw(初�
 
 --- 1. mechanical_goblin - 机械哥布林 ---
 类型：normal | 定位：控制 | AI：goblin
-属性：HP18 ATK3 MAG2 SPD5 杀意2 手牌4 摸牌1 初始1
+属性：HP18 ATK3 MAG2 SPD5 淫气2 手牌4 摸牌1 初始1
 立绘：./assets/images/mechanical-goblin.webp
 评价：杀牌命中后的手牌消耗单位。
 
@@ -42,7 +42,7 @@ handLimit(手牌上限) / drawPerTurn(每回合摸牌额外) / initialDraw(初�
 
 --- 2. machine_succubus - 机器魅魔 ---
 类型：normal | 定位：输出 | AI：succubus
-属性：HP16 ATK3 MAG4 SPD4 杀意1 手牌4 摸牌1 初始2
+属性：HP16 ATK3 MAG4 SPD4 淫气1 手牌4 摸牌1 初始2
 立绘：./assets/images/machine-succubus.webp
 评价：红桃数量驱动的拼花伤害单位。
 
@@ -53,7 +53,7 @@ handLimit(手牌上限) / drawPerTurn(每回合摸牌额外) / initialDraw(初�
 
 --- 3. skeleton_patrol - 骷髅巡逻机 ---
 类型：normal | 定位：控制 | AI：radar
-属性：HP19 ATK3 MAG2 SPD6 杀意1 手牌3 摸牌2 初始1
+属性：HP19 ATK3 MAG2 SPD6 淫气1 手牌3 摸牌2 初始1
 立绘：./assets/images/skeleton-patrol-machine.webp
 评价：花色锁定与杀牌增伤单位。
 
@@ -64,7 +64,7 @@ handLimit(手牌上限) / drawPerTurn(每回合摸牌额外) / initialDraw(初�
 
 --- 4. mecha_minotaur - 机甲牛头怪 ---
 类型：normal | 定位：防御/嘲讽 | AI：minotaur
-属性：HP26 ATK4 MAG2 SPD4 杀意3 手牌5 摸牌1 初始2
+属性：HP26 ATK4 MAG2 SPD4 淫气3 手牌5 摸牌1 初始2
 立绘：./assets/images/mecha-minotaur.webp
 评价：攻防双判定前排单位。
 
@@ -76,7 +76,7 @@ handLimit(手牌上限) / drawPerTurn(每回合摸牌额外) / initialDraw(初�
 --- 5. elrana_clone - 艾尔拉娜克隆体 ---
 类型：elite | 定位：输出 | AI：elrana_clone
 性别：女
-属性：HP68 ATK4 MAG5 SPD6 杀意3 手牌3 摸牌2 初始3
+属性：HP68 ATK4 MAG5 SPD6 淫气3 手牌3 摸牌2 初始3
 立绘：./assets/images/elrana-clone.webp
 BGM：./assets/sounds/elrana-clone.ogg
 精华掉落率：普通0.2 冒险0.5 勇士0.7
@@ -91,7 +91,7 @@ BGM：./assets/sounds/elrana-clone.ogg
 --- 6. krow_doctor - 克罗博士 ---
 类型：elite | 定位：控制 | AI：krow_doctor
 性别：男
-属性：HP68 ATK3 MAG5 SPD6 杀意2 手牌4 摸牌2 初始4
+属性：HP68 ATK3 MAG5 SPD6 淫气2 手牌4 摸牌2 初始4
 立绘：./assets/images/krow-doctor.webp
 BGM：./assets/sounds/krow-doctor.ogg
 评价：群体毒控精英。
@@ -105,7 +105,7 @@ BGM：./assets/sounds/krow-doctor.ogg
 --- 7. invader_chiyo - 入侵者橘千樱 ---
 类型：elite | 定位：输出 | AI：invader_chiyo
 性别：女
-属性：HP78 ATK4 MAG4 SPD8 杀意2 手牌5 摸牌3 初始1
+属性：HP78 ATK4 MAG4 SPD8 淫气2 手牌5 摸牌3 初始1
 立绘：./assets/images/invader-chiyo.webp
 BGM：./assets/sounds/invader-chiyo.ogg
 评价：高速连斩精英。
@@ -119,7 +119,7 @@ BGM：./assets/sounds/invader-chiyo.ogg
 
 --- 8. mechanical_bull_king - 机械牛头王 ---
 类型：boss | 定位：防御/嘲讽 | AI：mechanical_bull_king
-属性：HP100 ATK5 MAG3 SPD6 杀意2 手牌6 摸牌3 初始2
+属性：HP100 ATK5 MAG3 SPD6 淫气2 手牌6 摸牌3 初始2
 立绘：./assets/images/mechanical-bull-king.webp
 BGM：./assets/sounds/mechanical-bull-king.ogg
 歼灭BGM：./assets/sounds/mechanical-bull-king-annihilation.22a0d6c2.ogg
@@ -140,7 +140,7 @@ BGM：./assets/sounds/mechanical-bull-king.ogg
 --- 9. pursuer_edis - 内英组杀手伊迪斯 ---
 类型：boss | 定位：输出 | AI：pursuer_edis
 性别：女
-属性：HP180 ATK3 MAG2 SPD7 杀意2 手牌5 摸牌2 初始1
+属性：HP180 ATK3 MAG2 SPD7 淫气2 手牌5 摸牌2 初始1
 立绘：./assets/images/pursuer-edis.8d1fc755.webp
 BGM：./assets/sounds/pursuer-edith.ogg
 精华掉落率：普通0.2 冒险0.4 勇士0.6 王者0.8 英雄1.0
@@ -162,7 +162,7 @@ BGM：./assets/sounds/pursuer-edith.ogg
 
 --- 10. terror_slime - 恐怖史莱姆 ---
 类型：normal | 定位：控制 | AI：terror_slime
-属性：HP36 ATK6 MAG5 SPD11 杀意1 手牌4 摸牌2 初始2
+属性：HP36 ATK6 MAG5 SPD11 淫气1 手牌4 摸牌2 初始2
 立绘：./assets/images/terror-slime.webp
 BGM：./assets/sounds/underwater-train-battle.ogg
 评价：状态污染与判定即死单位。
@@ -170,14 +170,14 @@ BGM：./assets/sounds/underwater-train-battle.ogg
 技能：
 - 粘液打击（被动）：锁定技，当你使用【杀】指定敌方角色为目标时，
   目标获得一张【粘液】状态牌；【粘液】不能于弃牌阶段弃置，
-  打出此牌需消耗1点杀意，不能交给其他角色，可被拆解或偷窃移除。
+  打出此牌需消耗1点淫气，不能交给其他角色，可被拆解或偷窃移除。
 - 吞食（被动）：锁定技，准备阶段，你随机选择一名拥有【粘液】的敌方角色
   并进行判定；若结果为红桃，该角色死亡。
 
 --- 11. shark_pirate_crew - 狂鲨海盗团船员 ---
 类型：normal | 定位：输出 | AI：shark_pirate_crew
 性别：男
-属性：HP36 ATK6 MAG4 SPD11 杀意1 手牌4 摸牌1 初始2
+属性：HP36 ATK6 MAG4 SPD11 淫气1 手牌4 摸牌1 初始2
 立绘：./assets/images/shark-pirate-crew.webp
 BGM：./assets/sounds/underwater-train-battle.ogg
 
@@ -188,7 +188,7 @@ BGM：./assets/sounds/underwater-train-battle.ogg
 --- 12. shark_pirate_raider - 狂鲨海盗团掠夺者 ---
 类型：normal | 定位：控制 | AI：shark_pirate_raider
 性别：男
-属性：HP44 ATK7 MAG4 SPD13 杀意2 手牌4 摸牌2 初始1
+属性：HP44 ATK7 MAG4 SPD13 淫气2 手牌4 摸牌2 初始1
 立绘：./assets/images/shark-pirate-raider.webp
 BGM：./assets/sounds/underwater-train-battle.ogg
 
@@ -197,7 +197,7 @@ BGM：./assets/sounds/underwater-train-battle.ogg
 
 --- 13. shark_pirate_submarine - 狂鲨海盗团潜水艇 ---
 类型：normal | 定位：输出 | AI：shark_pirate_submarine
-属性：HP64 ATK6 MAG5 SPD8 杀意2 手牌5 摸牌3 初始2
+属性：HP64 ATK6 MAG5 SPD8 淫气2 手牌5 摸牌3 初始2
 立绘：./assets/images/shark-pirate-submarine.webp
 BGM：./assets/sounds/underwater-train-battle.ogg
 
@@ -208,7 +208,7 @@ BGM：./assets/sounds/underwater-train-battle.ogg
 --- 14. raff_assassin - 内英组杀手拉芙 ---
 类型：elite | 定位：控制 | AI：raff_assassin
 性别：女
-属性：HP120 ATK6 MAG6 SPD14 杀意2 手牌3 摸牌2 初始1
+属性：HP120 ATK6 MAG6 SPD14 淫气2 手牌3 摸牌2 初始1
 立绘：./assets/images/raff-portrait.webp
 BGM：./assets/sounds/raff-bgm.ogg
 登场台词：等你很久了，罗卡尔哥哥。我是魔国暗部的内英组杀手拉芙。
@@ -230,7 +230,7 @@ BGM：./assets/sounds/raff-bgm.ogg
 --- 15. abe_mike - 鱼人武士安倍麦克 ---
 类型：elite | 定位：输出 | AI：abe_mike
 性别：男
-属性：HP132 ATK6 MAG5 SPD12 杀意1 手牌4 摸牌2 初始1
+属性：HP132 ATK6 MAG5 SPD12 淫气1 手牌4 摸牌2 初始1
 立绘：./assets/images/abe-mike.webp
 BGM：./assets/sounds/abe-mike.ogg
 登场台词：长角的小伙子，打得不错，来陪老夫练练手。若你败了，做老夫的女婿吧，嘿嘿。
@@ -240,7 +240,7 @@ BGM：./assets/sounds/abe-mike.ogg
   所有敌方角色随机各弃置一张牌。若弃置牌与你展示牌牌名不同，
   你对其造成等同于你攻击力的伤害。
 - 猛龙断空斩（主动）：出牌阶段限一次，你可以展示摸牌堆顶四张牌，
-  获得其中的单体【杀】，其余置入弃牌堆。以此法获得的牌本回合不消耗杀意。
+  获得其中的单体【杀】，其余置入弃牌堆。以此法获得的牌本回合不消耗淫气。
 - 幻影剑舞（被动）：锁定技，结束阶段，你随机选择一名敌方角色，
   视为对其使用X张不可被响应的虚拟【杀（普攻）】
   （X为你本回合使用的实体【杀】数）。
@@ -248,7 +248,7 @@ BGM：./assets/sounds/abe-mike.ogg
 --- 16. shark_captain_mordio - 狂鲨海盗团船长莫迪奥 ---
 类型：boss | 定位：控制 | AI：shark_captain_mordio
 性别：男
-属性：HP280 ATK8 MAG5 SPD11 杀意1 手牌6 摸牌3 初始2
+属性：HP280 ATK8 MAG5 SPD11 淫气1 手牌6 摸牌3 初始2
 立绘：./assets/images/shark-captain-mordio.webp
 BGM：./assets/sounds/shark-captain-mordio.ogg
 登场台词：你们就是人鱼女王派来的雇佣兵？你们知道我们背后大佬是谁吗？
@@ -262,12 +262,12 @@ BGM：./assets/sounds/shark-captain-mordio.ogg
   令所有敌方角色各获得一张【眩晕】状态牌；【眩晕】持有者判定阶段进行判定，
   若结果为黑色，跳过本回合出牌阶段。回合结束后，消耗未打出的【眩晕】。
 - 狂鲨之怒（被动）：锁定技，每轮每名敌方角色首次对你造成伤害后，
-  你的杀意上限+1。此加成于你的下个结束阶段移除。
+  你的淫气上限+1。此加成于你的下个结束阶段移除。
 
 --- 17. mona_eagle_captain - 天鹰突击队队长莫娜 ---
 类型：boss | 定位：输出 | AI：mona_eagle_captain
 性别：女
-属性：HP285 ATK6 MAG6 SPD12 杀意3 手牌5 摸牌2 初始2
+属性：HP285 ATK6 MAG6 SPD12 淫气3 手牌5 摸牌2 初始2
 立绘：./assets/images/mona-eagle-captain.webp
 BGM：./assets/sounds/mona-eagle-captain.ogg
 登场台词：你就是罗卡尔？我是天使军天鹰突击队队长莫娜。
@@ -291,7 +291,7 @@ BGM：./assets/sounds/mona-eagle-captain.ogg
 
 --- 18. suicide_drone - 魔王军自杀式无人机 ---
 类型：normal | 定位：输出 | AI：suicide_drone
-属性：HP32 ATK9 MAG7 SPD17 杀意2 手牌3 摸牌3 初始1
+属性：HP32 ATK9 MAG7 SPD17 淫气2 手牌3 摸牌3 初始1
 立绘：./assets/new-portraits/suicide-drone.webp
 BGM：./assets/new-bgm/orc-dungeon-battle.ogg
 
@@ -306,17 +306,17 @@ BGM：./assets/new-bgm/orc-dungeon-battle.ogg
 --- 19. demon_beast_unit - 魔王军猛兽部队 ---
 类型：normal | 定位：输出 | AI：demon_beast_unit
 性别：男
-属性：HP48 ATK8 MAG6 SPD13 杀意1 手牌4 摸牌1 初始2
+属性：HP48 ATK8 MAG6 SPD13 淫气1 手牌4 摸牌1 初始2
 立绘：./assets/new-portraits/demon-beast-unit.webp
 BGM：./assets/new-bgm/orc-dungeon-battle.ogg
 
 技能：
-- 火力压制（被动）：锁定技，你使用的【杀（普攻）】视为【机枪扫杀】；转化为全体【杀】后不消耗杀意。
+- 火力压制（被动）：锁定技，你使用的【杀（普攻）】视为【机枪扫杀】；转化为全体【杀】后不消耗淫气。
 
 --- 20. demon_witch - 魔王军魔女 ---
 类型：normal | 定位：输出 | AI：demon_witch
 性别：女
-属性：HP30 ATK5 MAG11 SPD14 杀意1 手牌3 摸牌2 初始2
+属性：HP30 ATK5 MAG11 SPD14 淫气1 手牌3 摸牌2 初始2
 立绘：./assets/new-portraits/demon-witch.webp
 BGM：./assets/new-bgm/orc-dungeon-battle.ogg
 
@@ -326,7 +326,7 @@ BGM：./assets/new-bgm/orc-dungeon-battle.ogg
 
 --- 21. demon_mecha_cerberus - 魔王军机械三头犬 ---
 类型：normal | 定位：输出 | AI：demon_mecha_cerberus
-属性：HP72 ATK8 MAG7 SPD14 杀意1 手牌4 摸牌1 初始2
+属性：HP72 ATK8 MAG7 SPD14 淫气1 手牌4 摸牌1 初始2
 立绘：./assets/new-portraits/demon-mecha-cerberus.webp
 BGM：./assets/new-bgm/orc-dungeon-battle.ogg
 
@@ -336,7 +336,7 @@ BGM：./assets/new-bgm/orc-dungeon-battle.ogg
 --- 22. witherer_1124_split - 凋零者1124号分裂体 ---
 类型：elite | 定位：成长/资源 | AI：witherer_1124
 性别：女
-属性：HP165 ATK9 MAG8 SPD15 杀意1 手牌4 摸牌1 初始1
+属性：HP165 ATK9 MAG8 SPD15 淫气1 手牌4 摸牌1 初始1
 立绘：./assets/new-portraits/witherer-1124-split.webp
 BGM：./assets/new-bgm/witherer-1124-theme.ogg
 登场台词：灵魂检测有反应，混沌之子在这里。
@@ -344,13 +344,13 @@ BGM：./assets/new-bgm/witherer-1124-theme.ogg
 技能：
 - 杀欲窥视（主动）：出牌阶段限一次，你可以指定敌方一名角色。
   若该角色有【杀】牌，你获得等量张临时同名同花色【杀】牌，带有消耗属性。
-  以此技能获得的【杀】牌不消耗杀意。
-- 鲜血之忆（被动）：锁定技，你生命值每减少20%，你的杀意上限和每回合摸牌数各+1。
+  以此技能获得的【杀】牌不消耗淫气。
+- 鲜血之忆（被动）：锁定技，你生命值每减少20%，你的淫气上限和每回合摸牌数各+1。
 
 --- 23. xx_witherer_1124 - XX型凋零者1124号 ---
 类型：boss | 定位：输出 | AI：witherer_1124
 性别：女
-属性：HP350 ATK10 MAG11 SPD17 杀意1 手牌4 摸牌3 初始2
+属性：HP350 ATK10 MAG11 SPD17 淫气1 手牌4 摸牌3 初始2
 立绘：./assets/new-portraits/xx-witherer-1124.webp
 BGM：./assets/new-bgm/witherer-1124-theme.ogg
 登场台词：父亲大人，不记得我了吗？没关系，带你去见母亲大人，
@@ -361,14 +361,14 @@ BGM：./assets/new-bgm/witherer-1124-theme.ogg
 - 杀欲窥视（主动）：同凋零者1124号分裂体。
 - 鲜血之忆（被动）：同凋零者1124号分裂体。
 - 暴走与极速（主动，转换技）：出牌阶段，根据手牌颜色切换。
-  红色不少于黑色进入暴走（红色牌视为【杀（普攻）】，不消耗杀意）。
+  红色不少于黑色进入暴走（红色牌视为【杀（普攻）】，不消耗淫气）。
   黑色更多进入极速（黑色牌不可响应，可当【闪】或【看破】使用）。
   满足另一形态条件时可再次切换。状态持续至下回合开始。
 
 --- 24. demon_king_bakaar - 魔王巴卡尔 ---
 类型：boss | 定位：成长/资源 | AI：demon_king_bakaar
 性别：男
-属性：HP330 ATK11 MAG7 SPD13 杀意2 手牌4 摸牌2 初始2
+属性：HP330 ATK11 MAG7 SPD13 淫气2 手牌4 摸牌2 初始2
 立绘：./assets/new-portraits/demon-king-bakaar.webp
 BGM：./assets/new-bgm/demon-king-bakaar.ogg
 登场台词：你就是帮人鱼女王夺回列车的勇者？本王有所耳闻。
@@ -389,7 +389,7 @@ BGM：./assets/new-bgm/demon-king-bakaar.ogg
 --- 25. orc_king_bondi - 兽人王邦迪 ---
 类型：elite | 定位：控制 | AI：orc_king_bondi
 性别：男
-属性：HP220 ATK10 MAG5 SPD12 杀意1 手牌4 摸牌2 初始1
+属性：HP220 ATK10 MAG5 SPD12 淫气1 手牌4 摸牌2 初始1
 立绘：./assets/new-portraits/orc-king-bondi.webp
 BGM：./assets/new-bgm/orc-king-bondi.ogg
 登场台词：你们是魅魔女王派来的？魔王很强，想挑战魔王就在这里证明给我看看。
@@ -404,7 +404,7 @@ BGM：./assets/new-bgm/orc-king-bondi.ogg
 --- 26. guard_kelly - 特坚组护卫凯丽 ---
 类型：elite | 定位：防御/嘲讽 | AI：guard_kelly
 性别：女
-属性：HP210 ATK8 MAG8 SPD14 杀意1 手牌4 摸牌3 初始2
+属性：HP210 ATK8 MAG8 SPD14 淫气1 手牌4 摸牌3 初始2
 立绘：./assets/new-portraits/guard-kelly.webp
 BGM：./assets/sounds/guard-kelly.ogg
 登场台词：有刺客！不会让你们接近魔王大人的。
@@ -420,7 +420,7 @@ BGM：./assets/sounds/guard-kelly.ogg
 --- 27. assassin_sakura_risa - 内英组杀手樱羽丽莎 ---
 类型：elite | 定位：防御/嘲讽 | AI：assassin_sakura_risa
 性别：女
-属性：HP190 ATK9 MAG7 SPD17 杀意2 手牌3 摸牌2 初始3
+属性：HP190 ATK9 MAG7 SPD17 淫气2 手牌3 摸牌2 初始3
 立绘：./assets/new-portraits/assassin-sakura-risa.webp
 BGM：./assets/new-bgm/assassin-sakura-risa.ogg
 登场台词：兽人的肉难吃死了……来了呀，长得挺好看，怪不得魔后想抓你，
@@ -441,33 +441,33 @@ BGM：./assets/new-bgm/assassin-sakura-risa.ogg
 
 --- 28. noble_soldier - 贵族军士兵 ---
 类型：normal | 定位：地雷控场 | AI：ruins_soldier | 性别：男
-属性：HP60 ATK9 MAG7 SPD14 杀意1 手牌4 摸牌2 初始2
+属性：HP60 ATK9 MAG7 SPD14 淫气1 手牌4 摸牌2 初始2
 立绘：./assets/ruins-enemies/noble-soldier.webp
 技能：放置地雷（主动）- 出牌阶段限一次，将敌方一张手牌转换为地雷状态牌。
 
 --- 29. noble_sniper - 贵族军狙击手 ---
 类型：normal | 定位：花色狙击 | AI：ruins_sniper | 性别：男
-属性：HP52 ATK10 MAG7 SPD17 杀意1 手牌4 摸牌1 初始1
+属性：HP52 ATK10 MAG7 SPD17 淫气1 手牌4 摸牌1 初始1
 立绘：./assets/ruins-enemies/attack-drone.webp
 技能：狙击目标（主动）- 展示一名敌方角色的一张手牌；若你的手牌中该花色数量更多，
 你对其使用的单体【杀】不可响应。
 
 --- 30. merca_tank - 梅尔卡坦克 ---
 类型：normal | 定位：群体蓄力 | AI：ruins_tank
-属性：HP80 ATK8 MAG8 SPD12 杀意1 手牌4 摸牌2 初始2
+属性：HP80 ATK8 MAG8 SPD12 淫气1 手牌4 摸牌2 初始2
 立绘：./assets/ruins-enemies/merca-tank.webp
 技能：坦克炮弹（主动）- 弃置两张单体【杀】并在下回合准备阶段对所有敌方角色发射炮弹。
 
 --- 31. attack_drone - 攻击型无人机 ---
 类型：normal | 定位：麻痹锁定 | AI：ruins_drone
-属性：HP44 ATK8 MAG8 SPD18 杀意1 手牌3 摸牌2 初始1
+属性：HP44 ATK8 MAG8 SPD18 淫气1 手牌3 摸牌2 初始1
 立绘：./assets/ruins-enemies/noble-sniper.webp
 技能：麻痹毒子弹（被动）- 你使用的单体【杀】造成伤害后，
 令目标获得一张【麻痹】状态牌。
 
 --- 32. mech_ai_dragon - 机械AI龙 ---
 类型：boss | 定位：多段机枪 | AI：ruins_dragon
-属性：HP342 ATK13 MAG8 SPD15 杀意1 手牌4 摸牌2 初始1
+属性：HP342 ATK13 MAG8 SPD15 淫气1 手牌4 摸牌2 初始1
 立绘：./assets/ruins-enemies/mech-ai-dragon.webp
 BGM：./assets/new-bgm/mech-ai-dragon.mp3
 技能：
@@ -477,7 +477,7 @@ BGM：./assets/new-bgm/mech-ai-dragon.mp3
 
 --- 33. witherer_1312 - XX型凋零者1312号 ---
 类型：boss | 定位：混乱反击 | AI：ruins_witherer | 性别：女
-属性：HP367 ATK12 MAG11 SPD13 杀意2 手牌3 摸牌3 初始2
+属性：HP367 ATK12 MAG11 SPD13 淫气2 手牌3 摸牌3 初始2
 立绘：./assets/ruins-enemies/witherer-1312.webp
 BGM：./assets/new-bgm/witherer-1312.mp3
 登场台词：混沌之子转生者，看你往哪里跑，跟我回母亲大人身边吧！
@@ -488,7 +488,7 @@ BGM：./assets/new-bgm/witherer-1312.mp3
 
 --- 34. hilde - 内英组杀手希尔德 ---
 类型：elite | 定位：隐身刺客 | AI：ruins_hilde | 性别：女
-属性：HP230 ATK11 MAG10 SPD16 杀意2 手牌3 摸牌2 初始1
+属性：HP230 ATK11 MAG10 SPD16 淫气2 手牌3 摸牌2 初始1
 立绘：./assets/ruins-enemies/hilde.webp
 BGM：./assets/new-bgm/hilde.mp3
 登场台词：是你打败了伊迪斯？我不会对你手下留情。
@@ -499,22 +499,22 @@ BGM：./assets/new-bgm/hilde.mp3
 
 --- 35. attack_helicopter - 武装直升机 ---
 类型：elite | 定位：同花扫射 | AI：ruins_helicopter
-属性：HP210 ATK9 MAG8 SPD12 杀意1 手牌5 摸牌3 初始2
+属性：HP210 ATK9 MAG8 SPD12 淫气1 手牌5 摸牌3 初始2
 立绘：./assets/ruins-enemies/attack-helicopter.webp
 BGM：./assets/new-bgm/attack-helicopter.mp3
 技能：
-- 战场扫射（主动）：出牌阶段，你可以将2张同花色牌当做【机枪扫杀】使用，不消耗杀意。
+- 战场扫射（主动）：出牌阶段，你可以将2张同花色牌当做【机枪扫杀】使用，不消耗淫气。
 - 继续压制（锁定）：锁定技，当你使用的【杀】牌被【闪】抵消时，你摸1张牌。
 
 --- 36. armored_carrier - 装甲运输车 ---
 类型：elite | 定位：无敌复活 | AI：ruins_carrier
-属性：HP220 ATK10 MAG6 SPD14 杀意1 手牌4 摸牌2 初始1
+属性：HP220 ATK10 MAG6 SPD14 淫气1 手牌4 摸牌2 初始1
 立绘：./assets/ruins-enemies/armored-carrier.webp
 BGM：./assets/new-bgm/armored-carrier.mp3
 技能：
-- 无脑冲撞（锁定技）：出牌阶段，你摸到或获得的实体单体【杀】牌转换为【撞杀】牌，转换后会自动使用，随机指定敌方一名角色，不消耗杀意。
+- 无脑冲撞（锁定技）：出牌阶段，你摸到或获得的实体单体【杀】牌转换为【撞杀】牌，转换后会自动使用，随机指定敌方一名角色，不消耗淫气。
 - 坚硬装甲（锁定技）：你不会受到任何伤害，且无法恢复自身生命值。
-- 增援部队（主动/触发）：准备阶段将已死亡的其他角色满血复活，并按人数损失生命。
+- 增援部队（主动/触发）：准备阶段将已死亡的其他角色满血复活，弃置其所有手牌并摸至手牌上限（补牌为纯补给，不触发摸牌类饰品、不被转移或封魔克扣），并按人数损失生命。
 
 ===============================================================
 
@@ -562,7 +562,7 @@ BGM：./assets/new-bgm/armored-carrier.mp3
    图标：枪 | 来源：机械牛头王(Boss)
    效果：锁定技，每回合限一次，当你使用实体单体【杀】指定唯一目标且手牌中还有
    实体单体【杀】时，依次对同一目标使用这些【杀】，不展示手牌。
-   这些【杀】不消耗杀意，目标需依次使用【闪】响应。
+   这些【杀】不消耗淫气，目标需依次使用【闪】响应。
    背景：克罗博士受到魔后资助，在工厂研发生物武器。
 
 6. 霹雳之锤
@@ -689,7 +689,7 @@ BGM：./assets/new-bgm/armored-carrier.mp3
 
 28. 1124号长舌头
     图标：舌 | 类型：active | 来源：XX型凋零者1124号(Boss)
-    效果：出牌阶段限一次，你没有杀意后，你可以指定敌方一名角色，
+    效果：出牌阶段限一次，你没有淫气后，你可以指定敌方一名角色，
     视为对其使用一张【勒杀】。
     背景：混沌女神派出大量XX级凋零者寻找儿子灵魂转生者。
 
@@ -717,7 +717,7 @@ BGM：./assets/new-bgm/armored-carrier.mp3
 
 33. 魅魔钢叉
     图标：叉 | 类型：active | 来源：XX型凋零者1312号
-    效果：出牌阶段限一次，将一张红桃牌当【魅杀】使用且不消耗杀意。
+    效果：出牌阶段限一次，将一张红桃牌当【魅杀】使用且不消耗淫气。
 
 34. 粉色魅魔装
     图标：装 | 来源：XX型凋零者1312号
@@ -725,11 +725,11 @@ BGM：./assets/new-bgm/armored-carrier.mp3
 
 35. 冰心双刺剑
     图标：刺 | 来源：内英组杀手希尔德
-    效果：你获得的单体【杀】牌转换为不消耗杀意的【刺杀】。该牌离开你的手牌区后恢复为原牌。
+    效果：你获得的单体【杀】牌转换为不消耗淫气的【刺杀】。该牌离开你的手牌区后恢复为原牌。
 
 36. 刺客胶衣
     图标：胶 | 类型：active | 来源：内英组杀手希尔德
-    效果：出牌阶段限一次，你可以将一张黑色牌当做【刺杀】使用，不消耗杀意。
+    效果：出牌阶段限一次，你可以将一张黑色牌当做【刺杀】使用，不消耗淫气。
 
 37. 螺旋桨
     图标：旋 | 类型：trigger | 来源：武装直升机
@@ -746,7 +746,7 @@ BGM：./assets/new-bgm/armored-carrier.mp3
 40. 武器库
     图标：库 | 类型：active | 来源：装甲运输车
     效果：出牌阶段限一次，你可以让我方所有其他角色从摸牌堆里摸1张【杀】牌，
-    此【杀】牌不消耗杀意。
+    此【杀】牌不消耗淫气。
 
 ===============================================================
 

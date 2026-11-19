@@ -106,7 +106,7 @@ async function resolveCatherineSteal(targetUid) {
 }
 
 // 渴血杀戮（米尔尤拉）：选定牌名后不再弹第二层窗口，改为点击敌方角色
-// 打出该牌名的虚拟牌（不消耗杀意）。牌名只能从牌库挑，故牌名阶段仍保留弹窗。
+// 打出该牌名的虚拟牌（不消耗淫气）。牌名只能从牌库挑，故牌名阶段仍保留弹窗。
 async function resolveMieryulaBloodthirst(targetUid) {
   const actionState = state;
   const battle = actionState.battle;

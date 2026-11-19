@@ -1,7 +1,7 @@
 // 专项：【计算下注】一次性摸等量牌检查
 //
 // 计算下注（艾伦格主动技）：弃置至少 1 张手牌，然后摸等量牌；若弃置
-// 全部手牌，额外摸 1 张并重置杀意。
+// 全部手牌，额外摸 1 张并重置淫气。
 //
 // 旧行为：摸牌动画逐张错峰起飞（每张间隔 100ms 错峰 + 360ms 飞行），
 //   弃 10 张就要连飞 10 段，弃得越多拖得越久。
@@ -63,7 +63,7 @@ async function settle(page, maxMs = 20000) {
 }
 
 // 构造：手牌 handCount 张、牌堆充足，然后走真实出牌入口发动计算下注
-// 弃 discardCount 张；若弃光全部手牌则触发 +1 与重置杀意分支。
+// 弃 discardCount 张；若弃光全部手牌则触发 +1 与重置淫气分支。
 // 走 useCard 全链路（含 CharacterSkillAccess 的角色/阶段/目标/成本校验），
 // 因此在驱动前补齐技能归属、出牌阶段、当前回合与自选牌索引。
 async function drive(page, handCount, discardCount, { control = false } = {}) {
@@ -157,7 +157,7 @@ async function drive(page, handCount, discardCount, { control = false } = {}) {
   console.log("--- 场景 B：手牌 8 张，全部弃置 ---");
   console.log(`  动画队列 ${JSON.stringify(b.animTypes)}`);
   console.log(`  drawBatch ${JSON.stringify(b.batches)}`);
-  console.log(`  手牌 ${b.handBefore} → ${b.handNow}，杀意 ${b.intentNow}`);
+  console.log(`  手牌 ${b.handBefore} → ${b.handNow}，淫气 ${b.intentNow}`);
 
   check("B1 前置：手牌 8 张构造成功",
     b.visibleBefore === 8, `hand=${b.visibleBefore}`);
@@ -169,7 +169,7 @@ async function drive(page, handCount, discardCount, { control = false } = {}) {
     b.batchCount === 1 && b.batches[0].count === 9, JSON.stringify(b.batches));
   check("B5 实际摸到 9 张",
     b.handNow === 9, `手牌 ${b.handNow}`);
-  check("B6 全弃时重置杀意（intent > 0）",
+  check("B6 全弃时重置淫气（intent > 0）",
     b.intentNow > 0, `intent=${b.intentNow}`);
 
   await settle(page);

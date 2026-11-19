@@ -26,20 +26,20 @@ function check(name, cond, extra) {
     await startFreshGame(page);
     await dismissOpeningStory(page);
 
-    // ---------- A. 注入小数金币 1000.9 ----------
+    // ---------- A. 注入小数金币 5000.9 ----------
     await page.evaluate(() => {
       const s = window.state;
       s.view = "hall"; s.hallModal = null;
-      s.resources.gold = 1000.9;
+      s.resources.gold = 5000.9;
       s.infoUnit = "lokar"; s.infoTab = "enhance";
       window.render();
     });
     await expect(page.locator('.info-overlay [data-info-tab="enhance"]')).toBeVisible();
     const beforeText = await page.locator(".character-enhance").textContent();
-    check("A1 小数余额按整数显示「莉莉丝元 1000」（不是 1000.9）",
-      beforeText.includes("莉莉丝元 1000") && !beforeText.includes("1000.9"), beforeText.slice(0, 160));
+    check("A1 小数余额按整数显示「莉莉丝元 5000」（不是 5000.9）",
+      beforeText.includes("莉莉丝元 5000") && !beforeText.includes("5000.9"), beforeText.slice(0, 160));
     const disabled = await page.locator("[data-enhance-char]").evaluateAll(bs => bs.map(b => b.disabled));
-    check("A2 1000.9 取整为 1000 后仍判定可强化（四按钮可点）",
+    check("A2 5000.9 取整为 5000 后仍判定可强化（四按钮可点）",
       disabled.length === 4 && disabled.every(d => !d), disabled);
     const popup = page.locator(".info-popup");
     if (await popup.count()) await popup.screenshot({ path: SHOT_GOLD });
@@ -69,7 +69,7 @@ function check(name, cond, extra) {
     // ---------- B. 34 名可玩角色适用范围（解锁后逐个渲染） ----------
     const scope = await page.evaluate(() => {
       const s = window.state;
-      s.view = "hall"; s.hallModal = null; s.resources.gold = 5000;
+      s.view = "hall"; s.hallModal = null; s.resources.gold = 25000;
       s.chars.forEach(c => { c.locked = false; });
       const ids = s.chars.map(c => c.id);
       const missing = [];
