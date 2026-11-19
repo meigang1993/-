@@ -1,4 +1,4 @@
-// 2026-11-18 难度调整严格复查：
+// 2026-11-19 难度调整严格复查：
 //   四档难度四项属性统一 +50%/+100%/+150%/+200%；所有副本莉莉丝元获得 -30%。
 // 走真实源码（vm 载入配置 + 抓真实 rollGold 函数体执行），REVERT=stats|gold|notice|doc 反向验证。
 const fs = require("fs");
@@ -15,7 +15,7 @@ function reverted(file, src) {
       .replace("elite: 196", "elite: 280").replace("boss: 350", "boss: 500").replace("chest: 154", "chest: 220");
   }
   if (REVERT === "notice" && file.endsWith("update-notice-recent.js")) {
-    return src.replace('title: "2026年11月18日 · 今日更新"', 'title: "2026年11月17日 · 今日更新"');
+    return src.replace('title: "2026年11月19日 · 今日更新"', 'title: "2026年11月17日 · 今日更新"');
   }
   if (REVERT === "doc" && file.endsWith("01-完整项目.txt")) {
     return src.replace("所有副本节点的莉莉丝元获得统一减少 30%", "所有副本节点的莉莉丝元获得保持不变");
@@ -105,8 +105,8 @@ T("B6 难度金币倍率与副本金币倍率未改",
 console.log("=== C/D. 公告、界面与文档 ===");
 const notice = codeOf("src/original/update-notice.js"), recent = reverted("src/original/update-notice-recent.js", codeOf("src/original/update-notice-recent.js"));
 const doc = reverted("docs/01-完整项目.txt", codeOf("docs/01-完整项目.txt"));
-T("C1 日期三处为 2026-11-18", /iso: "2026-11-18"/.test(notice) && /label: "2026年11月18日"/.test(notice) && /badge: "2026\.11\.18"/.test(notice));
-T("C2 首期标题为 11月18日", recent.includes('title: "2026年11月18日 · 今日更新"'));
+T("C1 日期三处为 2026-11-19", /iso: "2026-11-19"/.test(notice) && /label: "2026年11月19日"/.test(notice) && /badge: "2026\.11\.19"/.test(notice));
+T("C2 首期标题为 11月19日", recent.includes('title: "2026年11月19日 · 今日更新"'));
 T("C3 新一期写明四档 +50%/+100%/+150%/+200%", recent.includes("+50% / +100% / +150% / +200%"));
 T("C4 新一期写明所有副本金币 -30%", recent.includes("统一下调 30%") && recent.includes("逐副本、逐难度、逐节点"));
 // 公告摘要已重写为只讲当前生效口径，「统一下调」措辞收敛为「下调」；-30% 语义不变。

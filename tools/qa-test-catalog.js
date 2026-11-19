@@ -41,6 +41,8 @@ const timeouts = Object.freeze({
   "test-noa-relic-conflict-audit.js": 120,
   // 回合归属修正 + 淫气文案 + 公告显式报错（模块级，含 2 组源码级反向验证）
   "test-noa-own-turn-strict.js": 120,
+  // 神奇怀表时停：怪物技能模块守卫可达性独立复查（含反向组）
+  "test-magic-watch-monster-skill-recheck.js": 120,
   // 偷来的敌方手牌触发淫气改造重判（挂起弹窗 / 直连 / 回合守卫 / 11 条路径）
   "test-noa-stolen-hand-charm.js": 120,
   // 角色强化：契约检查 / 严格复查 / 浏览器实机（含面板截图）/ 副本置灰复查与实机
@@ -172,6 +174,7 @@ const groups = Object.freeze({
     "test-asar-content-smoke.js",
     "test-intent-to-yinqi-rename.js",
     "test-intent-to-yinqi-live.js",
+    "test-magic-watch-monster-skill-recheck.js",
   ],
   storage: [
     "test-battle-start-save.js",

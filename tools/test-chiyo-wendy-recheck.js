@@ -43,10 +43,10 @@ function patched(file) {
       "const team = (battle.allies || []);"), "side-aware team");
   if (REVERT === "notice") {
     if (file === "update-notice.js") return hit(s,
-      s.replace('iso: "2026-11-18", label: "2026年11月18日", badge: "2026.11.18"',
+      s.replace('iso: "2026-11-19", label: "2026年11月19日", badge: "2026.11.19"',
         'iso: "2026-11-10", label: "2026年11月10日", badge: "2026.11.10"'), "latest date");
     if (file === "update-notice-recent.js") return hit(s,
-      s.replace('title: "2026年11月18日 · 今日更新"', 'title: "2026年11月10日 · 今日更新"'),
+      s.replace('title: "2026年11月19日 · 今日更新"', 'title: "2026年11月10日 · 今日更新"'),
       "first section title");
   }
   return s;
@@ -212,10 +212,10 @@ function testNotice() {
   const main = patched("update-notice.js");
   const recent = patched("update-notice-recent.js");
   const archive = read("update-notice-archive.js");
-  T("C1 最新日期为 2026-11-18（iso / label / badge 三处一致）",
-    /iso: "2026-11-18"/.test(main) && /label: "2026年11月18日"/.test(main)
-    && /badge: "2026\.11\.18"/.test(main));
-  const firstTitle = recent.indexOf('title: "2026年11月18日 · 今日更新"');
+  T("C1 最新日期为 2026-11-19（iso / label / badge 三处一致）",
+    /iso: "2026-11-19"/.test(main) && /label: "2026年11月19日"/.test(main)
+    && /badge: "2026\.11\.19"/.test(main));
+  const firstTitle = recent.indexOf('title: "2026年11月19日 · 今日更新"');
   const oldTitle = recent.indexOf('title: "2026年11月10日 · 今日更新"');
   T("C2 首期标题为今天且排在 11月10 历史期之前",
     firstTitle >= 0 && oldTitle > firstTitle, { firstTitle, oldTitle });
@@ -237,7 +237,7 @@ function testNotice() {
     && !main.includes("本次再把【技能倍率】"));
   T("C5 行数未触发归档阈值且期数注释同步",
     lines("update-notice-recent.js") <= 150 && lines("update-notice-archive.js") <= 189
-    && recent.includes("2026年10月13日 ~ 11月18日十二期"),
+    && recent.includes("2026年10月14日 ~ 11月19日十一期"),
     { recent: lines("update-notice-recent.js"), archive: lines("update-notice-archive.js") });
   T("C6 10月10 期已按规则归档，历史期仍在",
     archive.includes('title: "2026年10月10日 · 今日更新"')
@@ -251,7 +251,7 @@ function testNotice() {
   T("C7 三个数据文件装配后公告可渲染且含两技能",
     (html.match(/update-notice-section/g) || []).length >= 3
     && html.includes("红缨连鬼斩") && html.includes("飘浮掩体")
-    && html.includes('datetime="2026-11-18"'));
+    && html.includes('datetime="2026-11-19"'));
 }
 
 // ---------- D：描述与台词防回归 ----------

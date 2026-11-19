@@ -28,7 +28,7 @@ function codeOf(f) {
     s = s.replace(from, "Object.keys(multipliers).forEach(k => u.stats[k] = b[k] * multipliers[k]);");
   }
   if (REVERT === "notice" && f === "update-notice.js") {
-    const from = 'iso: "2026-11-18"';
+    const from = 'iso: "2026-11-19"';
     if (!s.includes(from)) throw new Error("REVERT=notice must hit current iso date");
     s = s.replace(from, 'iso: "2026-11-13"');
   }
@@ -130,8 +130,8 @@ T("C11 满血加成等价 1.5 倍四舍五入", unit.stats.attack === 14 && unit
 
 // ---------- D. 公告 ----------
 const notice = codeOf("update-notice.js"), recent = codeOf("update-notice-recent.js");
-T("D1 最新日期三处均为 2026-11-18", /iso: "2026-11-18"/.test(notice) && /label: "2026年11月18日"/.test(notice) && /badge: "2026\.11\.18"/.test(notice));
-T("D2 首期标题为 11月18日", recent.includes('title: "2026年11月18日 · 今日更新"'));
+T("D1 最新日期三处均为 2026-11-19", /iso: "2026-11-19"/.test(notice) && /label: "2026年11月19日"/.test(notice) && /badge: "2026\.11\.19"/.test(notice));
+T("D2 首期标题为 11月19日", recent.includes('title: "2026年11月19日 · 今日更新"'));
 T("D3 summary 写进【终极刀魔】", notice.includes("【终极刀魔】"));
 // 旧说明清理后摘要只写当前生效口径，条目本身保留在 recent 首期。
 T("D4 角色强化四选一条目在首期、摘要不复述旧批次",

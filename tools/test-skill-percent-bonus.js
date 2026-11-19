@@ -130,7 +130,7 @@ T("D", "公告：增援满血", has("update-notice-recent.js", "【增援部队�
 T("D", "公告：温蒂结束阶段", has("update-notice-recent.js", "【飘浮掩体】（温蒂）触发阶段调整"));
 T("D", "公告：暴走 10%", has("update-notice-recent.js", "【暴走杀】成长改为百分比"));
 T("D", "公告：当前属性 A 与回血统一", has("update-notice-recent.js", "全部属性百分比统一为「当前属性」口径（A）"));
-T("D", "公告日期仍为 11-18", has("update-notice.js", 'iso: "2026-11-18"') && has("update-notice-recent.js", "2026年11月18日 · 今日更新"));
+T("D", "公告日期仍为 11-19", has("update-notice.js", 'iso: "2026-11-19"') && has("update-notice-recent.js", "2026年11月19日 · 今日更新"));
 T("D", "公告 recent 未超 150 行", raw("update-notice-recent.js").split("\n").length <= 150);
 T("D", "设定文档暴走口径同步", fs.readFileSync(path.join(__dirname, "..", "docs", "original", "game-settings.md"), "utf8").includes("按首次发动时的当前攻击力+10%"));
 T("D", "设定文档增援满血同步", ["05-怪物与怪物技能与饰品.txt", "12-新副本素材-废墟沙城.txt"].every(f => fs.readFileSync(path.join(__dirname, "..", "docs", f), "utf8").includes("满血复活")));
