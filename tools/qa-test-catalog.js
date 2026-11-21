@@ -159,6 +159,9 @@ const timeouts = Object.freeze({
   // 248 版：艾伦格战斗演练只认实体牌，妖刀村雨虚拟杀不再挂起（模块级 + 实机）
   "test-aileng-entity-card-drill.js": 120,
   "test-aileng-entity-card-drill-live.js": 240,
+  // 248 版：公告面板删除顶部固定说明，内容统一进下方可滚动分期列表（静态 + 实机截图）
+  "test-notice-no-top-summary.js": 120,
+  "test-notice-no-top-summary-live.js": 240,
 });
 
 const timeoutFor = (file, fallback) => timeouts[file] || fallback;
@@ -178,6 +181,7 @@ const groups = Object.freeze({
     "test-intent-to-yinqi-rename.js",
     "test-intent-to-yinqi-live.js",
     "test-magic-watch-monster-skill-recheck.js",
+    "test-notice-no-top-summary.js",
   ],
   storage: [
     "test-battle-start-save.js",
@@ -607,6 +611,7 @@ const groups = Object.freeze({
     "test-give-card-no-popup-live.js",
     "test-aileng-entity-card-drill.js",
     "test-aileng-entity-card-drill-live.js",
+    "test-notice-no-top-summary-live.js",
     "test-give-card-prompt-bar-only-live.js",
     "test-guard-comfort-bar-and-skill-greyout-live.js",
     "test-steal-greyout-dimension-bar-live.js",

@@ -43,7 +43,7 @@ function rootText(rel, opts = {}) {
       s += "\n// 反向注入：（后续口径已调整：旧口径回归）\n";
     }
     if (rel === "src/original/update-notice.js") {
-      s += "\n// 反向注入：此前新增第 34 名可玩角色 · 本次再把【技能倍率】\n";
+      s += "\n// 反向注入：<p class=\"update-notice-summary\">顶部固定说明段回归</p>\n";
     }
   }
   if (REVERT === "desc" && !opts.skipDesc) {
@@ -112,10 +112,10 @@ function src(file, skipDesc = false) {
     /【改造副作用】实装/.test(recent)
     && /安洁莉卡新增主动技【猩红暴走】/.test(archive)
     && /取消“多段或连击伤害时逐段结算”/.test(archive));
-  T("B5 公告摘要不再复述旧批次",
-    !/此前新增第 34 名可玩角色/.test(meta)
-    && !/本次再把【技能倍率】/.test(meta)
-    && !/完成角色数据、两张立绘/.test(meta));
+  T("B5 公告不再有顶部固定说明段，内容统一进分期列表",
+    !/update-notice-summary/.test(meta)
+    && !/本次更新统一数值口径/.test(meta)
+    && /update-notice-list/.test(meta));
   T("B6 当前生效口径条目齐全",
     /【增援部队】（装甲运输车）复活口径调整/.test(recent)
     && /【飘浮掩体】（温蒂）触发阶段调整/.test(recent)

@@ -89,15 +89,17 @@ T("A6 幂等按回合 token，不再比对原因字符串（旧档兼容）",
 {
   // store-repairs.js 的旧档迁移必须识别旧技能名才能删除幽灵技能，属合理例外。
   const skip = new Set(["update-notice-recent.js", "update-notice-archive.js",
-    "store-repairs.js"]);
+    "store-repairs.js", "store-merged-skills-repair.js"]);
   const hits = fs.readdirSync(ROOT).filter(f => f.endsWith(".js") && !skip.has(f))
     .filter(f => src(f).includes("改造副作用"));
   T("A10 源码中文旧技能名残留 0（公告历史除外）", hits.length === 0, hits);
 }
 {
-  const summary = src("update-notice.js");
-  T("A11 公告摘要不再把两个技能并列", !/【淫气改造】【改造副作用】/.test(summary)
-    && /含合并后的副作用效果/.test(summary));
+  const meta = src("update-notice.js");
+  T("A11 公告不再有顶部固定说明段，内容统一进分期列表",
+    !/update-notice-summary/.test(meta)
+    && !/本次更新统一数值口径/.test(meta)
+    && /update-notice-list/.test(meta));
 }
 
 // ── B 行为：真实模块装配 ──────────────────────────────────────────────────

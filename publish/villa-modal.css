@@ -34,7 +34,6 @@
 .update-notice-head h2 { margin: 2px 0 0; color: #ead9b7; text-shadow: 0 0 16px rgba(168,25,63,.46); }
 .update-notice-head time { flex: 0 0 auto; padding: 7px 10px; border: 1px solid rgba(201,167,100,.35); border-radius: 4px; color: #d8bd82; background: rgba(14,12,17,.5); font-size: 12px; }
 .update-notice-kicker { color: #aeb4bb; font-size: 12px; letter-spacing: 2px; }
-.update-notice-summary { margin: 0; color: #c9c0b8; line-height: 1.6; }
 .update-notice-list { min-height: 0; flex: 1; display: grid; gap: 10px; max-height: none; overflow-y: auto; padding-right: 4px; overscroll-behavior: contain; }
 .update-notice-section { display: grid; gap: 7px; padding: 12px 14px; border: 1px solid rgba(201,167,100,.2); border-radius: 6px; background: linear-gradient(160deg, rgba(43,39,47,.86), rgba(10,9,12,.88)); }
 .update-notice-section h3 { margin: 0; color: #d8bd82; font-size: 16px; }

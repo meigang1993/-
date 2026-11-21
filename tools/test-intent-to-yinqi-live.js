@@ -62,7 +62,7 @@ function check(name, cond, extra) {
         noticeCurOld: curNotices.some(t => t.includes(oldWord)),
         noticeHistOld: histNotices.concat(archiveNotices).some(t => t.includes(oldWord)),
         nonNoticeOld, noticeOld,
-        versionHit: /20260915-248|26\.0915\.248/.test(
+        versionHit: /20260915-249|26\.0915\.249/.test(
           document.body.innerText + document.documentElement.outerHTML.slice(0, 4000)),
       };
     }, { oldWord: OLD, newWord: NEW });
@@ -99,7 +99,7 @@ function check(name, cond, extra) {
     check("C4 公告面板内可见旧词 = 0", h.noticeOld === 0, { h });
     check("C5 打开公告面板后其它区域仍无旧词", h.nonNoticeOld === 0, { h });
 
-    check("D1 页面版本戳 248", g.versionHit);
+    check("D1 页面版本戳 249", g.versionHit);
     check("D2 收尾仍无 JS 错误", errors.length === 0, errors);
   } finally {
     await browser.close();

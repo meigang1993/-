@@ -183,9 +183,9 @@ for (const phase of [1, 2, 3, 5, 6]) {
   T("E2 解锁事件两句同步为淫气且无「魅\u529b」",
     ev.includes("地下室封印着强大的淫气改造者") && ev.includes("淫气改造？好像在哪听说过？") && !ev.includes("魅\u529b"));
   const notice = read("update-notice.js");
-  T("E3 公告 summary 同步且三个数据文件均显式报错、无 || [] 静默兜底",
-    notice.includes("本次更新统一数值口径") && notice.includes("【终极刀魔】")
-    && notice.includes("【角色强化】")
+  T("E3 公告无顶部固定摘要、内容统一进分期列表，且三个数据文件均显式报错、无 || [] 静默兜底",
+    !notice.includes("update-notice-summary") && !notice.includes("本次更新统一数值口径")
+    && notice.includes("update-notice-list")
     && (notice.match(/throw new Error/g) || []).length === 3 && !notice.includes("|| []"));
   const OLD_WORD = "魅\u529b";   // 拆开写，避免本测试文件自身被扫描命中
   let mei = [];

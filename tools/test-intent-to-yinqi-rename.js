@@ -148,12 +148,12 @@ check("E3 bundle 新词总数 >= 150", bundleNew >= 150, { bundleNew });
 check("E4 hall.min.js 新词 >= 8", countNew(HISTORY_BUNDLE) >= 8,
   { n: countNew(HISTORY_BUNDLE) });
 const idx = read("publish/index.html");
-check("E5 index 版本 248 ×13", (idx.match(/20260915-248/g) || []).length === 13);
-check("E6 徽章 v26.0915.248 且 247/249 残留 0",
-  idx.includes("v26.0915.248") && !idx.includes("20260915-247") && !idx.includes("20260915-249"));
+check("E5 index 版本 249 ×13", (idx.match(/20260915-249/g) || []).length === 13);
+check("E6 徽章 v26.0915.249 且 248/250 残留 0",
+  idx.includes("v26.0915.249") && !idx.includes("20260915-248") && !idx.includes("20260915-250"));
 const villa = read("publish/villa.css");
-check("E7 villa.css cache-buster 248 ×4", (villa.match(/20260915-248/g) || []).length === 4,
-  { n: (villa.match(/20260915-247/g) || []).length });
+check("E7 villa.css cache-buster 249 ×4", (villa.match(/20260915-249/g) || []).length === 4,
+  { n: (villa.match(/20260915-248/g) || []).length });
 
 // ---------- F 语法完整性 ----------
 const touched = files.filter(f => f.endsWith(".js") && read(f).includes(NEW));

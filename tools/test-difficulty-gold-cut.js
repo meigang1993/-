@@ -109,8 +109,10 @@ T("C1 日期三处为 2026-11-19", /iso: "2026-11-19"/.test(notice) && /label: "
 T("C2 首期标题为 11月19日", recent.includes('title: "2026年11月19日 · 今日更新"'));
 T("C3 新一期写明四档 +50%/+100%/+150%/+200%", recent.includes("+50% / +100% / +150% / +200%"));
 T("C4 新一期写明所有副本金币 -30%", recent.includes("统一下调 30%") && recent.includes("逐副本、逐难度、逐节点"));
-// 公告摘要已重写为只讲当前生效口径，「统一下调」措辞收敛为「下调」；-30% 语义不变。
-T("C5 summary 同步两项", notice.includes("+50% / +100% / +150% / +200%") && notice.includes("下调 30%"));
+// 顶部固定摘要段已删除；当前口径只保留在 recent 分期列表内，-30% 语义不变。
+T("C5 当前口径只写在分期列表、顶部无摘要",
+  recent.includes("+50% / +100% / +150% / +200%") && recent.includes("下调 30%")
+  && !notice.includes("update-notice-summary"));
 T("C6 recent 未超 150 行归档线", recent.split("\n").length <= 150, recent.split("\n").length);
 T("C7 难度卡仍显示难度金币倍率", /莉莉丝元 ×\$\{d\.reward\}/.test(codeOf("src/original/villa-team.js")));
 T("D1 文档难度表改为 1.5/2.0/2.5/3.0", ["1.5", "2.0", "2.5", "3.0"].every(v => doc.includes(`| ${v} |`)), doc.slice(doc.indexOf("| adventure"), doc.indexOf("| adventure") + 480));
