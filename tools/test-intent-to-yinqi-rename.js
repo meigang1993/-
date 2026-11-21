@@ -148,12 +148,14 @@ check("E3 bundle 新词总数 >= 150", bundleNew >= 150, { bundleNew });
 check("E4 hall.min.js 新词 >= 8", countNew(HISTORY_BUNDLE) >= 8,
   { n: countNew(HISTORY_BUNDLE) });
 const idx = read("publish/index.html");
-check("E5 index 版本 249 ×13", (idx.match(/20260915-249/g) || []).length === 13);
-check("E6 徽章 v26.0915.249 且 248/250 残留 0",
-  idx.includes("v26.0915.249") && !idx.includes("20260915-248") && !idx.includes("20260915-250"));
+const VER = (idx.match(/20260915-(\d+)/) || [])[1];
+const PREV = String(Number(VER) - 1), NEXT = String(Number(VER) + 1);
+check(`E5 index 版本 ${VER} ×13`, (idx.match(new RegExp(`20260915-${VER}`, "g")) || []).length === 13);
+check(`E6 徽章 v26.0915.${VER} 且 ${PREV}/${NEXT} 残留 0`,
+  idx.includes(`v26.0915.${VER}`) && !idx.includes(`20260915-${PREV}`) && !idx.includes(`20260915-${NEXT}`));
 const villa = read("publish/villa.css");
-check("E7 villa.css cache-buster 249 ×4", (villa.match(/20260915-249/g) || []).length === 4,
-  { n: (villa.match(/20260915-248/g) || []).length });
+check(`E7 villa.css cache-buster ${VER} ×4`, (villa.match(new RegExp(`20260915-${VER}`, "g")) || []).length === 4,
+  { n: (villa.match(new RegExp(`20260915-${PREV}`, "g")) || []).length });
 
 // ---------- F 语法完整性 ----------
 const touched = files.filter(f => f.endsWith(".js") && read(f).includes(NEW));

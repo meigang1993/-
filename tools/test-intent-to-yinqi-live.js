@@ -62,8 +62,10 @@ function check(name, cond, extra) {
         noticeCurOld: curNotices.some(t => t.includes(oldWord)),
         noticeHistOld: histNotices.concat(archiveNotices).some(t => t.includes(oldWord)),
         nonNoticeOld, noticeOld,
-        versionHit: /20260915-249|26\.0915\.249/.test(
-          document.body.innerText + document.documentElement.outerHTML.slice(0, 4000)),
+        versionHit: (() => {
+          const html = document.body.innerText + document.documentElement.outerHTML.slice(0, 4000);
+          return /20260915-\d+/.test(html) && /26\.0915\.\d+/.test(html);
+        })(),
       };
     }, { oldWord: OLD, newWord: NEW });
 

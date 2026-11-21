@@ -1,13 +1,19 @@
 window.CharacterProgression = (() => {
-  const maxLevel = 20;
+  // 天日国鹰7研究所：等级上限提高至 25 级，属性成长同步提高 30%。
+  // 新增 21~25 级经验延续既有「每级所需经验按 +40 等差递增」的末段规律
+  // （…6080→6780 为 +700，其后 +740 / +780 / +820 / +860 / +900）。
+  const maxLevel = 25;
+  const growthScale = 1.3;
   const expToNext = Object.freeze([
     100, 160, 240, 340, 470, 620, 800, 1020,
     1280, 1580, 1920, 2300, 2720, 3180, 3680,
     4220, 4800, 5420, 6080, 6780,
+    7520, 8300, 9120, 9980, 10880,
   ]);
   const encounterExp = Object.freeze({ normal: 30, elite: 70, boss: 130 });
   const dungeonExpMultiplier = Object.freeze({
     machine_factory: 1, underwater_train: 2, orc_dungeon: 3, ruins_sand_city: 4,
+    tenri_institute: 5,
   });
   const growth = Object.freeze({
     lokar: { maxHp: 280, attack: 67, magic: 25, speed: 29 },
@@ -79,7 +85,7 @@ window.CharacterProgression = (() => {
     const totals = profile(template?.id);
     statKeys.forEach(key => {
       const base = Number(template?.stats?.[key]) || 0;
-      const raw = base + (Number(totals[key]) || 0) * level / maxLevel;
+      const raw = base + (Number(totals[key]) || 0) * growthScale * level / maxLevel;
       // 全部属性统一四舍五入为整数：角色基值、成长表与强化加成均为整数；
       // Math.round 同时收敛浮点长尾，避免 40.82000000000001 之类的展示噪声。
       stats[key] = Math.round(raw);
@@ -123,7 +129,7 @@ window.CharacterProgression = (() => {
   }
 
   return {
-    maxLevel, expToNext, growth, statKeys, dungeonExpMultiplier,
+    maxLevel, growthScale, expToNext, growth, statKeys, dungeonExpMultiplier,
     cleanLevel, cleanExp, need, profile, statsAt, grant, rewardFor,
   };
 })();

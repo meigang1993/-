@@ -29,6 +29,7 @@ window.HallUnlockEvents = (() => {
     if (window.OrcUnlockEvents?.triggerPending?.(state)) return;
     if (window.triggerPendingPostUnderwaterTrainEvents?.(state)) return;
     if (window.NewCharacterUnlockEvents?.triggerPending?.(state)) return;
+    if (window.TenriInstituteUnlockEvents?.triggerPending?.(state)) return;
     window.RecruitUnlockEvents?.triggerPending?.(state);
   }
   async function complete(key) {

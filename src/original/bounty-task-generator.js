@@ -4,7 +4,8 @@ window.BountyTaskGenerator = ({ prepareTask }) => {
   function availableMissions(state) {
     const flags = state.flags || {};
     return (GameData.missions || []).filter(mission =>
-      mission.kind === "dungeon" && (!mission.requiresFlag || flags[mission.requiresFlag]));
+      mission.kind === "dungeon" && !mission.devLocked
+      && (!mission.requiresFlag || flags[mission.requiresFlag]));
   }
 
   const knownMission = missionId =>

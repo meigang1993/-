@@ -59,7 +59,7 @@ T("B5 首期标题与当期条目都在列表内",
 T("B6 顶部只有标题与日期，无长段说明",
   !/<p\b/.test(html) && (html.match(/<h2\b/g) || []).length === 1);
 T("B7 当前生效口径仍在分期列表里（未被误删）",
-  /5000 莉莉丝元/.test(html) && /各最多强化 50 次/.test(html) && /【淫气】/.test(html));
+  /5000 莉莉丝元/.test(html) && /各最多强化 70 次/.test(html) && /【淫气】/.test(html));
 T("B8 列表容器不写死 max-height，滚动高度由 flex 决定",
   /class="update-notice-list"/.test(html) && !/max-height:\s*\d/.test(css.split(".update-notice-list")[1]?.split("}")[0] || ""));
 

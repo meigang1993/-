@@ -14,7 +14,7 @@
     "DungeonMap", "DungeonNodeRewards", "DungeonRender", "DungeonRewardCore", "DungeonRewardPayload", "DungeonRewards", "DungeonRunRewards", "DungeonSettlementActions", "DungeonSystem", "EdisSkills",
     "CarlosSkills", "ElranaAceNanaliSkills", "EnemyCombatHooks", "EnemyDamageHooks", "EnemyKillHooks", "EnemySkills", "EnemyStatusEffects", "EnemyTacticalSkills", "ExtraUnlockEvents", "FloraCarlosSkills", "FloraSkills", "FloraSpeedAssault", "GameAssets",
     "AppActionGuard", "GameBGM", "GameBattleStyles", "GameConfirm", "GameData", "GameDataCards", "GameDataCharacters", "GameDataCharactersCore", "GameRandom", "GameSkinData",
-    "GameDataBakarEnemy", "GameDataCharactersExtra", "GameDataFutureCharacters", "GameDataFutureDungeons", "GameDataFutureEnemies", "GameDataFutureOrcEnemies",
+    "GameDataBakarEnemy", "GameDataCharactersExtra", "GameDataFutureCharacters", "GameDataFutureDungeons", "GameDataFutureEnemies", "GameDataFutureOrcEnemies", "GameDataTenriInstitute", "TenriInstituteUnlockEvents",
     "GameDataFutureRelics", "GameDataRelics", "GameDataWorld", "GameEconomy", "GameStore", "GameStoreCompact", "GameStoreIO", "GameStoreIOMutations", "GameStoreIORecovery", "GameStoreIOSelection", "GameStorePauseQueue", "GameStoreSaveLimits", "GameStoreSaveSchema", "GameStoreSaveValidation",
     "GameStoreMigrations", "GameStoreStateFactory", "GameUI", "GameUIBattleScene", "GameUIBattleTargeting", "GameUIBattleUnits", "GameUIHand", "GameUIHandState", "GameUIHandView", "GameUIInfo", "GameUIInfoMarks", "GameUILivingRoom",
     "GuestCharacterSkills", "GuestOpheliaGuard", "HallUnlockEvents", "LocalCore", "LocalCoreUtils", "LokarSkills",
@@ -27,6 +27,7 @@
     "completeNewGameIntroEvent", "completeFirstVictoryEvent", "triggerNewGameIntroEvent", "triggerFirstVictoryEvent",
     "preserveNextScroll", "releaseScrollLock", "render", "restoreScrollInstant", "startOpen", "state",
     "triggerAceUnlockEvent", "triggerOrcDungeonUnlockEvent", "triggerPostUnderwaterTrainClearEvents", "triggerUnderwaterTrainUnlockEvent",
+    "triggerTenriInstituteUnlockEvent", "completeTenriInstituteUnlockEvent",
     "tryLittleElranaEncounter", "tryAbeKarunaEncounter", "WithererSkills"
   ];
 

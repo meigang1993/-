@@ -79,6 +79,9 @@ window.DungeonRunRewards = (() => {
       && !window.triggerRuinsSandCityUnlockEvent?.(state, run)) {
       window.triggerPostUnderwaterTrainClearEvents?.(state, run);
     }
+    // 天日国鹰7研究所：废墟沙城·冒险级首次通关 + 两位角色已解锁时排队剧情。
+    window.triggerTenriInstituteUnlockEvent?.(state, run);
+    window.TenriInstituteUnlockEvents?.triggerPending?.(state);
     window.NewCharacterUnlockEvents?.triggerPending?.(state);
   }
 

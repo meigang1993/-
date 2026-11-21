@@ -1,5 +1,5 @@
 // 243/244 版严格复查：【增援部队】复活手牌 BUG 修复 + 摸至手牌上限（纯补给口径）；
-// 【角色强化】5000 元 / 每项 50 次，旧存档超过 50 次的次数不保留。
+// 【角色强化】5000 元 / 每项 70 次，旧存档超过 70 次的次数不保留。
 // 真实加载产品源码（BattleSession.draw / BattleCombatDefeat.discardDeadHands / LocalCore 结算链），
 // REVERT=hand|marker|cost|max|desc|relic|old 为源码级反向验证，须精准打红对应段、无关段保持绿。
 const fs = require("fs");
@@ -30,7 +30,7 @@ const REVERTS = {
     `    dead.forEach(enemy => { enemy.hp = window.BattleHpValue.maxHp(enemy); });`]] },
   marker: { "ruins-elite-skills.js": [["      delete enemy.deathDiscarded;\n", ""]] },
   cost: { "character-enhance.js": [["const COST = 5000;", "const COST = 1000;"]] },
-  max: { "character-enhance.js": [["const MAX_LEVEL = 50;", "const MAX_LEVEL = 999;"]] },
+  max: { "character-enhance.js": [["const MAX_LEVEL = 70;", "const MAX_LEVEL = 999;"]] },
   desc: {
     "data-ruins-sand-city-enemies.js": [["你将已死亡的所有其他角色满血复活，弃置其所有手牌并摸至手牌上限（补牌为纯补给，不触发摸牌类饰品、不被转移或封魔克扣）。", "你复活已死亡的所有其他角色。"]],
     "update-notice-recent.js": [["【增援部队】（装甲运输车）复活后手牌修正", "【已撤回】复活后手牌修正"]],
@@ -189,7 +189,7 @@ function mkState(dead) {
   box.logs.length = 0;
 }
 
-// ---------- D. 角色强化：5000 元 / 每项 50 次（真实 LocalCore 链路） ----------
+// ---------- D. 角色强化：5000 元 / 每项 70 次（真实 LocalCore 链路） ----------
 function coreCtx() {
   const ctx = vm.createContext({ console, window: {}, Date, Math, JSON, Object, Array, String, Number });
   ctx.window = ctx;
@@ -217,8 +217,8 @@ const mkCore = (gold, enhance) => ({
 });
 (async () => {
   T("D", "D1 价格为 5000 莉莉丝元", E.COST === 5000, { cost: E.COST });
-  T("D", "D2 每项上限为 50 次", E.MAX_LEVEL === 50, { max: E.MAX_LEVEL });
-  T("D", "D3 超出 50 次的旧档收敛为 50", E.cleanLevel(999) === 50 && E.cleanLevel(50) === 50 && E.cleanLevel(51) === 50);
+  T("D", "D2 每项上限为 70 次", E.MAX_LEVEL === 70, { max: E.MAX_LEVEL });
+  T("D", "D3 超出 70 次的旧档收敛为 70", E.cleanLevel(999) === 70 && E.cleanLevel(70) === 70 && E.cleanLevel(71) === 70);
   T("D", "D4 四项独立、单次加成不变",
     JSON.stringify(E.BONUS) === JSON.stringify({ maxHp: 3, attack: 1, magic: 1, speed: 1 }) && E.statKeys.length === 4);
   const exact = mkCore(5000);
@@ -228,21 +228,21 @@ const mkCore = (gold, enhance) => ({
   const poor = mkCore(4999);
   const r2 = await C.ServerCore.call("enhanceChar", { id: "lokar", stat: "speed" }, poor);
   T("D", "D6 4999 拒绝且不扣费", !r2.ok && poor.resources.gold === 4999 && E.levelOf(poor.chars[0], "speed") === 0);
-  const big = mkCore(5000 * 60);
+  const big = mkCore(5000 * 71);
   let last;
-  for (let i = 0; i < 50; i += 1) last = await C.ServerCore.call("enhanceChar", { id: "lokar", stat: "magic" }, big);
+  for (let i = 0; i < 70; i += 1) last = await C.ServerCore.call("enhanceChar", { id: "lokar", stat: "magic" }, big);
   const r51 = await C.ServerCore.call("enhanceChar", { id: "lokar", stat: "magic" }, big);
-  T("D", "D7 第 50 次成功、第 51 次拒绝", last.ok === true && !r51.ok && E.levelOf(big.chars[0], "magic") === 50,
+  T("D", "D7 第 70 次成功、第 71 次拒绝", last.ok === true && !r51.ok && E.levelOf(big.chars[0], "magic") === 70,
     { level: E.levelOf(big.chars[0], "magic") });
   const other = await C.ServerCore.call("enhanceChar", { id: "lokar", stat: "speed" }, big);
   T("D", "D8 某项满级不影响其它三项", other.ok === true && E.levelOf(big.chars[0], "speed") === 1);
   const legacy = { enhanceLevel: 999 };
-  T("D", "D9 旧档 999 次读档按四项各 50 次还原、加成不双算",
-    JSON.stringify(E.levelsOf(legacy)) === JSON.stringify({ maxHp: 50, attack: 50, magic: 50, speed: 50 })
-    && E.bonusOf(legacy).maxHp === 150);
+  T("D", "D9 旧档 999 次读档按四项各 70 次还原、加成不双算",
+    JSON.stringify(E.levelsOf(legacy)) === JSON.stringify({ maxHp: 70, attack: 70, magic: 70, speed: 70 })
+    && E.bonusOf(legacy).maxHp === 210);
   const panel = rel("src/original/ui-info.js");
-  T("D", "D10 面板兜底价与 50 次提示同步",
-    panel.includes("?? 5000") && panel.includes("每项最多 50 次"));
+  T("D", "D10 面板兜底价与 70 次提示同步",
+    panel.includes("?? 5000") && panel.includes("每项最多 70 次"));
   const hall = rel("src/original/hall-enhance-actions.js");
   T("D", "D11 动作层战报兜底价同步 5000", hall.includes("?? 5000"));
   // ---------- E. 描述 / 公告 / 文档同步 ----------
@@ -250,10 +250,10 @@ const mkCore = (gold, enhance) => ({
   T("E", "E1 技能描述写明弃置手牌并摸至上限",
     skill.includes("弃置其所有手牌并摸至手牌上限") && !skill.includes("你复活已死亡的所有其他角色。"));
   const notice = rel("src/original/update-notice-recent.js");
-  T("E", "E2 公告写明复活手牌修正与 5000/50 次",
+  T("E", "E2 公告写明复活手牌修正与 5000/70 次",
     notice.includes("【增援部队】（装甲运输车）复活后手牌修正")
     && notice.includes("【角色强化】价格与次数上限调整")
-    && notice.includes("5000 莉莉丝元") && notice.includes("50 次"));
+    && notice.includes("5000 莉莉丝元") && notice.includes("70 次"));
   T("E", "E3 两份 docs 同步",
     ["docs/05-怪物与怪物技能与饰品.txt", "docs/12-新副本素材-废墟沙城.txt"]
       .every(p => rel(p).includes("弃置其所有手牌并摸至手牌上限")));
@@ -309,23 +309,23 @@ const mkCore = (gold, enhance) => ({
       { got: got2.length });
   }
   {
-    // 旧存档超过 50 次不保留：落盘后四元组各 50、旧 enhanceLevel 字段不再写回。
+    // 旧存档超过 70 次不保留：落盘后四元组各 70、旧 enhanceLevel 字段不再写回。
     const old = { id: "lokar", locked: false, level: 3, exp: 0, hp: 200, enhanceLevel: 999 };
     const saved = C.GameStoreCompact.compactSaveData({
       view: "hall", chars: [old], deck: [], shopCards: [], bounties: [], pendingBountyRewards: [],
     });
     const ch = saved.chars[0];
-    T("F", "F6 旧档 999 次落盘不保留，四元组各 50 且无 enhanceLevel",
-      JSON.stringify(ch.enhance) === JSON.stringify({ maxHp: 50, attack: 50, magic: 50, speed: 50 })
-      && !("enhanceLevel" in ch) && E.bonusOf(ch).maxHp === 150, ch.enhance);
+    T("F", "F6 旧档 999 次落盘不保留，四元组各 70 且无 enhanceLevel",
+      JSON.stringify(ch.enhance) === JSON.stringify({ maxHp: 70, attack: 70, magic: 70, speed: 70 })
+      && !("enhanceLevel" in ch) && E.bonusOf(ch).maxHp === 210, ch.enhance);
     const mixed = { id: "lokar", level: 1, hp: 10,
       enhance: { maxHp: 999, attack: 51, magic: 50, speed: -3 }, enhanceLevel: 88 };
     T("F", "F7 新旧字段混合档也不保留超限、负数与旧字段",
-      JSON.stringify(E.levelsOf(mixed)) === JSON.stringify({ maxHp: 50, attack: 50, magic: 50, speed: 0 }),
+      JSON.stringify(E.levelsOf(mixed)) === JSON.stringify({ maxHp: 70, attack: 51, magic: 50, speed: 0 }),
       E.levelsOf(mixed));
   }
   T("F", "F8 公告写明纯补给与旧档超限不保留",
-    notice.includes("复活补牌另定为纯补给") && notice.includes("超过 50 次的强化次数不保留")
+    notice.includes("复活补牌另定为纯补给") && notice.includes("超过 70 次的强化次数不保留")
     && notice.includes("旧 enhanceLevel 字段不再写回"));
   T("F", "F9 技能描述与两份 docs 写明纯补给",
     skill.includes("补牌为纯补给")

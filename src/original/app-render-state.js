@@ -10,7 +10,10 @@ function updateBgmIfNeeded() {
   window.GameBGM?.update(state);
 }
 function validDungeonRun(run) {
-  return !!run && Array.isArray(run.layers) && run.layers.length > 0 && run.layers.some(layer => Array.isArray(layer) && layer.some(node => node?.id));
+  if (!run || !Array.isArray(run.layers) || !run.layers.length) return false;
+  const mission = (window.GameData?.missions || []).find(m => m.id === run.missionId);
+  if (mission?.devLocked) return false;
+  return run.layers.some(layer => Array.isArray(layer) && layer.some(node => node?.id));
 }
 function ensureRenderableView() {
   if (state.view === "dungeonConfirm" && !state.sortieStarting) {

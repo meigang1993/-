@@ -81,14 +81,20 @@ const T = (name, cond, extra) => {
   T("记录了 clear:ruins_sand_city@king",
     r.after.includes("clear:ruins_sand_city@king"), r.after);
 
-  console.log("—— 场景5：魅魔满级（20级） ——");
+  console.log("—— 场景5：魅魔满级（25级） ——");
   const hero = await page.evaluate(() => {
-    state.chars[0].level = 20;
+    state.chars[0].level = 25;
     const list = window.ButlerManualProgress.heroList(state);
     const target = list.find(h => h.id === state.chars[0].id);
     return { level: target?.level, maxed: target?.maxed, name: target?.name };
   });
-  T("20级角色被判定为满级", hero.maxed === true, hero);
+  T("25级角色被判定为满级", hero.maxed === true, hero);
+  T("20级角色不再误判为满级", await page.evaluate(() => {
+    state.chars[0].level = 20;
+    const notMaxed = window.ButlerManualProgress.heroList(state)[0].maxed === false;
+    state.chars[0].level = 25;
+    return notMaxed;
+  }), {});
   const overall = await page.evaluate(() => window.ButlerManualProgress.overall(state));
   T("总览含满级计数", overall.heroes.done >= 1, overall.heroes);
 

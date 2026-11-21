@@ -68,7 +68,8 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
   const data = await page.evaluate(() => {
     const G = window.GameData || {};
     const groups = {};
-    for (const [k, list] of Object.entries(G.enemies || {})) {
+    for (const m of window.ButlerManualProgress.missions()) {
+      const k = m.id, list = (G.enemies || {})[k] || [];
       groups[k] = {
         boss: (list || []).filter(e => e.type === "boss").map(e => e.name),
         elite: (list || []).filter(e => e.type === "elite").map(e => e.name),
@@ -76,7 +77,7 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
     }
     return {
       groups,
-      missions: (G.missions || []).filter(m => m.kind === "dungeon").map(m => m.name),
+      missions: window.ButlerManualProgress.missions().map(m => m.name),
       heroes: (G.characters || []).map(c => c.name),
       maxLevel: window.ButlerManualProgress?.MAX_LEVEL || 0,
       butlerName: window.ButlerManualProgress?.BUTLER_NAME || "",
@@ -91,7 +92,7 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
   const allElite = Object.values(data.groups).flatMap(g => g.elite);
   T("精英共 12 名且与清单一致", allElite.length === 12 && same(allElite, ELITES), allElite);
   T("魅魔共 34 名且与清单一致", data.heroes.length === 34 && same(data.heroes, HEROES), data.heroes.length);
-  T("满级线为 20 级", data.maxLevel === 20, data.maxLevel);
+  T("满级线为 25 级", data.maxLevel === 25, data.maxLevel);
   T(`管家名为「${BUTLER_NAME}」`, data.butlerName === BUTLER_NAME, data.butlerName);
 
   // ============ 二、手册界面与清单一致 ============
@@ -128,7 +129,7 @@ const texts = (page, sel) => page.locator(sel).allTextContents();
   const heroNames = (await texts(page, ".butler-hero b")).map(s => s.trim());
   T("魅魔目标列出 34 名", same(heroNames, HEROES), heroNames.length);
   const lv = await page.locator(".butler-hero small").first().textContent();
-  T("等级显示为 X/20", /\/\s*20$/.test((lv || "").trim()), { lv });
+  T("等级显示为 X/25", /\/\s*25$/.test((lv || "").trim()), { lv });
 
   // 探索目标
   await tab(page, "explore");

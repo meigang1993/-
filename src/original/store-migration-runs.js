@@ -9,8 +9,9 @@ window.StoreRunMigrations = (() => {
 
   function validDungeonRun(run) {
     if (!run || typeof run !== "object") return false;
-    if (!GameData.difficulties?.[run.difficultyId]
-      || !GameData.missions?.some(mission => mission.id === run.missionId)) return false;
+    if (!GameData.difficulties?.[run.difficultyId]) return false;
+    const mission = GameData.missions?.find(m => m.id === run.missionId);
+    if (!mission || mission.devLocked) return false;
     return Array.isArray(run.layers) && run.layers.length > 0
       && run.layers.some(layer => Array.isArray(layer) && layer.some(node => node?.id));
   }

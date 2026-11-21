@@ -57,6 +57,7 @@ window.VillaUI = (() => {
       hitwellUnlock: state => window.NewCharacterUnlockEvents?.hitwellUnlock?.(state) || "",
       preshiUnlock: state => window.NewCharacterUnlockEvents?.preshiUnlock?.(state) || "",
       mieryulaUnlock: state => window.NewCharacterUnlockEvents?.mieryulaUnlock?.(state) || "",
+      tenriInstituteUnlock: state => window.TenriInstituteUnlockEvents?.tenriInstituteUnlock?.(state) || "",
       newGameIntro: state => window.VillaStoryEvents?.newGameIntro?.(state) || "",
       firstVictory: state => window.VillaStoryEvents?.firstVictory?.(state) || "",
     };
@@ -68,7 +69,7 @@ window.VillaUI = (() => {
       "opheliaUnlock", "bestaNurseryUnlock", "orcDungeonUnlock", "soniaNurseryUnlock",
       "chiyoRecruitUnlock", "gerdaNurseryUnlock", "hoshinoFamilyUnlock",
       "ruinsSandCityUnlock", "hitwellUnlock", "preshiUnlock", "mieryulaUnlock",
-      "newGameIntro", "firstVictory",
+      "tenriInstituteUnlock", "newGameIntro", "firstVictory",
     ]);
     const modalClass = state.hallModal === "updates"
       ? " update-modal"

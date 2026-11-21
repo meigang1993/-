@@ -3,8 +3,8 @@ const {
 } = require("./progression-test-harness");
 
 function testGrowthProfiles() {
-  assert(Progression.expToNext.reduce((sum, value) => sum + value, 0) === 47710,
-    "level 20 must require 47710 total experience");
+  assert(Progression.expToNext.reduce((sum, value) => sum + value, 0) === 93510,
+    "level 25 must require 93510 total experience");
   const nodeRewards = Object.values(GameData.difficulties).map(difficulty =>
     ["normal", "elite", "boss"].map(kind =>
       Progression.rewardFor(kind, difficulty)));
@@ -30,8 +30,8 @@ function testExperienceGrant() {
   const first = Progression.grant(unit, 30, template);
   assert(first.level === 0 && unit.exp === 30,
     "one normal victory must retain partial level-zero experience");
-  const multi = Progression.grant(unit, 47680, template);
-  assert(multi.level === 20 && unit.exp === 0, "large rewards must support multi-level gains and cap at 20");
+  const multi = Progression.grant(unit, 93480, template);
+  assert(multi.level === 25 && unit.exp === 0, "large rewards must support multi-level gains and cap at 25");
   const capped = JSON.stringify(unit);
   Progression.grant(unit, 99999, template);
   assert(JSON.stringify(unit) === capped, "capped characters must not accumulate overflow experience");
@@ -74,7 +74,7 @@ function testMigration() {
   const grown = character(growth);
   assert(grown.level === 10 && grown.exp === 120,
     "growth migration must preserve level and current-level experience");
-  assert(grown.stats.maxHp === 264 && grown.hp === 30,
+  assert(grown.stats.maxHp === 270 && grown.hp === 33,
     "growth migration must rebuild rebalanced stats and preserve compact-save HP ratio");
   assert(growth.flags.characterGrowthVersion === 3,
     "growth migration must advance its independent version");
@@ -89,10 +89,10 @@ function testMigration() {
   secondGrowthUnit.hp = 40;
   window.GameStoreCompact.compactSaveData(secondGrowth);
   Store.migrate(secondGrowth);
-  assert(character(secondGrowth).hp === 40
+  assert(character(secondGrowth).hp === 46
     && secondGrowth.flags.characterGrowthVersion === 3,
-  "version-2 growth migration must preserve HP when maximum-HP growth is unchanged");
-  assert(character(secondGrowth).stats.attack === 44
+  "version-2 growth migration must rebuild HP from the compact-save ratio");
+  assert(character(secondGrowth).stats.attack === 45
     && character(secondGrowth).stats.magic === 18,
   "version-2 growth migration must rebuild attack and magic from the new growth table");
 
@@ -107,7 +107,7 @@ function testMigration() {
   assert(!Object.hasOwn(character(current), "stats"),
     "compact saves must omit derived character stats");
   Store.migrate(current);
-  assert(character(current).stats.maxHp === 264,
+  assert(character(current).stats.maxHp === 270,
     "current compact saves must rebuild level-derived maximum HP");
   assert(character(current).hp === 40,
     "current compact saves must preserve exact HP instead of healing to full");

@@ -1,5 +1,5 @@
 // 管家手册「魅魔目标」分母恒为全部可培养角色数检查（浏览器）
-// 分母取自 GameData.characters 模板（当前 30 名），不随解锁进度增长。
+// 分母取自 GameData.characters 模板（当前 34 名），不随解锁进度增长。
 // 需求：未解锁的魅魔也要占位显示灰剪影，分母不能随解锁进度增长。
 // 场景：新档（仅 2 名解锁）/ 全解锁 0 级 / 部分满级 / 满级后无灰剪影。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
@@ -17,7 +17,7 @@ const T = (name, cond, extra) => {
   return !!cond;
 };
 
-const EXPECT_TOTAL = 30;
+const EXPECT_TOTAL = 34;
 
 (async () => {
   const browser = await chromium.launch();
@@ -101,7 +101,7 @@ const EXPECT_TOTAL = 30;
   // ================= 场景3：部分满级 =================
   console.log("—— 场景3：3 名满级 ——");
   await page.evaluate(() => {
-    state.chars = (window.GameData?.characters || []).map((c, i) => ({ id: c.id, level: i < 3 ? 20 : 5, locked: false }));
+    state.chars = (window.GameData?.characters || []).map((c, i) => ({ id: c.id, level: i < 3 ? 25 : 5, locked: false }));
   });
   await refresh();
   s = await snapshot();
@@ -113,7 +113,7 @@ const EXPECT_TOTAL = 30;
   // ================= 场景4：全满级后无灰剪影 =================
   console.log("—— 场景4：全部满级 ——");
   await page.evaluate(() => {
-    state.chars = (window.GameData?.characters || []).map(c => ({ id: c.id, level: 20, locked: false }));
+    state.chars = (window.GameData?.characters || []).map(c => ({ id: c.id, level: 25, locked: false }));
   });
   await refresh();
   s = await snapshot();
@@ -126,7 +126,7 @@ const EXPECT_TOTAL = 30;
   // 加固点：分母由角色模板决定，即便存档只留了已解锁角色，也要补齐全部占位
   console.log("—— 场景5：存档只含 2 名已解锁角色 ——");
   await page.evaluate(() => {
-    state.chars = (window.GameData?.characters || []).slice(0, 2).map(c => ({ id: c.id, level: 20, locked: false }));
+    state.chars = (window.GameData?.characters || []).slice(0, 2).map(c => ({ id: c.id, level: 25, locked: false }));
   });
   await refresh();
   s = await snapshot();

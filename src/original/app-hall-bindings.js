@@ -68,6 +68,7 @@ window.AppHallBindings = (() => {
     bind("[data-hitwell-unlock-complete]", window.completeHitwellUnlockEvent);
     bind("[data-preshi-unlock-complete]", window.completePreshiUnlockEvent);
     bind("[data-mieryula-unlock-complete]", window.completeMieryulaUnlockEvent);
+    bind("[data-tenri-institute-unlock-complete]", window.completeTenriInstituteUnlockEvent);
     bind("[data-new-game-intro-complete]", window.completeNewGameIntroEvent);
     bind("[data-first-victory-complete]", window.completeFirstVictoryEvent);
   }

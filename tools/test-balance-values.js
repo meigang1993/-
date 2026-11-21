@@ -244,13 +244,13 @@ Object.entries(expectedEnemies).forEach(([id, expected]) => {
   const baseHp = Object.entries(targets).map(([, [list]]) => average(list, "hp"));
   assert.ok(baseHp.every((v, i) => i === 0 || v > baseHp[i - 1]),
     `副本平均生命未递进: ${baseHp.map(v => v.toFixed(1)).join("→")}`);
-  // 先手压力：水下列车英雄级平均速度不低于 20 级角色速度（47.12）的 90%
+  // 先手压力：水下列车英雄级平均速度不低于 20 级角色速度（48.47）的 90%
   const trainHell = average(
     GameDataUnderwaterTrainEnemies.map(enemy => GameDataWorld.scaleEnemyStats(enemy, difficulties[4], enemy.type)),
     "speed",
   );
-  assert.ok(trainHell >= 47.12 * 0.9,
-    `水下列车英雄级平均速度 ${trainHell.toFixed(1)} 未形成先手压力（20 级角色 47.12）`);
+  assert.ok(trainHell >= 48.47 * 0.9,
+    `水下列车英雄级平均速度 ${trainHell.toFixed(1)} 未形成先手压力（20 级角色 48.47）`);
 })();
 const averageHp = group => group.reduce((sum, enemy) => sum + enemy.hp, 0) / group.length;
 assert(averageHp(GameDataMachineFactoryEnemies)
@@ -327,13 +327,13 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [100, 
   assert.strictEqual(difficulties[0].attrText, "基础", "普通级 attrText 应为「基础」");
 })();
 
-// 0～20 级角色成长数据快照（随副本数值重平衡同步更新）
+// 0～25 级角色成长数据快照（随副本数值重平衡同步更新）
 (() => {
   const crypto = require("crypto");
   const progression = window.CharacterProgression;
   assert.ok(progression?.statsAt, "未取到 CharacterProgression.statsAt，快照失效");
-  assert.strictEqual(progression.maxLevel, 20, "满级应为 20");
-  assert.strictEqual(progression.expToNext.reduce((a, b) => a + b, 0), 47710,
+  assert.strictEqual(progression.maxLevel, 25, "满级应为 25");
+  assert.strictEqual(progression.expToNext.reduce((a, b) => a + b, 0), 93510,
     "升级经验总需求被改动");
   const rows = GameDataCharacters.map(character => {
     const levels = [];
@@ -352,14 +352,15 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [100, 
   // 11-09 全角色初始属性与成长、全怪物基础属性统一翻倍，成长档位单位同步翻倍。
   // 11-17 全部角色与怪物属性统一四舍五入取整，成长快照、生命/输出比与先手阈值同步重定。
   // 11-18 四档难度改为四项属性统一倍率、副本节点金币统一下调 30%，均值表与金币基线同步重定。
+  // 11-21 等级上限提高至 25 级、属性成长 ×1.3，成长快照、经验总和与等级比例基线同步重定。
   assert.strictEqual(digest,
-    "d7a08d4e858f7de74dd1d40e5d530a4f797bd665cbff408722883259ec0e4c28",
+    "154d002c4de997d95d9ef259aa921aa957685e749d21998726fd197fd6cd8121",
     "0～20 级角色成长数据被改动（快照不匹配，若有意调整请更新摘要）");
   const lokar = GameDataCharacters.find(character => character.id === "lokar");
   assert.deepStrictEqual(
-    [progression.statsAt(lokar, 0).maxHp, progression.statsAt(lokar, 20).maxHp],
-    [124, 404],
-    "罗卡尔 0/20 级生命与预期不符",
+    [progression.statsAt(lokar, 0).maxHp, progression.statsAt(lokar, progression.maxLevel).maxHp],
+    [124, 488],
+    "罗卡尔 0/25 级生命与预期不符",
   );
 })();
 
@@ -378,7 +379,7 @@ assert.deepStrictEqual(difficulties.map(item => item.enemy.normal.speed), [100, 
     return hp / power;
   };
   // 调整前（HEAD）实测的 0/5/10/15/20 级比例，重平衡后应回到同一水平（±0.4 容差）
-  const baseline = { 0: 14.28, 5: 9.98, 10: 8.74, 15: 8.26, 20: 7.97 };
+  const baseline = { 0: 14.28, 5: 9.82, 10: 8.77, 15: 8.23, 20: 7.93 };
   Object.entries(baseline).forEach(([level, expected]) => {
     const value = ratio(Number(level));
     assert.ok(Math.abs(value - expected) <= 0.4,

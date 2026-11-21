@@ -52,5 +52,14 @@ window.GameEconomy = Object.freeze({
         Object.freeze([1200, 2000]),
       ]),
     }),
+    // 天日国鹰7研究所：莉莉丝元按废墟沙城调整（倍率与悬赏区间同表）。
+    // 入口开发完成前悬赏生成已排除本副本，配置先行落位以便后续直接启用。
+    tenri_institute: Object.freeze({
+      goldMultiplier: 230,
+      bountyGoldRange: Object.freeze([1600, 2600]),
+      bountyLegacyGoldRanges: Object.freeze([
+        Object.freeze([1600, 2600]),
+      ]),
+    }),
   }),
 });

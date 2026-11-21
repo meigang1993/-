@@ -1,4 +1,4 @@
-// 全部属性取整严格检查：34 名可玩角色 + 全部 36 名怪物，覆盖基值、20 级成长表、
+// 全部属性取整严格检查：34 名可玩角色 + 全部 36 名怪物，覆盖基值、25 级成长表、
 // 0~20 级插值结果、角色强化加成、四副本五难度缩放与升级/重算路径。
 // REVERT 为源码级反向验证：把改动撤回后必须精准报红，确认断言不是空转。
 const fs = require("fs");
@@ -135,11 +135,11 @@ T("B5 成长仍落在原档位网格（整数化允许 0.15 tier 偏差）",
     return KEYS.some(k => Math.abs(g[k] / grid[k] - Math.round(g[k] / grid[k])) >= 0.15);
   }).map(([id]) => id));
 
-// ---------- C. 0~20 级插值 ----------
+// ---------- C. 0~25 级插值（等级上限 25 / 成长 ×1.3） ----------
 const levelBad = [], monoBad = [], zeroBad = [], twentyBad = [];
 for (const c of chars) {
   let prev = null;
-  for (let level = 0; level <= 20; level += 1) {
+  for (let level = 0; level <= P.maxLevel; level += 1) {
     const s = P.statsAt(c, level);
     for (const k of KEYS) if (isBad(s[k])) levelBad.push(`${c.id}@${level}.${k}=${s[k]}`);
     if (prev) for (const k of KEYS) if (s[k] < prev[k]) monoBad.push(`${c.id}@${level}.${k}`);
@@ -147,20 +147,20 @@ for (const c of chars) {
   }
   const zero = P.statsAt(c, 0);
   if (KEYS.some(k => zero[k] !== c.stats[k])) zeroBad.push(c.id);
-  const twenty = P.statsAt(c, 20);
+  const capped = P.statsAt(c, P.maxLevel);
   const g = P.profile(c.id);
-  if (KEYS.some(k => twenty[k] !== Math.round(c.stats[k] + g[k]))) twentyBad.push(c.id);
+  if (KEYS.some(k => capped[k] !== Math.round(c.stats[k] + g[k] * P.growthScale))) twentyBad.push(c.id);
 }
-T("C1 34×21×4 全部等级属性均为有限非负整数", levelBad.length === 0, levelBad.slice(0, 6));
+T("C1 34×26×4 全部等级属性均为有限非负整数", levelBad.length === 0, levelBad.slice(0, 6));
 T("C2 属性随等级单调不减", monoBad.length === 0, monoBad.slice(0, 6));
 T("C3 0 级属性等于角色基值", zeroBad.length === 0, zeroBad);
-T("C4 20 级属性 = 基值 + 成长表（四舍五入）", twentyBad.length === 0, twentyBad);
-T("C5 罗卡尔 0/20 级生命 124/404",
-  P.statsAt(chars[0], 0).maxHp === 124 && P.statsAt(chars[0], 20).maxHp === 404);
+T("C4 满级属性 = 基值 + 成长表×1.3（四舍五入）", twentyBad.length === 0, twentyBad);
+T("C5 罗卡尔 0/25 级生命 124/488",
+  P.statsAt(chars[0], 0).maxHp === 124 && P.statsAt(chars[0], P.maxLevel).maxHp === Math.round(124 + P.growth.lokar.maxHp * P.growthScale));
 
 // ---------- D. 角色强化加成 ----------
 const bonusBad = [];
-for (const n of [0, 1, 7, 50]) {
+for (const n of [0, 1, 7, 70]) {
   for (const c of chars) {
     const character = { enhance: Object.fromEntries(KEYS.map(k => [k, n])) };
     const base = P.statsAt(c, 7);
@@ -222,8 +222,8 @@ const gChar = {
   enhance: { maxHp: 2, attack: 3, magic: 1, speed: 4 },
 };
 P.grant(gChar, 100000, chars[0]);
-const gBase = P.statsAt(chars[0], 20);
-T("G1 升到 20 级后属性全为整数",
+const gBase = P.statsAt(chars[0], P.maxLevel);
+T("G1 升到满级后属性全为整数",
   KEYS.every(k => Number.isInteger(gChar.stats[k])), gChar.stats);
 T("G2 强化加成在升级重算后仍在且不重复叠加",
   KEYS.every(k => gChar.stats[k] === gBase[k] + E.BONUS[k] * gChar.enhance[k]),

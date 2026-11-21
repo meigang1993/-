@@ -11,6 +11,7 @@ window.LocalCoreDungeonOps = (() => {
       ? window.DungeonUnlocks.has(core, missionId, difficultyId)
       : (core.unlockedDifficulties || []).includes(difficultyId);
     if (!mission || mission.kind !== "dungeon" || !GameData.difficulties?.[difficultyId] || !difficultyOpen) return outcomes.rejected;
+    if (mission.devLocked) return outcomes.rejected;
     if (mission.requiresFlag && !core.flags?.[mission.requiresFlag]) return outcomes.rejected;
     core.pendingRun = { gold: 0, essence: 0, cards: [], relics: [] };
     const runId = String(args.runId || "");
@@ -38,8 +39,8 @@ window.LocalCoreDungeonOps = (() => {
     return ids;
   }
   function settleDungeon(core, args) {
-    const run = args.run || {}, nodeId = String(args.nodeId || run.pending || ""), node = (run.layers || []).flat().find(item => item.id === nodeId);
-    if (!node || (args.kind && args.kind !== node.type)) return outcomes.rejected;
+    const run = args.run || {}, nodeId = String(args.nodeId || run.pending || ""), node = (run.layers || []).flat().find(item => item.id === nodeId), mission = GameData.missions.find(m => m.id === run.missionId);
+    if (!node || (args.kind && args.kind !== node.type) || mission?.devLocked) return outcomes.rejected;
     const diff = GameData.difficulties[run.difficultyId] || GameData.difficulties.normal;
     const receiptId = rewardReceiptId(run, nodeId);
     if (!receiptId) return outcomes.rejected;

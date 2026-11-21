@@ -51,6 +51,9 @@ window.GameDataWorld = {
     machine_factory: window.GameDataMachineFactoryEnemies,
     underwater_train: window.GameDataUnderwaterTrainEnemies,
     ruins_sand_city: window.GameDataRuinsSandCityEnemies,
+    // 怪物设计未定稿：天日国鹰7研究所临时复用废墟沙城随机池。
+    // 条件展开与 mission 聚合同源，未加载新数据文件的工具链不会产生孤立敌人组 key。
+    ...(window.GameDataTenriInstitute ? { tenri_institute: window.GameDataTenriInstitute.enemies } : {}),
     ...(window.GameDataFutureEnemies || {}),
   },
   testEnemies: [],

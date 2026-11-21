@@ -1,6 +1,7 @@
 window.ButlerManualProgress = (() => {
   const BUTLER_NAME = "凯瑟琳";
-  const MAX_LEVEL = 20;
+  // 等级上限跟随成长模块，避免手册与成长表各自硬编码（25 级由 character-progression.js 提供）。
+  const maxLevel = () => Math.floor(Number(window.CharacterProgression?.maxLevel)) || 25;
   const DIFFS = ["normal", "adventure", "warrior", "king", "hell"];
   // 成果记录形如 "boss:mechanical_bull_king@normal"，三类前缀：boss / elite / clear。
   const KINDS = ["boss", "elite", "clear"];
@@ -49,7 +50,8 @@ window.ButlerManualProgress = (() => {
   }
 
   function missions() {
-    return (window.GameData?.missions || []).filter(m => m?.kind === "dungeon");
+    // devLocked 副本不进手册：入口锁着时无目标可完成，占位怪物池还会重名；去掉标记后自动纳入。
+    return (window.GameData?.missions || []).filter(m => m?.kind === "dungeon" && !m?.devLocked);
   }
   function enemiesOf(missionId, type) {
     const group = window.GameData?.enemies?.[missionId];
@@ -99,6 +101,7 @@ window.ButlerManualProgress = (() => {
   // 以角色模板为基准列出全部可培养魅魔：未解锁的也要占位（灰剪影），
   // 保证「已满级 X / 总数」的分母恒为全部可培养角色（当前 34），而不是随解锁进度增长。
   function heroList(state) {
+    const cap = maxLevel();
     const chars = Array.isArray(state?.chars) ? state.chars : [];
     const byId = new Map(chars.filter(c => c && c.id).map(c => [c.id, c]));
     const tpls = Array.isArray(window.GameData?.characters) ? window.GameData.characters : [];
@@ -110,7 +113,7 @@ window.ButlerManualProgress = (() => {
       const c = byId.get(id);
       const level = c ? Math.max(0, Math.floor(Number(c.level) || 0)) : 0;
       return {
-        id, name: tpl.name || c?.name || id, level, maxed: level >= MAX_LEVEL,
+        id, name: tpl.name || c?.name || id, level, maxed: level >= cap,
         unlocked: !!c && !c.locked, art: tpl.avatar || tpl.art || "", face: tpl.face || "?",
       };
     });
@@ -169,7 +172,7 @@ window.ButlerManualProgress = (() => {
   }
 
   return {
-    BUTLER_NAME, MAX_LEVEL, DIFFS, feats, has, record, recordBattle, recordClear, doneDiffs,
+    BUTLER_NAME, get MAX_LEVEL() { return maxLevel(); }, DIFFS, feats, has, record, recordBattle, recordClear, doneDiffs,
     missions, enemiesOf, difficulties, bossGroups, eliteGroups, heroList, exploreList, tutorialDone,
     overall, line, comment,
   };

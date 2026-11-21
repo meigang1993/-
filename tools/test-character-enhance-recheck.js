@@ -1,4 +1,4 @@
-// 【角色强化】严格复查：新口径「花 5000 只加一项属性、每项 50 次」的 BUG / 副作用排查。
+// 【角色强化】严格复查：新口径「花 5000 只加一项属性、每项 70 次」的 BUG / 副作用排查。
 // 与 test-character-enhance.js 独立实现，避免共用断言一起错。REVERT 为源码级反向验证。
 const fs = require("fs");
 const path = require("path");
@@ -101,14 +101,14 @@ function mkState(gold, enhance) {
 (async () => {
   // ---------- A. 模块与数值 ----------
   T("A1 花费固定 5000", E.COST === 5000);
-  T("A2 上限按项、四项独立", E.MAX_LEVEL === 50 && E.statKeys.length === 4);
+  T("A2 上限按项、四项独立", E.MAX_LEVEL === 70 && E.statKeys.length === 4);
   T("A3 单次加成表正确", KEYS.every(k => E.BONUS[k] === BONUS[k]));
   T("A4 levelsOf 对畸形入参不抛错",
     JSON.stringify(E.levelsOf({ enhance: null })) === JSON.stringify(zero())
     && JSON.stringify(E.levelsOf({ enhance: [] })) === JSON.stringify(zero()));
   T("A5 levelsOf 裁剪负数/超上限/字符串",
     JSON.stringify(E.levelsOf({ enhance: { maxHp: -1, attack: 1e9, magic: "4", speed: 2.9 } }))
-      === JSON.stringify({ maxHp: 0, attack: 50, magic: 4, speed: 2 }));
+      === JSON.stringify({ maxHp: 0, attack: E.MAX_LEVEL, magic: 4, speed: 2 }));
   T("A6 旧档 enhanceLevel=4 等价四项各 4 次",
     JSON.stringify(E.levelsOf({ enhanceLevel: 4 }))
       === JSON.stringify({ maxHp: 4, attack: 4, magic: 4, speed: 4 }));
@@ -180,12 +180,12 @@ function mkState(gold, enhance) {
   T("C6 未解锁拒绝且不扣费",
     (await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "speed" }, lockState)).ok === false
     && lockState.resources.gold === 5000);
-  const capped = mkState(15000, { maxHp: 50, attack: 0, magic: 0, speed: 0 });
+  const capped = mkState(15000, { maxHp: E.MAX_LEVEL, attack: 0, magic: 0, speed: 0 });
   const cap1 = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "maxHp" }, capped);
   const cap2 = await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "attack" }, capped);
   T("C7 该项满级拒绝", cap1.ok === false);
   T("C8 某项满级不影响其它项", cap2.ok === true && capped.resources.gold === 10000
-    && E.levelOf(capped.chars[0], "attack") === 1 && E.levelOf(capped.chars[0], "maxHp") === 50);
+    && E.levelOf(capped.chars[0], "attack") === 1 && E.levelOf(capped.chars[0], "maxHp") === E.MAX_LEVEL);
   T("C9 金币为负/NaN 一律拒绝不扣费",
     (await ctx.ServerCore.call("enhanceChar", { id: "lokar", stat: "magic" }, mkState(NaN))).ok === false);
   const hall = src("hall-enhance-actions.js");
@@ -248,8 +248,8 @@ function mkState(gold, enhance) {
   T("E4 累计显示按各项次数", html.includes("累计 +6") && html.includes("累计 +1") && html.includes("已强化 3 次"));
   T("E5 「立绘」页签确已删除", !html.includes('data-info-tab="specialArt"'));
   T("E6 文案写明选择一项", html.includes("选择一项属性"));
-  uiCtx.state = { view: "hall", resources: { gold: 25000 }, chars: [{ ...u, enhance: { maxHp: 50, attack: 0, magic: 0, speed: 0 } }] };
-  const capHtml = UI.infoPanel({ ...u, enhance: { maxHp: 50, attack: 0, magic: 0, speed: 0 } }, "enhance");
+  uiCtx.state = { view: "hall", resources: { gold: 25000 }, chars: [{ ...u, enhance: { maxHp: E.MAX_LEVEL, attack: 0, magic: 0, speed: 0 } }] };
+  const capHtml = UI.infoPanel({ ...u, enhance: { maxHp: E.MAX_LEVEL, attack: 0, magic: 0, speed: 0 } }, "enhance");
   T("E7 满级项单独置灰，其余三项可点",
     /data-enhance-stat="maxHp"[^>]*disabled/.test(capHtml)
     && (capHtml.match(/data-enhance-stat="(attack|magic|speed)"[^>]*disabled/g) || []).length === 0);

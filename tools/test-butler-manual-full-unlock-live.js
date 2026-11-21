@@ -1,5 +1,5 @@
 // 管家手册「全部目标能否点亮 / 是否存在死目标」端到端检查（浏览器，作弊方式）
-// 1. 作弊把四类目标全部记录 + 全部魅魔设为 20 级，检查手册是否每一条都点亮、总完成度是否 100%
+// 1. 作弊把四类目标全部记录 + 全部魅魔设为满级（25 级），检查手册是否每一条都点亮、总完成度是否 100%
 // 2. 静态排查"死目标"：难度解锁链是否完整、每名首领/精英的 id 是否真的会出现在战斗结算里、
 //    等级上限是否可达、每个副本是否都能在 5 个难度下通关
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
@@ -18,7 +18,7 @@ const T = (name, cond, extra) => {
 };
 
 const EXPECT = {
-  boss: 8, elite: 12, missions: 4, heroes: 30, diffs: 5,
+  boss: 8, elite: 12, missions: 4, heroes: 34, diffs: 5,
   // 探索目标 = 4 副本 × 5 难度 + 新手引导首战 1 条
   explore: 4 * 5 + 1,
 };
@@ -66,8 +66,8 @@ const EXPECT = {
   T(`精英 ${EXPECT.elite} 名`, src.elites.length === EXPECT.elite, src.elites.map(e => e.name));
   T(`魅魔 ${EXPECT.heroes} 名`, src.heroes.length === EXPECT.heroes, { n: src.heroes.length });
   T(`难度 ${EXPECT.diffs} 档`, src.diffs.length === EXPECT.diffs, src.diffs);
-  T("手册满级线与角色成长上限一致（20）",
-    src.maxLevel === 20 && src.progMax === 20, { manual: src.maxLevel, prog: src.progMax });
+  T("手册满级线与角色成长上限一致（25）",
+    src.maxLevel === 25 && src.progMax === 25, { manual: src.maxLevel, prog: src.progMax });
 
   // ================= 二、死目标排查（记录前先看能不能达成） =================
   console.log("—— 二、死目标排查 ——");
@@ -107,8 +107,8 @@ const EXPECT = {
       });
       DIFFS.forEach(d => { if (P.recordClear(state, m.id, d)) clearN += 1; });
     });
-    // 全部魅魔设为 20 级且已解锁
-    state.chars = (window.GameData?.characters || []).map(c => ({ id: c.id, level: 20, locked: false }));
+    // 全部魅魔设为满级且已解锁
+    state.chars = (window.GameData?.characters || []).map(c => ({ id: c.id, level: window.ButlerManualProgress.MAX_LEVEL, locked: false }));
     // 新手引导首战（探索目标页签的第一条）：走 Onboarding 真实完成入口
     state.flags = state.flags || {};
     if (!window.Onboarding.complete(state)) {

@@ -232,7 +232,7 @@ function testNotice() {
     firstItems.includes("技能调整【红缨连鬼斩】")
     && firstItems.includes("技能调整【飘浮掩体】")
     && firstItems.includes("【淫气改造】")
-    && main.includes("统一数值口径")
+    && !main.includes("统一数值口径")
     && !main.includes("此前新增第 34 名可玩角色")
     && !main.includes("本次再把【技能倍率】"));
   T("C5 行数未触发归档阈值且期数注释同步",

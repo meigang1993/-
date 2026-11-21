@@ -17,6 +17,7 @@ function completeClosableEventModal() {
     hitwellUnlock: window.completeHitwellUnlockEvent,
     preshiUnlock: window.completePreshiUnlockEvent,
     mieryulaUnlock: window.completeMieryulaUnlockEvent,
+    tenriInstituteUnlock: window.completeTenriInstituteUnlockEvent,
     newGameIntro: window.completeNewGameIntroEvent,
     firstVictory: window.completeFirstVictoryEvent,
   };

@@ -11,4 +11,6 @@ window.GameDataFutureDungeons = [
     route: { type: "fixed-random", layers: 13, rest: [12], chest: [7], boss: [13] }
   },
   ...(window.GameDataRuinsSandCity ? [window.GameDataRuinsSandCity.mission] : []),
+  // 天日国鹰7研究所：条件展开，未加载该数据文件的工具链会自动略过，不影响既有副本断言。
+  ...(window.GameDataTenriInstitute ? [window.GameDataTenriInstitute.mission] : []),
 ];

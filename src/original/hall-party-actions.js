@@ -47,6 +47,7 @@ async function startMission(id, difficulty = "normal", actionCurrent = null) {
     ? window.DungeonUnlocks.has(actionState, id, difficulty)
     : (actionState.unlockedDifficulties || []).includes(difficulty);
   if (!difficultyOpen) return log("该难度尚未解锁。"), render();
+  if (m.devLocked) return log(m.devHint || "未开发完成"), render();
   if (m.requiresFlag && !actionState.flags?.[m.requiresFlag]) return log(m.lockedHint || "该副本尚未解锁。"), render();
   if (!(actionState.party || []).length) return log("请先选择至少1名出战角色。"), render();
   if (m.kind === "dungeon" && window.GameBundles && !window.GameBundles.isReady("dungeon")) {

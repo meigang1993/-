@@ -151,7 +151,7 @@ const timeouts = Object.freeze({
   "test-all-modified-skills-cheat.js": 120,
   // 回血技能真实结算作弊：4 个技能 handler + 1000 张牌/1e9 上限/1000 枚标记，REVERT=heal 反向
   "test-skill-heal-real-settlement-cheat.js": 120,
-  // 243 版：增援复活手牌 BUG 修复 + 摸至手牌上限；强化 5000 元 / 每项 50 次（5 组源码级反向）
+  // 243 版：增援复活手牌 BUG 修复 + 摸至手牌上限；强化 5000 元 / 每项 70 次（5 组源码级反向）
   "test-reinforce-enhance-243.js": 120,
   // 245 版：出牌资源旧名→淫气全量文案统一，全库残留扫描 + 6 组源码级反向
   "test-intent-to-yinqi-rename.js": 120,
@@ -162,6 +162,18 @@ const timeouts = Object.freeze({
   // 248 版：公告面板删除顶部固定说明，内容统一进下方可滚动分期列表（静态 + 实机截图）
   "test-notice-no-top-summary.js": 120,
   "test-notice-no-top-summary-live.js": 240,
+  // 天日国鹰7研究所骨架：副本/节点/入口占位/剧情/数值（8 组源码级反向）
+  "test-tenri-institute-scaffold.js": 120,
+  // 250 版：管家手册接入 25 级满级线与 devLocked 副本过滤（A~E 五组 + 4 组反向）
+  "test-butler-manual-tenri-integration.js": 120,
+  // 250~252 独立严格复查：存档恢复/渲染/结算层 devLocked 全入口 + 经验金币成长强化口径（43 项 + 8 组反向）
+  "test-tenri-strict-recheck.js": 120,
+  // 253 版：devLocked 存档恢复真实浏览器验证（迁移层/渲染层/结算层联合）
+  "test-tenri-devlock-restore-live.js": 240,
+  // 255 版：研究所真实通关链路（start→14 层→BOSS→finish→剧情）+ 公告 70 次订正（27 项 + 8 组反向）
+  "test-tenri-clear-flow.js": 120,
+  // 255 版：浏览器逐层实机通关（临时解除 devLocked，14 层 / BOSS / 结算 / 回大厅 / 管家手册）
+  "test-tenri-institute-clear-live.js": 300,
 });
 
 const timeoutFor = (file, fallback) => timeouts[file] || fallback;
@@ -182,6 +194,11 @@ const groups = Object.freeze({
     "test-intent-to-yinqi-live.js",
     "test-magic-watch-monster-skill-recheck.js",
     "test-notice-no-top-summary.js",
+    "test-tenri-institute-scaffold.js",
+    "test-butler-manual-tenri-integration.js",
+    "test-tenri-strict-recheck.js",
+    "test-tenri-devlock-restore-live.js",
+    "test-tenri-clear-flow.js",
   ],
   storage: [
     "test-battle-start-save.js",
@@ -255,6 +272,7 @@ const groups = Object.freeze({
     "test-dungeon-playtest-live.js",
     "test-dungeon-route-integrity-live.js",
     "test-dungeon-walkthrough-live.js",
+    "test-tenri-institute-clear-live.js",
     "test-onboarding-first-battle-live.js",
     "test-onboarding-first-victory-exp-live.js",
     "test-onboarding-flow-live.js",

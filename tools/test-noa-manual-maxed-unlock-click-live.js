@@ -1,5 +1,5 @@
 // 怪面诺亚 · 管家手册20级点亮 & 解锁兑换事件按键真实点击 严格检查
-//   A 魅魔目标：level=20 点亮（.maxed / 20/20 / overall done+1），19 不点亮，未解锁灰剪影
+//   A 魅魔目标：level=25 点亮（.maxed / 25/25 / overall done+1），24 不点亮，未解锁灰剪影
 //   B 第三次全军覆没剧情 + 殿堂兑换：真实鼠标点击（非 evaluate(el.click())），
 //     验证可见/未禁用/无遮挡/命中测试/绑定生效/宝珠不足时禁用
 //   C 运行时反向：破坏 maxed 判定、摘掉按钮绑定，断言必须检出
@@ -82,30 +82,30 @@ const HIT = sel => `(() => {
 })()`;
 
 async function segA(page, errors) {
-  const ok = await setHero(page, 20, false);
+  const ok = await setHero(page, 25, false);
   T("A0 角色栏含怪面诺亚", ok.has === true, ok);
   const lv20 = await heroSnap(page);
-  T("A1 20级魅魔目标点亮（.maxed）", lv20.found && lv20.maxedClass === true, lv20);
-  T("A2 等级显示 20/20", lv20.small === "20/20", lv20.small);
+  T("A1 25级魅魔目标点亮（.maxed）", lv20.found && lv20.maxedClass === true, lv20);
+  T("A2 等级显示 25/25", lv20.small === "25/25", lv20.small);
   T("A3 数据层 maxed=true / unlocked=true", lv20.item?.maxed === true
-    && lv20.item?.level === 20 && lv20.item?.unlocked === true, lv20.item);
+    && lv20.item?.level === 25 && lv20.item?.unlocked === true, lv20.item);
   T("A4 满级计数分母为全部可培养角色", lv20.overall?.total === 34 && lv20.total === 34,
     { overall: lv20.overall, total: lv20.total });
 
-  await setHero(page, 19, false);
+  await setHero(page, 24, false);
   const lv19 = await heroSnap(page);
-  T("A5 19级不点亮（非恒真）", lv19.maxedClass === false && lv19.item?.maxed === false, lv19);
-  T("A6 20级比19级多计1名满级", lv20.overall?.done === lv19.overall?.done + 1,
+  T("A5 24级不点亮（非恒真）", lv19.maxedClass === false && lv19.item?.maxed === false, lv19);
+  T("A6 25级比24级多计1名满级", lv20.overall?.done === lv19.overall?.done + 1,
     { d20: lv20.overall?.done, d19: lv19.overall?.done });
 
   await setHero(page, 0, true);
   const locked = await heroSnap(page);
   T("A7 未解锁时是灰剪影占位、不点亮", locked.found && locked.lockedClass === true
-    && locked.maxedClass === false && locked.small === "0/20", locked);
+    && locked.maxedClass === false && locked.small === "0/25", locked);
 
-  await setHero(page, 20, false);
+  await setHero(page, 25, false);
   const again = await heroSnap(page);
-  T("A8 重新20级仍点亮（非一次性缓存）", again.maxedClass === true, again);
+  T("A8 重新满级仍点亮（非一次性缓存）", again.maxedClass === true, again);
   T("A9 无页面错误", relevantErrors(errors).length === 0, relevantErrors(errors).slice(0, 3));
 }
 
@@ -212,7 +212,7 @@ async function segB(page, errors) {
 
 async function segC(page, browser) {
   // C1 运行时破坏 maxed 判定 → 点亮必须消失（证明 A1 不是恒真断言）。
-  await setHero(page, 20, false);
+  await setHero(page, 25, false);
   const broken = await page.evaluate(() => {
     const P = window.ButlerManualProgress;
     if (!P?.heroList) return { ok: false };
