@@ -174,6 +174,11 @@ const timeouts = Object.freeze({
   "test-tenri-clear-flow.js": 120,
   // 255 版：浏览器逐层实机通关（临时解除 devLocked，14 层 / BOSS / 结算 / 回大厅 / 管家手册）
   "test-tenri-institute-clear-live.js": 300,
+  // 255 版：研究所解锁事件按键（ADV 逐句 / 完成 / 关闭 X / 键盘 + 入口 devLocked）静态与实机
+  "test-tenri-unlock-button-strict.js": 120,
+  "test-tenri-unlock-button-live.js": 300,
+  // 255 版：真实通关废墟沙城·冒险级 → 回大厅自动弹剧情 → 跳到结尾 → 点完成 端到端实机
+  "test-tenri-ruins-clear-to-unlock-e2e-live.js": 420,
 });
 
 const timeoutFor = (file, fallback) => timeouts[file] || fallback;
@@ -199,6 +204,9 @@ const groups = Object.freeze({
     "test-tenri-strict-recheck.js",
     "test-tenri-devlock-restore-live.js",
     "test-tenri-clear-flow.js",
+    "test-tenri-unlock-button-strict.js",
+    "test-tenri-unlock-button-live.js",
+    "test-tenri-ruins-clear-to-unlock-e2e-live.js",
   ],
   storage: [
     "test-battle-start-save.js",
