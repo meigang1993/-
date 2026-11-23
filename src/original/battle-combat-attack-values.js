@@ -7,15 +7,18 @@ window.BattleCombatAttackValues = api => {
     const magic = statOf(actor, "magic");
     const attack = deps.tempAttack(actor);
     const statKey = window.CardUtils?.damageStatKey?.(actor, card);
-    const bonus = statKey === "magic" ? magic
-      : statKey === "attack" ? attack
-        : card.virtual ? attack
-          // 【克罗研究记录】的额外结算复制牌带 _skill（用于跳过"从手牌移出"、
-          // 并阻止再次触发额外结算），但它结算的仍是原牌的效果，伤害加成必须照算。
-          // 此前一并落进 _skill 分支 → 加成被清零，【枪林弹雨】这类带攻击加成的
-          // 战术牌第二次结算只打出 card.power 的裸伤害（实测 6 → 1）。
-          : card._skill && !card._repeat ? 0
-            : card.hybridAttack && card.type === "tactic" ? attack + magic
+    // hybridAttack 战术牌（【枪林弹雨】）必须优先按「攻击力 + 魔力」结算：
+    // damageStatKey 对无 scale 的战术牌恒返回 "magic"，若让 statKey 抢先，复合分支
+    // 永远不可达（实测只打出魔力那一份），与卡面「攻击力与魔力之和」不符。
+    // 放在最前也保证【克罗研究记录】的 _repeat 复制牌与原牌同口径，不再出现数值漂移。
+    const bonus = card.hybridAttack && card.type === "tactic" ? attack + magic
+      : statKey === "magic" ? magic
+        : statKey === "attack" ? attack
+          : card.virtual ? attack
+            // 【克罗研究记录】的额外结算复制牌带 _skill（用于跳过"从手牌移出"、
+            // 并阻止再次触发额外结算），但它结算的仍是原牌的效果，伤害加成必须照算。
+            // 此前一并落进 _skill 分支 → 加成被清零，第二次结算只打出裸伤害。
+            : card._skill && !card._repeat ? 0
               : card.scale === "magic" ? magic
                 : card.type === "slash" ? attack : magic;
     let amount = card.doubleOnClash && clashOk

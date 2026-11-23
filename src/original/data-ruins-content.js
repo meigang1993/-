@@ -9,7 +9,7 @@ window.GameDataRuinsContent = {
     { name: "流星杀", enemy: "attack_helicopter", price: 1200, type: "slash", scale: "magic", attackType: "magic", sweep: true, targetless: true, responseKind: "dodge", suits: { "♥": 1, "♦": 1 }, text: "对所有敌方角色造成魔力魔法伤害。使用此牌需消耗1点淫气。" },
     { name: "吸魔杀", enemy: "attack_helicopter", price: 1600, type: "slash", scale: "magic", attackType: "magic", stealCard: true, suits: { "♣": 1, "♠": 1 }, text: "造成魔法伤害后获得目标一张牌。" },
     { name: "物资私分", enemy: "armored_carrier", price: 1700, type: "consume", allyTarget: true, excludeSelf: true, drawCards: 3, allyDrawCards: 3, suits: { "♥": 1, "♣": 1 }, text: "指定我方其他一名角色，双方各摸3张牌。" },
-    { name: "枪林弹雨", enemy: "armored_carrier", price: 1400, type: "tactic", power: 1, hybridAttack: true, sweep: true, targetless: true, responseKind: "dodge", suits: { "♠": 1, "♦": 1 }, text: "对所有敌方角色造成基础1点加攻击力与魔力的复合伤害；敌方可用【闪】抵消。" },
+    { name: "枪林弹雨", enemy: "armored_carrier", price: 1400, type: "tactic", hybridAttack: true, sweep: true, targetless: true, responseKind: "dodge", suits: { "♠": 1, "♦": 1 }, text: "对所有敌方角色造成攻击力与魔力之和的复合伤害；敌方可用【闪】抵消。" },
   ],
   relics: {
     "推进器": { icon: "推", stats: {}, effect: "根据你使用牌指定的目标数，你摸等量牌。", lore: "世界贵族为了占领这个国家，出动了几十万军队，反抗军奋力抵抗。", source: "机械AI龙", enemy: "mech_ai_dragon" },

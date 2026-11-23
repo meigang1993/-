@@ -14,7 +14,10 @@ window.BattleCombatAttackFlow = (api, values) => {
       state.battle.opheliaGuardRepeats = 0;
     }
     let base = values.cardPower(card);
-    const attacks = deps.isKillCard(card) || base > 0;
+    // 复合伤害战术牌（【枪林弹雨】）没有基础伤害字段，伤害全部来自攻击力+魔力加成，
+    // 不能只靠 base>0 判断「这张牌会打伤害」，否则删掉基础值后整段结算不会执行。
+    const attacks = deps.isKillCard(card) || base > 0
+      || (card.hybridAttack && card.type === "tactic");
     if (!target && !card.sweep && !card.targetless && attacks) {
       window.BattleLog.add(
         state, `${actor.name} 使用${card.name}失败：没有有效目标。`);

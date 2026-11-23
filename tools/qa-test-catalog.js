@@ -179,6 +179,14 @@ const timeouts = Object.freeze({
   "test-tenri-unlock-button-live.js": 300,
   // 255 版：真实通关废墟沙城·冒险级 → 回大厅自动弹剧情 → 跳到结尾 → 点完成 端到端实机
   "test-tenri-ruins-clear-to-unlock-e2e-live.js": 420,
+  // 256 版：所有副本冒险级以上精英率统一普通级 + 删除难度卡片精英出现率显示
+  "test-elite-rate-unify-difficulty-display.js": 120,
+  // 256 版：浏览器实机核对全部副本 × 五档难度卡片显示（含截图）
+  "test-difficulty-cards-all-missions-live.js": 240,
+  // 257 版：废墟沙城 10 张掉落卡实际效果独立严格检查（真实模块 + 7 组源码级反向）
+  "test-ruins-drop-card-effects-strict.js": 180,
+  // 257 版：枪林弹雨复合伤害 / 流星杀 / 魅杀 浏览器真实点击验证
+  "test-ruins-gun-rain-hybrid-live.js": 240,
 });
 
 const timeoutFor = (file, fallback) => timeouts[file] || fallback;
@@ -207,6 +215,10 @@ const groups = Object.freeze({
     "test-tenri-unlock-button-strict.js",
     "test-tenri-unlock-button-live.js",
     "test-tenri-ruins-clear-to-unlock-e2e-live.js",
+    "test-elite-rate-unify-difficulty-display.js",
+    "test-difficulty-cards-all-missions-live.js",
+    "test-ruins-drop-card-effects-strict.js",
+    "test-ruins-gun-rain-hybrid-live.js",
   ],
   storage: [
     "test-battle-start-save.js",

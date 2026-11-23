@@ -56,7 +56,7 @@ const check = (name, ok, detail = "") => {
     `listH=${info.listH} headH=${info.headH}`);
   check("列表内容可滚动", info.scrollH > info.listH + 100,
     `scrollH=${info.scrollH} listH=${info.listH}`);
-  check("首期条目在列表内且可见", /2026年11月19日/.test(info.firstSection) && info.sectionCount > 3,
+  check("首期条目在列表内且可见", /2026年11月23日/.test(info.firstSection) && info.sectionCount > 3,
     `sections=${info.sectionCount} first=${info.firstSection.slice(0, 60)}`);
 
   // 真实滚动一次，再把位置归零后截图

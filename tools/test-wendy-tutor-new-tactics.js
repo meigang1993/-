@@ -34,14 +34,14 @@ record("临时牌已入手", !!card);
 if(card){
   record("标记为临时牌", card.temporary===true && card.void===true);
   record("保留 hybridAttack", card.hybridAttack===true, `=${card.hybridAttack}`);
-  record("保留 power=1", card.power===1, `=${card.power}`);
+  record("不再带基础伤害值", !("power" in card) || card.power===0, `=${card.power}`);
   record("保留 sweep", card.sweep===true, `=${card.sweep}`);
   record("type 仍为 tactic", card.type==="tactic", `=${card.type}`);
   record("带花色", !!card.suit, `=${card.suit}`);
-  // 伤害公式：1 + 攻 + 魔
+  // 伤害公式：攻 + 魔（已删除基础1点）
   wendy.stats.attack=3; wendy.stats.magic=4;
   const amount=(card.power||0)+wendy.stats.attack+wendy.stats.magic;
-  record("伤害=1+3+4=8", amount===8, `=${amount}`);
+  record("伤害=3+4=7", amount===7, `=${amount}`);
 }
 
 // 4. 交给队友

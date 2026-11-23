@@ -54,8 +54,8 @@ T("B3 头部与列表之间没有其它段落/容器",
   /<\/header>\s*<div class="update-notice-list">/.test(html));
 T("B4 分期条目数与三个数据文件一致", sectionCount === expected, { sectionCount, expected });
 T("B5 首期标题与当期条目都在列表内",
-  html.includes("2026年11月19日 · 今日更新") && html.includes("【终极刀魔】")
-  && html.indexOf("2026年11月19日 · 今日更新") > html.indexOf('class="update-notice-list"'));
+  html.includes("2026年11月23日 · 今日更新") && html.includes("【终极刀魔】")
+  && html.indexOf("2026年11月23日 · 今日更新") > html.indexOf('class="update-notice-list"'));
 T("B6 顶部只有标题与日期，无长段说明",
   !/<p\b/.test(html) && (html.match(/<h2\b/g) || []).length === 1);
 T("B7 当前生效口径仍在分期列表里（未被误删）",

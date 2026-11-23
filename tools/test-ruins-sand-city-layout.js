@@ -42,21 +42,22 @@ const layers = window.DungeonMap.buildLayers(
 
 ok("共 15 层", layers.length === 15, `实际 ${layers.length}`);
 const typeAt = n => layers[n - 1].map(x => x.type).join(",");
+// 固定层以 mission.route 为唯一真相源（此前写死第 4/9 层篝火，route 改到 rest[14] 后一直滞后）。
+const fixedRest = route.rest || [], fixedChest = route.chest || [], fixedBoss = route.boss || [];
 ok("第 1 层 = 起点(start)", typeAt(1) === "start", typeAt(1));
-ok("第 4 层 = 篝火(rest)", typeAt(4) === "rest", typeAt(4));
-ok("第 7 层 = 宝箱(chest)", typeAt(7) === "chest", typeAt(7));
-ok("第 9 层 = 篝火(rest)", typeAt(9) === "rest", typeAt(9));
-ok("第 15 层 = BOSS(boss)", typeAt(15) === "boss", typeAt(15));
+ok("固定休整层 = route.rest", fixedRest.length > 0 && fixedRest.every(n => typeAt(n) === "rest"), JSON.stringify(fixedRest));
+ok("固定宝箱层 = route.chest", fixedChest.length > 0 && fixedChest.every(n => typeAt(n) === "chest"), JSON.stringify(fixedChest));
+ok("固定BOSS层 = route.boss", fixedBoss.length > 0 && fixedBoss.every(n => typeAt(n) === "boss"), JSON.stringify(fixedBoss));
 
-// 篝火/宝箱各只有一个节点
-ok("第 4 层篝火仅 1 个节点", layers[3].length === 1, `${layers[3].length} 个`);
-ok("第 9 层篝火仅 1 个节点", layers[8].length === 1, `${layers[8].length} 个`);
-ok("第 7 层宝箱仅 1 个节点", layers[6].length === 1, `${layers[6].length} 个`);
+// 固定层各只有一个节点
+ok("固定层均仅 1 个节点", [...fixedRest, ...fixedChest, ...fixedBoss].every(n => layers[n-1].length === 1),
+  [...fixedRest, ...fixedChest, ...fixedBoss].map(n => `${n}:${layers[n-1].length}`).join(","));
 
 // 其余层是战斗节点（普通或精英；精英按难度 eliteRate 掷点，与 machine_factory 一致）
-const normalLayers = [2,3,5,6,8,10,11,12,13,14];
+const fixed = new Set([1, ...fixedRest, ...fixedChest, ...fixedBoss]);
+const normalLayers = Array.from({ length: layers.length }, (_, i) => i + 1).filter(n => !fixed.has(n));
 const allBattle = normalLayers.every(n => layers[n-1].every(x => x.type === "normal" || x.type === "elite"));
-ok("其余 10 层均为战斗节点(normal/elite)", allBattle);
+ok(`其余 ${normalLayers.length} 层均为战斗节点(normal/elite)`, allBattle);
 // 精英必须真的会出现，否则依赖精英掉落的卡牌永远解锁不了
 let eliteSeen = 0, battleTotal = 0;
 for (let i = 0; i < 200; i++) {

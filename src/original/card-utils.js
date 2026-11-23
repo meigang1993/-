@@ -137,8 +137,9 @@ window.CardUtils = (() => {
     }
     if (card?.virtual) return "attack";
     // 【克罗研究记录】的额外结算复制牌带 _skill，但结算的是原牌效果：
-    // 若在此落到 null，attackAmount 会改走 hybridAttack 分支，加成口径与原牌不同
-    // （实测【枪林弹雨】首次 6、重复 11）。故为 _repeat 让路，按原牌牌面取键。
+    // 仍按原牌牌面取键，避免 _skill 落到 null 改变其它分支判定。
+    // 复合伤害（hybridAttack 战术牌）现已统一在 attackAmount 最前按攻+魔结算，
+    // 原牌与 _repeat 复制牌同口径，不再依赖本函数的返回值。
     if (card?._skill && !card?._repeat) return null;
     return card?.scale === "magic" ? "magic" : card?.scale === "attack" || slash ? "attack" : "magic";
   }

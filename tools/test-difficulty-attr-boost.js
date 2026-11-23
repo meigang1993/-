@@ -127,12 +127,13 @@ for (const id of TIERS) {
   ok(s && Math.abs(+s[1] - D[id].enemy.normal.speed) <= 1, `${id} attrText 速度值与实际一致`, { text: D[id].attrText, real: D[id].enemy.normal.speed });
 }
 
-console.log("=== E. 非属性项未被误改（奖励/精英率/掉落/经验）===");
+console.log("=== E. 精英率统一普通级；奖励/掉落/经验未被误改 ===");
+// 255→256：冒险级及以上 eliteRate 一律与 normal 相同（20），其余非属性项保持原表。
 const EXPECT_OTHER = {
-  adventure: { eliteRate: 30, reward: 135, xp: 115, dropRate: 40 },
-  warrior:   { eliteRate: 40, reward: 175, xp: 135, dropRate: 50 },
-  king:      { eliteRate: 50, reward: 220, xp: 160, dropRate: 60 },
-  hell:      { eliteRate: 60, reward: 275, xp: 190, dropRate: 70 },
+  adventure: { eliteRate: 20, reward: 135, xp: 115, dropRate: 40 },
+  warrior:   { eliteRate: 20, reward: 175, xp: 135, dropRate: 50 },
+  king:      { eliteRate: 20, reward: 220, xp: 160, dropRate: 60 },
+  hell:      { eliteRate: 20, reward: 275, xp: 190, dropRate: 70 },
 };
 for (const [id, exp] of Object.entries(EXPECT_OTHER)) {
   for (const [k, v] of Object.entries(exp)) {

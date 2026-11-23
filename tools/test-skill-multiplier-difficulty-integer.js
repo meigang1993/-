@@ -8,7 +8,7 @@ const ROOT = path.resolve(__dirname, "..", "src", "original");
 const REVERT = process.env.REVERT || "";
 const src = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 let pass = 0, total = 0; const reds = [];
-const T = (name, ok, extra) => { total++; if (ok) pass++; else { reds.push(name); if (extra !== undefined) console.log("  RED", name, JSON.stringify(extra)); } };
+const T = (name, ok, extra) => { total++; if (ok) pass++; else { reds.push(name); console.log("  RED", name, extra !== undefined ? JSON.stringify(extra) : ""); } };
 const isInt = v => Number.isInteger(v) && Number.isFinite(v);
 const mk = () => { const c = { console, Math, Number, Object, Array, JSON, String, Boolean, isNaN, parseInt, parseFloat, Set, Map, Error, Date, RegExp }; c.window = c; vm.createContext(c); return c; };
 
@@ -28,7 +28,7 @@ function codeOf(f) {
     s = s.replace(from, "Object.keys(multipliers).forEach(k => u.stats[k] = b[k] * multipliers[k]);");
   }
   if (REVERT === "notice" && f === "update-notice.js") {
-    const from = 'iso: "2026-11-19"';
+    const from = 'iso: "2026-11-23"';
     if (!s.includes(from)) throw new Error("REVERT=notice must hit current iso date");
     s = s.replace(from, 'iso: "2026-11-13"');
   }
@@ -94,9 +94,10 @@ const consumers = {
 };
 Object.entries(consumers).forEach(([f, needle]) => T(`B1 ${f} 已按整数百分比折算`, codeOf(f).includes(needle)));
 const mults = [...codeOf("economy-config.js").matchAll(/goldMultiplier:\s*(\d+)/g)].map(m => Number(m[1]));
-T("B2 四个金币倍率全为整数百分比", mults.length === 4 && mults.every(isInt), mults);
-T("B3 金币倍率还原后等于原 1 / 1.25 / 1.7 / 2.3",
-  JSON.stringify(mults.map(v => v / 100)) === JSON.stringify([1, 1.25, 1.7, 2.3]), mults);
+// 250 版新增【天日国鹰7研究所】后金币倍率为 5 个，第 5 个按废墟沙城 230。
+T("B2 五个金币倍率全为整数百分比", mults.length === 5 && mults.every(isInt), mults);
+T("B3 金币倍率还原后等于原 1 / 1.25 / 1.7 / 2.3 / 2.3",
+  JSON.stringify(mults.map(v => v / 100)) === JSON.stringify([1, 1.25, 1.7, 2.3, 2.3]), mults);
 const OLDRW = { 100: 1, 135: 1.35, 175: 1.75, 220: 2.2, 275: 2.75 }, OLDGM = { 100: 1, 125: 1.25, 170: 1.7, 230: 2.3 };
 T("B4 金币/经验奖励折算后与原口径逐项一致且为整数",
   [[700, 135, 125], [900, 275, 230], [220, 100, 100], [500, 175, 170]].every(([base, rw, gm]) => {
@@ -130,9 +131,10 @@ T("C11 满血加成等价 1.5 倍四舍五入", unit.stats.attack === 14 && unit
 
 // ---------- D. 公告 ----------
 const notice = codeOf("update-notice.js"), recent = codeOf("update-notice-recent.js");
-T("D1 最新日期三处均为 2026-11-19", /iso: "2026-11-19"/.test(notice) && /label: "2026年11月19日"/.test(notice) && /badge: "2026\.11\.19"/.test(notice));
-T("D2 首期标题为 11月19日", recent.includes('title: "2026年11月19日 · 今日更新"'));
-T("D3 summary 写进【终极刀魔】", notice.includes("【终极刀魔】"));
+T("D1 最新日期三处均为 2026-11-23", /iso: "2026-11-23"/.test(notice) && /label: "2026年11月23日"/.test(notice) && /badge: "2026\.11\.23"/.test(notice));
+T("D2 首期标题为 11月23日", recent.includes('title: "2026年11月23日 · 今日更新"'));
+// 249 版已删除公告面板顶部固定说明段；内容一律进下方可滚动分期列表。
+T("D3 面板不再有顶部固定说明段", !notice.includes("update-notice-summary") && !notice.includes("本次更新统一数值口径"));
 // 旧说明清理后摘要只写当前生效口径，条目本身保留在 recent 首期。
 T("D4 角色强化四选一条目在首期、摘要不复述旧批次",
   recent.includes("【角色强化】") && recent.includes("四选一")

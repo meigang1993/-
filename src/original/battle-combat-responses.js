@@ -105,7 +105,9 @@ window.BattleCombatResponses = (api) => {
     if (clashOk && card.charm) window.BattleStatus?.mark(target, "魅惑"); if (checkDefeat(state) || b.locked) return true;
     if (clashOk && card.block) { actor.block += card.block; pushFloat(b, actor.uid, "armor-gain", card.block); }
     const base = attackValues.cardPower(card);
-    const attacks = deps.isKillCard(card) || base > 0;
+    // 与 battle-combat-attack-flow 同口径：复合伤害战术牌无基础值，仍要走伤害结算。
+    const attacks = deps.isKillCard(card) || base > 0
+      || (card.hybridAttack && card.type === "tactic");
     let amount = attackValues.attackAmount(state, actor, card, base, clashOk);
     amount = attackValues.modifyAttackAmount(state, actor, target, card, amount);
     attackValues.applyAttackRelics(state, actor, target, card);

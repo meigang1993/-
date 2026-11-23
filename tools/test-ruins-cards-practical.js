@@ -201,20 +201,21 @@ console.log("\n===== 废墟沙城 10 张卡牌 · 实战测试（真实接口）
 // ---------- 10. 枪林弹雨 ----------
 {
   const def = find("枪林弹雨");
-  record("枪林弹雨-基础1点", def.power === 1, `power=${def.power}`);
+  record("枪林弹雨-已删除基础伤害值", !("power" in def) || def.power === 0, `power=${def.power}`);
+  record("枪林弹雨-卡面不再写基础1点", !/基础\s*1\s*点/.test(def.text), def.text);
   record("枪林弹雨-攻魔复合", def.hybridAttack === true, `hybridAttack=${def.hybridAttack}`);
-  // 伤害由通用字段驱动：cardPower(1) + (hybridAttack && tactic ? 攻+魔 : ...)
+  // 伤害由复合分支驱动：cardPower(0) + (hybridAttack && tactic ? 攻+魔 : ...)
   const vSrc = fs.readFileSync("./src/original/battle-combat-attack-values.js", "utf8");
   record("枪林弹雨-伤害公式已支持",
     vSrc.includes("card.hybridAttack && card.type === \"tactic\""),
     "attack-values 含 hybridAttack+tactic 分支");
-  record("枪林弹雨-power字段已计入", vSrc.includes("card.power"), "cardPower 读 power");
-  // 实测：攻3魔4 -> 1+3+4=8
+  record("枪林弹雨-无基础值字段计入", vSrc.includes("card.power ?? card.damage ?? 0"), "cardPower 仍读通用字段");
+  // 实测：攻3魔4 -> 3+4=7
   const { state, allies, enemies } = makeBattle();
   const actor = allies[0];
   actor.stats.attack = 3; actor.stats.magic = 4;
   const amount = (def.power || 0) + actor.stats.attack + actor.stats.magic;
-  record("枪林弹雨-实测伤害=8", amount === 8, `1+3+4=${amount}`);
+  record("枪林弹雨-实测伤害=7", amount === 7, `3+4=${amount}`);
   record("枪林弹雨-sweep全体", def.sweep === true, `sweep=${def.sweep}`);
   record("枪林弹雨-可闪抵消(战术牌)", def.type === "tactic",
     "战术牌默认进响应判定");

@@ -1,4 +1,4 @@
-// 2026-11-19 难度调整严格复查：
+// 2026-11-23 难度调整严格复查：
 //   四档难度四项属性统一 +50%/+100%/+150%/+200%；所有副本莉莉丝元获得 -30%。
 // 走真实源码（vm 载入配置 + 抓真实 rollGold 函数体执行），REVERT=stats|gold|notice|doc 反向验证。
 const fs = require("fs");
@@ -15,7 +15,7 @@ function reverted(file, src) {
       .replace("elite: 196", "elite: 280").replace("boss: 350", "boss: 500").replace("chest: 154", "chest: 220");
   }
   if (REVERT === "notice" && file.endsWith("update-notice-recent.js")) {
-    return src.replace('title: "2026年11月19日 · 今日更新"', 'title: "2026年11月17日 · 今日更新"');
+    return src.replace('title: "2026年11月23日 · 今日更新"', 'title: "2026年11月17日 · 今日更新"');
   }
   if (REVERT === "doc" && file.endsWith("01-完整项目.txt")) {
     return src.replace("所有副本节点的莉莉丝元获得统一减少 30%", "所有副本节点的莉莉丝元获得保持不变");
@@ -59,8 +59,8 @@ TIERS.forEach((id, i) => {
   })(), d.enemy.normal);
   T(`A4 ${d.name} attrText 三项 = ${TARGET[i]}%`,
     new RegExp(`生命${TARGET[i]}%/输出${TARGET[i]}%/速度${TARGET[i]}%`).test(d.attrText), d.attrText);
-  T(`A5 ${d.name} 奖励/经验/精英/掉落未改`,
-    JSON.stringify([d.reward, d.xp, d.eliteRate, d.dropRate]) === JSON.stringify([[135, 115, 30, 40], [175, 135, 40, 50], [220, 160, 50, 60], [275, 190, 60, 70]][i]), [d.reward, d.xp, d.eliteRate, d.dropRate]);
+  T(`A5 ${d.name} 奖励/经验/掉落未改且精英率统一 20`,
+    JSON.stringify([d.reward, d.xp, d.eliteRate, d.dropRate]) === JSON.stringify([[135, 115, 20, 40], [175, 135, 20, 50], [220, 160, 20, 60], [275, 190, 20, 70]][i]), [d.reward, d.xp, d.eliteRate, d.dropRate]);
 });
 T("A6 英雄级 enemyRelics 保留", D.hell.enemyRelics === true, D.hell.enemyRelics);
 
@@ -105,8 +105,8 @@ T("B6 难度金币倍率与副本金币倍率未改",
 console.log("=== C/D. 公告、界面与文档 ===");
 const notice = codeOf("src/original/update-notice.js"), recent = reverted("src/original/update-notice-recent.js", codeOf("src/original/update-notice-recent.js"));
 const doc = reverted("docs/01-完整项目.txt", codeOf("docs/01-完整项目.txt"));
-T("C1 日期三处为 2026-11-19", /iso: "2026-11-19"/.test(notice) && /label: "2026年11月19日"/.test(notice) && /badge: "2026\.11\.19"/.test(notice));
-T("C2 首期标题为 11月19日", recent.includes('title: "2026年11月19日 · 今日更新"'));
+T("C1 日期三处为 2026-11-23", /iso: "2026-11-23"/.test(notice) && /label: "2026年11月23日"/.test(notice) && /badge: "2026\.11\.23"/.test(notice));
+T("C2 首期标题为 11月23日", recent.includes('title: "2026年11月23日 · 今日更新"'));
 T("C3 新一期写明四档 +50%/+100%/+150%/+200%", recent.includes("+50% / +100% / +150% / +200%"));
 T("C4 新一期写明所有副本金币 -30%", recent.includes("统一下调 30%") && recent.includes("逐副本、逐难度、逐节点"));
 // 顶部固定摘要段已删除；当前口径只保留在 recent 分期列表内，-30% 语义不变。

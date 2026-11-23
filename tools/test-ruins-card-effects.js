@@ -103,10 +103,11 @@ const slash = (name = "杀") => card(name, "slash", { suit: "♠" });
   assert(supply.allyTarget === true, "物资私分：目标为友方");
 }
 
-// ---------- 6. 枪林弹雨：基础1点 + 攻击 + 魔力 ----------
+// ---------- 6. 枪林弹雨：纯攻击 + 魔力（已删除基础1点） ----------
 {
   const rain = find("枪林弹雨");
-  assert(rain.power === 1, "枪林弹雨：基础伤害1点");
+  assert(!("power" in rain) || rain.power === 0, "枪林弹雨：不再带基础伤害值");
+  assert(!/基础\s*1\s*点/.test(rain.text), "枪林弹雨：卡面不再写基础1点");
   assert(rain.hybridAttack === true, "枪林弹雨：复合伤害");
   assert(rain.sweep === true && rain.targetless === true, "枪林弹雨：全体目标");
 }

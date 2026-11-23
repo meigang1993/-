@@ -11,7 +11,9 @@ window.VillaTeamUI = (() => {
     const recommended = !!window.Onboarding?.active?.(state) && mission.id === "machine_factory" && id === "normal";
     const text = state.sortieStarting ? "出征中…" : mission.devLocked ? "未开发完成" : !missionOpen ? "副本锁定" : unlocked ? ((state.party || []).length ? "确认出征" : "先选择队伍") : "未解锁";
     const hint = !missionOpen ? `<p class="muted">${U.esc(mission.devLocked ? (mission.devHint || "未开发完成") : (mission.lockedHint || "该副本尚未解锁。"))}</p>` : "";
-    return `<div class="card difficulty-card ${d.tone || "green"} ${unlocked ? "" : "locked"} ${recommended ? "recommended" : ""}">${lock}${recommended ? '<span class="recommended-badge">推荐首战</span>' : ""}<b>${d.name}</b>${hint}<p>怪物属性 ${d.attrText}</p><p>精英出现率 ${Math.round((d.eliteRate || 0) * 100)}%</p><p>莉莉丝元 ×${d.reward}</p><p>卡牌/饰品 ${Math.round(d.dropRate * 100)}%</p><button data-start="${mission.id}" data-difficulty="${id}" ${ready ? "" : "disabled"}>${text}</button></div>`;
+    // 精英出现率不再显示（全难度已统一为普通级 20%）；dropRate 是整数百分比，
+    // 直接显示即可，旧写法 ×100 会把 20% 误写成 2000%。
+    return `<div class="card difficulty-card ${d.tone || "green"} ${unlocked ? "" : "locked"} ${recommended ? "recommended" : ""}">${lock}${recommended ? '<span class="recommended-badge">推荐首战</span>' : ""}<b>${d.name}</b>${hint}<p>怪物属性 ${d.attrText}</p><p>莉莉丝元 ×${d.reward}</p><p>卡牌/饰品 ${Math.round(d.dropRate)}%</p><button data-start="${mission.id}" data-difficulty="${id}" ${ready ? "" : "disabled"}>${text}</button></div>`;
   }
   function portrait(c) {
     const art = c.avatar || c.art;

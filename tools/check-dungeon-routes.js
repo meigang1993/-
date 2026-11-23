@@ -185,7 +185,8 @@ for (const missionId of MISSIONS) {
 
 // ---------- 全局：每个副本都必须有固定休整层 ----------
 // 休整是唯一的回血手段。此前 machine_factory 没有 route 配置，走 defaultLayers，
-// 休整靠权重随机；英雄级 eliteRate .6 挤占掷点，约 27% 的路线整张图都没有休整点。
+// 休整靠权重随机；早期高难度精英率偏高挤占掷点，约 27% 的路线整张图都没有休整点
+// （现各难度统一 20%，固定休整层仍保留）。
 for (const missionId of MISSIONS) {
   const mission = GameData.missions.find(m => m.id === missionId);
   const rest = mission?.route?.rest || [];

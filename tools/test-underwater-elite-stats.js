@@ -69,7 +69,12 @@ const path = require("path");
   for (const mid of mids) {
     const n = out.normal[mid], h = out.hell?.[mid];
     t(`${mid} 普通级存在精英节点`, n && n.avg > 0, `avg=${n?.avg}`);
-    t(`${mid} 英雄级精英不少于普通级`, h && n && h.avg >= n.avg,
+    // 256 版：所有难度精英率统一普通级 20%，不再要求英雄级 ≥ 普通级；
+    // 改为核对两档配置一致、且多局统计均值在随机波动容差内。
+    t(`${mid} 普通/英雄级精英率同为 20`, n?.rate === 20 && h?.rate === 20,
+      `normal=${n?.rate} hell=${h?.rate}`);
+    t(`${mid} 英雄级精英数与普通级相当`, h && n
+      && Math.abs(h.avg - n.avg) <= Math.max(0.6, n.avg * 0.15),
       `normal=${n?.avg} hell=${h?.avg}`);
   }
 

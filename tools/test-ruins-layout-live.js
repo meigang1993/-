@@ -38,6 +38,8 @@ const path = require("path");
     return {
       layerCount: layers.length,
       l1: typeAt(1), l4: typeAt(4), l7: typeAt(7), l9: typeAt(9), l15: typeAt(15),
+      rest: mission.route?.rest || [], chest: mission.route?.chest || [], boss: mission.route?.boss || [],
+      allTypes: layers.map(l => l.map(x => x.type).join(",")),
       shape: layers.map(l => l.length).join("-"),
       samples: samples.slice(0, 8),
       maxLen: Math.max(...samples.map(s => s.split("+").length)),
@@ -54,7 +56,11 @@ const path = require("path");
   console.log(`页面错误: ${errors.length ? errors.join("; ") : "无"}`);
   await browser.close();
   const ok15 = result.layerCount === 15;
-  const okFixed = result.l1==="start"&&result.l4==="rest"&&result.l7==="chest"&&result.l9==="rest"&&result.l15==="boss";
+  // 固定层以 mission.route 为准（旧版写死第 4/9 层篝火，route 改到 rest[14] 后一直滞后）。
+  const okFixed = result.l1 === "start"
+    && (result.rest || []).every(n => result.allTypes[n - 1] === "rest")
+    && (result.chest || []).every(n => result.allTypes[n - 1] === "chest")
+    && (result.boss || []).every(n => result.allTypes[n - 1] === "boss");
   console.log(ok15 && okFixed ? "\n✅ 浏览器实测与逻辑测试一致" : "\n❌ 不一致");
   process.exit(ok15 && okFixed && !errors.length ? 0 : 1);
 })();

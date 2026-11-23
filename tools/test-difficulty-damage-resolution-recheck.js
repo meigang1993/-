@@ -85,7 +85,7 @@ function patchedResolution(src) {
 }
 function patchedNotice(src) {
   if (REVERT !== "notice") return src;
-  return src.replace('title: "2026年11月19日 · 今日更新"', 'title: "2026年11月17日 · 今日更新"');
+  return src.replace('title: "2026年11月23日 · 今日更新"', 'title: "2026年11月17日 · 今日更新"');
 }
 function patchedWorld(src) {
   if (REVERT !== "mult") return src;
@@ -227,7 +227,7 @@ ok(Object.keys(EXPECT).every(d => W.difficulties[d].enemy.normal.hp === EXPECT[d
 ok(/normal: Object\.freeze\(\[63, 91\]\)/.test(code("src/original/economy-config.js"))
   && /elite: 196/.test(code("src/original/economy-config.js")),
   "D2 副本金币基础值 -30%（63/91/196/350/154）");
-ok(notice.includes("2026年11月19日"), "D3 公告日期 11-19 在位");
+ok(notice.includes("2026年11月23日"), "D3 公告日期 11-23 在位");
 ok(doc.includes("所有副本节点的莉莉丝元获得统一减少 30%"), "D4 docs 难度/金币表同步");
 
 console.log(`\n通过 ${pass} / ${pass + fail}`);
