@@ -45,8 +45,11 @@ window.EnemyStatusEffects = ({ alive, markStatus }) => {
     return marks;
   }
 
-  function addPoison(state, target, count = 1, source = null) {
-    if (!alive([target]).length) return;
+  // allowDowned：仅【麻痹毒子弹】使用。一击把目标打到 hp<=0 时，
+  // 后续保命/复活/测试模式回血会把角色救回，毒标记仍应留在身上；
+  // 默认口径保持"不给已倒下的单位挂毒"，其它调用方行为不变。
+  function addPoison(state, target, count = 1, source = null, allowDowned = false) {
+    if (!allowDowned && !alive([target]).length) return;
     const amount = Math.max(0, Math.floor(finite(count)));
     if (!amount) return;
     const marks = normalizeMarks(state, target);

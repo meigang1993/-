@@ -39,7 +39,7 @@ revisions.
 | `03-角色与角色技能.txt` | 26 official characters and skills |
 | `04-卡牌.txt` | Card system |
 | `05-怪物与怪物技能与饰品.txt` | 33 monsters and 30 relics |
-| `06-副本.txt` | 4 official dungeons |
+| `06-副本.txt` | 4 official dungeons + 1 placeholder (天日国鹰7研究所, devLocked) |
 | `07-UI描述.txt` | UI spec (24 screens, battle bands, modal stack) |
 | `09-开发风险.txt` | Development risks and mitigations |
 | `10-开发规则与DZMM规则.txt` | Static rules, sandbox, DZMM SDK |
@@ -51,12 +51,30 @@ revisions.
 | `安洁莉卡技能重制.txt` | Angelica skill rework (latest) |
 | `废墟沙城怪物设计最新版本.txt` | Latest ruins_sand_city design |
 
+## Reference Snapshots (`reference/`)
+
+Read-only snapshots generated from current source, for cross-agent alignment:
+
+| File | Owns |
+| --- | --- |
+| `reference/废墟沙城怪物属性清单.md` / `.csv` | 9 ruins monsters' base stats, 5 difficulty conversions, groups, drops |
+| `reference/研究所立绘与BGM素材清单.md` / `.csv` | 14 assets from remote `天日国鹰7研究所.zip`, source SHA, naming pairs |
+| `reference/README.md` | Source-of-truth rules and archive notes |
+
+On 2026-11-24 the base stats in `05-怪物与怪物技能与饰品.txt`,
+`12-新副本素材-废墟沙城.txt` and `废墟沙城怪物设计最新版本.txt` were synced to
+`src/original/data-ruins-sand-city-enemies.js`. **When a design note and the
+implementation disagree, `src/original/` + these snapshots win.** Older dungeon
+structure / level-cap wording in the design note is kept as history.
+
 ## Selection Rules
 
 - Original gameplay, content, UI, animation, save, browser runtime, or assets:
   read only the relevant `docs/original/` memory.
 - Product changes are implemented in `src/original/`, generated into
   `publish/bundles/`, and recorded in the matching original memory document.
+- Numeric/design conflicts: trust `src/original/` and `reference/` snapshots; reconcile
+  the stale document instead of silently picking one side.
 
 ## Precedence
 

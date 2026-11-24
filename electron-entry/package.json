@@ -1,7 +1,7 @@
 {
   "name": "succubuskill",
   "productName": "SuccubusKill",
-  "version": "26.0915.263",
+  "version": "26.0915.266",
   "description": "《魅魔杀》Windows 桌面版",
   "main": "main.js",
   "private": true,

@@ -60,22 +60,24 @@ window.RuinsGruntSkills = (() => {
     if (actor?.ai !== "ruins_drone") return;
     if (!C.isSingleSlash(card)) return;
     card.poison = true;
+    // 毒标记改由本技能与【麻痹】同源发放；通用伤害钩子据此跳过，避免重复叠层。
+    card.dronePoisonSelf = true;
   }
 
   function afterDamage(state, actor, target, card, hpLoss) {
     if (!hpLoss || !actor) return;
-    if (actor.ai === "ruins_drone" && C.isSlash(card) && !card?._soulChain) {
-      const paralyze = () => window.BattleStatusCards?.add?.(state, target,
+    // 只认单体【杀】：群体杀、锁魂链追加段不生成毒与麻痹，与「单体【杀】」描述一致。
+    if (actor.ai !== "ruins_drone" || !C.isSingleSlash(card) || card?._soulChain) return;
+    // 【毒】与【麻痹】同源、同一段结算。此前毒全交给通用伤害钩子，
+    // 而 addPoison 默认拒绝 hp<=0 的目标：一击把人打到濒死（随后被保命/复活/
+    // 测试模式回血救回）时，麻痹照发、毒却被吞掉，表现为「造成伤害没施加毒标记」。
+    // allowDowned=true 让毒与麻痹口径一致；通用钩子已排除无人机杀，不会叠成 2 层。
+    const apply = () => {
+      window.EnemySkills?.addPoison?.(state, target, 1, actor, true);
+      window.BattleStatusCards?.add?.(state, target,
         window.BattleStatusCardRegistry?.create("paralysis"), actor.name);
-      const poison = () => {
-        if (!card?.poison) return;
-        window.EnemySkills?.addPoison?.(state, target, 1, actor);
-      };
-      if (!window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, () => {
-        paralyze();
-        poison();
-      })) { paralyze(); poison(); }
-    }
+    };
+    if (!window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, apply)) apply();
   }
 
   // ---------- 梅尔卡坦克 · 坦克炮弹 ----------

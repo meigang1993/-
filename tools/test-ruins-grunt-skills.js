@@ -241,16 +241,58 @@ console.log("=== 废墟沙城 普通怪技能 实现检查 ===\n");
   check("4.3 单体杀造成伤害后生成麻痹状态牌", gotPara,
     `手牌=${(ally.hand || []).map(c => c.name).join(",") || "空"}`);
 
+  {
+    const st = createState(); const dr = mkGrunt("attack_drone"); const al = mkAlly();
+    st.battle.enemies = [dr]; st.battle.allies = [al]; al.hand = [];
+    const sweep = card("机枪扫杀", "slash", { suit: "♠", sweep: true });
+    window.RuinsGruntSkills.afterDamage(st, dr, al, sweep, 5);
+    check("4.3b 群体杀不生成麻痹状态牌",
+      !(al.hand || []).some(c => c.name === "麻痹"),
+      `手牌=${(al.hand || []).map(c => c.name).join(",") || "空"}`);
+  }
+
   const k2 = slash("♠");
   window.RuinsGruntSkills.beforeKillUsed?.(state, actor, k2);
   check("4.4 单体杀转为毒属性", k2.poison === true, `card.poison=${k2.poison}`);
   {
+    const sweep = card("机枪扫杀", "slash", { suit: "♠", sweep: true });
+    window.RuinsGruntSkills.beforeKillUsed?.(state, actor, sweep);
+    check("4.4a 群体杀不转毒属性", sweep.poison !== true, `card.poison=${sweep.poison}`);
+  }
+  {
+    // 265 修复：【毒】与【麻痹】收回技能内同源发放（allowDowned）。
     const st = createState(); const dr = mkGrunt("attack_drone"); const al = mkAlly();
     st.battle.enemies = [dr]; st.battle.allies = [al]; al.hand = [];
     const k3 = slash("♠");
     window.RuinsGruntSkills.beforeKillUsed?.(st, dr, k3);
     window.RuinsGruntSkills.afterDamage(st, dr, al, k3, 5);
-    check("4.4b 造成伤害后附加1层毒", (al.poison || 0) >= 1, `毒层数=${al.poison || 0}`);
+    check("4.4b 技能内同源发毒恰好1层", (al.poison || 0) === 1, `毒层数=${al.poison || 0}`);
+  }
+  {
+    // 真实结算链：通用钩子跳过无人机杀，技能内发 1 层毒 + 1 张麻痹，不叠 2 层
+    const st = createState(); const dr = mkGrunt("attack_drone"); const al = mkAlly();
+    st.battle.enemies = [dr]; st.battle.allies = [al]; al.hand = [];
+    const prevLifecycle = window.BattleDamageLifecycle;
+    window.BattleDamageLifecycle = { delayUntilHitSettled: (_s, fn) => { fn(); return true; } };
+    const k4 = slash("♠");
+    window.RuinsGruntSkills.beforeKillUsed?.(st, dr, k4);
+    window.EnemySkills.afterDamage(st, dr, al, k4, 5, () => {});
+    window.BattleDamageLifecycle = prevLifecycle;
+    check("4.4c 真实结算链恰好1层毒+1张麻痹",
+      (al.poison || 0) === 1 && (al.hand || []).filter(c => c.name === "麻痹").length === 1,
+      `毒层数=${al.poison || 0} 麻痹牌=${(al.hand || []).filter(c => c.name === "麻痹").length}`);
+  }
+  {
+    // 265 核心回归：目标被打到 hp<=0（随后可被保命/复活/测试模式回血救回）时，
+    // 毒不再被 addPoison 的存活守卫吞掉，与麻痹保持一致。
+    const st = createState(); const dr = mkGrunt("attack_drone"); const al = mkAlly();
+    st.battle.enemies = [dr]; st.battle.allies = [al]; al.hand = []; al.hp = 0;
+    const k5 = slash("♠");
+    window.RuinsGruntSkills.beforeKillUsed?.(st, dr, k5);
+    window.RuinsGruntSkills.afterDamage(st, dr, al, k5, 5);
+    check("4.4d 濒死目标仍获得1层毒+1张麻痹",
+      (al.poison || 0) === 1 && (al.hand || []).filter(c => c.name === "麻痹").length === 1,
+      `hp=${al.hp} 毒层数=${al.poison || 0} 麻痹牌=${(al.hand || []).filter(c => c.name === "麻痹").length}`);
   }
 
   // 麻痹判定：♥或♠ → 跳过本回合出牌阶段

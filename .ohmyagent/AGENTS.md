@@ -9,7 +9,7 @@
 - 游戏工作室 Game Studio 项目 `2971485` 的**纯静态 HTML5 卡牌/战斗游戏** + 大型 QA 工具链。
 - `publish/` = 已构建的线上运行时(入口 `publish/index.html`);`src/original/` = 开发期模块化源码(约数百个 JS);工具链把 `src/original/` 打成 `publish/bundles/*.min.js`。
 - 硬约束:禁止服务器/端口/后端框架;横屏为主、基线 1280x720;`publish/` 下路径全 ASCII 且无空格;每个 JS ≤200 行。
-- Git:远端 `origin` = https://github.com/meigang1993/- ;默认分支 **`魅魔杀`**。`core.hooksPath=.githooks`(git 保存守卫)。
+- Git:远端 `origin` = https://github.com/meigang1993/- ;默认分支 **`main`**(2026-09-12 由中文分支名改名,见 `docs/开发日记.md` §33)。`core.hooksPath=.githooks`(git 保存守卫)。推送走 GitHub git data API + 持久卷 `.secrets/github_token` 的 PAT;账号密码 Basic Auth 已被 GitHub 拒绝(401),勿再用。
 
 ## 每次动代码前的必读路由(摘自根 AGENTS.md)
 
@@ -36,6 +36,7 @@
 | `docs/deepseek-rebuild/01~08` | 重构期设计文档(另一视角,改动前可对照) |
 | `docs/开发日记.md` | 更新流水日志:每次变更(新建/修改/删除/提交/决策)必追加一条 |
 | `docs/开发日记.md` §17 | **跨 AI 协作硬约束:scripts/ 边界、Git 保存规范、密钥传递方式、bundle 全量比对、删除前先核实** |
+| `docs/reference/` | **权威数值/素材快照**:废墟沙城怪物属性清单、研究所立绘与BGM素材清单(md+csv);设计稿与实现冲突时以此为准 |
 
 ## 跨 AI 协作硬约束(写入前必读)
 
@@ -67,7 +68,7 @@
 | `03-角色与角色技能.txt` | 26 名正式角色及技能、数值规则 |
 | `04-卡牌.txt` | 卡牌系统分类与规则 |
 | `05-怪物与怪物技能与饰品.txt` | 怪物 33 只(正式24+废墟沙城9)与饰品 30 个 |
-| `06-副本.txt` | 正式副本 4 个(机械工厂/水下列车/兽人地下城/废墟沙城) |
+| `06-副本.txt` | 正式副本 4 个(机械工厂/水下列车/兽人地下城/废墟沙城);另有【天日国鹰7研究所】第 5 个副本骨架,入口仍占位「未开发完成」 |
 | `07-UI描述.txt` | UI 总风格、24 屏说明、战斗六带布局、弹窗层级与关闭顺序 |
 | `09-开发风险.txt` | 18 类开发风险与防御 |
 | `10-开发规则与DZMM规则.txt` | 静态规则/沙箱/DZMM SDK/音频/构建版本管理 |
@@ -84,19 +85,28 @@
 - 文件:`docs/开发日记.md`。
 - 纪律:每次发生文件**新建/修改/删除**、代码改动、git 提交或影响项目的决策,都必须在该文件末尾追加一条:日期 → 变更摘要 → 新建/修改/删除的文件路径清单(仓库相对路径)→ 提交 hash。**与游戏项目无关的更新(本机工具/环境安装、系统改动等)一律不写入。**
 - 流水事实进开发日记;本文件与 docs 索引只做路由/规则,不重复记流水。
+- 2026-11-24 补记:开发日记此前停在 2026-10-06,已补 § 阶段性汇总(248~264),逐项文件清单以 `git log` 记账提交与各轮回执为准。
 
 ## 测试与 QA
 
 两层测试,入口都在 package.json / tools:
 - 逻辑测试:`node tools/run-qa.js`(聚合器;`list` / `focus` / `logic` / `quick`),scripts 有 `npm run test:*`、`check:*` 一整套。
 - 浏览器测试(Playwright):`tests/*.spec.js` + `*.scenario.js` + `helpers/`;跑 `node tools/run-browser-tests.js`。
-- ⚠️ `scripts/` 目录缺失:原文件本机无出处、属工作室私有胶水,已决策**保留缺口不伪造**;引用 `bash scripts/*.sh` 的命令(`verify`、`qa:full`、`qa:exhaustive`、`save:checkpoint`、`save:studio`、`test:offline` 等)不可用,拿到原文件后入库即可恢复。
-- ⚠️ 运行依赖:仓库**未 `npm install`**,工具链命令(eslint/stylelint/terser/playwright 及 `npm run check` 等)需先安装依赖后才能运行(Node 等本机环境以实际检测为准,本文件不记录工具安装)。
+- `scripts/` **现存在 5 个脚本**(save.sh / save-checkpoint.sh / verify.sh / verify-exhaustive.sh / test-offline.sh),仍是容器专用胶水:需 `CONTAINER_SECRET` 等三个变量并调用 `http://localhost:3005/git/save`。本环境该服务不可达、变量未注入,按 §17 **不伪造变量、不尝试调用**;推送改用 GitHub API,勿把 API 成功说成 G 保存成功。
+- 运行依赖:`npm run build:bundles` / `check:core` / `check:lines` / `check:bundles` / `lint:js|css|html` 在当前环境**可直接运行**(terser、playwright 已就位,lint 由 `tools/` 封装);不要假定「必须 npm install 才能验证」。
 - 守则:改动后只跑受影响范围的聚焦测试,未经用户要求不要跑全量。
+
+## 当前状态指针(2026-11-24,只给指针不记流水)
+
+- **版本**:本地 `20260915-264`(11 个 bundle current),`deliveries/` 仍是 **260 版两个包**;本轮纯文档整理,未改源码、未重建、未升版。
+- **远端**:`main` = `fc8c935c` = 263 提交 `c0f8c6d6` + 远端并行新增 `天日国鹰7研究所.zip`(该 zip 已下载解压到沙盒工作区 `研究所素材/`,但**未纳入仓库**;远端原 zip 按要求保留)。
+- **待推**:264 的 17 项 + 本轮文档/记忆整理项,均**未提交、未推送、未出包**;推前需先处理远端多出的 1 个提交/文件。
+- **权威数值源**:`src/original/data-ruins-sand-city-enemies.js`;快照见 `docs/reference/`。研究所怪物设计仍未定稿,入口保持「未开发完成」。
+- 流水、逐项文件清单与已知提交 hash 一律见 `docs/开发日记.md` 末段,本文件不复制。
 
 ## 会话备忘(2026-09-07)
 
-- 已 `git init`(分支 `魅魔杀`)并完成首次上传:提交 `55f7f0d`(1009 文件,Initial upload of the complete project),强推覆盖远端空提交后 tip 一致,已设置上游跟踪 `origin/魅魔杀`。
+- 已 `git init`(分支 `魅魔杀`)并完成首次上传:提交 `55f7f0d`(1009 文件,Initial upload of the complete project),强推覆盖远端空提交后 tip 一致,已设置上游跟踪 `origin/魅魔杀`。 (该分支已于 2026-09-12 改名为 `main`,见 §33;本条为 2026-09-07 历史事实,保留原文。)
 - 为绕过不稳定网络,仓库级已配置 `http.postBuffer=524288000`、`http.version=HTTP/1.1`(可随时移除)。
 - 提交身份(仓库级):`meigang1993` / `322323265+meigang1993@users.noreply.github.com`。
 - `.ohmyagent/settings.json`(工具生成的权限配置)不入库;`.ohmyagent/AGENTS.md` 建议入库随项目走。

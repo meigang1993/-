@@ -62,6 +62,8 @@ const timeouts = Object.freeze({
   "test-all-stats-integer.js": 120,
   "test-skill-multiplier-difficulty-integer.js": 120,
   "test-difficulty-gold-cut.js": 120,
+  "test-paralysis-poison-bullet-strict.js": 120,
+  "test-paralysis-poison-first-round-live.js": 240,
   // 压缩过的核心伤害结算 × 238 难度倍率（5 组源码级反向）
   "test-difficulty-damage-resolution-recheck.js": 120,
   // 副本置灰在 7 条真实回大厅路径下解除（6 组源码级反向）
@@ -289,6 +291,7 @@ const groups = Object.freeze({
     "check-butler-difficulty-coupling.js",
     "check-ruins-enemy-skill-text.js",
     "check-bounty-elite-live.js",
+    "test-paralysis-poison-bullet-strict.js",
     "test-ruins-grunt-skills.js",
     "test-dungeon-playtest-live.js",
     "test-dungeon-route-integrity-live.js",
@@ -671,6 +674,7 @@ const groups = Object.freeze({
     "test-relic-virtual-guard.js",
     "test-ruins-dragon-heroic-relics-live.js",
     "test-ruins-grunt-skills-live.js",
+    "test-paralysis-poison-first-round-live.js",
     "test-ruins-relics-aoe-4live.js",
     "test-ruins-relics-aoe-live.js",
     "test-ruins-relics-live.js",

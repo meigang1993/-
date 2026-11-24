@@ -438,36 +438,38 @@ BGM：./assets/new-bgm/assassin-sakura-risa.ogg
 ===============================================================
 
 【六、废墟沙城怪物（9只，正式副本内容）】
+（本节属性与技能文案已于 2026-11-24 同步至 src/original/data-ruins-sand-city-enemies.js 当前值；早期设计稿数值见 docs/开发日记.md 补记条目，权威清单见 docs/reference/废墟沙城怪物属性清单.md）
 
 --- 28. noble_soldier - 贵族军士兵 ---
 类型：normal | 定位：地雷控场 | AI：ruins_soldier | 性别：男
-属性：HP60 ATK9 MAG7 SPD14 淫气1 手牌4 摸牌2 初始2
+属性：HP136 ATK20 MAG16 SPD30 淫气1 手牌4 摸牌2 初始2
 立绘：./assets/ruins-enemies/noble-soldier.webp
 技能：放置地雷（主动）- 出牌阶段限一次，将敌方一张手牌转换为地雷状态牌。
 
 --- 29. noble_sniper - 贵族军狙击手 ---
 类型：normal | 定位：花色狙击 | AI：ruins_sniper | 性别：男
-属性：HP52 ATK10 MAG7 SPD17 淫气1 手牌4 摸牌1 初始1
+属性：HP120 ATK22 MAG16 SPD36 淫气1 手牌4 摸牌1 初始1
 立绘：./assets/ruins-enemies/attack-drone.webp
 技能：狙击目标（主动）- 展示一名敌方角色的一张手牌；若你的手牌中该花色数量更多，
 你对其使用的单体【杀】不可响应。
 
 --- 30. merca_tank - 梅尔卡坦克 ---
 类型：normal | 定位：群体蓄力 | AI：ruins_tank
-属性：HP80 ATK8 MAG8 SPD12 淫气1 手牌4 摸牌2 初始2
+属性：HP184 ATK20 MAG20 SPD28 淫气1 手牌4 摸牌2 初始2
 立绘：./assets/ruins-enemies/merca-tank.webp
 技能：坦克炮弹（主动）- 弃置两张单体【杀】并在下回合准备阶段对所有敌方角色发射炮弹。
 
 --- 31. attack_drone - 攻击型无人机 ---
 类型：normal | 定位：麻痹锁定 | AI：ruins_drone
-属性：HP44 ATK8 MAG8 SPD18 淫气1 手牌3 摸牌2 初始1
+属性：HP104 ATK20 MAG20 SPD40 淫气1 手牌3 摸牌2 初始1
 立绘：./assets/ruins-enemies/noble-sniper.webp
-技能：麻痹毒子弹（被动）- 你使用的单体【杀】造成伤害后，
-令目标获得一张【麻痹】状态牌。
+技能：麻痹毒子弹（被动/锁定技）- 你使用的单体【杀】改为毒属性伤害；
+造成伤害后，目标获得1层【毒】与一张【麻痹】状态牌（多段或连击伤害时逐段结算，
+同类【麻痹】状态牌不可叠加）。
 
 --- 32. mech_ai_dragon - 机械AI龙 ---
 类型：boss | 定位：多段机枪 | AI：ruins_dragon
-属性：HP342 ATK13 MAG8 SPD15 淫气1 手牌4 摸牌2 初始1
+属性：HP860 ATK32 MAG22 SPD34 淫气1 手牌4 摸牌2 初始1
 立绘：./assets/ruins-enemies/mech-ai-dragon.webp
 BGM：./assets/new-bgm/mech-ai-dragon.mp3
 技能：
@@ -477,7 +479,7 @@ BGM：./assets/new-bgm/mech-ai-dragon.mp3
 
 --- 33. witherer_1312 - XX型凋零者1312号 ---
 类型：boss | 定位：混乱反击 | AI：ruins_witherer | 性别：女
-属性：HP367 ATK12 MAG11 SPD13 淫气2 手牌3 摸牌3 初始2
+属性：HP900 ATK30 MAG28 SPD32 淫气2 手牌3 摸牌3 初始2
 立绘：./assets/ruins-enemies/witherer-1312.webp
 BGM：./assets/new-bgm/witherer-1312.mp3
 登场台词：混沌之子转生者，看你往哪里跑，跟我回母亲大人身边吧！
@@ -488,7 +490,7 @@ BGM：./assets/new-bgm/witherer-1312.mp3
 
 --- 34. hilde - 内英组杀手希尔德 ---
 类型：elite | 定位：隐身刺客 | AI：ruins_hilde | 性别：女
-属性：HP230 ATK11 MAG10 SPD16 淫气2 手牌3 摸牌2 初始1
+属性：HP520 ATK26 MAG24 SPD34 淫气2 手牌3 摸牌2 初始1
 立绘：./assets/ruins-enemies/hilde.webp
 BGM：./assets/new-bgm/hilde.mp3
 登场台词：是你打败了伊迪斯？我不会对你手下留情。
@@ -499,7 +501,7 @@ BGM：./assets/new-bgm/hilde.mp3
 
 --- 35. attack_helicopter - 武装直升机 ---
 类型：elite | 定位：同花扫射 | AI：ruins_helicopter
-属性：HP210 ATK9 MAG8 SPD12 淫气1 手牌5 摸牌3 初始2
+属性：HP480 ATK22 MAG20 SPD28 淫气1 手牌5 摸牌3 初始2
 立绘：./assets/ruins-enemies/attack-helicopter.webp
 BGM：./assets/new-bgm/attack-helicopter.mp3
 技能：
@@ -508,7 +510,7 @@ BGM：./assets/new-bgm/attack-helicopter.mp3
 
 --- 36. armored_carrier - 装甲运输车 ---
 类型：elite | 定位：无敌复活 | AI：ruins_carrier
-属性：HP220 ATK10 MAG6 SPD14 淫气1 手牌4 摸牌2 初始1
+属性：HP500 ATK24 MAG16 SPD32 淫气1 手牌4 摸牌2 初始1
 立绘：./assets/ruins-enemies/armored-carrier.webp
 BGM：./assets/new-bgm/armored-carrier.mp3
 技能：

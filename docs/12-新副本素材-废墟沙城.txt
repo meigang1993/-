@@ -3,6 +3,7 @@
   交接对象：DeepSeek 重制
   状态：已完成，已接入正式世界地图，属于正式副本
   本文档单独列出废墟沙城的全部素材和数据供参考
+（本文件数值与技能文案已于 2026-11-24 同步至 src/original 当前实现；早期设计稿数值见 docs/开发日记.md，权威清单见 docs/reference/废墟沙城怪物属性清单.md）
 ===============================================================
 
 【说明】
@@ -25,13 +26,13 @@
 副标题：帮助反抗军击退入侵小国的世界贵族军
 路线类型：fixed-random
 层数：15
-休息节点：第4层、第9层
+休息节点：第14层（route.rest=[14]）；宝箱节点：第7层
 宝箱节点：第7层
 Boss：第15层
 BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 解锁条件：首次通关兽人地下城·勇士级后触发解锁事件
 解锁提示：首次通关兽人地下城·勇士级后触发解锁事件
-金币倍率：同兽人地下城（1.7）
+金币倍率：230%（GameEconomy.missionRewards.ruins_sand_city.goldMultiplier）
 
 ===============================================================
 
@@ -39,7 +40,7 @@ BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 
 --- 1. noble_soldier - 贵族军士兵 ---
 类型：normal | 定位：地雷控场 | AI：ruins_soldier | 性别：男
-属性：HP60 ATK9 MAG7 SPD14 淫气1 手牌4 摸牌2 初始2
+属性：HP136 ATK20 MAG16 SPD30 淫气1 手牌4 摸牌2 初始2
 立绘：./assets/ruins-enemies/noble-soldier.webp
 BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 技能：
@@ -47,7 +48,7 @@ BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 
 --- 2. noble_sniper - 贵族军狙击手 ---
 类型：normal | 定位：花色狙击 | AI：ruins_sniper | 性别：男
-属性：HP52 ATK10 MAG7 SPD17 淫气1 手牌4 摸牌1 初始1
+属性：HP120 ATK22 MAG16 SPD36 淫气1 手牌4 摸牌1 初始1
 立绘：./assets/ruins-enemies/attack-drone.webp（注：交叉引用）
 BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 技能：
@@ -56,7 +57,7 @@ BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 
 --- 3. merca_tank - 梅尔卡坦克 ---
 类型：normal | 定位：群体蓄力 | AI：ruins_tank
-属性：HP80 ATK8 MAG8 SPD12 淫气1 手牌4 摸牌2 初始2
+属性：HP184 ATK20 MAG20 SPD28 淫气1 手牌4 摸牌2 初始2
 立绘：./assets/ruins-enemies/merca-tank.webp
 BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 技能：
@@ -64,16 +65,17 @@ BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 
 --- 4. attack_drone - 攻击型无人机 ---
 类型：normal | 定位：麻痹锁定 | AI：ruins_drone
-属性：HP44 ATK8 MAG8 SPD18 淫气1 手牌3 摸牌2 初始1
+属性：HP104 ATK20 MAG20 SPD40 淫气1 手牌3 摸牌2 初始1
 立绘：./assets/ruins-enemies/noble-sniper.webp（注：交叉引用）
 BGM：./assets/new-bgm/ruins-sand-city-battle.mp3
 技能：
-- 麻痹毒子弹（被动）：你使用的单体【杀】造成伤害后，
-  令目标获得一张【麻痹】状态牌；当前实现不额外改变伤害属性。
+- 麻痹毒子弹（被动/锁定技）：你使用的单体【杀】改为毒属性伤害；
+  造成伤害后，目标获得1层【毒】与一张【麻痹】状态牌（多段或连击伤害时逐段结算，
+  同类【麻痹】状态牌不可叠加）。
 
 --- 5. mech_ai_dragon - 机械AI龙 ---
 类型：boss | 定位：多段机枪 | AI：ruins_dragon
-属性：HP342 ATK13 MAG8 SPD15 淫气1 手牌4 摸牌2 初始1
+属性：HP860 ATK32 MAG22 SPD34 淫气1 手牌4 摸牌2 初始1
 立绘：./assets/ruins-enemies/mech-ai-dragon.webp
 BGM：./assets/new-bgm/mech-ai-dragon.mp3
 技能：
@@ -83,7 +85,7 @@ BGM：./assets/new-bgm/mech-ai-dragon.mp3
 
 --- 6. witherer_1312 - XX型凋零者1312号 ---
 类型：boss | 定位：混乱反击 | AI：ruins_witherer | 性别：女
-属性：HP367 ATK12 MAG11 SPD13 淫气2 手牌3 摸牌3 初始2
+属性：HP900 ATK30 MAG28 SPD32 淫气2 手牌3 摸牌3 初始2
 立绘：./assets/ruins-enemies/witherer-1312.webp
 BGM：./assets/new-bgm/witherer-1312.mp3
 登场台词：混沌之子转生者，看你往哪里跑，跟我回母亲大人身边吧！
@@ -95,7 +97,7 @@ BGM：./assets/new-bgm/witherer-1312.mp3
 
 --- 7. hilde - 内英组杀手希尔德 ---
 类型：elite | 定位：隐身刺客 | AI：ruins_hilde | 性别：女
-属性：HP230 ATK11 MAG10 SPD16 淫气2 手牌3 摸牌2 初始1
+属性：HP520 ATK26 MAG24 SPD34 淫气2 手牌3 摸牌2 初始1
 立绘：./assets/ruins-enemies/hilde.webp
 BGM：./assets/new-bgm/hilde.mp3
 登场台词：是你打败了伊迪斯？我不会对你手下留情。
@@ -107,7 +109,7 @@ BGM：./assets/new-bgm/hilde.mp3
 
 --- 8. attack_helicopter - 武装直升机 ---
 类型：elite | 定位：同花扫射 | AI：ruins_helicopter
-属性：HP210 ATK9 MAG8 SPD12 淫气1 手牌5 摸牌3 初始2
+属性：HP480 ATK22 MAG20 SPD28 淫气1 手牌5 摸牌3 初始2
 立绘：./assets/ruins-enemies/attack-helicopter.webp
 BGM：./assets/new-bgm/attack-helicopter.mp3
 技能：
@@ -116,7 +118,7 @@ BGM：./assets/new-bgm/attack-helicopter.mp3
 
 --- 9. armored_carrier - 装甲运输车 ---
 类型：elite | 定位：无敌复活 | AI：ruins_carrier
-属性：HP220 ATK10 MAG6 SPD14 淫气1 手牌4 摸牌2 初始1
+属性：HP500 ATK24 MAG16 SPD32 淫气1 手牌4 摸牌2 初始1
 立绘：./assets/ruins-enemies/armored-carrier.webp
 BGM：./assets/new-bgm/armored-carrier.mp3
 技能：

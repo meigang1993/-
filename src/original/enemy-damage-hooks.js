@@ -56,7 +56,11 @@ window.EnemyDamageHooks = ({ hasSkill, machine, discardOne, status }) => {
     // 圣痕让后续圣属性伤害翻倍)，延后会改变伤害结果，故保持同步发放。
     if (hpLoss && card?.shock && !card?._soulChain) status.addShock(state, target, 1, actor);
     if (hpLoss && card?.holy && !card?._soulChain) status.addHolyScar(state, target);
-    if (hpLoss && card?.poison && !card?.poisonTick && !card?._soulChain) {
+    // 攻击型无人机【麻痹毒子弹】的毒由技能自身与【麻痹】同源发放
+    // （可覆盖一击濒死又被救回的场景），这里不再重复发，避免同一段叠 2 层。
+    // 双重判据：card 标记防 actor 被来源改写，actor.ai 防 card 被 clean 重建后丢标记。
+    if (hpLoss && card?.poison && !card?.poisonTick && !card?._soulChain
+        && !card?.dronePoisonSelf && actor?.ai !== "ruins_drone") {
       settleStatus(state, () => status.addPoison(state, target, 1, actor));
     }
     if (hpLoss && card?.type === "slash" && hasSkill(actor, "毒针") && !card?.poison) {

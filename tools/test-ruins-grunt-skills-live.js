@@ -326,7 +326,12 @@ async function runScene(browser, name, tpl, watchMs) {
       const lockEstablished = (f.battleLog || []).some(l =>
         String(l).includes("锁定成立"));
       console.log(`  战报含"狙击": ${logged}  锁定成立=${lockEstablished}`);
-      checks.push(["狙击目标 · 花色比较后锁定", f.sniperLocked && lockEstablished]);
+      // 锁定是一次性的：命中一张实体单体【杀】后 ruinsSniperLocked 立即清零，
+      // 终态 f.sniperLocked 必然为 false，不能作为「是否锁定过」的判据。
+      // 以战报「锁定成立」+ 目标 uid 已记录 + 不可响应已触发为准。
+      const triggered = (f.battleLog || []).some(l => String(l).includes("狙击目标触发"));
+      checks.push(["狙击目标 · 花色比较后锁定", lockEstablished && !!f.sniperTarget]);
+      checks.push(["狙击目标 · 锁定命中后实体单体杀不可响应", triggered]);
       checks.push(["狙击目标 · 战报记录", logged]);
     } else if (r.name === "坦克炮弹") {
       console.log(`  装填=${r.loaded || f.tankReady} 炮弹标记=${f.tankReady} 敌方手牌=${f.enemyHand}`);
