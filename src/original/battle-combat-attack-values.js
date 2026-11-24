@@ -115,8 +115,12 @@ window.BattleCombatAttackValues = api => {
   }
 
   function baseCardCanFlame(actor, card) {
+    // 聚焦喷火器与次元转移/巴特雷/反坦克炮同口径：只把「实体单体【杀】」
+    // 转为全体火杀。虚拟杀、技能生成牌、type:"skill" 伤害载荷不再触发，
+    // 也不再挂 _tempSweep / 火属性 / 两段不可响应。
     return actor.ref === "manny" && actor.mannyWeapon === "flamer"
-      && deps.isKillCard(card) && !card.sweep && !card.targetless
+      && deps.isKillCard(card) && window.CardUtils?.isEntityCard?.(card)
+      && !card.sweep && !card.targetless
       && !card.allTargets && !card.aoeLineShown;
   }
 

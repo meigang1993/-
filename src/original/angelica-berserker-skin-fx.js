@@ -134,7 +134,19 @@ window.AngelicaBerserkerSkinFX = (() => {
   }
   function sync(state) {
     if (!hasDocument()) return;
-    if (!state?.battle) return;
+    const battle = state?.battle;
+    if (!battle) return;
+    const units = battle.allies.concat(battle.enemies || []);
+    // 仍有激活单位时不动：入场演出 / 8 段分阶段特效由各自的 later 定时器自管，
+    // 每次 render 都清会把 1380ms 的入场态提前掐断。
+    if (units.some(active)) return;
+    // 皮肤已切走（或队伍里不再有该皮肤）：清掉残留的入场类名与悬空特效节点，
+    // 避免立绘长期停在「入场中」、旧特效浮在屏幕上。与 cancel() 互补——
+    // 这里不 bump version、不清定时器，只收 DOM 尾。
+    document.querySelectorAll(".angelica-berserker-entering").forEach(node =>
+      node.classList.remove("angelica-berserker-entering"));
+    document.querySelectorAll(".angelica-berserker-fx,.angelica-berserker-line")
+      .forEach(node => node.remove());
   }
   function tone(...args) { window.BattleAudio?.tone?.(...args); }
   function cancel() {

@@ -70,6 +70,15 @@ test("Angelica Imperial Blood Slaying renders battle effects and victory scene",
   await expect(page.locator(".angelica-victory-embers i")).toHaveCount(5);
   await expect(page.locator(".angelica-victory-motto")).toHaveText("帝血未冷，下一场继续。");
 
+  // 专属皮肤 CSS 由 runtime-battle-styles 延迟挂载；未生效时 victory-stats
+  // 还是默认宽度，scrollWidth/Height 会临时偏大。先等样式落地再量布局，
+  // 否则断言会随机红（实测同一页面二次测量即为 0/0）。
+  await expect.poll(() => page.evaluate(() => {
+    const screen = document.querySelector(".victory-screen");
+    return screen ? (screen.scrollWidth - screen.clientWidth)
+      + (screen.scrollHeight - screen.clientHeight) : -1;
+  }), { timeout: 10000 }).toBe(0);
+
   const layout = await page.evaluate(() => {
     const screen = document.querySelector(".victory-screen");
     const stats = document.querySelector(".victory-stats");
@@ -115,6 +124,18 @@ test("Angelica Berserk Will plays staged effects and pulse rings", async ({ page
     window.render();
   });
   await expect(page.locator(".unit-art img").first()).toBeVisible();
+
+  // 专属皮肤 CSS 由 GameBattleStyles 异步挂载；若样式未落地就取样，
+  // getComputedStyle 的 animationName 会是 "none"（实测偶发）。等规则生效再跑。
+  await expect.poll(() => page.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.className = "angelica-berserker-fx angelica-berserker-rampage-armor";
+    probe.innerHTML = "<b></b>";
+    document.body.appendChild(probe);
+    const name = getComputedStyle(probe.querySelector("b")).animationName;
+    probe.remove();
+    return name;
+  }), { timeout: 10000 }).toBe("imperialArmorClench");
 
   const staged = await page.evaluate(async () => {
     const state = window.state;

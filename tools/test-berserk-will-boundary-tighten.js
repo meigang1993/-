@@ -68,6 +68,7 @@ const win = {
   BattleLog: { add: (_s, text) => logs.push(text) },
   BattleLines: { skill: () => {} },
   BattleHpValue: {
+    healPctStacks: (unit, pct, n) => Math.max(1, Math.round((unit?.maxHp ?? unit?.stats?.maxHp ?? 0) * Math.max(0, pct) / 100)) * Math.max(0, Math.round(n)),
     healCap: (u, n) => Math.max(0, Math.min(n, (u.maxHp || 0) - (u.hp || 0))),
     applyHeal: (u, n) => { u.hp += n; },
   },

@@ -118,7 +118,9 @@ T("A13 皮肤特效导出改为 berserkWill",
   const exempt = new Set(["test-berserk-will-merge-audit.js", "qa-test-catalog.js",
     "test-angelica-merge-recheck.js", "test-merge-skill-side-effects.js",
     "test-merge-skill-final-recheck.js", "test-angelica-berserk-will-trail.js",
-    "test-angelica-berserk-will-trail-live.js", "test-split-compact-recheck.js"]);
+    "test-angelica-berserk-will-trail-live.js", "test-split-compact-recheck.js",
+    // 历史公告「安洁莉卡新增主动技【猩红暴走】」属事实保留，仅作旧称引用。
+    "test-all-modified-skills-cheat.js"]);
   const toolHits = ["tools", "tests"].flatMap(dir => {
     const base = path.join(__dirname, "..", dir);
     return fs.readdirSync(base).filter(f => f.endsWith(".js") && !exempt.has(f))
@@ -133,6 +135,7 @@ const win = {
   BattleLog: { add: (state, text) => (state.log ||= []).push(text) },
   BattleLines: { skill: (state, _unit, name) => (state.lines ||= []).push(name) },
   BattleHpValue: {
+    healPctStacks: (unit, pct, n) => Math.max(1, Math.round((unit?.maxHp ?? unit?.stats?.maxHp ?? 0) * Math.max(0, pct) / 100)) * Math.max(0, Math.round(n)),
     healCap: (unit, amount) => Math.max(0, Math.min(amount, (unit.maxHp || 0) - (unit.hp || 0))),
     applyHeal: (unit, amount) => { unit.hp += amount; },
   },

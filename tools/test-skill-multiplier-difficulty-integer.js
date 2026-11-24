@@ -107,10 +107,10 @@ T("B4 金币/经验奖励折算后与原口径逐项一致且为整数",
 
 // ---------- C. 技能倍率 ----------
 const bertis = codeOf("bertis-gerlot-skills.js"), angelica = codeOf("angelica-luka-skills.js"), ruins = codeOf("ruins-card-skills.js");
-T("C1 傲慢雌小鬼倍率为 150/200 整数百分比", bertis.includes("attack: 150, magic: 150, bloodlust: 200, handLimit: 200"));
+T("C1 傲慢雌小鬼四项倍率统一为 200 整数百分比", bertis.includes("attack: 200, magic: 200, bloodlust: 200, handLimit: 200"));
 T("C2 傲慢雌小鬼输出四舍五入为整数", bertis.includes("Math.round(b[k] * multipliers[k] / 100)"));
 const rawHalf = 9 * 1.5;
-T("C3 奇数攻击力×1.5 不再产生小数属性", !isInt(rawHalf) && Math.round(9 * 150 / 100) === 14);
+T("C3 整数百分比换算仍消除浮点尾数（2 倍同样无小数）", !isInt(rawHalf) && Math.round(9 * 200 / 100) === 18 && isInt(Math.round(9 * 200 / 100)));
 T("C4 力量爆发仍按 +50% 逐张累积", angelica.includes("+ 0.5;") && angelica.includes("${Math.round(actor.angelicaMightBonus * 100)}%"));
 T("C5 力量爆发伤害出口四舍五入", angelica.includes("Math.round(amount * (1 + bonus))"));
 T("C6 力量爆发 10 点伤害 +50% = 15", Math.round(10 * (1 + 0.5)) === 15);
@@ -127,7 +127,7 @@ vm.runInContext(codeOf("bertis-gerlot-skills.js"), bctx, { filename: "bertis-ger
 const unit = { ref: "bertis", side: "ally", hp: 50, maxHp: 50, skills: [{ name: "傲慢雌小鬼" }], stats: { attack: 9, magic: 7, bloodlust: 1, handLimit: 3 }, intent: 0 };
 bctx.BertisGerlotSkills.refreshArrogance({ battle: { allies: [unit], enemies: [] } });
 T("C10 真实傲慢雌小鬼满血后属性全为整数", ["attack", "magic", "bloodlust", "handLimit"].every(k => isInt(unit.stats[k])), unit.stats);
-T("C11 满血加成等价 1.5 倍四舍五入", unit.stats.attack === 14 && unit.stats.magic === 11 && unit.stats.bloodlust === 2, unit.stats);
+T("C11 满血加成等价 2 倍四舍五入", unit.stats.attack === 18 && unit.stats.magic === 14 && unit.stats.bloodlust === 2, unit.stats);
 
 // ---------- D. 公告 ----------
 const notice = codeOf("update-notice.js"), recent = codeOf("update-notice-recent.js");

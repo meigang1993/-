@@ -38,7 +38,8 @@ window.BattleEffectCardPlays = U => {
     const fixed = Array.isArray(card?.allTargets) ? new Set(card.allTargets) : null;
     const converted = window.OrcDungeonSkills?.beastSuppressionConverts?.(actor, card)
       || actor?.ref === "manny" && actor.mannyWeapon === "flamer"
-        && isSingleSlash(card) && hasDamage(card);
+        && isSingleSlash(card) && hasDamage(card)
+        && !!window.CardUtils?.isEntityCard?.(card);
     if (!fixed && !card?.allTargets && !card?.sweep && !card?.aoeLineShown
       && !card?.demonInvasion && !converted) return [];
     return (foes || [])

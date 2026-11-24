@@ -73,8 +73,11 @@ test("battle skin switch does not corrupt unit artwork", async ({ page }) => {
   // Wait for appearanceSaving to finish
   await expect.poll(() => page.evaluate(() => window.state.appearanceSaving === false)).toBe(true);
 
-  // Give it a moment for images to load
-  await page.waitForTimeout(500);
+  // 帝血弑天的入场演出持续 1380ms，切到皮肤后会由 queueEntry 排队播放；
+  // 写死 500ms 会在演出中途取样，误判成「残留特效」。等它自然收尾。
+  await expect.poll(() => page.evaluate(() =>
+    document.querySelectorAll(".angelica-berserker-entry").length
+  ), { timeout: 10000 }).toBe(0);
 
   // Check the state after skin switch
   const after = await page.evaluate(() => {
@@ -125,7 +128,12 @@ test("battle skin switch does not corrupt unit artwork", async ({ page }) => {
 
   for (const skinId of ["angelica_level_10_special", "angelica_default", "angelica_berserker"]) {
     await page.locator(`[data-battle-equip-skin="${skinId}"]`).click();
-    await page.waitForTimeout(150);
+    // 切回帝血弑天会重播 1380ms 入场演出；等特效自然收尾再取样，
+    // 判断的是「切换后不留残影」，而不是「演出中途必须为空」。
+    await expect.poll(() => page.evaluate(() =>
+      document.querySelectorAll(".angelica-berserker-fx,.angelica-berserker-line").length
+      + document.querySelectorAll(".angelica-berserker-entering").length
+    ), { timeout: 10000 }).toBe(0);
     const transition = await page.evaluate(() => ({
       fx: document.querySelectorAll(".angelica-berserker-fx,.angelica-berserker-line").length,
       entering: document.querySelectorAll(".angelica-berserker-entering").length,
@@ -133,7 +141,6 @@ test("battle skin switch does not corrupt unit artwork", async ({ page }) => {
         img.complete && img.naturalWidth > 0),
     }));
     expect(transition).toEqual({ fx: 0, entering: 0, images: true });
-    await page.waitForTimeout(1250);
   }
 
   expect(relevantErrors(errors)).toEqual([]);

@@ -9,7 +9,11 @@ window.BattleEffectPlay = (() => {
       const cost = actor?.hand?.[battle?.selectedCardIndex];
       return !!cost && !cost._pendingDraw && ["♥", "♦"].includes(cost.suit);
     }
-    if (actor?.ref === "manny" && actor.mannyWeapon === "flamer") return isSingleSlash(card) && hasDamage(card);
+    // 与 baseCardCanFlame 同口径：虚拟杀不再被当成"已转成群体"来播群体动画。
+    if (actor?.ref === "manny" && actor.mannyWeapon === "flamer") {
+      return isSingleSlash(card) && hasDamage(card)
+        && !!window.CardUtils?.isEntityCard?.(card);
+    }
     return !!window.OrcDungeonSkills?.beastSuppressionConverts?.(actor, source || card);
   }
   function groupTargetUids(actor, card, source, battle, foes) {

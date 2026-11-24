@@ -186,6 +186,7 @@ const win = {
     fromEntity: (name, opts) => ({ name, ...opts, virtual: true }),
   },
   BattleHpValue: {
+    healPctStacks: (unit, pct, n) => Math.max(1, Math.round((unit?.maxHp ?? unit?.stats?.maxHp ?? 0) * Math.max(0, pct) / 100)) * Math.max(0, Math.round(n)),
     healCap: (unit, amount) => Math.max(0, Math.min(amount, (unit.maxHp || 0) - (unit.hp || 0))),
     applyHeal: (unit, amount) => { unit.hp += amount; },
   },

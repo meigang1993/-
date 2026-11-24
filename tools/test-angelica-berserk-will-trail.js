@@ -56,6 +56,7 @@ window.BattleAudio = { tone: (...args) => tones.push(args) };
 window.BattleLines = { skill: (_s, _u, name) => lines.push(name) };
 window.BattleLog = { add: (_s, msg) => logs.push(msg) };
 window.BattleHpValue = {
+  healPctStacks: (unit, pct, n) => Math.max(1, Math.round((unit?.maxHp ?? unit?.stats?.maxHp ?? 0) * Math.max(0, pct) / 100)) * Math.max(0, Math.round(n)),
   healCap: (_u, amount) => Math.max(0, Math.round(amount)),
   applyHeal: (u, amount) => { u.hp = Math.min(u.maxHp || 9999, (u.hp || 0) + amount); return amount; },
 };

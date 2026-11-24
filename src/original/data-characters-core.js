@@ -22,9 +22,9 @@ window.GameDataCharactersCore = [
   {
     id: "manny", name: "曼妮", gender: "female", face: "曼", art: "./assets/images/manny-portrait.032001c2.webp", avatar: "./assets/images/manny-portrait.032001c2.webp", role: "异次元公主", locked: true, unlockCost: 10,
     stats: { attack: 10, magic: 10, speed: 13, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 3 },
-    evaluation: "伤害转移与重火器支援角色。次元转移可用黑色手牌改写友方受到的杀牌伤害目标，次元军火库则按战况选择单体、群体或属性火力。",
+    evaluation: "伤害转移与重火器支援角色。次元转移可用黑色手牌改写友方受到的实体单体【杀】伤害目标，次元军火库则按战况选择单体、群体或属性火力。",
     skills: [
-      { name: "次元转移", type: "trigger", icon: "⭐", text: "当一名友方角色即将受到单体【杀】的伤害时，你可以选择并弃置1张黑色手牌，再指定一名敌方角色，将此次伤害转移给该角色。转移后的伤害不能再次触发此技能。" },
+      { name: "次元转移", type: "trigger", icon: "⭐", text: "当一名友方角色即将受到实体单体【杀】的伤害时，你可以选择并弃置1张黑色手牌，再指定一名敌方角色，将此次伤害转移给该角色。转移后的伤害不能再次触发此技能；虚拟【杀】与技能伤害不触发。" },
       { name: "次元军火库", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以从刺刀AK47、巴特雷、反坦克炮和聚焦喷火器中选择1种重火器，并立即获得所选效果。", card: { name: "次元军火库", type: "tactic", mannyArmory: true, targetless: true, icon: "⚔️", text: "从4种重火器中选择1种，并立即获得所选效果。" } }
     ]
   },

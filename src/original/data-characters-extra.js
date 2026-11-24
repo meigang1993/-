@@ -4,7 +4,7 @@ window.GameDataCharactersExtra = [
     stats: { attack: 10, magic: 10, speed: 11, maxHp: 130, bloodlust: 1, handLimit: 3, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "满生命强化与团队资源核心。傲慢雌小鬼在满生命时强化多项属性，苦肉鞭笞以友方伤害换取手牌和淫气，快速生长持续积累共享“粮食”。",
     skills: [
-      { name: "傲慢雌小鬼", type: "passive", icon: "⭐", text: "锁定技，当你的生命值为满时，你的攻击力和魔力变为基础值的1.5倍，淫气上限和手牌上限各翻倍。" },
+      { name: "傲慢雌小鬼", type: "passive", icon: "⭐", text: "锁定技，当你的生命值为满时，你的攻击力和魔力变为基础值的2倍，淫气上限和手牌上限各翻倍。" },
       { name: "苦肉鞭笞", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以指定一名其他友方角色，对其造成等同于你攻击力的伤害，然后你摸2张牌并恢复1点淫气。若目标为杰洛特或诺诺卡，伤害、摸牌数和恢复的淫气均翻倍。", card: { name: "苦肉鞭笞", type: "tactic", bertisWhip: true, allyTarget: true, icon: "⚔️", text: "对一名其他友方角色造成攻击力伤害，然后摸2张牌并恢复1点淫气；对杰洛特或诺诺卡时全部效果翻倍。" } },
       { name: "快速生长", type: "passive", icon: "⭐", text: "锁定技，结束阶段，你获得1枚“粮食”标记；每当一名角色因伤害死亡后，你获得3枚“粮食”标记。其他友方角色获得临时技能【取粮】。", derivedSkills: [{ name: "取粮", text: "出牌阶段限一次，你可以移去1枚队伍共享的“粮食”标记，然后摸2张牌。" }] }
     ]

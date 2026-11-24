@@ -16,9 +16,16 @@ module.exports = ({
       enemies: [transferAttacker, transferEnemy], animQueue: [], locked: false,
     },
   };
-  assert(MannySkills.transferSlash(
+  // 次元转移只认实体单体【杀】：虚拟杀不再弹转移提示，也不能锁住战斗。
+  assert(!MannySkills.transferSlash(
     state, transferAttacker, transferProtected, 4, "虚拟杀", { ...incoming },
-  ), "Dimension Transfer must accept virtual single Slashes");
+  ), "Dimension Transfer must reject virtual single Slashes");
+  assert(!state.battle.dimensionTransfer && !state.battle.locked,
+    "Rejected virtual Slashes must not open a transfer prompt or lock the battle");
+  assert(MannySkills.transferSlash(
+    state, transferAttacker, transferProtected, 4, "实体杀",
+    card("杀（普攻）", "slash", { suit: "♠" }),
+  ), "Dimension Transfer must accept entity single Slashes");
   assert(state.battle.dimensionTransfer.costIndex == null,
     "Dimension Transfer must wait for the player to choose a black cost card");
   assert(MannySkills.selectDimensionTransferCard(state, 0),
@@ -35,7 +42,8 @@ module.exports = ({
   "Dimension Transfer must discard the selected black card and redirect only the current damage segment");
   transferManny.hand = [card("Second Black Cost", "response", { suit: "♣" })];
   assert(MannySkills.transferSlash(
-    state, transferAttacker, transferProtected, 4, "放弃测试", { ...incoming },
+    state, transferAttacker, transferProtected, 4, "放弃测试",
+    card("杀（普攻）", "slash", { suit: "♣" }),
   ), "Dimension Transfer must open again when another black cost is available");
   let declinedTarget = null;
   let repeatedResponsePath = false;
@@ -144,6 +152,7 @@ module.exports = ({
       healBySyringe() {},
       repeatTactic() {},
       resolveGreenGatling() {},
+      prepareGreenGatling() {},
       queueBattleCourage() {},
     },
     useCard() {},
@@ -159,10 +168,19 @@ module.exports = ({
     repeatIfDone() {},
     hasNoIntentCost: () => true,
   });
+  // 【聚焦喷火器】收窄为实体单体【杀】：虚拟杀不再被转成全体火杀，
+  // 也不再挂 fire / gatlingRepeats / 不可响应；实体杀照常转换。
   resolver.continueAfterCounter(
     state, manny, plainTarget,
     card("Virtual Flame", "slash", { virtual: true, power: 1, scale: "attack" }),
   );
+  assert(!flamerSweep,
+    "Focused Flamer must reject virtual single Slashes");
+  flamerSweep = null;
+  resolver.continueAfterCounter(
+    state, manny, plainTarget,
+    card("杀（普攻）", "slash", { suit: "♠", power: 1, scale: "attack" }),
+  );
   assert(flamerSweep?.sweep && flamerSweep.fire && flamerSweep.gatlingRepeats === 2,
-    "Focused Flamer must transform virtual single slashes");
+    "Focused Flamer must still transform entity single Slashes");
 };

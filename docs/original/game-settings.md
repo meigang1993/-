@@ -108,7 +108,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - Completing a dungeon bounty grants its reward directly without opening a separate task-reward settlement popup.
 - The X button on every unlock-story modal is a completion action, not a dismiss-only action. It runs the same durable unlock path as the event's primary button and closes only after that path is dispatched.
 - Every canonical playable character must retain at least one valid unlock path. Skin purchases immediately equip the purchased skin, and owned default and paid skins must remain freely switchable afterward.
-- 2026年7月24日角色平衡调整：贝尔蒂丝满生命时攻击力与魔力为基础值的1.5倍，淫气上限与手牌上限仍各为基础值的2倍；芙萝娅神速飞剑按行动回合记录目标，同一目标每回合最多触发一次；索尼娅的暴走与极速核心机制不变。温蒂当前摸牌加成为每回合`1`、初始`2`。
+- 2026年7月24日角色平衡调整（后续以最新公告为准）：贝尔蒂丝满生命时攻击力与魔力为基础值的2倍，淫气上限与手牌上限仍各为基础值的2倍；芙萝娅神速飞剑按行动回合记录目标，同一目标每回合最多触发一次；索尼娅的暴走与极速核心机制不变。温蒂当前摸牌加成为每回合`1`、初始`2`。
 - 26名角色的初始面板与15级生命成长保持不变；攻击/魔力按基础成长的`3x`总量执行，速度按`2.5x`总量执行。没有跨角色共用的15级终值上限；完整初始属性与15级成长总量以四个角色数据源和`src/original/character-progression.js`为准。
 - 2026年8月10日角色调整：芙萝娅基础淫气上限改为`1`，`神速之袭`在准备阶段和结束阶段各限一次，同一回合可分别发动；准备阶段发动仍跳过本回合判定阶段和摸牌阶段，结束阶段发动后芙萝娅翻面并跳过下一个完整回合。`神速之袭`的翻面与击杀摸牌必须等本次攻击动画完成后一次性提交；只有该虚拟【刺杀】首次直接命中的实际生命伤害令实际受伤目标死亡时才摸牌，后续连锁伤害不计，待复活目标不计，最后一名敌人仍须先发放该奖励再进入胜利结算。摸牌中途异常必须回滚牌堆、手牌、随机游标、日志和待播事件，并保留结算事件供后续重试；重复提交或已经替换的旧战斗不得再次摸牌、翻面或回写状态。贝丝妲魔偶基础魔力改为`3`。卡洛斯基础攻击力改为`3`、基础淫气上限改为`1`。
 - Same-screen party selection must update roster cards in place: selecting or removing a character preserves both the complete card DOM node and its portrait, keeps card geometry and modal scroll stable, and updates only classes, status text, and the party count. Roster cards must keep `content-visibility: visible` so offscreen intrinsic-size estimates cannot cause vertical jumps. This rule is data-driven and applies automatically to every current and future unlocked character; it must never rely on a hard-coded character list.
@@ -265,7 +265,7 @@ gameplay values and behavior remain here rather than being duplicated in
 - 毒、燃烧、刺弹爆炸与【魔王军入侵】造成的实际生命值伤害同样经过统一受伤后触发链。毒伤不会重新叠毒，刺弹爆炸不会再次引爆其他刺弹；准备阶段若被半魅魔血等提示暂停，必须从原准备阶段步骤继续，不能漏掉后续毒伤、敌方准备技能、饰品或判定摸牌阶段。
 - 准备阶段的每个步骤必须在执行可能中断的技能、反击或提示前推进游标；中断恢复时只继续尚未完成的步骤，不得重做已经结算的状态伤害、准备技能或费用。嵌套敌方准备游标在整段准备流程完成后必须一并清理；若敌方准备被打断后恢复到出牌阶段，只对仍有 AI 的敌人自动继续出牌，测试单位停留在输入阶段。
 - 任一强制攻击类效果（如要求敌人依次“使用1张单体【杀】或弃置1张手牌”）在任一次强制攻击触发责任担当、次元转移或其他锁定提示时，必须保留尚未行动的敌人，并在提示结算后从下一名敌人继续。
-- 曼妮【次元转移】触发后，底部手牌区统一切换为曼妮的真实手牌；玩家必须亲自选择1张可见黑色手牌，选牌后再指定一名存活敌人承受伤害。红色牌与待摸牌不可选择；玩家可以放弃发动，放弃时不弃牌并让原目标继续承受已经确认命中的该次伤害，不得重新获得一次响应机会。次元转移每次只改写当前伤害段，多段【杀】的剩余伤害继续走统一续跑并可逐段重新选择。
+- 曼妮【次元转移】只在友方即将承受实体单体【杀】伤害时触发（CardUtils.isEntityCard 单一判定源叠加原有单体杀判据）；虚拟【杀】、技能生成牌与 `type:"skill"` 伤害载荷不触发，也不得弹出转移提示或锁定战斗。触发后，底部手牌区统一切换为曼妮的真实手牌；玩家必须亲自选择1张可见黑色手牌，选牌后再指定一名存活敌人承受伤害。红色牌与待摸牌不可选择；玩家可以放弃发动，放弃时不弃牌并让原目标继续承受已经确认命中的该次伤害，不得重新获得一次响应机会。次元转移每次只改写当前伤害段，多段【杀】的剩余伤害继续走统一续跑并可逐段重新选择。
 - 多段伤害续跑显示下一次【次元转移】提示后，费用牌与敌方目标必须立即可操作；若上一段的动画或操作锁仍在收尾，目标点击需排队到收尾完成后执行，不能静默丢弃并让提示卡死。敌方回合续跑失败必须进入战斗动作错误恢复，并且不得把失败后的状态写成稳定操作检查点。
 - 多段伤害的中断续跑必须重新确认伤害来源仍存活；若来源在次元转移、反击或其他反应中生命降至0，立即丢弃该来源尚未结算的剩余伤害段，再继续公共反应队列与回合清理。
 
@@ -668,8 +668,8 @@ gameplay values and behavior remain here rather than being duplicated in
 - 顶栏莉莉丝元显示名为`据点余额`；副本探索期间仍显示当前可消费的据点数值，并在旁边同步显示本次探索的`待结算 +N`金币与精华宝珠。副本顶部累计收入显示名为`本次探索待结算`，通关或撤退执行入账后才并入据点余额。
 - 副本节点结算成功后必须校验真实奖励载荷，并可从当前副本奖励收据账本或待结算资源增量恢复兼容返回；不得在奖励字段缺失或异常时静默显示莉莉丝元0、精华宝珠0。无法确认真实奖励时暂停节点完成并显示可重试错误。
 - 角色最大生命值只按各自成长配置自动提升，不再存在生命值加点或通用固定换算。
-- Generic single-target Slash effects that accept virtual Slashes include 洛基`智障力大`, 卡洛斯`疯狂刺刀`, 芙萝娅`神速飞剑`, 曼妮`巴特雷`/`反坦克炮`/`聚焦喷火器`, 狂鲨海盗团船员`穿透锚枪`, 狂鲨海盗团掠夺者`冲锋掠夺`, 莫迪奥`粉碎破坏者`, and 莫娜`圣剑无双`/`圣天破军剑`.
-- Skills explicitly written as entity or non-virtual, including 曼妮`刺刀AK47`, 莫娜`剑盾反攻`, and other `实体单体【杀】` effects, continue to reject virtual Slashes.
+- Generic single-target Slash effects that accept virtual Slashes include 洛基`智障力大`, 卡洛斯`疯狂刺刀`, 芙萝娅`神速飞剑`, 狂鲨海盗团船员`穿透锚枪`, 狂鲨海盗团掠夺者`冲锋掠夺`, 莫迪奥`粉碎破坏者`, and 莫娜`圣剑无双`/`圣天破军剑`.
+- Skills explicitly written as entity or non-virtual, including 曼妮`刺刀AK47`/`巴特雷`/`反坦克炮`/`聚焦喷火器`/`次元转移`, 莫娜`剑盾反攻`, and other `实体单体【杀】` effects, continue to reject virtual Slashes. 巴特雷不再给虚拟杀挂 `mannyDouble` 翻倍与不可响应，反坦克炮不再给虚拟杀挂 `ignoreBlock` 与刺弹标记，聚焦喷火器不再把虚拟杀转成全体火杀（不挂 `_tempSweep`/火属性/两段不可响应），三者也不再播放对应武器攻击特效或群体目标线。
 ### 战斗技能特效定位
 
 - 战斗技能特效需要锚定角色行动区时，统一使用`src/original/battle-effect-anchors.js`，不得在具体技能里重复手写行动区选择器和坐标计算。

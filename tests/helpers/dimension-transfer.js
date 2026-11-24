@@ -77,7 +77,7 @@ async function setupMultiHitScenario(page, mode = "enemy-turn") {
     const protectedHp = protectedUnit.hp;
     window.BattleSystem.useCard(window.state, enemy, protectedUnit, {
       name: fatal ? "反杀续跑测试" : allyTurn ? "友方回合反击测试" : "双段转移测试",
-      type: "slash", power: 0, scale: "attack", virtual: true, gatlingRepeats: 2,
+      type: "slash", power: 0, scale: "attack", gatlingRepeats: 2,
     });
     if (allyTurn) {
       const originalResolve = window.BattleSystem.resolveDimensionTransfer.bind(window.BattleSystem);

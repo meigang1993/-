@@ -26,6 +26,18 @@ test("Manny Gun Succubus renders weapon skeleton, portal, spike, and victory eff
   })).toEqual({ content: "none", backgroundImage: "none" });
   expect(await page.locator(".ally-unit .skin-effect-manny-gun > img")
     .evaluate(image => getComputedStyle(image).animationName)).toBe("none");
+  // 专属皮肤 CSS 由 GameBattleStyles 异步挂载；未落地时 .manny-gun-armory b i
+  // 的 transform / animationName 全是 none，军火库展开断言会随机红。
+  // 用一次性探针等规则生效，不改动上面「静态态无动画」的既有断言。
+  await expect.poll(() => page.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.className = "manny-gun-armory";
+    probe.innerHTML = "<b><i></i></b>";
+    document.body.appendChild(probe);
+    const name = getComputedStyle(probe.querySelector("i")).animationName;
+    probe.remove();
+    return name;
+  }), { timeout: 10000 }).toBe("mannyArmoryExpand");
   await page.evaluate(() => {
     const actor = window.state.battle.allies.find(unit => unit.ref === "manny");
     const originalTarget = window.state.battle.allies.find(unit => unit.ref === "lokar");

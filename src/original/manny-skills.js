@@ -1,12 +1,16 @@
 window.MannySkills = (() => {
   const weapons = [
     { id: "ak47", name: "刺刀AK47", type: "trigger", icon: "🔵", text: "当你使用实体单体【杀】指定唯一目标时，此【杀】结算两次。当你受到伤害后，若伤害来源存活，你可以视为对其使用一张虚拟【杀（普攻）】。" },
-    { id: "barrett", name: "巴特雷", type: "active", icon: "⚔️", text: "出牌阶段限一次，你进行判定并记录判定牌花色。本回合，你使用与记录花色相同的单体【杀】造成的伤害翻倍，且不可被响应。", card: { name: "巴特雷", type: "tactic", mannyBarrett: true, targetless: true, icon: "⚔️", text: "进行判定并记录判定牌花色；本回合，与记录花色相同的单体【杀】造成的伤害翻倍，且不可被响应。" } },
-    { id: "cannon", name: "反坦克炮", type: "passive", icon: "⭐", text: "锁定技，你使用的单体【杀】无视护甲；此【杀】造成生命伤害后，目标获得“刺弹”标记（多段或连击伤害时逐段结算）。拥有“刺弹”标记的角色受到伤害时，移去该标记，然后对其同阵营所有角色造成5+你攻击力点无视护甲伤害。" },
-    { id: "flamer", name: "聚焦喷火器", type: "passive", icon: "⭐", text: "锁定技，你使用的单体【杀】附加火属性并改为指定所有敌方角色为目标；每名未倒下的目标连续受到2次不可被响应的伤害。" },
+    { id: "barrett", name: "巴特雷", type: "active", icon: "⚔️", text: "出牌阶段限一次，你进行判定并记录判定牌花色。本回合，你使用与记录花色相同的实体单体【杀】造成的伤害翻倍，且不可被响应；虚拟【杀】与技能生成牌不触发。", card: { name: "巴特雷", type: "tactic", mannyBarrett: true, targetless: true, icon: "⚔️", text: "进行判定并记录判定牌花色；本回合，与记录花色相同的实体单体【杀】造成的伤害翻倍，且不可被响应；虚拟【杀】与技能生成牌不触发。" } },
+    { id: "cannon", name: "反坦克炮", type: "passive", icon: "⭐", text: "锁定技，你使用的实体单体【杀】无视护甲；此【杀】造成生命伤害后，目标获得“刺弹”标记（多段或连击伤害时逐段结算）。拥有“刺弹”标记的角色受到伤害时，移去该标记，然后对其同阵营所有角色造成5+你攻击力点无视护甲伤害。虚拟【杀】与技能生成牌不触发，也不挂刺弹标记。" },
+    { id: "flamer", name: "聚焦喷火器", type: "passive", icon: "⭐", text: "锁定技，你使用的实体单体【杀】附加火属性并改为指定所有敌方角色为目标；每名未倒下的目标连续受到2次不可被响应的伤害。虚拟【杀】与技能生成牌不触发。" },
   ];
   const black = c => c?.suit === "♠" || c?.suit === "♣";
   const singleSlash = c => window.CardUtils.isSingleKill(c);
+  // 次元转移只改写「实体单体【杀】」：实体判定统一走 CardUtils.isEntityCard 单一来源，
+  // 与【战斗演练】实体牌口径一致。妖刀村雨自动斩、刺刀AK47反击等虚拟杀、技能生成牌
+  // 与 type:"skill" 伤害载荷一律不触发，避免非玩家出牌阶段弹出转移提示锁住 battle。
+  const entitySingleSlash = c => singleSlash(c) && window.CardUtils.isEntityCard(c);
   const stat = (u, k) => (u.stats?.[k] || 0) + (k === "attack" ? (u.tempAttack || 0) : k === "magic" ? (u.tempMagic || 0) : 0);
   const alive = u => u && u.hp > 0;
   const markStatus = (target, status) => { target.statuses ||= []; if (!target.statuses.includes(status)) target.statuses.push(status); };
@@ -39,19 +43,29 @@ window.MannySkills = (() => {
   function beforeSlash(state, actor, target, card) {
     if (actor?.ref !== "manny") return;
     const single = singleSlash(card), weapon = activeWeapon(actor)?.id;
-    const flamer = weapon === "flamer" && card?._tempSweep;
+    // 巴特雷/反坦克炮与次元转移同口径：只对实体单体【杀】生效，
+    // 虚拟杀、技能生成牌不翻倍、不无视护甲，也不播放武器攻击特效。
+    const entitySingle = entitySingleSlash(card);
+    // 转换后 card.sweep 已被置位，不能再走单体判据；_tempSweep 证明原牌是单体，
+    // 实体性单独用 CardUtils.isEntityCard 补一道，避免虚拟杀误播喷火动画。
+    const flamer = weapon === "flamer" && card?._tempSweep
+      && !!window.CardUtils?.isEntityCard?.(card);
     const weaponFx = weapon && (weapon !== "barrett" || (actor.mannyBarrettSuit && card.suit === actor.mannyBarrettSuit));
-    if ((single && weaponFx) || (flamer && !card._mannyFlamerFxShown)) {
+    // 聚焦喷火器转换后 card.sweep 已置位，通用单体分支会误判；它的动画
+    // 只由下面的 _tempSweep 分支承担，且该分支已叠加 isEntityCard 守卫。
+    const fxSingle = weapon === "flamer" ? false
+      : (weapon === "barrett" || weapon === "cannon") ? entitySingle : single;
+    if ((fxSingle && weaponFx) || (flamer && !card._mannyFlamerFxShown)) {
       if (flamer) card._mannyFlamerFxShown = true;
       window.MannyGunSkinFX?.weaponAttack?.(state, actor, target, weapon);
     }
-    if (!single) return;
+    if (!entitySingle) return;
     if (actor.mannyWeapon === "barrett" && actor.mannyBarrettSuit && card.suit === actor.mannyBarrettSuit) { card.mannyDouble = true; if (!card.ignoreResponse) card._tempIgnoreResponse = true; card.ignoreResponse = true; window.BattleLines?.skill(state, actor, "巴特雷"); }
     if (actor.mannyWeapon === "cannon") { if (!card.ignoreBlock) card._tempIgnoreBlock = true; card.ignoreBlock = true; window.BattleLines?.skill(state, actor, "反坦克炮"); }
   }
   function transferSlash(state, actor, target, amount, source, card) {
     const b = state.battle, manny = b?.allies.find(u => u.ref === "manny" && u.hp > 0);
-    if (target?.side !== "ally" || !manny || !singleSlash(card) || card.dimensionTransferred) return false;
+    if (target?.side !== "ally" || !manny || !entitySingleSlash(card) || card.dimensionTransferred) return false;
     const hasCost = manny.hand.some(c => black(c) && !c._pendingDraw), foes = b.enemies.filter(e => e.hp > 0);
     if (!hasCost || !foes.length) return false;
     const transferCard = { ...card, dimensionTransferred: true, skipDamageModify: true, _entitySourceCard: card._entitySourceCard || card };
@@ -111,7 +125,7 @@ window.MannySkills = (() => {
     if (!hpLoss) return;
     if (target?.spikeShell && !card?.spikeExplosion) { explodeSpike(state, target, damage, directDamage); return; }
     if (!alive(target)) return;
-    if (actor?.ref === "manny" && singleSlash(card) && actor.mannyWeapon === "cannon") {
+    if (actor?.ref === "manny" && entitySingleSlash(card) && actor.mannyWeapon === "cannon") {
       // 刺弹标记会立刻显示为状态图标，需等本段受击动画演完再挂上
       const spike = () => markSpike(state, actor, target);
       if (!(damage?.delayUntilHitSettled?.(state, spike)

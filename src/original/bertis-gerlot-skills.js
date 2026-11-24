@@ -29,9 +29,10 @@ window.BertisGerlotSkills = (() => {
   function setArrogant(u, active) {
     const b = u.bertisBaseStats;
     const multipliers = active
-      ? { attack: 150, magic: 150, bloodlust: 200, handLimit: 200 }
+      ? { attack: 200, magic: 200, bloodlust: 200, handLimit: 200 }
       : { attack: 100, magic: 100, bloodlust: 100, handLimit: 100 };
-    // 整数百分比化：150 即原 1.5 倍，除法后四舍五入，奇数基值也不再出现 13.5 这类小数属性。
+    // 整数百分比化：200 即 2 倍（攻/魔由原 1.5 倍上调），除法后四舍五入，
+    // 奇数基值也不再出现 13.5 这类小数属性；四项满血增益现在统一为 2 倍。
     Object.keys(multipliers).forEach(k => u.stats[k] = Math.round(b[k] * multipliers[k] / 100));
     u.bertisArrogant = active;
     u.intent = Math.min(intentMax(u), u.intent || 0);
