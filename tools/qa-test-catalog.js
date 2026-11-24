@@ -165,6 +165,8 @@ const timeouts = Object.freeze({
   "test-notice-no-top-summary.js": 120,
   "test-notice-no-top-summary-live.js": 240,
   // 天日国鹰7研究所骨架：副本/节点/入口占位/剧情/数值（8 组源码级反向）
+  "check-tenri-bgm-seamless.js": 180,
+  "test-tenri-normal-enemies-strict.js": 180,
   "test-tenri-institute-scaffold.js": 120,
   // 250 版：管家手册接入 25 级满级线与 devLocked 副本过滤（A~E 五组 + 4 组反向）
   "test-butler-manual-tenri-integration.js": 120,
@@ -209,6 +211,8 @@ const groups = Object.freeze({
     "test-intent-to-yinqi-live.js",
     "test-magic-watch-monster-skill-recheck.js",
     "test-notice-no-top-summary.js",
+    "check-tenri-bgm-seamless.js",
+    "test-tenri-normal-enemies-strict.js",
     "test-tenri-institute-scaffold.js",
     "test-butler-manual-tenri-integration.js",
     "test-tenri-strict-recheck.js",

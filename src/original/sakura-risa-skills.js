@@ -10,7 +10,8 @@ window.SakuraRisaSkills = (() => {
     unit?.side === "enemy" ? battle.allies : battle.enemies;
   const responseCount = unit =>
     visible(unit).filter(card => card.type === "response").length;
-  const pendingRevival = unit => !!unit?.risaRevivePending;
+  const pendingRevival = unit => !!unit?.risaRevivePending
+    || !!window.TenriInstituteSkills?.pendingRevival?.(unit);
   const aliveForBattle = unit => !!unit && (unit.hp > 0 || pendingRevival(unit));
   const battleSettling = battle => !!(battle?.pendingVictory || battle?.pendingDefeat
     || battle?.victoryScreen || battle?.defeat || battle?.testComplete);
@@ -19,9 +20,15 @@ window.SakuraRisaSkills = (() => {
     sameSide, foesOf, battleSettling,
   };
 
-  return {
+  const api = {
     isRisa, responseCount, pendingRevival, aliveForBattle,
     ...window.SakuraRisaCombatSkills(shared),
     ...window.SakuraRisaLifecycleSkills(shared),
   };
+  // 免死统一入口：研究所【快速复生】与不死食尸鬼共用全项目 preventDeath 挂点。
+  const basePreventDeath = api.preventDeath;
+  api.preventDeath = (state, unit) =>
+    !!window.TenriInstituteSkills?.preventDeath?.(state, unit)
+    || !!basePreventDeath?.(state, unit);
+  return api;
 })();

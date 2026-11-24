@@ -40,7 +40,8 @@ window.GameRandom = {
 window.ButlerManualProgress = { has: () => false };
 [
   "economy-config.js", "data-machine-factory-enemies.js", "data-underwater-train-enemies.js",
-  "data-ruins-sand-city-enemies.js", "data-ruins-sand-city.js", "data-tenri-institute.js",
+  "data-ruins-sand-city-enemies.js", "data-ruins-sand-city.js",
+  "data-tenri-institute-enemies.js", "data-tenri-institute.js",
   "data-future-dungeons.js", "character-progression.js", "character-enhance.js",
   "unlock-event-progress.js", "dungeon-map.js", "tenri-institute-unlock-events.js",
 ].forEach(load);
@@ -59,7 +60,9 @@ check("A", "id / 名称 / kind", m.id === "tenri_institute" && m.name === "天�
 check("A", "requiresFlag 与 lockedHint", m.requiresFlag === "tenriInstituteUnlocked" && m.lockedHint.includes("废墟沙城"));
 check("A", "devLocked + devHint 占位", m.devLocked === true && m.devHint === "未开发完成");
 check("A", "subtitle 含研究所与橘千樱", m.subtitle.includes("秘密研究所") && m.subtitle.includes("橘千樱"));
-check("A", "bgm 已配置", typeof m.bgm === "string" && m.bgm.endsWith(".mp3"));
+check("A", "bgm 已配置（研究所专属无缝循环曲）", typeof m.bgm === "string"
+  && /\.(ogg|mp3)$/.test(m.bgm)
+  && m.bgm.includes("tenri-institute-battle"));
 check("A", "reward 按废墟沙城", m.reward.gold === 0 && m.reward.goldMultiplier === 230);
 check("A", "route 14 层 / 固定节点", m.route.type === "fixed-random" && m.route.layers === 14
   && m.route.rest[0] === 13 && m.route.chest[0] === 7 && m.route.boss[0] === 14);
@@ -70,8 +73,9 @@ const all = window.GameData.missions.filter(x => x.id === m.id);
 check("B", "聚合进 GameData.missions 且唯一", all.length === 1 && all[0] === m);
 check("B", "GameDataFutureDungeons 条件展开", window.GameDataFutureDungeons.includes(m));
 check("B", "敌人池已挂载且非空", Array.isArray(window.GameData.enemies[m.id]) && window.GameData.enemies[m.id].length > 0);
-check("B", "敌人池复用废墟沙城", window.GameData.enemies[m.id].length === window.GameDataRuinsSandCityEnemies.length);
-check("B", "敌人池含三型", ["normal", "elite", "boss"].every(t => window.GameData.enemies[m.id].some(e => e.type === t)));
+check("B", "敌人池为 4 只研究所专属普通怪", window.GameData.enemies[m.id].length === 4
+  && window.GameData.enemies[m.id].every(e => String(e.id).startsWith("tenri_")));
+check("B", "精英/首领待设计：池内仅普通怪", window.GameData.enemies[m.id].every(e => e.type === "normal"));
 check("B", "解锁前置判定", T.unlockCastReady({ chars: [{ id: "preshi", locked: false }, { id: "mieryula", locked: false }] })
   && !T.unlockCastReady({ chars: [{ id: "preshi", locked: false }] }));
 

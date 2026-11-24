@@ -7,8 +7,16 @@
 | --- | --- | --- | --- |
 | `废墟沙城怪物属性清单.md` | 9 只怪物的基础属性、五档难度换算、编组、掉落、逐怪技能全文 | `src/original/data-ruins-sand-city-enemies.js`、`data-world.js`、`dungeon-enemies.js`、`data-ruins-content.js` | 沙盒工作区 `废墟沙城怪物属性清单/`（含 CSV 与 2 张 PNG 总览） |
 | `废墟沙城怪物属性清单.csv` | 同上，机器可读；含 9×5 档换算列 | 同上 | 同上 |
+| `天日国鹰7研究所怪物设计.md` | 研究所 4 只普通怪的重平衡后八项属性、四个技能实现口径、随机池复用结论、立绘与 BGM 无缝处理链 | `src/original/data-tenri-institute-enemies.js`、`tenri-*-skills.js`、`dungeon-enemies.js`、`bgm.js` | 沙盒工作区 `研究所素材/` |
+| `天日国鹰7研究所怪物设计.md` | 研究所 4 只普通怪的重平衡后八项属性、四个技能实现口径、随机池复用结论、立绘与 BGM 无缝处理链 | `src/original/data-tenri-institute-enemies.js`、`tenri-*-skills.js`、`dungeon-enemies.js`、`bgm.js` | 沙盒工作区 `研究所素材/` |
 | `研究所立绘与BGM素材清单.md` | 远端 `天日国鹰7研究所.zip` 的 14 个素材、来源 SHA、命名配对与保留状态 | 远端提交 `fc8c935c` 中的 `天日国鹰7研究所.zip` | 沙盒工作区 `研究所素材/`（含 CSV、预览拼图、原 ZIP） |
 | `研究所立绘与BGM素材清单.csv` | 同上，含完整 SHA256 | 同上 | 同上 |
+
+> 2026-11-24 起「研究所普通战斗_min.ogg」已处理为无缝循环曲并接入 `publish/assets/new-bgm/`，
+> 由 `tools/check-tenri-bgm-seamless.js` 复核；素材清单记录的是**原始 zip 内容**，两处不冲突。
+
+> 2026-11-24 起「研究所普通战斗_min.ogg」已处理为无缝循环曲并接入 `publish/assets/new-bgm/`，
+> 由 `tools/check-tenri-bgm-seamless.js` 复核；素材清单记录的是**原始 zip 内容**，两处不冲突。
 
 ## 使用约定
 

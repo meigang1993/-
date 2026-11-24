@@ -51,6 +51,7 @@ window.EnemyKillHooks = ({ black, hasSkill, drawJudge }) => {
     }
     window.OrcDungeonSkills?.beforeKillTargeted?.(state, actor, target, card);
     window.RuinsEnemySkills?.beforeKillTargeted?.(state, actor, target, card);
+    window.TenriInstituteSkills?.beforeKillTargeted?.(state, actor, target, card);
     monaSlash(state, actor, target, card);
     }
     if (!targetStopped) minotaurDefense(state, target, card);

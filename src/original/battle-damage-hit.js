@@ -24,6 +24,9 @@ window.BattleDamageHit = ({
       ? amount
       : window.BertisGerlotSkills?.modifyIncomingDamage?.(
         state, actor, amount, card) ?? amount;
+    // 【极速射线】在统一命中出口翻倍，避免攻击流程里再乘一次。
+    if (!card?.skipDamageModify) amount = window.TenriInstituteSkills?.modifyIncomingDamage?.(
+      state, actor, target, amount, card) ?? amount;
     if (ctx.checkDefeat(state) || state.battle?.locked) {
       return { dodged: false, hpLoss: 0 };
     }

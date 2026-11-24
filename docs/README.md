@@ -82,6 +82,12 @@ structure / level-cap wording in the design note is kept as history.
 2. Original runtime/data and matching `docs/original/` contract.
 3. Current executable repository contracts.
 
+## Reference Snapshots
+
+- `reference/天日国鹰7研究所怪物设计.md` — 研究所 4 只普通怪的属性、技能、随机池复用结论与立绘清单。
+- `reference/废墟沙城怪物属性清单.md` / `.csv` — 废墟沙城 9 只怪的源码数值快照。
+- `reference/研究所立绘与BGM素材清单.md` / `.csv` — 并行提交素材 zip 的逐文件校验记录。
+
 ## Cross-AI Collaboration Rules (must read before writing)
 
 Multiple AI agents work on this repo (local container + remote). Before any

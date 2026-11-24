@@ -22,6 +22,8 @@ window.BattleCombat = (deps) => {
 
   function useCard(state, actor, target, card) {
     const battleAtStart = state.battle;
+    // 研究所【守护后方】：实体单体杀的目标转移必须在所有结算之前生效。
+    target = window.TenriInstituteSkills?.redirectTarget?.(state, actor, target, card) ?? target;
     if (window.CharacterSkillAccess?.canResolve
       && !window.CharacterSkillAccess.canResolve(
         state, actor, target, card, canPlay
@@ -92,7 +94,7 @@ window.BattleCombat = (deps) => {
       card._countAsPlayed = true;
       return false;
     }
-    state.battle.testRecovery = false; if (actor.hand.includes(card)) card._playedFromHand = true; window.WithererSkills?.convertBerserkCard?.(state, actor, card); if (!card._skill) { window.AngelicaLukaSkills?.beforeCardPlayed?.(state, actor, card); window.ArtinaMariaSkills?.beforeCardPlayed?.(state, actor, card, deps); } window.CatherineSkills?.beforeCardPlayed?.(state, actor, card); window.RuinsEnemySkills?.beforeCardPlayed?.(state, actor, card); window.PreshiSkills?.beforeCardPlayed?.(state, actor, card, target);
+    state.battle.testRecovery = false; if (actor.hand.includes(card)) card._playedFromHand = true; window.WithererSkills?.convertBerserkCard?.(state, actor, card); if (!card._skill) { window.AngelicaLukaSkills?.beforeCardPlayed?.(state, actor, card); window.ArtinaMariaSkills?.beforeCardPlayed?.(state, actor, card, deps); } window.CatherineSkills?.beforeCardPlayed?.(state, actor, card); window.RuinsEnemySkills?.beforeCardPlayed?.(state, actor, card); window.PreshiSkills?.beforeCardPlayed?.(state, actor, card, target); window.TenriInstituteSkills?.beforeCardPlayed?.(state, actor, card);
     window.EdisSkills?.rememberPrePlayHand?.(actor, card);
     window.WithererSkills?.prepareSpeedCard?.(state, actor, card);
     if (card.demonPoker) { const done = specials.demonPoker(state, actor, target, card); repeatIfDone(state, actor, target, card, done); return done; }

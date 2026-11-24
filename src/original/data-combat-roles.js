@@ -76,6 +76,10 @@ window.GameCombatRoles = (() => {
     witherer_1312: ["控制"],
     hilde: ["控制"],
     attack_helicopter: ["输出"],
+    tenri_assault: ["输出"],
+    tenri_guard: ["防御/嘲讽"],
+    tenri_railgun: ["输出"],
+    tenri_ghoul: ["辅助/续航"],
     armored_carrier: ["防御/嘲讽"],
   });
   const templates = [
@@ -83,6 +87,7 @@ window.GameCombatRoles = (() => {
     ...(window.GameDataMachineFactoryEnemies || []),
     ...(window.GameDataUnderwaterTrainEnemies || []),
     ...(window.GameDataRuinsSandCityEnemies || []),
+    ...(window.GameDataTenriInstituteEnemies || []),
     ...Object.values(window.GameDataFutureEnemies || {}).flat(),
   ];
   templates.forEach(template => {

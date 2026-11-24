@@ -88,6 +88,9 @@ window.BattleTurnStart = ({
     battle.prepareUnitUid = unit.uid;
     battle.prepareStep = 0;
     window.BattleTurnState.resetBeginTurn(unit, battle, intentMax(unit));
+    // 【快速复生】先于不死食尸鬼结算：复活后清掉待复活标记，
+    // 后者看到 pendingRevival=false 便不会抢先执行丽莎的复活逻辑。
+    window.TenriInstituteSkills?.beginTurn?.(state, unit);
     // 时停：回合开始技归属该单位，跳回合判据在其后，故先在此拦掉。
     if (!window.MieryulaTimeStop?.isSkillDisabled?.(unit))
     window.SakuraRisaSkills?.beginTurn?.(state, unit);

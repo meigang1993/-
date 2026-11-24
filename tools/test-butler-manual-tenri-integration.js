@@ -40,7 +40,7 @@ global.window = global;
   "character-progression.js", "character-enhance.js",
   "data-machine-factory-enemies.js", "data-underwater-train-enemies.js",
   "data-ruins-sand-city-enemies.js", "data-ruins-sand-city.js",
-  "data-tenri-institute.js", "data-future-dungeons.js",
+  "data-tenri-institute-enemies.js", "data-tenri-institute.js", "data-future-dungeons.js",
   "data-future-orc-enemies.js", "data-bakar-enemy.js", "data-future-enemies.js",
   "data-orc-bondi.js", "data-guard-kelly.js", "data-sakura-risa.js",
   "data-world.js", "data.js", "butler-manual-progress.js",
@@ -105,8 +105,10 @@ const openedBoss = P.bossGroups(state()).flatMap(g => g.list.map(e => e.id));
 tenri.devLocked = flag;
 check("C", "去掉 devLocked 后手册自动纳入第 5 个副本", opened.length === 5
   && opened.some(m => m.id === "tenri_institute"));
-check("C", "纳入后探索格 26 / 首领 10", openedExplore.length === 6
-  && openedTotal === 26 && openedBoss.length === 10);
+// 研究所怪物表目前只有 4 只普通怪（精英/首领待设计），纳入后首领数不虚增。
+check("C", "纳入后探索格 26 / 首领仍 8（研究所暂无首领怪）", openedExplore.length === 6
+  && openedTotal === 26 && openedBoss.length === 8
+  && !openedBoss.some(id => String(id).startsWith("tenri_")));
 check("C", "恢复 devLocked 后回到 4 副本 21 格", P.missions().length === 4
   && P.overall(state()).explore.total === 21);
 

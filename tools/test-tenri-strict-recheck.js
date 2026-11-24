@@ -40,7 +40,8 @@ window.GameRandom = {
 };
 [
   "economy-config.js", "data-machine-factory-enemies.js", "data-underwater-train-enemies.js",
-  "data-ruins-sand-city-enemies.js", "data-ruins-sand-city.js", "data-tenri-institute.js",
+  "data-ruins-sand-city-enemies.js", "data-ruins-sand-city.js",
+  "data-tenri-institute-enemies.js", "data-tenri-institute.js",
   "data-future-dungeons.js", "character-progression.js", "character-enhance.js",
   "unlock-event-progress.js", "dungeon-map.js", "tenri-institute-unlock-events.js",
 ].forEach(load);
@@ -212,8 +213,9 @@ check("G", "手册 MAX_LEVEL 动态跟随成长模块", (() => {
   vm.runInNewContext(source("butler-manual-progress.js"), sandbox, { filename: "butler-manual-progress.js" });
   return sandbox.window.ButlerManualProgress.MAX_LEVEL === P.maxLevel;
 })());
-check("G", "怪物池复用废墟沙城且三型齐全", GD.enemies.tenri_institute.length === window.GameDataRuinsSandCityEnemies.length
-  && ["normal", "elite", "boss"].every(t => GD.enemies.tenri_institute.some(e => e.type === t)));
+check("G", "怪物池为 4 只研究所专属普通怪", GD.enemies.tenri_institute.length === 4
+  && GD.enemies.tenri_institute.every(e => String(e.id).startsWith("tenri_") && e.type === "normal")
+  && GD.enemies.tenri_institute !== window.GameDataRuinsSandCityEnemies);
 check("G", "占位期不进手册避免重名点亮", has("butler-manual-progress.js", "!m?.devLocked"));
 
 // ---------- 汇总 ----------

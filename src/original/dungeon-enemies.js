@@ -38,6 +38,7 @@ window.DungeonEnemyGroups = (() => {
     if (run.missionId === "underwater_train") return underwaterEnemies(pool, diff, type, state);
     if (run.missionId === "orc_dungeon") return orcDungeonEnemies(pool, diff, type, state);
     if (run.missionId === "ruins_sand_city") return ruinsEnemies(pool, diff, type, state);
+    if (run.missionId === "tenri_institute") return tenriEnemies(pool, diff, type, state);
     // 新手保护：首次远征第一场战斗固定为单个机械哥布林，避免随机到多名敌人或精英。
     // 注意：本函数在 DungeonSystem.start 生成 layers 的过程中被调用，此时 run.layers
     // 可能尚未建立，故只能做防御式读取，不能调用 DungeonMap.nodes()（它假定 layers 已存在，
@@ -71,6 +72,14 @@ window.DungeonEnemyGroups = (() => {
   function orcDungeonEnemies(pool, diff, type, state) {
     if (type === "boss") return fixedGroup(pool, diff, type, sample([["xx_witherer_1124"], ["demon_mecha_cerberus", "demon_king_bakaar"]], state), state);
     if (type === "elite") return fixedGroup(pool, diff, type, sample([["witherer_1124_split", "witherer_1124_split"], ["orc_king_bondi"], ["demon_beast_unit", "guard_kelly", "demon_witch"], ["demon_witch", "assassin_sakura_risa", "demon_witch"]], state), state);
+    const count = rand(1, 4, state), picked = [], normalPool = pool.filter(e => e.type === "normal");
+    for (let i = 0; i < count; i++) picked.push(pickRepeatable(normalPool, picked, state));
+    return withLabels(picked.map(e => scaleEnemy(e, diff, type)));
+  }
+  // 研究所目前只有 4 只普通怪：三型节点都从普通池随机，完全复用其它副本的
+  // rand(1,4) + pickRepeatable（同 id 最多 4 只）+ withLabels（ABCD 编号区分）。
+  // 精英/首领节点按对应难度倍率缩放，但不会混入其它副本的怪物 id。
+  function tenriEnemies(pool, diff, type, state) {
     const count = rand(1, 4, state), picked = [], normalPool = pool.filter(e => e.type === "normal");
     for (let i = 0; i < count; i++) picked.push(pickRepeatable(normalPool, picked, state));
     return withLabels(picked.map(e => scaleEnemy(e, diff, type)));

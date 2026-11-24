@@ -66,7 +66,7 @@ global.persist = async () => true;
 [
   "economy-config.js",
   "data-machine-factory-enemies.js", "data-underwater-train-enemies.js", "data-ruins-sand-city-enemies.js",
-  "data-ruins-sand-city.js", "data-tenri-institute.js", "data-future-dungeons.js",
+  "data-ruins-sand-city.js", "data-tenri-institute-enemies.js", "data-tenri-institute.js", "data-future-dungeons.js",
   "character-progression.js", "character-enhance.js", "unlock-event-progress.js", "local-core-utils.js",
   "dungeon-unlocks.js", "dungeon-map.js", "dungeon-enemies.js", "dungeon-events.js",
   "dungeon-reward-core.js", "dungeon-settlement-actions.js", "dungeon-run-rewards.js",
