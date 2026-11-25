@@ -69,77 +69,22 @@ window.CardArt = (() => {
     obstacle: "灵魂锁链",
     status: "眩晕",
   });
-  const skillArt = Object.freeze({
-    "热血契约": "./assets/generated/cards/skill-art-blood-pact.d333993a.webp",
-    "狂风绝息斩": "./assets/generated/cards/skill-art-wind-execution.b663998e.webp",
-    "榨取精华": "./assets/generated/cards/skill-art-essence-extract.ecb49b53.webp",
-    "渴血杀戮": "./assets/generated/cards/skill-art-bloodthirst-slaughter.52cdcdce.webp",
-    "神奇怀表": "./assets/generated/cards/skill-art-magic-watch.8f812c23.webp",
-    "次元军火库": "./assets/generated/cards/skill-art-dimension-armory.98680273.webp",
-    "贪玩老虎机": "./assets/generated/cards/skill-art-playful-slot.3104c35f.webp",
-    "模仿之音": "./assets/generated/cards/skill-art-mimic-voice.ee17d220.webp",
-    "偶像之吻": "./assets/generated/cards/skill-art-idol-kiss.03ce3e80.webp",
-    "神速之袭": "./assets/generated/cards/skill-art-speed-assault.2df815af.webp",
-    "解答迷惑": "./assets/generated/cards/skill-art-answer-confusion.4b87bb39.webp",
-    "疯狂射击": "./assets/generated/cards/skill-art-crazy-shooting.cce6591a.webp",
-    "苦肉鞭笞": "./assets/generated/cards/skill-art-self-punishing-whip.1afab66d.webp",
-    "疯狂屠戮": "./assets/generated/cards/skill-art-crazy-slaughter.7dbbf054.webp",
-    "狂战意志": "./assets/generated/cards/skill-art-berserker-will.51f36fec.webp",
-    "回春之手": "./assets/generated/cards/skill-art-rejuvenating-hand.08870ba4.webp",
-    "贡献计划": "./assets/generated/cards/skill-art-contribution-plan.29b404d6.webp",
-    "计算下注": "./assets/generated/cards/skill-art-calculated-bet.4054b9e6.webp",
-    "终焉鬼影斩": "./assets/generated/cards/skill-art-phantom-final-slash.de39f1c5.webp",
-    "半魅魔精华": "./assets/generated/cards/skill-art-half-succubus-essence.38f22194.webp",
-    "杀欲窥视": "./assets/generated/cards/skill-art-killing-intent-gaze.96198fac.webp",
-    "暴走与极速": "./assets/generated/cards/skill-art-berserk-speed-shift.aa36282b.webp",
-    "充能精华": "./assets/generated/cards/skill-art-charged-essence.376fbb0d.webp",
-    "取粮": "./assets/generated/cards/skill-art-take-rations.11d64493.webp",
-    "巴特雷": "./assets/generated/cards/skill-art-barrett.9263336b.webp",
-    "控神魔眼": "./assets/generated/cards/skill-art-control-eye.8765b0b1.webp",
-    "无人机采精": "./assets/generated/cards/skill-art-drone-extract.a84f55e0.webp",
-    "毒气手雷": "./assets/generated/cards/skill-art-poison-grenade.69277c14.webp",
-    "猛龙断空斩": "./assets/generated/cards/skill-art-dragon-slash.64c65c7e.webp",
-    "索敌雷达": "./assets/generated/cards/skill-art-targeting-radar.065fa2e0.webp",
-    "震感闪光弹": "./assets/generated/cards/skill-art-shock-flashbang.1708cb72.webp",
-    "魔法巡飞弹": "./assets/generated/cards/skill-art-magic-cruise-missile.e989e139.webp",
-    "恐怖巨锤": "./assets/generated/cards/skill-art-terror-hammer.0c5ae580.webp",
-    "鬼王扑克": "./assets/generated/cards/skill-art-demon-poker.e05b46de.webp",
-    "1124号长舌头": "./assets/generated/cards/skill-art-long-tongue-1124.2cbb0cc8.webp",
-    "军令状": "./assets/generated/cards/skill-art-military-order.794b2a24.webp",
-    "放置地雷": "./assets/generated/cards/skill-art-mine-placement.06f31cda.webp",
-    "狙击目标": "./assets/generated/cards/skill-art-sniper-target.f36526d7.webp",
-    "坦克炮弹": "./assets/generated/cards/skill-art-tank-shell.cfe53029.webp",
-    "电钻火花": "./assets/generated/cards/skill-art-drill-spark.73282249.webp",
-    "机尾机枪": "./assets/generated/cards/skill-art-tail-machinegun.4d88dacf.webp",
-    "死亡音波": "./assets/generated/cards/skill-art-death-wave.66c1eac9.webp",
-    "百眼魅魔": "./assets/generated/cards/skill-art-many-eyes.8f373b74.webp",
-    "潜影背刺": "./assets/generated/cards/skill-art-shadow-backstab.9f3e155f.webp",
-    "窃取": "./assets/generated/cards/skill-art-catherine-steal.5dbd21f5.webp",
-    "影舞步": "./assets/generated/cards/skill-art-shadow-dance.eddbc5f2.webp",
-    "战场扫射": "./assets/generated/cards/skill-art-battlefield-sweep.d9b5c850.webp",
-    "增援部队": "./assets/generated/cards/skill-art-reinforcement.3a06f2c4.webp",
-    "蓄力子弹": "./assets/generated/cards/skill-art-artina-sniper.b1dba20c.webp",
-    "荣誉祝福": "./assets/generated/cards/skill-art-maria-honor-blessing.bb3f4b54.webp",
-    "魅魔钢叉": "./assets/generated/cards/skill-art-succubus-fork.bdc0e56b.webp",
-    "女王榨取": "./assets/generated/cards/skill-art-queen-extract.361b442b.webp",
-    "终极刀魔": "./assets/generated/cards/skill-art-ultimate-blade.c1dcc172.webp",
-  });
-  const skillFallback = "./assets/generated/cards/card-art-charge.bfb8fcb9.webp";
+  // 2026-11-25：按需求删除全部技能牌图（skill-art-*.webp）出牌区也不再显示技能牌。
+  // 卡牌图案（card-art-*.webp）全部保留，只供实体牌 / 状态牌 / 战术牌使用。
+  // 技能牌（_skill / skillName）不再解析任何卡图，url 与 fallbackUrl 一律返回空串，
+  // UICommonCardArt.html 收到空串就不会渲染 <img>，避免出现空 <img src=""> 或破图。
   const isSkill = card => !!card && !card.virtual && !card.convertedFrom
     && !!(card._skill || card.skillName);
 
   function url(cardOrName) {
     const card = typeof cardOrName === "string" ? { name: cardOrName } : cardOrName || {};
+    if (isSkill(card)) return "";
     if (art[card.name]) return art[card.name];
-    const skillName = card.skillName || card.name;
-    if (isSkill(card)) {
-      return skillArt[skillName] || skillFallback;
-    }
     return art[fallback[card.type] || "蓄力"];
   }
   function fallbackUrl(cardOrName) {
     const card = typeof cardOrName === "string" ? { name: cardOrName } : cardOrName || {};
-    return isSkill(card) ? skillFallback : art[fallback[card.type] || "蓄力"];
+    return isSkill(card) ? "" : art[fallback[card.type] || "蓄力"];
   }
 
   function className(card = {}) {

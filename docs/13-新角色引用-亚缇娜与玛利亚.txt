@@ -41,9 +41,9 @@ ID：artina
    本回合首次使用每种花色的牌时记录花色。下一张实体单体【杀】伤害翻倍，
    每记录一种花色额外增加一倍，使用后清除记录。
 
-技能插画素材：
-  publish/assets/generated/cards/skill-art-artina-sniper.b1dba20c.webp
-  publish/assets/generated/cards/skill-art-sniper-target.f36526d7.webp
+技能插画素材（2026-11-25 已删除）：
+  原 publish/assets/generated/cards/skill-art-artina-sniper.b1dba20c.webp
+  与原 skill-art-sniper-target.f36526d7.webp 均随全部技能牌图一并删除。
 
 立绘素材：
   publish/assets/new-portraits/artina.webp
@@ -81,7 +81,7 @@ ID：maria
    生成卡牌：战术牌，名为"荣誉祝福"。
 
 技能插画素材：
-  publish/assets/generated/cards/skill-art-maria-honor-blessing.bb3f4b54.webp
+  publish/assets/generated/cards/skill-art-maria-honor-blessing.bb3f4b54.webp（2026-11-25 已删除）
 
 立绘素材：
   publish/assets/new-portraits/maria.webp
@@ -106,8 +106,9 @@ ID：maria
   文件名                                    -> 用途
   new-portraits/artina.webp                 -> 亚缇娜立绘
   new-portraits/maria.webp                  -> 玛利亚立绘
-  generated/cards/skill-art-artina-sniper.b1dba20c.webp -> 亚缇娜狙击目标技能图
-  generated/cards/skill-art-sniper-target.f36526d7.webp -> 狙击目标技能图（共用）
-  generated/cards/skill-art-maria-honor-blessing.bb3f4b54.webp -> 玛利亚荣誉祝福技能图
+  generated/cards/skill-art-artina-sniper.b1dba20c.webp -> 亚缇娜狙击目标技能图（已删除）
+  generated/cards/skill-art-sniper-target.f36526d7.webp -> 狙击目标技能图（共用，已删除）
+  generated/cards/skill-art-maria-honor-blessing.bb3f4b54.webp -> 玛利亚荣誉祝福技能图（已删除）
 
-这些素材存在于项目中，重制时可以保留或移除，不影响正式游戏功能。
+技能插画素材已于 2026-11-25 全部删除，出牌区不再显示技能牌；以上清单仅为历史记录。
+立绘素材仍按上表保留，不受本次删除影响。

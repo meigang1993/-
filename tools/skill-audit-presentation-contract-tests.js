@@ -88,31 +88,36 @@ module.exports = ({ assert, unit }) => {
   // 49 → 50：新增诺亚主动技「终极刀魔」（无专属卡图，走技能卡兜底图）。
   assert(namedActiveSkills.size === 50,
     `skill artwork audit must cover all 50 named active skills (实际 ${namedActiveSkills.size})`);
-  const artOwners = new Map();
-  const hashOwners = new Map();
+  // 2026-11-25：技能牌图（skill-art-*.webp）全部删除，出牌区不再显示技能牌。
+  // 审计口径反转：50 个具名主动技不再解析出任何卡图，CardArt.url/fallbackUrl
+  // 对技能牌一律返回空串；卡牌图案（card-art-*.webp）59 张必须全部保留。
   namedActiveSkills.forEach((skill, name) => {
     const runtimeCard = {
       ...(skill.card || { name, type: "tactic" }),
       _skill: true,
       skillName: name,
     };
-    const art = CardArt.url(runtimeCard);
-    const file = path.resolve("publish", art.replace(/^\.\//, ""));
-    assert(art.includes("/skill-art-"),
-      `${name} must resolve dedicated skill artwork`);
-    assert(fs.existsSync(file), `${name} skill artwork file is missing`);
-    assert(!artOwners.has(art),
-      `${name} shares artwork path with ${artOwners.get(art)}`);
-    artOwners.set(art, name);
-    const hash = crypto.createHash("sha256")
-      .update(fs.readFileSync(file)).digest("hex");
-    assert(!hashOwners.has(hash),
-      `${name} duplicates artwork bytes from ${hashOwners.get(hash)}`);
-    hashOwners.set(hash, name);
+    assert(CardArt.isSkill(runtimeCard), `${name} must still be identified as a skill card`);
+    assert(CardArt.url(runtimeCard) === "",
+      `${name} must not resolve any skill artwork (got ${CardArt.url(runtimeCard)})`);
+    assert(CardArt.fallbackUrl(runtimeCard) === "",
+      `${name} must not fall back to a card artwork either`);
     const snapshot = CardUtils.clean(runtimeCard, { skillName: name });
-    assert(CardArt.url(snapshot) === art && CardArt.isSkill(snapshot),
-      `${name} cleaned trail snapshot must keep its skill artwork identity`);
+    assert(CardArt.isSkill(snapshot) && CardArt.url(snapshot) === "",
+      `${name} cleaned trail snapshot must stay artwork-free`);
   });
+  const cardsDir = path.resolve("publish/assets/generated/cards");
+  const allArt = fs.readdirSync(cardsDir);
+  assert(allArt.filter(f => f.startsWith("skill-art-")).length === 0,
+    "all skill-art-*.webp must be deleted");
+  assert(allArt.filter(f => f.startsWith("card-art-")).length === 59,
+    "all 59 card-art-*.webp (real card artwork) must be kept");
+  const trailSrc = fs.readFileSync(path.resolve("src/original/ui-battle-trail.js"), "utf8");
+  assert(/isSkillCard/.test(trailSrc) && /filter\(card => !isSkillCard\(card\)\)/.test(trailSrc),
+    "public play-area must filter skill cards out of the visual trail");
+  const artSrc = fs.readFileSync(path.resolve("src/original/card-art.js"), "utf8");
+  assert(!/skill-art-/.test(artSrc.replace(/^.*2026-11-25.*$/m, "")),
+    "card-art.js must not reference any skill-art file");
 
   const expectedLockedIcons = new Set([
     "神速之翼", "神速飞剑", "重火力支援",

@@ -96,12 +96,18 @@
 - 运行依赖:`npm run build:bundles` / `check:core` / `check:lines` / `check:bundles` / `lint:js|css|html` 在当前环境**可直接运行**(terser、playwright 已就位,lint 由 `tools/` 封装);不要假定「必须 npm install 才能验证」。
 - 守则:改动后只跑受影响范围的聚焦测试,未经用户要求不要跑全量。
 
-## 当前状态指针(2026-11-24,只给指针不记流水)
+## 当前状态指针(2026-11-25,只给指针不记流水)
 
-- **版本**:本地 `20260915-264`(11 个 bundle current),`deliveries/` 仍是 **260 版两个包**;本轮纯文档整理,未改源码、未重建、未升版。
-- **远端**:`main` = `fc8c935c` = 263 提交 `c0f8c6d6` + 远端并行新增 `天日国鹰7研究所.zip`(该 zip 已下载解压到沙盒工作区 `研究所素材/`,但**未纳入仓库**;远端原 zip 按要求保留)。
-- **待推**:264 的 17 项 + 本轮文档/记忆整理项,均**未提交、未推送、未出包**;推前需先处理远端多出的 1 个提交/文件。
-- **权威数值源**:`src/original/data-ruins-sand-city-enemies.js`;快照见 `docs/reference/`。研究所怪物设计仍未定稿,入口保持「未开发完成」。
+- **远端**: `main` = `00a4f0b2`(2026-11-24 12:43 UTC **推送成功**,API 实时查证)= 267~270 版
+  「天日国鹰7研究所 4 只普通怪落地、专属无缝战斗 BGM 接入、属性重平衡」,parent `1f47c1e0`。
+  远端根目录的 `天日国鹰7研究所.zip`(blob `ef02cd6c`)按要求原样保留,本地已补齐对齐。
+- **本地记账**: `3f23613`(记账 266)之后已补 `【记账】267~270 已推送 00a4f0b2`,HEAD 追平远端内容。
+- **版本**: 本地 `20260915-273`(11 个 bundle current),`deliveries/` 仍是 **260 版两个包**。
+- **273 版(未提交 / 未推送 / 未出包)**: 应用户要求**撤销 11-24 的属性曲线重平衡**,四只怪八项数值
+  全部还原用户原稿;BGM 播放器升级为 **WebAudio 采样级无缝**(`bgm-loop-metadata.js` +
+  `bgm-webaudio.js`,按 LOOPSTART/LOOPLENGTH 设 loopStart/loopEnd,file:/blob: 协议静默回退原生 loop)。
+- **权威数值源**: `src/original/data-tenri-institute-enemies.js`(已还原原稿)、
+  `data-ruins-sand-city-enemies.js`;快照见 `docs/reference/`。研究所入口保持「未开发完成」。
 - 流水、逐项文件清单与已知提交 hash 一律见 `docs/开发日记.md` 末段,本文件不复制。
 
 ## 会话备忘(2026-09-07)

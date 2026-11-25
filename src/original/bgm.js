@@ -5,7 +5,10 @@ window.GameBGM = (() => {
     dungeon: "./assets/sounds/dungeon-map.ogg",
     battle: "./assets/sounds/machine-factory-battle.ogg",
   };
-  const audio = new Audio();
+  // 优先 WebAudio 采样级无缝（按 Ogg LOOPSTART/LOOPLENGTH 精确设 loopStart/loopEnd）；
+  // 不支持或解码失败时 create() 会返回 null / 内部自动降级，退回原生 audio.loop。
+  // 适配器与 HTMLAudioElement 同构，下面所有淡入淡出 / 切曲 / 挂起逻辑无需改动。
+  const audio = window.BGMWebAudio?.create?.() || new Audio();
   audio.loop = true; audio.volume = 0.42; audio.preload = "auto";
   let current = "", pending = "", enabled = false, fadeId = 0;
   // 时停等效果可临时挂起 BGM：按 reason 计数，最后一个解除时恢复。

@@ -1,5 +1,5 @@
 // 诺亚【终极刀魔】实机回归：真实 bundle 装配下跑「发动 → 下一张实体单体杀 →
-// 按本回合已用杀数额外结算 → 目标阵亡转移」，并校验专属卡图真实解码。
+// 按本回合已用杀数额外结算 → 目标阵亡转移」，并校验技能牌图已删除、出牌区不显示技能牌。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
@@ -114,18 +114,23 @@ const flowTpl = `(() => {
   })()`);
   T("实机：发动一次后登记表判为已使用（按钮置灰依据）", grey.blocked === true, grey);
 
-  // 专属卡图真实解码（不是只查文件存在）
-  const art = await page.evaluate(async () => {
-    const url = "./assets/generated/cards/skill-art-ultimate-blade.c1dcc172.webp";
-    return await new Promise(resolve => {
-      const img = new Image();
-      img.onload = () => resolve({ ok: true, w: img.naturalWidth, h: img.naturalHeight, url });
-      img.onerror = () => resolve({ ok: false, url });
-      img.src = url;
-    });
+  // 技能牌图已删除：技能牌不解析任何卡图、出牌区不渲染技能牌，卡牌图案仍正常
+  const art = await page.evaluate(() => {
+    const skill = { name: "终极刀魔", type: "tactic", _skill: true, skillName: "终极刀魔" };
+    const norm = { name: "杀", type: "slash" };
+    return {
+      url: window.CardArt?.url?.(skill) ?? "MISSING",
+      fb: window.CardArt?.fallbackUrl?.(skill) ?? "MISSING",
+      normalUrl: window.CardArt?.url?.(norm) || "",
+      skillImgs: Array.from(document.querySelectorAll("img[src*=skill-art]")).length,
+      skillTrails: Array.from(document.querySelectorAll(".card-trail"))
+        .filter(t => /技能/.test(t.textContent || "")).length,
+    };
   });
-  T("实机：终极刀魔专属卡图可解码 384×384",
-    art.ok === true && art.w === 384 && art.h === 384, art);
+  T("实机：终极刀魔技能牌不再解析任何卡图", art.url === "" && art.fb === "", art);
+  T("实机：普通卡牌图案未被误删", /card-art-/.test(art.normalUrl), art.normalUrl);
+  T("实机：出牌区不显示技能牌、无 skill-art 图请求",
+    art.skillImgs === 0 && art.skillTrails === 0, art);
 
   T("全程无 JS 错误", errors.length === 0, errors.slice(0, 3));
 

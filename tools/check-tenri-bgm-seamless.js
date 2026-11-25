@@ -16,10 +16,10 @@ const EXPECT_GROUPS = { tags: ["C"], wire: ["D"], player: ["D"], override: ["D"]
 const REPL = {
   wire: [SRC, 'bgm: "./assets/new-bgm/tenri-institute-battle.c9d87b58.ogg",',
     'bgm: "./assets/new-bgm/ruins-sand-city-battle.mp3",'],
-  player: ["src/original/bgm.js", "  function loadSrc(src) {\n    audio.loop = true;",
-    "  function loadSrc(src) {"],
-  override: ["src/original/data-tenri-institute-enemies.js", "hp: 240, attack: 27,",
-    'bgm: "./assets/override.ogg", hp: 240, attack: 27,'],
+  player: ["src/original/bgm.js", "  const audio = window.BGMWebAudio?.create?.() || new Audio();",
+    "  const audio = new Audio();"],
+  override: ["src/original/data-tenri-institute-enemies.js", "hp: 260, attack: 43,",
+    'bgm: "./assets/override.ogg", hp: 260, attack: 43,'],
 };
 const patchedText = rel => {
   let s = fs.readFileSync(path.join(ROOT, rel), "utf8");
@@ -111,15 +111,28 @@ const enemiesJs = patchedText("src/original/data-tenri-institute-enemies.js");
 const bundles = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/publish-bundles.json"), "utf8"));
 check("D", "D1 mission.bgm 指向无缝专属曲",
   institute.includes('bgm: "./assets/new-bgm/tenri-institute-battle.c9d87b58.ogg",'));
-check("D", "D2 播放器显式 loop=true（原生循环）",
-  /audio\.loop = true/.test(bgmJs)
-  && /function loadSrc\(src\) \{\s*audio\.loop = true;/.test(bgmJs));
+const webaudioJs = patchedText("src/original/bgm-webaudio.js");
+const metaJs = patchedText("src/original/bgm-loop-metadata.js");
+check("D", "D2 播放器已升级 WebAudio 采样级循环（保留原生兜底）",
+  bgmJs.includes("window.BGMWebAudio?.create?.() || new Audio()")
+  && /s\.loop = true/.test(webaudioJs)
+  && /s\.loopStart = loopStart \|\| 0/.test(webaudioJs)
+  && /s\.loopEnd = loopEnd != null/.test(webaudioJs)
+  && /LOOPSTART/.test(metaJs) && /LOOPLENGTH/.test(metaJs));
 check("D", "D3 4 只怪数据表不覆盖 mission 曲目", !/bgm:\s*["']/.test(enemiesJs));
 check("D", "D4 battleTrack 有 mission.bgm 回落分支", /\|\| mission\?\.bgm/.test(bgmJs));
 check("D", "D5 数据表已进 bundle 清单",
   Object.values(bundles).flat().includes("data-tenri-institute-enemies.js"));
 check("D", "D6 资源被源码引用（check:resources 不判 unused）",
   institute.includes("assets/new-bgm/tenri-institute-battle.c9d87b58.ogg"));
+check("D", "D7 两个新模块在 startup-app 且位于 bgm.js 之前", (() => {
+  const v = bundles["startup-app"] || [];
+  return v.includes("bgm-loop-metadata.js") && v.includes("bgm-webaudio.js")
+    && v.indexOf("bgm-loop-metadata.js") < v.indexOf("bgm-webaudio.js")
+    && v.indexOf("bgm-webaudio.js") < v.indexOf("bgm.js");
+})());
+check("D", "D8 无循环标签的旧 BGM 退化整曲 loop（等价原生）",
+  /loopEnd != null \? Math\.min\(loopEnd, buffer\.duration\) : buffer\.duration/.test(webaudioJs));
 
 // ---------- 汇总 ----------
 const failed = results.filter(r => !r.ok);

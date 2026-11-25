@@ -1,6 +1,7 @@
 // 实机：安洁莉卡【狂战意志】主动发动后的表现层
 //   1) 出牌区真的渲染出「狂战意志」卡（DOM .card-trail + 数据快照）；
-//   2) 出牌区卡图加载的是 skill-art-berserker-will（不是兜底图/旧猩红暴走图）；
+//   2) 技能牌图已删除：出牌区不再渲染技能牌、不再加载任何 skill-art 图；
+//      数据快照（played / shownPlayed）仍保留技能身份供战报与存档使用；
 //   3) 装备「帝血弑天」皮肤时，原【猩红暴走】8 段特效节点真的依次挂载；
 //   4) 主动技按钮发动前可点击、发动一次后置灰、二次点击无效；
 //   5) 主动发动播新台词「游戏结束了，看我全力进攻。」；
@@ -213,6 +214,8 @@ const RAMPAGE = ["armor", "burst", "shock", "giant", "heal", "pulse", "rain", "c
       const hit = trails.find(t => (t.textContent || "").includes("狂战意志"));
       const img = hit?.querySelector("img");
       const allSrc = trails.map(t => t.querySelector("img")?.getAttribute("src") || "");
+      const skillCard = { name: "狂战意志", type: "tactic", _skill: true, skillName: "狂战意志" };
+      const normalCard = { name: "杀", type: "slash" };
       return {
         trailCount: trails.length,
         hit: !!hit,
@@ -220,18 +223,23 @@ const RAMPAGE = ["armor", "burst", "shock", "giant", "heal", "pulse", "rain", "c
         src: img?.getAttribute("src") || "",
         naturalWidth: img?.naturalWidth || 0,
         allSrc,
+        skillUrl: window.CardArt?.url?.(skillCard) ?? "MISSING",
+        skillFallback: window.CardArt?.fallbackUrl?.(skillCard) ?? "MISSING",
+        normalUrl: window.CardArt?.url?.(normalCard) || "",
       };
     });
-    check("出牌区 DOM 真的渲染出 .card-trail 狂战意志卡",
-      dom.hit && dom.trailCount >= 1, JSON.stringify({ count: dom.trailCount, text: dom.text }));
-    check("出牌区卡图指向 skill-art-berserker-will 且真实解码成功",
-      /skill-art-berserker-will\.51f36fec\.webp/.test(dom.src)
-      && dom.naturalWidth > 0, JSON.stringify({ src: dom.src, nw: dom.naturalWidth }));
-    check("出牌区文案标注「技能」且动作是「发动了」",
-      /技能/.test(dom.text) && /发动了/.test(dom.text), dom.text);
-    check("无旧猩红暴走卡图引用 / 无技能兜底图",
-      !dom.allSrc.some(s => s.includes("crimson-rampage"))
-      && !/card-art-charge/.test(dom.src), JSON.stringify(dom.allSrc));
+    check("出牌区 DOM 不再渲染「狂战意志」技能牌",
+      !dom.hit, JSON.stringify({ count: dom.trailCount, text: dom.text }));
+    check("出牌区没有任何 skill-art 图 / 无技能兜底图",
+      !dom.allSrc.some(s => s.includes("skill-art") || s.includes("card-art-charge")),
+      JSON.stringify(dom.allSrc));
+    check("技能牌仍不解析任何卡图（CardArt.url 为空串）",
+      dom.skillUrl === "" && dom.skillFallback === "",
+      JSON.stringify({ url: dom.skillUrl, fb: dom.skillFallback }));
+    check("普通卡牌图案未被误删（card-art 仍可解码）",
+      /card-art-/.test(dom.normalUrl), dom.normalUrl);
+    check("数据层仍保留技能身份（played/shownPlayed）",
+      data.hit && data.skillName === "狂战意志", JSON.stringify(data));
 
     // 皮肤特效最晚一段 core 在发动后约 1.75s；再留足余量。
     await page.waitForTimeout(3600);

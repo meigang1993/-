@@ -16,10 +16,14 @@ window.GameUIBattleTrail = U => {
     return first === second || keys.every(key => first?.[key] === second?.[key]);
   }
 
+  // 技能牌是「发动技能」而非「打出一张牌」，不再进入出牌区视觉轨迹；
+  // 数据快照（played / shownPlayed）仍完整保留，战报、动画与存档链不受影响。
+  const isSkillCard = card => !!window.CardArt?.isSkill?.(card);
   function cards(battle) {
-    const played = battle.played || [];
+    const played = (battle.played || []).filter(card => !isSkillCard(card));
     const matched = new Set();
     const transient = (battle.shownPlayed || []).filter(card => {
+      if (isSkillCard(card)) return false;
       const index = played.findIndex((entry, position) =>
         !matched.has(position) && same(card, entry));
       if (index < 0) return true;

@@ -32,6 +32,7 @@ window.UICommonCards = deps => {
   }
 
   function trailCard(card) {
+    if (window.CardArt?.isSkill?.(card)) return "";
     const rawType = String(card?.type || "tactic");
     const type = typeName[rawType] ? rawType : "tactic";
     const generated = window.CardUtils?.generatedSource?.(card);

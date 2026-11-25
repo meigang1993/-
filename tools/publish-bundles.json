@@ -111,6 +111,8 @@
     "save-slots-actions.js",
     "save-slots.js",
     "confirm-dialog.js",
+    "bgm-loop-metadata.js",
+    "bgm-webaudio.js",
     "bgm.js",
     "ui-common-skill-model.js",
     "ui-common-skill-view.js",

@@ -91,10 +91,14 @@ T("A9 可打出性与 AI 决策都改用 berserkWill",
   && /card\.bestaEndSlash\) && !livingEnemy\(\)/.test(consumers[0][1])
   && /card\.berserkWill/.test(consumers[1][1]));
 const cardArt = src("card-art.js");
-T("A10 卡图只保留狂战意志，孤立卡图文件已删除",
-  /"狂战意志":\s*"\.\/assets\/generated\/cards\/skill-art-berserker-will/.test(cardArt)
+const cardsDir = path.join(__dirname, "../publish/assets/generated/cards");
+T("A10 技能牌图已全部删除，狂战意志不再解析任何卡图",
+  !/"狂战意志":\s*"\.\/assets\/generated\/cards\//.test(cardArt)
+  && /if \(isSkill\(card\)\) return "";/.test(cardArt)
   && !/"猩红暴走"/.test(cardArt)
-  && !fs.existsSync(path.join(__dirname, "../publish/assets/generated/cards/skill-art-crimson-rampage.ba43cf6a.webp")));
+  && !fs.existsSync(path.join(cardsDir, "skill-art-crimson-rampage.ba43cf6a.webp"))
+  && !fs.readdirSync(cardsDir).some(f => f.startsWith("skill-art-"))
+  && fs.readdirSync(cardsDir).filter(f => f.startsWith("card-art-")).length === 59);
 const linesData = src("battle-line-data.js");
 T("A11 台词表删除猩红暴走专属台词，保留狂战意志",
   !/"猩红暴走"/.test(linesData) && /"狂战意志":/.test(linesData));

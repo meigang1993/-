@@ -351,9 +351,12 @@ const tactic = () => ({ name: "蓄力", type: "tactic", suit: "" });
     /chain\.skillName \|\| "红缨连鬼斩"/.test(shared)
     && /chain\.chainKey \|\| "chiyoChain"/.test(shared));
   const art = read("card-art.js");
-  const m = art.match(/"终极刀魔": "\.\/assets\/generated\/cards\/(skill-art-[^"]+\.webp)"/);
-  T("H14 专属技能卡图已登记且文件在位",
-    !!m && fs.existsSync(path.join(__dirname, "../publish/assets/generated/cards", m[1])), m?.[1]);
+  const cardsDir = path.join(__dirname, "../publish/assets/generated/cards");
+  T("H14 技能牌图已删除：终极刀魔不再解析任何卡图，卡牌图案仍保留",
+    !/"终极刀魔":\s*"\.\/assets\/generated\/cards\//.test(art)
+    && /if \(isSkill\(card\)\) return "";/.test(art)
+    && !fs.readdirSync(cardsDir).some(f => f.startsWith("skill-art-"))
+    && fs.readdirSync(cardsDir).filter(f => f.startsWith("card-art-")).length === 59);
 }
 
 console.log(`终极刀魔严格检查：${pass} PASS / ${reds.length} FAIL`);

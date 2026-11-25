@@ -3,7 +3,8 @@
 // 目的：
 //   1) 公告弹窗首期 datetime / 标题日期与 UpdateNotice.latestDate() 一致，
 //      且本期新角色与两件重做饰品条目都在；
-//   2) 女王榨取的技能立绘真的加载出来（此前缺图会退回通用兜底图）。
+//   2) 技能牌图已全部删除：技能牌不再解析任何卡图，出牌区不显示技能牌，
+//      卡牌图案（card-art-*.webp）仍正常加载。
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
 const path = require("path");
@@ -78,34 +79,37 @@ const check = (name, ok, detail = "") => {
   check("本期公告含重做饰品【圣鹰剑】", notice.topics.eagle, JSON.stringify(notice.topics));
   check("公告文本长度合理（非空壳）", notice.len > 200, `len=${notice.len}`);
 
-  console.log("\n【二】女王榨取技能立绘真的能加载");
+  console.log("\n【二】技能牌图已删除，出牌区不显示技能牌");
   const art = await page.evaluate(async () => {
-    // CardArt 只暴露 className / fallbackUrl / isSkill / url(card)，
-    // 用 url() 取技能立绘，并和兜底图比对以证明不是退回通用图。
-    // 真实技能卡由 battle-combat-targeting 组装：_skill + skillName
     const card = { name: "女王榨取", type: "tactic", _skill: true, skillName: "女王榨取" };
-    const url = window.CardArt?.url?.(card) || null;
-    const fallback = window.CardArt?.fallbackUrl || null;
+    const url = window.CardArt?.url?.(card) ?? "MISSING";
+    const fallback = window.CardArt?.fallbackUrl?.(card) ?? "MISSING";
+    const normal = { name: "杀", type: "slash" };
     const load = src => new Promise(res => {
       const im = new Image();
-      im.onload = () => res({ ok: true, w: im.naturalWidth, h: im.naturalHeight });
-      im.onerror = () => res({ ok: false, w: 0, h: 0 });
+      im.onload = () => res({ ok: true, w: im.naturalWidth });
+      im.onerror = () => res({ ok: false, w: 0 });
       im.src = src;
     });
     return {
       url, fallback,
       isSkill: !!window.CardArt?.isSkill?.(card),
-      res: url ? await load(url) : null,
-      fallbackRes: fallback ? await load(fallback) : null,
+      normalUrl: window.CardArt?.url?.(normal) || "",
+      normalRes: await load(window.CardArt?.url?.(normal) || ""),
+      skillArtImgs: Array.from(document.querySelectorAll("img[src*=skill-art]")).length,
+      skillTrails: Array.from(document.querySelectorAll(".card-trail"))
+        .filter(t => /技能/.test(t.textContent || "")).length,
     };
   });
-  check("技能立绘映射存在", !!art.url, `url=${art.url}`);
-  check("未被判为普通牌（isSkill）", art.isSkill === true, `isSkill=${art.isSkill}`);
-  check("未退回通用兜底图", !!art.url && art.url !== art.fallback,
-    `url=${art.url} fallback=${art.fallback}`);
-  check("立绘加载成功且尺寸正常（非兜底/非破图）",
-    !!art.res?.ok && art.res.w > 0 && art.res.h > 0,
-    JSON.stringify(art.res));
+  check("技能牌不再解析任何卡图（url 为空串）", art.url === "", `url=${art.url}`);
+  check("仍被正确识别为技能牌（数据层不变）", art.isSkill === true, `isSkill=${art.isSkill}`);
+  check("技能牌也不再走卡牌兜底图（fallbackUrl 为空串）", art.fallback === "", `fallback=${art.fallback}`);
+  check("普通卡牌图案仍正常加载（未误删 card-art）",
+    /card-art-/.test(art.normalUrl) && art.normalRes.ok && art.normalRes.w > 0,
+    JSON.stringify({ url: art.normalUrl, res: art.normalRes }));
+  check("页面无 skill-art 图片请求 / 出牌区无技能牌条目",
+    art.skillArtImgs === 0 && art.skillTrails === 0,
+    JSON.stringify({ imgs: art.skillArtImgs, trails: art.skillTrails }));
 
   console.log(`\n合计 ${pass} 通过 / ${fail} 失败   页面错误 ${errors.length}`);
   if (errors.length) console.log("页面错误:", errors.slice(0, 3));

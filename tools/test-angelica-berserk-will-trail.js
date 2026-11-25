@@ -1,9 +1,9 @@
 // 【狂战意志】合并【猩红暴走】后的表现层严格检查：
-//   A 卡图：技能卡/出牌区快照都命中 skill-art-berserker-will，旧猩红暴走图无残留引用
-//   B 出牌区：snapshot 保留 skillName / 「发动了」，CardArt 仍按技能图取图
+//   A 卡图：技能牌图已全部删除，技能卡/出牌区快照都不再解析任何卡图；card-art 卡牌图案 59 张保留
+//   B 出牌区：数据快照仍保留 skillName / 「发动了」，但视觉轨迹不再渲染技能牌
 //   C 皮肤特效：原独立主动技的 8 段特效、CSS、音效在合并后仍由 berserkWill 触发
 //   D 原技能口径：运行时源码无「猩红暴走」判定残留，台词/技能表/登记表同步
-//   E 反向：REVERT=art|fx|trail 撤掉对应修复，断言必须精准变红
+//   E 反向：REVERT=art|trail|combattrail|fx 撤掉对应修复，断言必须变红
 //
 // 用 vm 直接加载 src/original 真实模块（不是自写等价式）；REVERT 模式加载
 // 「撤回后」的源码，验证断言不是空转。
@@ -64,12 +64,17 @@ window.BattleStats = { heal() {} };
 
 const transform = {
   "card-art.js": s => REVERT === "art"
-    ? s.replace(/"狂战意志": "[^"]+",\n/, "")
+    ? s.replace('    if (isSkill(card)) return "";\n', "")
+    : s,
+  "ui-battle-trail.js": s => REVERT === "trail"
+    ? s.replace("    const played = (battle.played || []).filter(card => !isSkillCard(card));",
+        "    const played = battle.played || [];")
+       .replace("      if (isSkillCard(card)) return false;\n", "")
     : s,
   "angelica-luka-skills.js": s => REVERT === "fx"
     ? s.replace("window.AngelicaBerserkerSkinFX?.berserkWill?.(state, actor, spent);", "")
     : s,
-  "battle-combat-trail.js": s => REVERT === "trail"
+  "battle-combat-trail.js": s => REVERT === "combattrail"
     ? s.replace("if (skillName) base.skillName = skillName;\n    else delete base.skillName;",
       "delete base.skillName;")
     : s,
@@ -79,7 +84,7 @@ const load = f => {
   vm.runInThisContext(code, { filename: f });
 };
 ["card-utils.js", "card-art.js", "ui-common-skill-model.js",
-  "battle-combat-trail.js", "angelica-berserker-skin-fx.js",
+  "battle-combat-trail.js", "ui-battle-trail.js", "angelica-berserker-skin-fx.js",
   "angelica-luka-skills.js"].forEach(load);
 window.UICommon = window.UICommonSkillModel();
 
@@ -100,19 +105,24 @@ const state = { battle };
 global.state = state;
 const trail = window.BattleCombatTrail({ allUnits: b => b.allies.concat(b.enemies) });
 
-console.log("\n【A】卡图：狂战意志技能卡 / 出牌区快照");
+console.log("\n【A】卡图：技能牌图已删除，卡牌图案保留");
 const card = skillCard();
 const skillUrl = window.CardArt.url(card);
-T("A1 技能卡命中狂战意志专属卡图（非技能兜底图）",
-  skillUrl === SKILL_ART && skillUrl !== window.CardArt.fallbackUrl(card), skillUrl);
-T("A2 卡图文件真实存在且是 WebP",
-  fs.existsSync(path.join(ROOT, "publish", SKILL_ART.replace(/^\.\//, "")))
-  && fs.readFileSync(path.join(ROOT, "publish", SKILL_ART.replace(/^\.\//, ""))).slice(0, 4).toString() === "RIFF");
-T("A3 skillArt 已无「猩红暴走」键、旧图文件已删除、全库无旧图引用",
-  !/"猩红暴走"\s*:/.test(src("card-art.js"))
-  && !fs.existsSync(path.join(ROOT, "publish/assets/generated/cards", OLD_ART))
+T("A1 技能卡不再解析任何卡图（url 为空串）",
+  skillUrl === "" && window.CardArt.fallbackUrl(card) === "", JSON.stringify({ skillUrl, fb: window.CardArt.fallbackUrl(card) }));
+T("A2 狂战意志专属技能图文件已删除，全库无 skill-art 引用",
+  !fs.existsSync(path.join(ROOT, "publish", SKILL_ART.replace(/^\.\//, "")))
   && !fs.readdirSync(path.join(ROOT, "src/original")).some(f =>
-    f.endsWith(".js") && src(f).includes(OLD_ART)));
+    f.endsWith(".js") && /skill-art-[a-z0-9.-]+\.webp/.test(src(f))));
+const cardsDir = path.join(ROOT, "publish/assets/generated/cards");
+const artFiles = fs.readdirSync(cardsDir);
+T("A3 59 张卡牌图案（card-art-*.webp）全部保留，未误删",
+  artFiles.filter(f => f.startsWith("card-art-")).length === 59
+  && artFiles.filter(f => f.startsWith("skill-art-")).length === 0,
+  `card-art=${artFiles.filter(f => f.startsWith("card-art-")).length} skill-art=${artFiles.filter(f => f.startsWith("skill-art-")).length}`);
+T("A4 旧「猩红暴走」图仍无残留",
+  !/\b猩红暴走\b\s*:/.test(src("card-art.js"))
+  && !fs.existsSync(path.join(ROOT, "publish/assets/generated/cards", OLD_ART)));
 
 console.log("\n【B】出牌区：发动主动技后的战报快照");
 const snap = trail.snapshot(card, actor, battle);
@@ -122,8 +132,16 @@ T("B1 快照牌名/技能名/动作文案正确",
     name: snap.name, action: snap._playedAction, by: snap._playedByName }));
 T("B2 快照保留 skillName（CardArt 据此识别技能图）",
   snap.skillName === "狂战意志", `skillName=${snap.skillName}`);
-T("B3 出牌区快照仍取狂战意志卡图，不退回兜底图",
-  window.CardArt.url(snap) === SKILL_ART, window.CardArt.url(snap));
+T("B3 出牌区快照不再取任何卡图（数据层仍保留技能身份）",
+  window.CardArt.url(snap) === "" && window.CardArt.isSkill(snap), window.CardArt.url(snap));
+T("B5 出牌区视觉轨迹过滤掉技能牌，普通牌照常显示", (() => {
+  const fakeU = { trailCard: c => `CARD:${c?.name || ""}` };
+  const api = window.GameUIBattleTrail(fakeU);
+  const normal = { name: "杀", type: "slash" };
+  const b = { played: [normal, snap], shownPlayed: [] };
+  const rendered = api.cards(b).map(fakeU.trailCard);
+  return rendered.length === 1 && rendered[0] === "CARD:杀";
+})());
 T("B4 useCard 链路：handleSpecialCard 命中后置 _countAsPlayed（trailEntry 保留）",
   /if \(window\.AngelicaLukaSkills\?\.handleSpecialCard\?\.\(state, actor, target, card, deps, specialCtx\)\) \{ card\._countAsPlayed = true;/.test(src("battle-combat.js"))
   && /const counted = !!card\?\._countAsPlayed/.test(src("battle-combat.js"))
