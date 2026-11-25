@@ -76,10 +76,11 @@ const state = (enemies, allies) => ({ battle: { enemies, allies, animQueue: [], 
 // ---------- A 数据表 ----------
 const byId = Object.fromEntries(POOL.map(e => [e.id, e]));
 const expect = {
-  tenri_assault: [260, 43, 35, 48, 2, 4, 3, 5],
-  tenri_guard: [300, 36, 34, 43, 1, 4, 4, 7],
-  tenri_railgun: [220, 44, 40, 50, 2, 3, 5, 6],
-  tenri_ghoul: [200, 50, 47, 53, 2, 3, 3, 5],
+  // 字段存的是加成值 N（引擎按 2+N / 4+N 结算），不是实摸总量。
+  tenri_assault: [260, 43, 35, 48, 2, 4, 1, 1],
+  tenri_guard: [300, 36, 34, 43, 1, 4, 2, 3],
+  tenri_railgun: [220, 44, 40, 50, 2, 3, 3, 2],
+  tenri_ghoul: [200, 50, 47, 53, 2, 3, 1, 1],
 };
 check("A", "A1 恰好 4 只且 id/type 正确", POOL.length === 4
   && POOL.every(e => Object.prototype.hasOwnProperty.call(expect, e.id) && e.type === "normal"));
@@ -93,9 +94,22 @@ check("A", "A3 每只一条被动技能且文案同步", POOL.every(e => e.skill
   && !e.skills[0].text.includes(["杀","意"].join("")) && !e.skills[0].text.includes("当前实现")));
 check("A", "A4 无垢食尸鬼性别女 / 四张立绘已落地", byId.tenri_ghoul.gender === "female"
   && POOL.every(e => fs.existsSync(path.join(ROOT, "publish", e.art.replace(/^\.\//, "")))));
-check("A", "A5 数据表注释写明淫气与基础折算口径", /淫气上限/.test(raw("data-tenri-institute-enemies.js"))
-  && /2\+N/.test(raw("data-tenri-institute-enemies.js"))
+check("A", "A5 数据表注释写明淫气与摸牌加成值口径", /淫气上限/.test(raw("data-tenri-institute-enemies.js"))
+  && /加成值 N/.test(raw("data-tenri-institute-enemies.js"))
   && /还原为用户原稿/.test(raw("data-tenri-institute-enemies.js")));
+// A6：从产品源码抽行执行真实摸牌公式，验证实摸回到用户稿总量。
+const runtime = raw("battle-runtime-helpers.js");
+const drawFormulas = ["initialDrawCount", "turnDrawCount"].map(name => {
+  const line = runtime.split("\n").find(l => l.includes(`const ${name} = unit =>`));
+  if (!line) return null;
+  return vm.runInThisContext(`(${line.trim().replace(/^const \w+ = /, "").replace(/;$/, "")})`, { filename: "draw-formula" });
+});
+const specTotals = { tenri_assault: [3, 5], tenri_guard: [4, 7], tenri_railgun: [5, 6], tenri_ghoul: [3, 5] };
+check("A", "A6 真实公式：2+drawPerTurn / 4+initialDraw 等于用户稿实摸总量",
+  drawFormulas.every(Boolean) && Object.entries(specTotals).every(([id, [turn, initial]]) => {
+    const u = { stats: { drawPerTurn: byId[id].drawPerTurn, initialDraw: byId[id].initialDraw } };
+    return drawFormulas[0](u) === initial && drawFormulas[1](u) === turn;
+  }), drawFormulas.map(f => f ? "ok" : "missing").join("/"));
 
 // ---------- B 随机池（复用其它副本范式） ----------
 forcedCount = 4;

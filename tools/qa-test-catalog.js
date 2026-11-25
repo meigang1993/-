@@ -166,6 +166,7 @@ const timeouts = Object.freeze({
   "test-notice-no-top-summary-live.js": 240,
   // 天日国鹰7研究所骨架：副本/节点/入口占位/剧情/数值（8 组源码级反向）
   "test-bgm-webaudio-seamless.js": 300,
+  "check-tenri-draw-counts-strict.js": 300,
   "check-skill-card-no-flight-and-tenri-bgm.js": 300,
   "test-skill-card-no-flight-tenri-bgm-live.js": 420,
   "check-risa-life-loss-strict.js": 300,
@@ -223,6 +224,7 @@ const groups = Object.freeze({
     "test-magic-watch-monster-skill-recheck.js",
     "test-notice-no-top-summary.js",
     "test-bgm-webaudio-seamless.js",
+    "check-tenri-draw-counts-strict.js",
     "check-skill-card-no-flight-and-tenri-bgm.js",
     "test-skill-card-no-flight-tenri-bgm-live.js",
     "check-risa-life-loss-strict.js",

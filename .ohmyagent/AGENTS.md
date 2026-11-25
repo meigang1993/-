@@ -98,21 +98,34 @@
 
 ## 当前状态指针(2026-11-25,只给指针不记流水)
 
-- **远端**: `main` = `2ec97c79`(2026-11-25 推送成功,API 实时查证)= **277~279 版**
-  「研究所 4 只普通怪技能落地、丽莎复活链四轮复查与修复」,parent `47543e40`,
-  新 tree `a6d3a9bb`,49 files(7 增 / 42 改 / 0 删),+2214 / −93,提交说明 8 行。
-  远端 tree 1640 文件:`skill-art-*.webp` **0 张**、`card-art-*.webp` **59 张全保留**;
-  根目录 `天日国鹰7研究所.zip` SHA 未变、原样保留。
-- **本地记账**: 本提交 `【记账】277~279 已推送 2ec97c79`,在工作区推送完成后补记。
-- **版本**: `20260915-279` ×13 + electron `26.0915.279`,11 个 bundle current,工作树干净。
-- **deliveries/**: 仍是 **260 版两个包**(仓库外 `/data/workspace/deliveries/`),
-  未出 279 包;下次出包才会同步为无技能牌图的新资源。
+- **远端**: `main` = `931cc6d9`(2026-11-25 推送成功,API 实时查证)= **280 版**
+  「技能牌飞行动画最后一处漏网补齐、测试战斗研究所 BGM 按所选敌人解析」,
+  parent `2ec97c79`,新 tree `af78f0f0`,17 files(2 增 / 15 改 / 0 删),
+  +495 / −49,提交说明 8 行。远端 tree 1642 文件:`skill-art-*.webp` **0 张**、
+  `card-art-*.webp` **59 张全保留**;根目录 `天日国鹰7研究所.zip` SHA 未变、原样保留。
+- **本地记账**: 本提交 `【记账】280 版已推送 931cc6d9`,在工作区推送完成后补记。
+- **版本**: `20260915-280` ×13 + villa.css ×4 + electron `26.0915.280`,
+  11 个 bundle current,工作树干净。
+- **deliveries/**: **279 版两个包**(`app.asar` + `魅魔杀-完整项目-20261030-279.zip`,
+  2026-11-25 已出,260 两包已备份进 `deliveries_backup/`)。**未出 280 包**:
+  279 包内 `hall.min.js` / `battle-presentation.min.js` 仍是旧版,测试战斗选研究所新怪
+  仍播机械工厂曲、发动技能仍会飞牌;要拿修复须出 280 包。
+- **技能牌口径**: `_skill` / `skillName` 对象是技能结算载体,**不能删**
+  (useCard 跳过手牌移出、战报「发动了」、shownPlayed / 存档 / 飘字依赖)。
+  视觉层已删干净:53 张技能牌图 0 残留、`CardArt.isSkill` 不解析卡图、
+  出牌区 `ui-battle-trail.js` 过滤、`BattleEffectPlay.playCard` 与敌方
+  `enemyPlay` / `virtualPlay` 三条动画链均不生成 projectile。普通实体牌 / 虚拟杀 /
+  追加伤害段飞牌演出不变。
+- **测试战斗 BGM**: `hall-test-actions.js` 的 `testBattleMissionId(selected)` 按所选敌人
+  反查 `GameDataWorld.enemies` 分组,全同副本才用该副本 id;研究所 4 只普通怪不带
+  各自 `bgm`,回落到 `mission.bgm` 的新无缝战斗 OGG;混合 / 空 / 未识别退回
+  `machine_factory`。正式副本链与 28 首 BGM 全量口径不变。
 - **权威数值源**: `src/original/data-tenri-institute-enemies.js`(用户原稿)、
   `data-ruins-sand-city-enemies.js`;快照见 `docs/reference/`。研究所入口保持「未开发完成」。
 - **复活链口径**: `SakuraRisaSkills.preventDeath` 是丽莎【不死食尸鬼】与研究所
   【快速复生】共用唯一免死入口,全库 10 个 `BattleHpValue.applyDamage` 调用点
   (3 主链 + 7 生命流失路径)均已挂接;两条 `beginTurn` 按 `isRisa` / `isGhoul` 互斥。
-  【自爆倒计时】主动自毁按既有设计为豁免。详见当期公告与 `docs/reference/`。
+  【自爆倒计时】主动自毁按既有设计为豁免。
 - **已知边界**: Electron 仍是 `loadFile`(file: 协议),WebAudio 采样级路径只在
   http/https/app 协议启用,桌面端当前走原生 loop 回退;QA logic 组两个历史红项
   (洛基 3 级魔力 / 存档恢复敌方出牌阶段)与本轮无关,未修。

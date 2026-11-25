@@ -35,7 +35,9 @@ const put = (n, ok, d = "") => { results.push({ n, ok: !!ok, d }); console.log(`
     hasMission: !!window.GameData?.missions?.some(m => m.id === "tenri_institute"),
     tenriCount: (window.GameDataWorld?.enemies?.tenri_institute || []).length,
   }));
-  put("01 页面渲染且版本戳 280", init.meta === "20260915-280" && init.badge === "v26.0915.280",
+  // 版本戳从页面动态解析：升版不再需要逐个改实机脚本。
+  const build = /^20260915-\d+$/.test(init.meta || "") ? init.meta.split("-")[1] : "";
+  put("01 页面渲染且版本戳与徽章一致", !!build && init.badge === `v26.0915.${build}`,
     `meta=${init.meta} badge=${init.badge}`);
   put("02 关键模块与测试战斗函数已装配",
     init.hasBGM && init.hasTrail && init.hasCardArt && init.hasPlay && init.hasDom
