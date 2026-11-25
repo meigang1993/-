@@ -43,19 +43,31 @@ function scaleTestEnemy(e) {
   if (diff.enemyRelics && ["elite", "boss"].includes(e.type)) enemy.battleRelics = RelicSystem?.enemyRelics?.(e.id) || [];
   return enemy;
 }
+// 测试战斗此前写死 machine_factory：选研究所新怪时 BGM 仍是机械工厂曲。
+// 按所选敌人反查 GameDataWorld.enemies 的分组 key；全部同副本才用该副本，
+// 混合选择 / 未识别一律退回既有默认 machine_factory，避免误改其它行为。
+function testBattleMissionId(selected) {
+  const groups = window.GameDataWorld?.enemies || {};
+  const ids = selected.map(i => GameData.testEnemies[i]?.id).filter(Boolean);
+  const owners = [...new Set(ids.map(id => Object.keys(groups).find(key =>
+    (Array.isArray(groups[key]) ? groups[key] : []).some(e => e && e.id === id))))]
+    .filter(Boolean);
+  return owners.length === 1 ? owners[0] : "machine_factory";
+}
 async function startTestBattle(actionCurrent = null) {
   const actionState = state;
   const isCurrent = () => window.state === actionState
     && (!actionCurrent || actionCurrent());
   window.GameBGM?.unlock?.(); window.BattleFX?.unlockAudio?.();
   const enemies = (actionState.testEnemies || []).map(i => GameData.testEnemies[i]).filter(Boolean).map(scaleTestEnemy);
-  window.GameBGM?.primeBattle?.(window.GameBGM?.battleTrack?.("machine_factory", enemies));
+  const missionId = testBattleMissionId(actionState.testEnemies || []);
+  window.GameBGM?.primeBattle?.(window.GameBGM?.battleTrack?.(missionId, enemies));
   actionState.testBattleStarting = true; actionState.hallModal = null; actionState.view = "battleLoading"; actionState.loadingBattleName = "测试战斗"; actionState.loadingBattleProgress = null; render();
   try {
     if (window.GameBundles) await window.GameBundles.load("battle", { state: actionState, test: true, allyIds: actionState.testAllies || [] });
     if (!isCurrent()) return;
     window.BattleFX?.unlockAudio?.();
-    await BattleSystem.start(actionState, "machine_factory", render, {
+    await BattleSystem.start(actionState, missionId, render, {
       test: true, allyIds: actionState.testAllies || [], enemies, deck: testDeck(),
       isCurrent,
     });

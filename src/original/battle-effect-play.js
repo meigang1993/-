@@ -32,6 +32,10 @@ window.BattleEffectPlay = (() => {
     if (!active()) return false;
     const card = selectedCard(), zone = publicZone(), b = state.battle, actor = window.BattleSystem?.active?.(b);
     const playedSource = b.selectedSkillCard || actor?.hand?.[b.selectedCardIndex], played = window.WithererSkills?.displayCard?.(actor, playedSource) || playedSource;
+    // 技能牌是「发动技能」的结算载体，不是打出的牌：不播飞牌动画。
+    // 数据层（played / shownPlayed / 战报 / 存档）完整保留，只跳过视觉飞行。
+    // 与出牌区过滤（ui-battle-trail.js）同源判据 CardArt.isSkill。
+    const isSkillCard = card => !!window.CardArt?.isSkill?.(card);
     const pendingTargets = (b?.pendingTargetUids || []).filter(uid => uid !== actor?.uid);
     const foes = actor?.side === "enemy" ? b?.allies : b?.enemies;
     const groupTargets = groupTargetUids(actor, played, playedSource, b, foes);
@@ -50,6 +54,7 @@ window.BattleEffectPlay = (() => {
     const targetUid = guardUid || rawTargetUid;
     const art = targetUid ? targetArt(targetUid) : zone;
     const from = actor?.side === "ally" ? card || unitArt(actor?.uid) : unitArt(actor?.uid) || card;
+    if (isSkillCard(playedSource) || isSkillCard(played)) return commit();
     if (!card || !zone || !art || !from || !played) return commit();
     let ok, committed = false, fly = null, failure = null;
     const commitOnce = () => {

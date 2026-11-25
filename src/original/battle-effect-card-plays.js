@@ -9,6 +9,8 @@ window.BattleEffectCardPlays = U => {
   const { isKillCard, isSingleKill: isSingleSlash } = window.CardUtils;
   const hasDamage = card =>
     isKillCard(card) || (card?.power ?? card?.damage ?? 0) > 0;
+  // 与 BattleEffectPlay.playCard 同口径：技能牌只走台词 / 伤害演出，不飞牌。
+  const isSkillCard = card => !!window.CardArt?.isSkill?.(card);
   const virtualTargetUids = event => {
     const direct = Array.isArray(event.targetUids) ? event.targetUids : [];
     return direct.length
@@ -61,11 +63,13 @@ window.BattleEffectCardPlays = U => {
     await waitHold(HIT_HOLD_MS, event);
     actor?.classList.remove("enemy-acting");
     if (!active()) return;
-    if (from && targets.length) {
-      await flight.flyPlayAoe(event.card, from, targets, zone, true, event, active);
-    } else if (from && (targeted ? to : zone)) {
-      await flight.flyPlay(event.card, from, targeted ? to : zone,
-        zone, targeted, true, null, event, active);
+    if (!isSkillCard(event.card)) {
+      if (from && targets.length) {
+        await flight.flyPlayAoe(event.card, from, targets, zone, true, event, active);
+      } else if (from && (targeted ? to : zone)) {
+        await flight.flyPlay(event.card, from, targeted ? to : zone,
+          zone, targeted, true, null, event, active);
+      }
     }
     if (!active()) return;
     reveal(event.card, event);
@@ -94,12 +98,14 @@ window.BattleEffectCardPlays = U => {
     const zone = publicZone();
     const targeted = !!(from && to && event.targetUid !== event.uid);
     const enemyLine = virtualEnemyLine(state, event);
-    if (from && targets.length) {
-      await flight.flyPlayAoe(
-        event.card, from, targets, zone, enemyLine, event, active);
-    } else if (from && (targeted ? to : zone)) {
-      await flight.flyPlay(event.card, from, targeted ? to : zone,
-        zone, targeted, enemyLine, partner, event, active);
+    if (!isSkillCard(event.card)) {
+      if (from && targets.length) {
+        await flight.flyPlayAoe(
+          event.card, from, targets, zone, enemyLine, event, active);
+      } else if (from && (targeted ? to : zone)) {
+        await flight.flyPlay(event.card, from, targeted ? to : zone,
+          zone, targeted, enemyLine, partner, event, active);
+      }
     }
     if (!active()) return;
     if (event.show !== false) {
