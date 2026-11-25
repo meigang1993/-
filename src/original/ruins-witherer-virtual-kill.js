@@ -13,7 +13,7 @@ window.RuinsWithererVirtualKill = ({ stat, log }) => {
     if (!others.length) {
       const amount = stat(attacker, "attack");
       const before = attacker.hp;
-      window.BattleHpValue.applyDamage(attacker, amount);
+      window.BattleHpValue.applyDamage(attacker, amount); window.SakuraRisaSkills?.preventDeath?.(state, attacker);
       const loss = before - attacker.hp;
       if (loss > 0) window.BattleSystem?.pushFloat?.(state.battle, attacker.uid, "hp-loss", loss);
       log(state, `${witherer.name} 的外神之眼触发，${attacker.name}无其他敌方角色，对自己造成${amount}点伤害。`);
@@ -35,7 +35,7 @@ window.RuinsWithererVirtualKill = ({ stat, log }) => {
     if (target === ally) {
       const amount = stat(ally, "attack");
       const before = ally.hp;
-      window.BattleHpValue.applyDamage(ally, amount);
+      window.BattleHpValue.applyDamage(ally, amount); window.SakuraRisaSkills?.preventDeath?.(state, ally);
       const loss = before - ally.hp;
       if (loss > 0) window.BattleSystem?.pushFloat?.(state.battle, ally.uid, "hp-loss", loss);
       log(state, `${ally.name} 无可攻击目标，百眼魅魔使其受到自身${amount}点伤害。`);

@@ -35,7 +35,20 @@ window.BattleEffectPlay = (() => {
     const pendingTargets = (b?.pendingTargetUids || []).filter(uid => uid !== actor?.uid);
     const foes = actor?.side === "enemy" ? b?.allies : b?.enemies;
     const groupTargets = groupTargetUids(actor, played, playedSource, b, foes);
-    const targetUids = pendingTargets.length ? pendingTargets : groupTargets, targetUid = b?.pendingTargetUid && b.pendingTargetUid !== actor?.uid ? b.pendingTargetUid : null, art = targetUid ? targetArt(targetUid) : zone;
+    const rawTargetUid = b?.pendingTargetUid && b.pendingTargetUid !== actor?.uid ? b.pendingTargetUid : null;
+    // 【守护后方】：useCard 在 commit 里才把目标转移给防爆队，而飞行线在这里、
+    // commit 之前就按 pendingTargetUid 画好了。不预测就会「线画向原目标、
+    // 结算打在防爆队」，还会因 _playedTargetUid 对不上而补第二条虚拟飞行。
+    // plannedTarget 是纯判定（不写日志/不播台词），与 useCard 里的 redirectTarget 同源。
+    const rawTarget = rawTargetUid
+      ? (b.allies || []).concat(b.enemies || []).find(u => u.uid === rawTargetUid)
+      : null;
+    const guardUid = rawTarget
+      ? window.TenriInstituteSkills?.plannedTarget?.(
+        state, actor, rawTarget, playedSource || played)?.uid : null;
+    const targetUids = pendingTargets.length ? pendingTargets : groupTargets;
+    const targetUid = guardUid || rawTargetUid;
+    const art = targetUid ? targetArt(targetUid) : zone;
     const from = actor?.side === "ally" ? card || unitArt(actor?.uid) : unitArt(actor?.uid) || card;
     if (!card || !zone || !art || !from || !played) return commit();
     let ok, committed = false, fly = null, failure = null;

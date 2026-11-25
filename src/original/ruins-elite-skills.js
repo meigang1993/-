@@ -92,7 +92,7 @@ window.RuinsEliteSkills = (() => {
     });
     const loss = dead.length * Math.ceil((unit.maxHp || 1) * 0.1);
     const before = unit.hp;
-    window.BattleHpValue.applyDamage(unit, loss);
+    window.BattleHpValue.applyDamage(unit, loss); window.SakuraRisaSkills?.preventDeath?.(state, unit);
     const lost = before - unit.hp;
     if (lost > 0) window.BattleSystem?.pushFloat?.(state.battle, unit.uid, "hp-loss", lost);
     window.BattleLines?.skill?.(state, unit, "增援部队");

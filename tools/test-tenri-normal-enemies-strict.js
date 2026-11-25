@@ -158,12 +158,12 @@ check("C", "C3 虚拟杀 / 群体杀 / 时停不触发", (() => {
   const got = T.redirectTarget(s, unit("p1", "ally", 100), victim, slash("杀（普攻）"));
   check("D", "D1 其他我方角色被指定 → 转移给防爆队", got === guard);
   check("D", "D2 防爆队自身被指定 → 不再转移", T.redirectTarget(s, unit("p1", "ally", 100), guard, slash("杀（普攻）")) === null);
-  check("D", "D3 虚拟杀 / 群体杀 / 时停不转移", (() => {
+  check("D", "D3 按新稿：虚拟单体杀也转移；群体杀 / 时停不转移", (() => {
     const c1 = slash("杀（普攻）", { virtual: true }), c2 = slash("杀（普攻）", { sweep: true });
     guard.__stopped = true;
     const c3 = T.redirectTarget(s, unit("p1", "ally", 100), victim, slash("杀（普攻）"));
     guard.__stopped = false;
-    return T.redirectTarget(s, unit("p1", "ally", 100), victim, c1) === null
+    return T.redirectTarget(s, unit("p1", "ally", 100), victim, c1) === guard
       && T.redirectTarget(s, unit("p1", "ally", 100), victim, c2) === null && c3 === null;
   })());
 }
@@ -199,9 +199,10 @@ check("C", "C3 虚拟杀 / 群体杀 / 时停不触发", (() => {
 {
   const ghoul = unit("tenri_ghoul", "enemy", 0);
   ghoul.maxHp = 200;
-  check("F", "F3 队友全灭 / 时停不进入待复活", (() => {
+  check("F", "F3 按新稿：死亡瞬间不判队友（全灭仍进待复活），只有时停不进", (() => {
     const s1 = state([ghoul], [unit("p1", "ally", 100)]);
-    const a = T.preventDeath(s1, ghoul) === false && !T.pendingRevival(ghoul);
+    const a = T.preventDeath(s1, ghoul) === true && T.pendingRevival(ghoul) === true;
+    delete ghoul.tenriRevivePending; ghoul.statuses = [];
     ghoul.__stopped = true;
     const s2 = state([unit("mate", "enemy", 100), ghoul], []);
     const b = T.preventDeath(s2, ghoul) === false && !T.pendingRevival(ghoul);
@@ -209,10 +210,11 @@ check("C", "C3 虚拟杀 / 群体杀 / 时停不触发", (() => {
     return a && b;
   })());
 }
-check("F", "F4 免死链接入全局 pendingRevival / preventDeath / beginTurn",
+check("F", "F4 免死链接入全局 pendingRevival / preventDeath / beginTurn + 胜负兜底",
   /TenriInstituteSkills\?\.pendingRevival/.test(raw("sakura-risa-skills.js"))
   && /TenriInstituteSkills\?\.preventDeath/.test(raw("sakura-risa-skills.js"))
-  && /TenriInstituteSkills\?\.beginTurn/.test(raw("battle-turn-start.js")));
+  && /TenriInstituteSkills\?\.beginTurn/.test(raw("battle-turn-start.js"))
+  && /TenriInstituteSkills\?\.shouldHoldRevival/.test(raw("sakura-risa-skills.js")));
 
 // ---------- G 接线 / 公告 / 资源 ----------
 const wiring = [

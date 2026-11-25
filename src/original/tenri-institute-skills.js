@@ -19,6 +19,10 @@ window.TenriInstituteSkills = (() => {
   function beforeKillTargeted(state, actor, target, card) {
     assault()?.beforeKillTargeted?.(state, actor, target, card);
   }
+  // 纯预测：给出牌动画在 commit 前修正飞行目标，不写日志/不播台词。
+  function plannedTarget(state, actor, target, card) {
+    return guard()?.plannedTarget?.(state, actor, target, card) || null;
+  }
   function redirectTarget(state, actor, target, card) {
     return guard()?.redirectTarget?.(state, actor, target, card) || null;
   }
@@ -30,11 +34,12 @@ window.TenriInstituteSkills = (() => {
   }
   const preventDeath = (state, unit) => !!ghoul()?.preventDeath?.(state, unit);
   const pendingRevival = unit => !!ghoul()?.pendingRevival?.(unit);
+  const shouldHoldRevival = unit => ghoul()?.shouldHoldRevival?.(unit);
   const beginTurn = (state, unit) => !!ghoul()?.beginTurn?.(state, unit);
 
   return {
-    beforeCardPlayed, beforeKillTargeted, redirectTarget,
+    beforeCardPlayed, beforeKillTargeted, plannedTarget, redirectTarget,
     modifyAttackAmount, modifyIncomingDamage,
-    preventDeath, pendingRevival, beginTurn,
+    preventDeath, pendingRevival, shouldHoldRevival, beginTurn,
   };
 })();

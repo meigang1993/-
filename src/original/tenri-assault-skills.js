@@ -20,7 +20,10 @@ window.TenriAssaultSkills = (() => {
   }
 
   function modifyAttackAmount(state, actor, target, card, amount) {
-    const bonus = card?._tenriAssaultBonus;
+    const c = C();
+    // 双保险：即使牌上因旧档/异常路径残留标记，也只对突击队本家且在非时停时生效。
+    const bonus = c?.isAi(actor, "tenri_assault") && !c.stopped(actor)
+      ? card?._tenriAssaultBonus : 0;
     return bonus > 0 ? amount * (1 + bonus) : amount;
   }
 

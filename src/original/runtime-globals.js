@@ -16,7 +16,7 @@
     "AppActionGuard", "GameBGM", "BGMLoopMetadata", "BGMWebAudio", "GameBattleStyles", "GameConfirm", "GameData", "GameDataCards", "GameDataCharacters", "GameDataCharactersCore", "GameRandom", "GameSkinData",
     "GameDataBakarEnemy", "GameDataCharactersExtra", "GameDataFutureCharacters", "GameDataFutureDungeons", "GameDataFutureEnemies", "GameDataFutureOrcEnemies", "GameDataTenriInstitute", "GameDataTenriInstituteEnemies", "TenriInstituteUnlockEvents",
     "TenriInstituteCommon", "TenriInstituteSkills", "TenriAssaultSkills", "TenriGuardSkills",
-    "TenriRailgunSkills", "TenriGhoulRevival",
+    "TenriRailgunSkills", "TenriGhoulRevival", "TenriInstituteAI",
     "GameDataFutureRelics", "GameDataRelics", "GameDataWorld", "GameEconomy", "GameStore", "GameStoreCompact", "GameStoreIO", "GameStoreIOMutations", "GameStoreIORecovery", "GameStoreIOSelection", "GameStorePauseQueue", "GameStoreSaveLimits", "GameStoreSaveSchema", "GameStoreSaveValidation",
     "GameStoreMigrations", "GameStoreStateFactory", "GameUI", "GameUIBattleScene", "GameUIBattleTargeting", "GameUIBattleUnits", "GameUIHand", "GameUIHandState", "GameUIHandView", "GameUIInfo", "GameUIInfoMarks", "GameUILivingRoom",
     "GuestCharacterSkills", "GuestOpheliaGuard", "HallUnlockEvents", "LocalCore", "LocalCoreUtils", "LokarSkills",

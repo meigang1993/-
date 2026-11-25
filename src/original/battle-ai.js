@@ -46,8 +46,11 @@ window.BattleAI = (() => {
     const foes = battle.allies;
     const rawHand = actor.hand.filter(card => !card._pendingDraw);
     const playable = rawHand.filter(card => canPlay(actor, card));
-    const hand = window.GuardKellySkills?.aiHand?.(
+    const guardHand = window.GuardKellySkills?.aiHand?.(
       actor, playable, context) || playable;
+    // 研究所防爆队保留【闪】：链式应用，不与凯丽的 aiHand 互斥。
+    const hand = window.TenriInstituteAI?.aiHand?.(
+      actor, guardHand, context) || guardHand;
     let target = null;
     let slash = null;
     const ensureSlash = (focusOnly = false) => {
@@ -64,6 +67,10 @@ window.BattleAI = (() => {
     const relicSkill = skillMove(actor, team, foes, canPlay, true);
     if (relicSkill) return relicSkill;
     const characterMoves = [
+      // 研究所 4 只普通怪的专属 AI 排在最前：需要「先蓄力再输出」「跳过保命战术」
+      // 时抢在 tacticMove / skillMove 之前；防爆队内部返回 null 交回默认 AI。
+      () => window.TenriInstituteAI?.aiMove?.(
+        window.state, actor, team, foes, rawHand, canPlay, context),
       () => window.RuinsEnemySkills?.aiMove?.(
         window.state, actor, team, foes, rawHand, canPlay, context),
       () => window.SakuraRisaSkills?.aiMove?.(

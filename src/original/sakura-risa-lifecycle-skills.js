@@ -49,12 +49,30 @@ window.SakuraRisaLifecycleSkills = ({
   }
 
   function beginTurn(state, unit) {
-    if (!pendingRevival(unit)) return false;
+    // pendingRevival 是研究所【快速复生】与不死食尸鬼共用的包装判据：它对
+    // 挂着 tenriRevivePending 的食尸鬼同样返回 true。回合开始对**每个单位**都会
+    // 调用本函数，缺少 isRisa 守卫时，一旦研究所的 beginTurn 因任何原因尚未清掉
+    // 标记（同一回合重复进准备流程 / 手动响应续跑），食尸鬼就会被当成丽莎满血
+    // 复活并播「不死食尸鬼」台词。两条复活链必须按归属互斥。
+    if (!pendingRevival(unit) || !isRisa(unit)) return false;
+    // 与研究所【快速复生】同口径：maxHp 走血量模块的统一取值，旧档 / 测试构造
+    // 里 unit.maxHp 缺失时不会把 hp 写成 undefined。
+    const maxHp = window.BattleHpValue?.maxHp?.(unit)
+      ?? unit.maxHp ?? unit.stats?.maxHp ?? unit.hp;
     unit.risaRevivePending = false;
-    unit.hp = unit.maxHp;
+    unit.hp = maxHp;
+    // 死亡伤害浮字会把 visualHp 写回 0，而单位卡按 visualHp ?? hp 渲染。
+    // 只改 hp 会出现「已经满血、单位卡仍是灰化死亡态」，且 deathShown /
+    // deathAnimationPending 不会被 isDead=false 分支清掉（UI 只在非死亡时清）。
+    unit.visualHp = maxHp;
+    unit.visualBlock = unit.block || 0;
+    unit.visualDefense = unit.defenseSystem || 0;
     unit.statuses = (unit.statuses || []).filter(status => status !== "待复活");
     delete unit.deathDiscarded;
-    window.BattleSystem?.pushFloat?.(state.battle, unit.uid, "heal", unit.maxHp);
+    delete unit.deathShown;
+    delete unit.deathAnimationPending;
+    delete unit.deferredDeathVisual;
+    window.BattleSystem?.pushFloat?.(state.battle, unit.uid, "heal", maxHp);
     window.EnemySkills?.onHeal?.(state, window.BattleSystem?.draw);
     window.BattleLines?.skill(state, unit, "不死食尸鬼");
     window.BattleLog.add(state, `${unit.name} 的不死食尸鬼触发，恢复全部生命并继续行动。`);

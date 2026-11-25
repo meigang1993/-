@@ -432,6 +432,7 @@
     "battle-ai-skill-evaluation.js",
     "battle-ai-skill-moves.js",
     "battle-ai-skill-planner.js",
+    "tenri-institute-ai.js",
     "battle-ai.js"
   ],
   "battle-presentation": [

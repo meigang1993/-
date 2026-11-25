@@ -61,7 +61,7 @@ window.BattleStatusCardTriggers = (() => {
       unit.skipPlayReason = "混乱";
       if (amount > 0) {
         const before = unit.hp;
-        window.BattleHpValue.applyDamage(unit, amount);
+        window.BattleHpValue.applyDamage(unit, amount); window.SakuraRisaSkills?.preventDeath?.(state, unit);
         const loss = before - unit.hp;
         if (loss > 0) {
           window.BattleSystem?.pushFloat?.(state.battle, unit.uid, "hp-loss", loss);
@@ -93,7 +93,7 @@ window.BattleStatusCardTriggers = (() => {
     window.BattleCards?.put?.(state.battle, holder, landmine, "consumed");
     if (amount > 0) {
       const before = holder.hp;
-      window.BattleHpValue.applyDamage(holder, amount);
+      window.BattleHpValue.applyDamage(holder, amount); window.SakuraRisaSkills?.preventDeath?.(state, holder);
       const loss = before - holder.hp;
       if (loss > 0) {
         window.BattleSystem?.pushFloat?.(state.battle, holder.uid, "hp-loss", loss);

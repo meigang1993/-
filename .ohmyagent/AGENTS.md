@@ -98,16 +98,19 @@
 
 ## 当前状态指针(2026-11-25,只给指针不记流水)
 
-- **远端**: `main` = `00a4f0b2`(2026-11-24 12:43 UTC **推送成功**,API 实时查证)= 267~270 版
-  「天日国鹰7研究所 4 只普通怪落地、专属无缝战斗 BGM 接入、属性重平衡」,parent `1f47c1e0`。
-  远端根目录的 `天日国鹰7研究所.zip`(blob `ef02cd6c`)按要求原样保留,本地已补齐对齐。
-- **本地记账**: `3f23613`(记账 266)之后已补 `【记账】267~270 已推送 00a4f0b2`,HEAD 追平远端内容。
-- **版本**: 本地 `20260915-273`(11 个 bundle current),`deliveries/` 仍是 **260 版两个包**。
-- **273 版(未提交 / 未推送 / 未出包)**: 应用户要求**撤销 11-24 的属性曲线重平衡**,四只怪八项数值
-  全部还原用户原稿;BGM 播放器升级为 **WebAudio 采样级无缝**(`bgm-loop-metadata.js` +
-  `bgm-webaudio.js`,按 LOOPSTART/LOOPLENGTH 设 loopStart/loopEnd,file:/blob: 协议静默回退原生 loop)。
-- **权威数值源**: `src/original/data-tenri-institute-enemies.js`(已还原原稿)、
+- **远端**: `main` = `47543e40`(2026-11-25 推送成功,API 实时查证)= **271~274 版**
+  「撤销属性重平衡、WebAudio 采样级无缝、删除全部技能牌图、读书的智慧文案订正」,parent `00a4f0b2`。
+  远端 tree 1633 文件:`skill-art-*.webp` **0 张**(已删 53 张),`card-art-*.webp` **59 张全保留**;
+  根目录 `天日国鹰7研究所.zip` 原样保留。
+- **本地记账**: `2facac6`(记账 270)之后已补 `【记账】271~274 已推送 47543e40`,HEAD tree 追平远端内容。
+- **版本**: `20260915-274` ×13 + electron `26.0915.274`,11 个 bundle current,工作树干净。
+- **deliveries/**: 仍是 **260 版两个包**(仓库外 `/data/workspace/deliveries/`,内含 54 个技能图条目),
+  未出 274 包;下次出包才会同步为无技能牌图的新资源。
+- **权威数值源**: `src/original/data-tenri-institute-enemies.js`(已还原用户原稿)、
   `data-ruins-sand-city-enemies.js`;快照见 `docs/reference/`。研究所入口保持「未开发完成」。
+- **已知边界**: Electron 仍是 `loadFile`(file: 协议),WebAudio 采样级路径只在 http/https/app 协议启用,
+  桌面端当前走原生 loop 回退;QA logic 组两个历史红项(洛基 3 级魔力 / 存档恢复敌方出牌阶段)
+  与本轮无关,未修。
 - 流水、逐项文件清单与已知提交 hash 一律见 `docs/开发日记.md` 末段,本文件不复制。
 
 ## 会话备忘(2026-09-07)
