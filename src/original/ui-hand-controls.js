@@ -23,7 +23,9 @@ window.GameUIHandControls = ({ selectionTip }) => {
     }
     if (modes.dimensionTransfer) {
       const pickedCost = battle.dimensionTransfer?.costIndex != null;
-      return `<span class="discard-prompt">次元转移：${pickedCost ? "已选择黑色牌，请点击一名敌方角色承受本次伤害" : "请先从手牌中选择1张黑色牌"}。</span><button data-dimension-transfer-skip="1">放弃发动</button>`;
+      // 非锁定技：玩家必须能明确选择「不发动」。按钮与提示文案都写明后果，
+      // 避免原来只写「放弃发动」时被当成选牌流程中的取消操作。
+      return `<span class="discard-prompt">次元转移：${pickedCost ? "已选择黑色牌，请点击一名敌方角色承受本次伤害" : "请先从手牌中选择1张黑色牌"}；也可跳过（不发动），本次伤害仍由原目标承受。</span><button data-dimension-transfer-skip="1" title="不发动次元转移，本次伤害仍由原目标承受">跳过（不发动）</button>`;
     }
     if (modes.kaiichiShare) {
       return `<span class="discard-prompt">半魅魔血：已选${picks.kaiichi.length}/${battle.kaiichiShare.maxCount}张，选择至多3张后点击一名队友一次性交出。</span><button data-kaiichi-share-skip="1">不交</button>`;

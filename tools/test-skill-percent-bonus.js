@@ -8,10 +8,11 @@ const fs = require("fs");
 const vm = require("vm");
 const path = require("path");
 const assert = require("assert");
+const { sourceOf } = require("./split-source-view");
 const ROOT = path.join(__dirname, "..", "src", "original");
 const REVERT = process.env.REVERT || "none";
 const cache = {};
-const raw = f => cache[f] || (cache[f] = fs.readFileSync(path.join(ROOT, f), "utf8"));
+const raw = f => cache[f] || (cache[f] = sourceOf(path.join(ROOT, f)));
 const REVERTS = {
   formula: {
     "hp-value.js": [["const pctStacks = (base, pct, n) => Math.max(1, Math.round(\n    clean(base) * Math.max(0, clean(pct)) / 100)) * Math.max(0, Math.round(clean(n)));",

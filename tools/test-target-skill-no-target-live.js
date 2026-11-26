@@ -157,8 +157,34 @@ const clickAndCheck = async (page, ref, dataVar, mode, prepare, mateGender) => {
   console.log("── E · 偶像之吻（队友全阵亡）──");
   const eNo = await setup(page, "nonoka", "window.GameDataCharactersCore", "noMate", "偶像之吻");
   T("E1 队友全阵亡：按钮置灰", eNo.found && eNo.disabled === true, eNo);
-  const eOk = await setup(page, "nonoka", "window.GameDataCharactersCore", "ok", "偶像之吻");
-  T("E0 对照：有队友时可点", eOk.found && eOk.hasIndex, eOk);
+  // 偶像之吻的置灰判据是 livingPartner()（明确排除自己），而回归战斗默认只有
+  // 1 名我方：前面 B/C/D 对照组靠「敌人也算其他角色」或「自身满足条件」成立，
+  // 只有 E0 因缺另一名存活友方而假红。这里显式补一名队友；E1 的 noMate 在它
+  // 之前执行，队友仍会被置为 hp=0，所以 E1 的置灰断言不受影响。
+  const mateCount = await page.evaluate(`(() => {
+    const b = window.state.battle;
+    if (b.allies.length < 2) {
+      const mate = JSON.parse(JSON.stringify(b.allies[0]));
+      mate.uid = "e0-mate"; mate.name = "E0队友"; mate.hp = 100; mate.maxHp = 100;
+      mate.gender = "female"; b.allies.push(mate);
+    }
+    return b.allies.length;
+  })()`);
+  const eFull = await setup(page, "nonoka", "window.GameDataCharactersCore", "ok", "偶像之吻");
+  // 第二层判据：偶像之吻是治疗技，同阵营没有任何受伤角色时按「无合法目标」正确置灰
+  // （battle-card-playability.js 的 isSingleHealCard + needsHeal）。夹具默认全员满血，
+  // 所以原 E0 红的是夹具本身。先把「满血即置灰」作为一条正向断言固化，再让施术者受伤。
+  T("E0a 双方满血时按「无受伤目标」正确置灰",
+    mateCount >= 2 && eFull.found && eFull.disabled === true, { mateCount, ...eFull });
+  await page.evaluate(`(() => {
+    const c = window.state.battle.allies[0];
+    c.hp = Math.max(1, c.maxHp - 30);
+    window.render();
+    return { hp: c.hp, maxHp: c.maxHp };
+  })()`);
+  await page.waitForTimeout(320);
+  const eOk = await page.evaluate(btnTpl("偶像之吻"));
+  T("E0 对照：有队友且有受伤目标时可点", mateCount >= 2 && eOk.found && eOk.hasIndex, { mateCount, ...eOk });
 
   T("页面无 JS 错误", pageErrors.length === 0, pageErrors.slice(0, 3));
 

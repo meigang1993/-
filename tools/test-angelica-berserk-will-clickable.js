@@ -113,6 +113,10 @@ global.BattleLines = { skill: () => {} };
 global.BattleLog = { add: () => {} };
 global.BattleStats = { heal: () => {} };
 global.BattleHpValue = {
+  // 狂战意志按「当前最大生命值 × 10% × 标记数」回血；此 mock 与 hp-value.js
+  // 的 healPctStacks 同口径，之前漏了这个方法导致 D 段 vm 直接 TypeError。
+  healPctStacks: (actor, pct, n) => Math.max(1, Math.round((actor.maxHp || 0) * pct / 100))
+    * Math.max(0, Math.round(n)),
   healCap: (_u, a) => Math.max(0, Math.round(a)),
   applyHeal: u => u.hp,
 };

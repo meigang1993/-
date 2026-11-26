@@ -1,5 +1,11 @@
 // 合并技能最终复查：装配顺序、历史公告口径、两个合并技能描述、旧存档兼容性。
 // REVERT=order|notice|desc|migration 为源码级反向验证（预期精准报红）。
+// C6 口径更新：2026-11-25 全部技能牌图（skill-art-*.webp）已删除，card-art.js 只保留
+//   59 张实体牌卡图并用 isSkill 守卫让技能牌 url 返回空串（见 check-skill-art-removed.js
+//   与 test-berserk-will-merge-audit.js A10）。原 C6 仍期望 card-art.js 里有 "狂战意志": 键，
+//   属断言未跟上设计变更，是常驻红项，还污染了上面 4 组反向验证。本轮改按当前口径拆成
+//   C6 / C6b / C6c 三条，分别锁卡图层、技能入口层、角色数据层。
+//   新增 REVERT=cardArtLeak|skillAccessLeak|extraLeak 三组，注入只作用于 C 段读取。
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -59,6 +65,26 @@ function rootText(rel, opts = {}) {
     if (rel === "docs/deepseek-rebuild/02-characters.md") {
       s = s.replace("原独立主动技`猩红暴走`已删除，效果并入`狂战意志`", "限定技`猩红暴走`保留");
     }
+  }
+  // C6 专属反向注入：只在 C 段显式带 { leak: true } 的读取上生效。
+  // E 段真实 vm 装配走 src()/load()，不带 leak，注入不会污染运行时行为。
+  if (opts.leak && REVERT === "cardArtLeak" && rel === "src/original/card-art.js") {
+    const anchor = '    "杀": "./assets/generated/cards/card-art-basic-slash.9b6ab50a.webp",';
+    if (!s.includes(anchor)) throw new Error("REVERT=cardArtLeak must hit card-art.js");
+    s = s.replace(anchor,
+      '    "狂战意志": "./assets/generated/cards/skill-art-leak.webp",\n' + anchor, 1);
+  }
+  if (opts.leak && REVERT === "skillAccessLeak" && rel === "src/original/character-skill-access.js") {
+    const anchor = '    { flags: ["berserkWill"], name: "狂战意志", target: "self" },';
+    if (!s.includes(anchor)) throw new Error("REVERT=skillAccessLeak must hit character-skill-access.js");
+    s = s.replace(anchor,
+      '    { flags: ["crimsonRampage"], name: "猩红暴走", target: "self" },\n' + anchor, 1);
+  }
+  if (opts.leak && REVERT === "extraLeak" && rel === "src/original/data-characters-extra.js") {
+    const anchor = '      { name: "狂战意志", type: "active"';
+    if (!s.includes(anchor)) throw new Error("REVERT=extraLeak must hit data-characters-extra.js");
+    s = s.replace(anchor,
+      '      { name: "猩红暴走", type: "active" },\n' + anchor, 1);
   }
   return s;
 }
@@ -128,13 +154,13 @@ function src(file, skipDesc = false) {
 
 // C 两个合并技能描述：游戏数据 + 设定文档 + docs/03
 {
-  const extra = rootText("src/original/data-characters-extra.js");
-  const noa = rootText("src/original/data-new-characters.js");
-  const docSkill = rootText("docs/安洁莉卡技能重制.txt");
-  const docOverview = rootText("docs/deepseek-rebuild/02-characters.md");
-  const docAll = rootText("docs/03-角色与角色技能.txt");
-  const cardArt = rootText("src/original/card-art.js");
-  const skillAccess = rootText("src/original/character-skill-access.js");
+  const extra = rootText("src/original/data-characters-extra.js", { leak: true });
+  const noa = rootText("src/original/data-new-characters.js", { leak: true });
+  const docSkill = rootText("docs/安洁莉卡技能重制.txt", { leak: true });
+  const docOverview = rootText("docs/deepseek-rebuild/02-characters.md", { leak: true });
+  const docAll = rootText("docs/03-角色与角色技能.txt", { leak: true });
+  const cardArt = rootText("src/original/card-art.js", { leak: true });
+  const skillAccess = rootText("src/original/character-skill-access.js", { leak: true });
   T("C1 狂战意志游戏描述含主动合并效果与 berserkWill 卡",
     /name: "狂战意志", type: "active"/.test(extra)
     && /出牌阶段限一次，你可以弃置所有/.test(extra)
@@ -154,8 +180,24 @@ function src(file, skipDesc = false) {
   T("C5 docs/03 已补诺亚当前合并描述",
     /补充：noa - 怪面诺亚/.test(docAll)
     && /若队伍中没有存活的男性角色/.test(docAll));
-  T("C6 卡图与技能入口只剩狂战意志",
-    /"狂战意志":/.test(cardArt) && !/猩红暴走/.test(skillAccess));
+  T("C6 技能牌图整体移除：卡图映射无两个合并技能键、isSkill 守卫与实体牌卡图仍在",
+    !/"狂战意志":/.test(cardArt) && !/"猩红暴走":/.test(cardArt)
+    && !/\.\/assets\/generated\/cards\/skill-art-/.test(cardArt)
+    && /if \(isSkill\(card\)\) return "";/.test(cardArt)
+    && /"杀（普攻）":\s*"\.\/assets\/generated\/cards\/card-art-/.test(cardArt),
+    { willKey: /"狂战意志":/.test(cardArt), crimsonKey: /"猩红暴走":/.test(cardArt),
+      skillArtRef: /\.\/assets\/generated\/cards\/skill-art-/.test(cardArt),
+      guard: /if \(isSkill\(card\)\) return "";/.test(cardArt) });
+  T("C6b 技能入口只剩【狂战意志】，旧【猩红暴走】判定无残留",
+    /\{ flags: \["berserkWill"\], name: "狂战意志", target: "self" \}/.test(skillAccess)
+    && !/猩红暴走/.test(skillAccess) && !/crimsonRampage/.test(skillAccess),
+    { will: /\{ flags: \["berserkWill"\], name: "狂战意志", target: "self" \}/.test(skillAccess),
+      crimson: /猩红暴走|crimsonRampage/.test(skillAccess) });
+  T("C6c 角色数据层旧独立技【猩红暴走】已删除",
+    !/name: "猩红暴走"/.test(extra) && !/crimsonRampage/.test(extra)
+    && /name: "狂战意志", type: "active"/.test(extra),
+    { crimson: /name: "猩红暴走"|crimsonRampage/.test(extra),
+      will: /name: "狂战意志", type: "active"/.test(extra) });
 }
 
 // D 旧存档迁移接线：checkpoint 后规范化；无 checkpoint 先丢弃 battle

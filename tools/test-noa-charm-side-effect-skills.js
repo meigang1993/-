@@ -1,21 +1,51 @@
-// 怪面诺亚【淫气改造】【淫气改造】严格检查（Node 直调，不依赖浏览器）
+// 怪面诺亚【淫气改造】严格检查（Node 直调，不依赖浏览器）
 // 覆盖：角色模板 / 台词 / 皮肤 / 免淫气 / 手牌恒等 / 动态手牌上限 /
 //       结束阶段男性伤害 / 无男性时的虚拟咬杀与跳过出牌 / 解锁链路静态装配。
-// 反向验证：撤掉任一技能判据后，对应断言必须立刻变红。
+// 口径更新：诺亚后来新增主动技【终极刀魔】，技能表由 1 项变 2 项
+//   （见 update-notice-recent.js 公告与 test-noa-charm-merge-audit.js / test-merge-skill-side-effects.js）。
+//   A6 原断言仍期望 skills.length === 1，属断言未跟上设计变更，非产品数据错误；
+//   本轮改按 2 项严格校验，并拆出 A6b 单独锁住主动技定义完整性。
+// 反向验证：REVERT=bladeType|sideEffect|bladeMissing 精准打红对应 A 段断言，无关段保持绿。
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { sourceOf } = require("./split-source-view");
 
 const SRC = f => path.join(__dirname, "..", "src", "original", f);
-const read = f => fs.readFileSync(SRC(f), "utf8");
+const REVERT = process.env.REVERT || "";
+// 只在读取 data-new-characters.js 时做源码级替换，且只动诺亚技能表相关文本；
+// 其它 read() 目标（含拆分感知视图）原样返回，不干扰 E 段静态装配断言。
+const REVERTS = {
+  bladeType: { "data-new-characters.js": [
+    ['{ name: "终极刀魔", type: "active"', '{ name: "终极刀魔", type: "passive"'],
+  ] },
+  sideEffect: { "data-new-characters.js": [
+    ["结束阶段，你对我方其他所有存活男性角色各造成等同于你攻击力的伤害；", ""],
+  ] },
+  bladeMissing: { "data-new-characters.js": [
+    [/^      \{ name: "终极刀魔",.*\n/m, ""],
+  ] },
+};
+function read(f) {
+  let s = sourceOf(SRC(f));
+  const name = path.basename(f);
+  for (const [from, to] of (REVERTS[REVERT]?.[name] || [])) {
+    const hit = from instanceof RegExp ? from.test(s) : s.includes(from);
+    if (!hit) throw new Error(`REVERT=${REVERT} 目标未命中: ${name} / ${String(from).slice(0, 70)}`);
+    s = s.replace(from, to);
+  }
+  return s;
+}
 const ctx = { console };
 ctx.window = ctx;
 vm.createContext(ctx);
 
 let pass = 0, total = 0;
+const results = [];
 const T = (name, cond, extra) => {
   total++;
   if (cond) pass++;
+  results.push({ name, ok: !!cond });
   console.log(`${cond ? "✅" : "❌"} ${name}` + (cond ? "" : `  ← ${JSON.stringify(extra || {})}`));
   return !!cond;
 };
@@ -61,12 +91,30 @@ T("A2 身份为淫气改造者", tpl?.role === "淫气改造者", tpl?.role);
 T("A3 0级属性正确（203版全角色翻倍后）", JSON.stringify(tpl?.stats) === JSON.stringify({ attack: 6, magic: 4, speed: 8, maxHp: 130, bloodlust: 1, handLimit: 4, drawPerTurn: 1, initialDraw: 1 }), tpl?.stats);
 T("A4 每回合摸牌=基础2+1、初始摸牌=基础4+1", tpl?.stats?.drawPerTurn === 1 && tpl?.stats?.initialDraw === 1, tpl?.stats);
 T("A5 锁定且殿堂价100、解锁旗标正确", tpl?.locked === true && tpl?.unlockCost === 100 && tpl?.unlockFlag === "noaNurseryUnlocked", tpl);
-T("A6 合并后只保留【淫气改造】一个技能，描述含原效果与并入的三段副作用",
-  tpl?.skills?.length === 1 && tpl.skills[0].name === "淫气改造"
-  && tpl.skills[0].text.includes(noaSkills[0].text)
-  && /结束阶段，你对我方其他所有存活男性角色/.test(tpl.skills[0].text)
-  && /手牌上限\+1/.test(tpl.skills[0].text)
-  && /虚拟【咬杀】/.test(tpl.skills[0].text), tpl?.skills?.map(s => s.name));
+const charmText = tpl?.skills?.find(s => s.name === "淫气改造")?.text || "";
+const blade = tpl?.skills?.find(s => s.name === "终极刀魔");
+T("A6 技能表为【淫气改造】+【终极刀魔】两项；淫气改造描述含原效果与并入的三段副作用",
+  tpl?.skills?.length === 2
+  && tpl.skills[0].name === "淫气改造" && tpl.skills[0].type === "passive"
+  && charmText.includes(noaSkills[0].text)
+  && /结束阶段，你对我方其他所有存活男性角色/.test(charmText)
+  && /手牌上限\+1/.test(charmText)
+  && /虚拟【咬杀】/.test(charmText),
+  { names: tpl?.skills?.map(s => s.name), firstType: tpl?.skills?.[0]?.type,
+    sideEffects: [/结束阶段，你对我方其他所有存活男性角色/, /手牌上限\+1/, /虚拟【咬杀】/]
+      .map(re => re.test(charmText)) });
+T("A6b 新增主动技【终极刀魔】定义完整（active + 技能卡 + X 结算 + 目标转移）",
+  tpl?.skills?.[1]?.name === "终极刀魔" && blade?.type === "active"
+  && /出牌阶段限一次/.test(blade?.text || "")
+  && /额外结算X次/.test(blade?.text || "")
+  && /剩余未结算的次数/.test(blade?.text || "")
+  && blade?.card?.type === "tactic"
+  && blade.card.ultimateBlade === true
+  && blade.card.targetless === true
+  && /下一张实体单体【杀】/.test(blade.card.text || ""),
+  blade ? { name: blade.name, type: blade.type, icon: blade.icon,
+    card: { type: blade.card?.type, ultimateBlade: blade.card?.ultimateBlade,
+      targetless: blade.card?.targetless } } : { skills: tpl?.skills?.map(s => s.name) });
 T("A7 主立绘指向已接入的文件", (tpl?.art || "").includes("noa.470b1881.webp"), tpl?.art);
 T("A8 登场台词与设定一致", tpl?.entrance === "啊啊……身体好热！杀光敌人！别忘了……给我……雄性……淫气改造把我变成了淫荡的怪物！！！", tpl?.entrance);
 
@@ -268,5 +316,20 @@ T("E17 三个生效判据都带出牌阶段守卫",
 T("E12 结束阶段与狂暴挂接入主流程", read("battle-end-phase.js").includes("NoaSideEffectSkills?.endTurn") && read("battle-turn-start.js").includes("NoaSideEffectSkills?.beginPlayPhase"));
 T("E13 动态手牌上限被三处消费", ["ui-common.js", "battle-runtime-helpers.js", "battle-ai-helpers.js"].every(f => read(f).includes("NoaSideEffectSkills?.handLimit")));
 
+const EXPECT = { bladeType: ["A6b"], sideEffect: ["A6"], bladeMissing: ["A6", "A6b"] };
+// 只接管本脚本自己支持的反向组；批量回归里若外部误设了别的 REVERT 值，
+// 仍按正向执行，避免无关环境变量导致假红。
+if (REVERT && !EXPECT[REVERT]) {
+  console.log(`\nREVERT=${REVERT} 非本脚本反向组，按正向执行`);
+}
+if (EXPECT[REVERT]) {
+  const red = results.filter(r => !r.ok).map(r => r.name.split(" ")[0]);
+  const want = EXPECT[REVERT] || [];
+  const precise = want.length > 0
+    && want.every(w => red.includes(w))
+    && red.every(r => want.includes(r));
+  console.log(`\nREVERT=${REVERT} RED=${JSON.stringify(red)} EXPECTED=${JSON.stringify(want)} ${precise ? "PRECISE_OK" : "PRECISE_FAIL"}`);
+  process.exit(precise ? 0 : 1);
+}
 console.log(`\nRESULT ${pass}/${total}`);
 if (pass !== total) process.exit(1);

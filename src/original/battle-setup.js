@@ -4,7 +4,7 @@ window.BattleSetup = () => {
   let enemyTemplates = null;
   const resistanceSkill = Object.freeze({
     name: "霸王色抗性", type: "trigger", icon: "✦",
-    text: "触发技，准备阶段自动触发。若自身持有状态牌且另有至少2张手牌，弃置2张手牌，消耗并移除其中1张状态牌；否则该状态牌照常进入判定阶段。",
+    text: "非锁定技，准备阶段自动触发。若自身持有状态牌且另有至少2张手牌，弃置2张手牌，消耗并移除其中1张状态牌；否则该状态牌照常进入判定阶段。",
   });
   const enemyTemplate = (id) => {
     enemyTemplates = enemyTemplates || new Map(Object.values(GameData.enemies || {}).flat().map(e => [e.id, e]));

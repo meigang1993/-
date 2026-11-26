@@ -1,6 +1,6 @@
-// 触发技（type: "trigger"）玩家选择权审计
+// 非锁定技（type: "trigger"）玩家选择权审计
 //
-// 触发技的语义是「满足条件时触发，或弹出响应选择」。若一个触发技在触发后
+// 非锁定技的语义是「满足条件时触发，或弹出响应选择」。若一个非锁定技在触发后
 // 只锁定界面、强迫玩家走唯一路径（没有任何放弃入口），玩家就被剥夺了选择权，
 // 与「你可以……」的描述不符。
 //
@@ -61,7 +61,7 @@ const resolverBlock = counterSrc.slice(
 );
 const counterSkills = [...resolverBlock.matchAll(/"([^"]+)":/g)].map(m => m[1]);
 
-// ---- 2. UI 文件（渲染触发技弹窗的地方） ----
+// ---- 2. UI 文件（渲染非锁定技弹窗的地方） ----
 const UI_FILES = [
   "ui-hand-controls.js", "ui-hand-view.js",
   "ui-battle-pickers.js",
@@ -76,7 +76,7 @@ function hasCancelButton(skillName) {
     && line.includes("<button") && CANCEL_RE.test(line));
 }
 
-// ---- 3. 收集触发技 ----
+// ---- 3. 收集非锁定技 ----
 const skills = [];
 
 // 3a. 角色技能（可玩角色数据）
@@ -102,7 +102,7 @@ for (const [file, data] of Object.entries(charSources)) {
   collect(list, file, ch => ch.name || ch.id);
 }
 
-// 3b. 已知的可玩角色触发技（定义在独立技能文件里，不在角色数据数组中）
+// 3b. 已知的可玩角色非锁定技（定义在独立技能文件里，不在角色数据数组中）
 [["manny-skills.js", readSrc("manny-skills.js")]].forEach(([file, src]) => {
   [...src.matchAll(/name:\s*"([^"]+)",\s*type:\s*"trigger"/g)]
     .forEach(m => skills.push({
@@ -111,7 +111,7 @@ for (const [file, data] of Object.entries(charSources)) {
     }));
 });
 
-// 3c. 饰品触发技
+// 3c. 饰品非锁定技
 const relicSources = {
   "data-relics.js": window.GameDataRelics,
   "data-future-relics.js": window.GameDataFutureRelics,
@@ -144,7 +144,7 @@ const ok = (name, cond, extra = "") => {
   else { fail++; console.log(`❌ ${name}${extra ? "  " + extra : ""}`); }
 };
 
-console.log(`===== 触发技玩家选择权审计（共 ${list.length} 项）=====\n`);
+console.log(`===== 非锁定技玩家选择权审计（共 ${list.length} 项）=====\n`);
 console.log(`通用反击面板已注册：${counterSkills.join(" / ")}\n`);
 
 for (const s of list) {
@@ -156,7 +156,7 @@ for (const s of list) {
   // 没写「可以」的是强制触发（满足条件即生效），不需要选择入口。
   const optional = /你可以|可以选择/.test(s.text);
   if (optional) {
-    // 饰品触发技若靠通用面板，还要确认引擎真的开了面板（防止「注册了却没调用」）
+    // 饰品非锁定技若靠通用面板，还要确认引擎真的开了面板（防止「注册了却没调用」）
     const opened = s.kind !== "饰品" || !viaCounter || openedInEngine(s.name);
     ok(`${s.kind}·${s.name}`, canDecide && opened,
       `（${how}；描述含「你可以」，玩家须能放弃${opened ? "" : "；⚠️ 引擎未调用 open"}）`);

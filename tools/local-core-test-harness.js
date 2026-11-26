@@ -65,7 +65,7 @@ require("../src/original/store-save-limits.js");
   "bounty-ledger.js",
   "receipt-ledger.js",
   "local-core-utils.js", "local-core-character.js", "local-core-commerce.js",
-  "local-core-bounty.js", "local-core-dungeon.js", "local-core-events.js", "local-core.js",
+  "local-core-bounty.js", "local-core-dungeon-settlement.js", "local-core-dungeon.js", "local-core-events.js", "local-core.js",
   "server-core-apply.js", "server-core.js", "bounty-rewards.js", "bounty-task-rewards.js",
   "bounty-task-generator.js", "bounty-task-repair.js", "bounty-tasks.js", "bounty.js",
 ].forEach(file => require(`../src/original/${file}`));

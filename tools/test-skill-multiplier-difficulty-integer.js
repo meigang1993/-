@@ -4,9 +4,10 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { sourceOf } = require("./split-source-view");
 const ROOT = path.resolve(__dirname, "..", "src", "original");
 const REVERT = process.env.REVERT || "";
-const src = f => fs.readFileSync(path.join(ROOT, f), "utf8");
+const src = f => sourceOf(path.join(ROOT, f));
 let pass = 0, total = 0; const reds = [];
 const T = (name, ok, extra) => { total++; if (ok) pass++; else { reds.push(name); console.log("  RED", name, extra !== undefined ? JSON.stringify(extra) : ""); } };
 const isInt = v => Number.isInteger(v) && Number.isFinite(v);

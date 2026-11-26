@@ -7,11 +7,12 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { sourceOf } = require("./split-source-view");
 
 const ROOT = path.resolve(__dirname, "..");
 const DIR = path.join(ROOT, "src", "original");
 const REVERT = process.env.REVERT || "";
-const raw = n => fs.readFileSync(path.join(DIR, n), "utf8");
+const raw = n => sourceOf(path.join(DIR, n));
 
 const P = (file, arg) => [
   `window.BattleHpValue.applyDamage(${arg}); window.SakuraRisaSkills?.preventDeath?.(state, ${arg.replace(/,.*/, "")});`,
@@ -181,7 +182,10 @@ check("E", "E1 增援部队自伤（ruins-elite-skills.js）同行补了 prevent
     patched("ruins-elite-skills.js")));
 check("E", "E2 全库 BattleHpValue.applyDamage 调用点无第 9 处漏网（豁免见 E3）",
   (() => {
-    const files = fs.readdirSync(DIR).filter(f => f.endsWith(".js"));
+    // 3 个子模块已并入各自「主文件」的拆分感知视图（sourceOf），
+    // 再单独扫一遍会把同一处调用点计两次；只扫主文件视图即可覆盖全部源码。
+    const SPLIT_SUBS = ["ruins-dragon-tailgun.js", "local-core-dungeon-settlement.js", "ruins-elite-prepare-skills.js"];
+    const files = fs.readdirSync(DIR).filter(f => f.endsWith(".js") && !SPLIT_SUBS.includes(f));
     const sites = [];
     files.forEach(f => {
       const s = patched(f);
@@ -192,7 +196,10 @@ check("E", "E2 全库 BattleHpValue.applyDamage 调用点无第 9 处漏网（�
     // 3 条主链（外层包装调 preventDeath）+ 7 条本轮补齐 = 10 个调用点
     return sites.length === 10;
   })(), `sites=${(() => {
-    const files = fs.readdirSync(DIR).filter(f => f.endsWith(".js"));
+    // 3 个子模块已并入各自「主文件」的拆分感知视图（sourceOf），
+    // 再单独扫一遍会把同一处调用点计两次；只扫主文件视图即可覆盖全部源码。
+    const SPLIT_SUBS = ["ruins-dragon-tailgun.js", "local-core-dungeon-settlement.js", "ruins-elite-prepare-skills.js"];
+    const files = fs.readdirSync(DIR).filter(f => f.endsWith(".js") && !SPLIT_SUBS.includes(f));
     const out = [];
     files.forEach(f => patched(f).split("\n").forEach((l, i) => {
       if (l.includes("BattleHpValue.applyDamage(")) out.push(`${f}:${i + 1}`);

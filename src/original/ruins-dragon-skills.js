@@ -7,6 +7,12 @@ window.RuinsDragonSkills = (() => {
   const suits = ["♥", "♦", "♠", "♣"];
   // 死亡音波的实现拆分到 ruins-dragon-deathwave.js（主文件 200 行硬约束）。
   const DW = new Proxy({}, { get: (_, key) => window.RuinsDragonDeathWave?.[key] });
+  // 机尾机枪的实现拆分到 ruins-dragon-tailgun.js（主文件逼近 189 行硬约束）。
+  // 显式抛错：子模块漏加载时立刻失败，不允许静默兜底把方法无声丢掉。
+  if (!window.RuinsDragonTailGun) {
+    throw new Error("ruins-dragon-skills: 缺少子模块 RuinsDragonTailGun（ruins-dragon-tailgun.js 必须先于本文件加载）");
+  }
+  const { fireTailGun } = window.RuinsDragonTailGun;
 
   function prepare(state, unit) {
     if (unit?.ai !== "ruins_dragon") return;
@@ -81,47 +87,6 @@ window.RuinsDragonSkills = (() => {
     if (dragon.ruinsHitsThisTurn < threshold || dragon.ruinsGunFired) return;
     dragon.ruinsGunFired = true;
     fireTailGun(state, dragon, damage);
-  }
-
-  function fireTailGun(state, dragon, damage) {
-    const targets = alive(state.battle.allies);
-    if (!targets.length) return;
-    const amount = stat(dragon, "attack");
-    // 描述为「视为使用一张虚拟【机枪扫杀】」：必须以实体牌【机枪扫杀】为模板建虚拟牌，
-    // 才能继承 type:"slash" / sweep:true / targetless:true / scale:"attack" 等原牌字段。
-    // 此前是手搓 { name:"机尾机枪", type:"skill" }，既不是杀牌，也没有 allTargets /
-    // aoeLineShown，导致：①不绘制全体目标线；②isGroupTargetCard 判 false，群体牌
-    // 相关判定（群体响应口径、群体触发、目标线渲染）全部失效。
-    // responseKind:"dodge" 保留：真正的【机枪扫杀】靠它才进响应判定，可被【闪】响应。
-    const card = window.CardUtils.fromEntity("机枪扫杀", {
-      allTargets: targets.map(unit => unit.uid),
-      aoeLineShown: true,
-      responseKind: "dodge",
-      // 本牌是技能生成的虚拟牌，不走普通出牌的暴击表现。
-      // 改成以【机枪扫杀】为模板后 isKillCard 成立、攻击力 13 ≥ 5，
-      // 会命中 battle-damage-hit 的 critical 判定，飘字被放大 1.3 倍并加粒子，
-      // 与「锁定技造成技能伤害」的定位不符（数值不变，纯视觉副作用）。
-      skipCriticalFx: true,
-    });
-    let dealt = 0;
-    window.BattleLines?.skill?.(state, dragon, "机尾机枪");
-    // 全体目标线：与无限暗刃（edis-skills）同一范式，推 virtualPlay 动画。
-    state.battle.tailGunSeq = (state.battle.tailGunSeq || 0) + 1;
-    state.battle.animQueue?.push({
-      type: "virtualPlay", id: `tailgun${state.battle.tailGunSeq}`, uid: dragon.uid,
-      targetUids: card.allTargets, card, enemyLine: dragon.side === "enemy", show: true,
-    });
-    targets.forEach(target => {
-      // 护甲按「对每名角色造成的伤害量」累加：直接用 damage 返回的 hpLoss，
-      // 被【闪】响应时为 0，不会误给护甲。
-      const result = damage(state, target, amount, "机尾机枪", dragon, { ...card });
-      dealt += Math.max(0, result?.hpLoss || 0);
-    });
-    if (dealt > 0) {
-      dragon.block = (dragon.block || 0) + dealt;
-      window.BattleSystem?.pushFloat?.(state.battle, dragon.uid, "armor-gain", dealt);
-      log(state, `${dragon.name} 发动机尾机枪，造成${dealt}点伤害并获得${dealt}点护甲。`);
-    }
   }
 
   function endTurn(state, unit) {

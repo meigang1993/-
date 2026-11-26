@@ -13,6 +13,10 @@ const timeouts = Object.freeze({
   "test-edis-chainsaw-vs-counter-live.js": 240,
   // 每段各弹一次交牌窗，需等交牌窗挂载并跳过，等待链更长
   "test-double-and-chain-slash-live.js": 300,
+  // 机尾机枪 × 半魅魔血：一次 boot 内跑挂起/解锁/续跑 + 机枪扫杀对照
+  "test-tailgun-halfblood-continuation-live.js": 240,
+  "test-nonlocked-transfer-skip-live.js": 240,
+  "test-nonlocked-transfer-skip-clickable-live.js": 240,
   "test-chain-slash-dodge-live.js": 300,
   "test-reaction-queue-guards-live.js": 300,
   // 诺亚回合流 A~E 共 5 段各自 boot 一次浏览器，E 段还要逐项禁用技能重跑
@@ -664,6 +668,13 @@ const groups = Object.freeze({
     "test-hammer-gatling-conflict-live.js",
     "test-entity-card-suit-skills-live.js",
     "test-aoe-halfblood-continuation-live.js",
+    "test-tailgun-halfblood-continuation-live.js",
+    "check-aoe-continuation-source.js",
+    "check-split-283.js",
+    "check-split-283-browser.js",
+    "check-nonlocked-skill-and-transfer-skip.js",
+    "test-nonlocked-transfer-skip-live.js",
+    "test-nonlocked-transfer-skip-clickable-live.js",
     "test-butler-manual-tutorial-goal-live.js",
     "test-all-unlock-events-live.js",
     "test-artina-skills-live.js",

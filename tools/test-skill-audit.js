@@ -59,8 +59,10 @@ window.CharacterSkinFX = { extractEssence(_state, actor, target, amount) {
 BattleCardSpecials({ draw(actor, count) { if (actor === extractActor) extractDraw += count; } }, {
   holdVisual() {}, pushFloat() {}, visualOf() { return {}; },
 }).extractEssence(state, extractActor, extractTarget);
-assert(extractTarget.hp === 18 && extractDraw === 2 && extractActor.tempMagic === 6,
-  "Extract Essence must add 50% of base magic per visible heart without multiplying existing temporary magic");
+// 口径更新：百分比统一按「当前属性」（stats.magic + tempMagic）快照线性相加，
+// 不再按 base magic。currentStat = 4 + 2 = 6；pctStacks(6, 50, 2) = 3×2 = 6 → tempMagic = 8。
+assert(extractTarget.hp === 18 && extractDraw === 2 && extractActor.tempMagic === 8,
+  "Extract Essence must add 50% of CURRENT magic (base + temp) per visible heart");
 assert(extractActor.extractMagicAttack && extractFx === 1,
   "Extract Essence must keep physical-card conversion and dispatch its equipped-skin effect");
 for (const hearts of [0, 1, 3]) {
@@ -81,9 +83,12 @@ for (const hearts of [0, 1, 3]) {
   BattleCardSpecials({ draw(unitActor, count) { if (unitActor === actor) drawn += count; } }, {
     holdVisual() {}, pushFloat() {}, visualOf() { return {}; },
   }).extractEssence(extractState, actor, target);
-  assert(actor.tempMagic === initialTempMagic + baseMagic * .5 * hearts,
-    `Extract Essence ${hearts}-heart case must add half base magic per visible heart`);
-  assert(actor.stats.magic + actor.tempMagic === baseMagic + initialTempMagic + baseMagic * .5 * hearts,
+  // 与 hp-value.js 的 pctStacks 同口径的独立参考实现（不调用被测模块）：
+  // 基数 = 当前魔力 = baseMagic + initialTempMagic；单份四舍五入且至少 1 点。
+  const perHeart = Math.max(1, Math.round((baseMagic + initialTempMagic) * 50 / 100));
+  assert(actor.tempMagic === initialTempMagic + perHeart * hearts,
+    `Extract Essence ${hearts}-heart case must add 50% of current magic per visible heart`);
+  assert(actor.stats.magic + actor.tempMagic === baseMagic + initialTempMagic + perHeart * hearts,
     `Extract Essence ${hearts}-heart case must produce the exact effective magic`);
   assert(target.hp === 20 - hearts && drawn === hearts,
     `Extract Essence ${hearts}-heart case must keep HP loss and draw equal to visible hearts`);

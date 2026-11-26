@@ -62,6 +62,10 @@ const SPLITS = [
   { main: "artina-maria-skills.js", deps: ["MariaHonorBlessing"] },
   { main: "ruins-witherer-skills.js", deps: ["RuinsWithererVirtualKill"] },
   { main: "store-repairs.js", deps: ["StoreMergedSkillsRepair"] },
+  // 2026-11-26 预防性拆分：3 个逼近 189 行硬约束的低风险文件各拆出一个子模块。
+  { main: "ruins-dragon-skills.js", deps: ["RuinsDragonTailGun"] },
+  { main: "local-core-dungeon.js", deps: ["LocalCoreDungeonSettlement"] },
+  { main: "ruins-elite-skills.js", deps: ["RuinsElitePrepareSkills"] },
 ];
 
 const failures = [];
@@ -143,6 +147,9 @@ if (!fs.existsSync(bundlesPath)) {
     "artina-maria-skills.js": ["maria-honor-blessing.js"],
     "ruins-witherer-skills.js": ["ruins-witherer-virtual-kill.js"],
     "store-repairs.js": ["store-merged-skills-repair.js"],
+    "ruins-dragon-skills.js": ["ruins-dragon-tailgun.js"],
+    "local-core-dungeon.js": ["local-core-dungeon-settlement.js"],
+    "ruins-elite-skills.js": ["ruins-elite-prepare-skills.js"],
   };
   // 共享模块必须同时出现在两个消费方所在的 bundle，否则跨包依赖并未消除
   const sharedCross = {

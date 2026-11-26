@@ -8,6 +8,7 @@
 const fs = require("fs");
 const vm = require("vm");
 const { installGlobals, loadRuntime } = require("./skill-coverage-fixtures");
+const { sourceOf } = require("./split-source-view");
 
 installGlobals();
 loadRuntime();
@@ -21,7 +22,7 @@ loadRuntime();
   "ruins-dragon-skills.js",
   "battle-damage-triggers.js",
 ].forEach(file => vm.runInThisContext(
-  fs.readFileSync(`./src/original/${file}`, "utf8"),
+  sourceOf(`./src/original/${file}`),
   { filename: file },
 ));
 

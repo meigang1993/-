@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 const assert = require("assert");
+const { sourceOf } = require("./split-source-view");
 
 const ROOT = path.join(__dirname, "../src/original");
 const REVERT = process.env.REVERT || "";
@@ -15,7 +16,7 @@ function T(name, cond, extra) {
   reds.push(name);
   if (REVERT) console.log(`  RED ${name}`, extra === undefined ? "" : JSON.stringify(extra));
 }
-function read(file) { return fs.readFileSync(path.join(ROOT, file), "utf8"); }
+function read(file) { return sourceOf(path.join(ROOT, file)); }
 function patched(file) {
   let s = read(file);
   if (REVERT === "entity" && file === "ruins-elite-skills.js") {

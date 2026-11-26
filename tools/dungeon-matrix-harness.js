@@ -1,11 +1,12 @@
 const fs = require("fs");
 const vm = require("vm");
+const { sourceOf } = require("./split-source-view");
 
 global.window = global;
 global.console = console;
 
 function load(file) {
-  vm.runInThisContext(fs.readFileSync(file, "utf8"), { filename: file });
+  vm.runInThisContext(sourceOf(file), { filename: file });
 }
 
 function assert(condition, message) {

@@ -5,7 +5,7 @@
 // 而项目里技能 type 有 active / passive / trigger 三类，后两类根本不走 canPlay：
 //   · 被动技（外神之眼、魅魔吸精术）走 afterDamage 钩子
 //   · 结束阶段技（百眼魅魔）走 endTurn
-//   · 触发技（复仇反击等）走 BattleCounterTriggers
+//   · 非锁定技（复仇反击等）走 BattleCounterTriggers
 // 本文件逐个类型实测，并各带「不施加时停」的对照组，确保断言不是恒真。
 require("./repository-toolchain");
 const path = require("path");

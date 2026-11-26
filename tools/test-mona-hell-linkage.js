@@ -284,7 +284,7 @@ const expSpeed = Math.round(monaBase.speed * 3);
 // ── F 段：文案 / 背景 / 数值口径 ──────────────────────────────
 {
   const texts = monaBase.skills.map(s => `${s.name}：${s.text}`).join("\n");
-  T("F1", "莫娜三技能文案齐备且均为锁定技/触发技",
+  T("F1", "莫娜三技能文案齐备且均为锁定技/非锁定技",
     monaBase.skills.length === 3 && /圣剑无双/.test(texts)
     && /圣天破军剑/.test(texts) && /剑盾反攻/.test(texts), { names: monaBase.skills.map(s => s.name) });
   const r1 = window.GameDataRelics["盖亚妮丝护符"];

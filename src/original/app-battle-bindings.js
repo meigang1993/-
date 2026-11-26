@@ -100,8 +100,8 @@ window.bindBattleActionButtons = function bindBattleActionButtons() {
     control.addEventListener("pointerdown", run);
     control.addEventListener("click", run);
   };
-  bindCounterTrigger("[data-counter-trigger-use]", true, "触发技发动失败");
-  bindCounterTrigger("[data-counter-trigger-skip]", false, "触发技跳过失败");
+  bindCounterTrigger("[data-counter-trigger-use]", true, "非锁定技发动失败");
+  bindCounterTrigger("[data-counter-trigger-skip]", false, "非锁定技跳过失败");
   document.querySelectorAll("[data-hand-reveal-pick]").forEach(b => b.onpointerdown = e => { e.preventDefault(); e.stopPropagation(); BattleActionGuard.run("展示牌处理失败", async ({ state: actionState, isCurrent }) => { await BattleSystem.resolveHandReveal(actionState, Number(b.dataset.handRevealPick), render); if (!isCurrent()) return false; render(); await BattleEffects.whenIdle?.(); if (!isCurrent()) return false; render(); persist({ battleOperation: true }); }, { control: b }); });
   document.querySelector("[data-hand-reveal-close]")?.addEventListener("pointerdown", e => { e.preventDefault(); e.stopPropagation(); BattleActionGuard.run("关闭展示牌失败", async ({ state: actionState, isCurrent }) => { await BattleSystem.resolveHandReveal(actionState, null, render); if (!isCurrent()) return false; render(); persist({ battleOperation: true }); }, { control: e.currentTarget }); });
   document.querySelectorAll("[data-reckless-pick]").forEach(b => b.onclick = e => { e.stopPropagation(); if (state.battle?.recklessPrompt) state.battle.recklessPrompt.selectedIndex = Number(b.dataset.recklessPick); render(); });

@@ -5,12 +5,15 @@
 const fs = require("fs");
 const vm = require("vm");
 const path = require("path");
+const { sourceOf } = require("./split-source-view");
 const ROOT = path.join(__dirname, "..");
 const SRC = path.join(ROOT, "src", "original");
 const REVERT = process.env.REVERT || "none";
 const rawCache = {};
-const raw = f => rawCache[f] || (rawCache[f] = fs.readFileSync(path.join(SRC, f), "utf8"));
+const raw = f => rawCache[f] || (rawCache[f] = sourceOf(path.join(SRC, f)));
 const rootText = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
+// 行数约束按「单个物理文件」计：拆分感知视图会把主+子拼起来，不能用于行数断言。
+const realLines = f => fs.readFileSync(path.join(ROOT, "src", "original", f), "utf8").split("\n").length;
 
 const NEW_BODY = `    const draw = window.BattleSystem?.draw;
     dead.forEach(enemy => {
@@ -258,8 +261,9 @@ const mkCore = (gold, enhance) => ({
     ["docs/05-怪物与怪物技能与饰品.txt", "docs/12-新副本素材-废墟沙城.txt"]
       .every(p => rel(p).includes("弃置其所有手牌并摸至手牌上限")));
   T("E", "E4 公告未超 150 行归档线", notice.split("\n").length <= 150, { lines: notice.split("\n").length });
-  T("E", "E5 增援源码未超 180 行硬约束", raw("ruins-elite-skills.js").split("\n").length <= 180,
-    { lines: raw("ruins-elite-skills.js").split("\n").length });
+  T("E", "E5 增援源码未超 180 行硬约束（主+子各自）",
+    realLines("ruins-elite-skills.js") <= 180 && realLines("ruins-elite-prepare-skills.js") <= 180,
+    { main: realLines("ruins-elite-skills.js"), sub: realLines("ruins-elite-prepare-skills.js") });
 
   // ---------- F. 纯补给口径 + 旧档超限不保留（真实 draw / compactSaveData） ----------
   let relicCalls = 0;
@@ -334,10 +338,11 @@ const mkCore = (gold, enhance) => ({
   T("F", "F10 纯补给接线在位（静态源码）",
     read("battle-session.js").includes("const clean = !!options?.cleanRefill;")
     && read("ruins-elite-skills.js").includes("cleanRefill: true"));
-  T("F", "F11 两个改动源码均未超 180 行硬约束",
+  T("F", "F11 两个改动源码均未超 180 行硬约束（主+子各自）",
     raw("battle-session.js").split("\n").length <= 180
-    && raw("ruins-elite-skills.js").split("\n").length <= 180,
-    { session: raw("battle-session.js").split("\n").length, ruins: raw("ruins-elite-skills.js").split("\n").length });
+    && realLines("ruins-elite-skills.js") <= 180
+    && realLines("ruins-elite-prepare-skills.js") <= 180,
+    { session: raw("battle-session.js").split("\n").length, ruins: realLines("ruins-elite-skills.js"), sub: realLines("ruins-elite-prepare-skills.js") });
 
   const segs = Object.keys(reds);
   console.log(`\n=== ${pass}/${pass + segs.reduce((n, k) => n + reds[k].length, 0)} 通过，红段=${segs.join(",") || "无"} ===`);

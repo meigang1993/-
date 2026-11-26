@@ -3,8 +3,9 @@
 // 走真实源码（vm 载入配置 + 抓真实 rollGold 函数体执行），REVERT=stats|gold|notice|doc 反向验证。
 const fs = require("fs");
 const vm = require("vm");
+const { sourceOf } = require("./split-source-view");
 const REVERT = process.env.REVERT || "";
-const codeOf = f => fs.readFileSync(`./${f}`, "utf8");
+const codeOf = f => sourceOf(`./${f}`);
 function reverted(file, src) {
   if (REVERT === "stats" && file.endsWith("data-world.js")) {
     return src.replace(/hp: 150, power: 150, speed: 150/g, "hp: 140, power: 130, speed: 120")

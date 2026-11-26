@@ -29,6 +29,13 @@ window.BattleReactionQueueRun = (() => {
             ? hit(state, target, action.amount, action.source, actor, action.delay || 0, card)
             : hit(state, target, action.amount, action.source, actor, card);
         if (result?.dodged && action.edisGroupHealCard?._edisDarkBlocked) action.edisGroupHealCard._edisDarkBlocked.add(target.uid);
+        // 机尾机枪护甲：按每段实际造成的生命值伤害累加，被【闪】抵消时不加。
+        // 队列可能在弹窗挂起后由 resumeInterruptedActions 续跑，累加放在这里才能
+        // 覆盖解锁后的剩余目标，与修复前的裸循环口径一致。
+        if (action.tailGunArmor && result?.hpLoss > 0) {
+          actor.block = (actor.block || 0) + result.hpLoss;
+          window.BattleSystem?.pushFloat?.(state.battle, actor.uid, "armor-gain", result.hpLoss);
+        }
       }
       return;
     }

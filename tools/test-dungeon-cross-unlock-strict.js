@@ -4,11 +4,12 @@
 
 const fs = require("fs");
 const vm = require("vm");
+const { sourceOf } = require("./split-source-view");
 
 global.window = global;
 global.console = console;
 function load(file) {
-  vm.runInThisContext(fs.readFileSync(`./src/original/${file}`, "utf8"), { filename: file });
+  vm.runInThisContext(sourceOf(`./src/original/${file}`), { filename: file });
 }
 [
   "game-random.js",

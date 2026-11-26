@@ -4,11 +4,12 @@
 const fs = require("fs");
 const vm = require("vm");
 const path = require("path");
+const { sourceOf } = require("./split-source-view");
 const ROOT = path.join(__dirname, "..");
 const SRC = path.join(ROOT, "src", "original");
 const REVERT = process.env.REVERT || "none";
 const rawCache = {};
-const raw = f => rawCache[f] || (rawCache[f] = fs.readFileSync(path.join(SRC, f), "utf8"));
+const raw = f => rawCache[f] || (rawCache[f] = sourceOf(path.join(SRC, f)));
 const rootText = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
 
 // 反向替换只动目标文件，保证每组只打红对应段落。

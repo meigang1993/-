@@ -3,11 +3,12 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { sourceOf } = require("./split-source-view");
 
 const ROOT = path.resolve(__dirname, "..");
 const DIR = path.join(ROOT, "src", "original");
 const REVERT = process.env.REVERT || "";
-const raw = name => fs.readFileSync(path.join(DIR, name), "utf8");
+const raw = name => sourceOf(path.join(DIR, name));
 const REPL = {
   restore: ["store-migration-runs.js", "if (!mission || mission.devLocked) return false;", "if (!mission) return false;"],
   render: ["app-render-state.js", "  if (mission?.devLocked) return false;", "  "],
