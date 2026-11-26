@@ -21,7 +21,7 @@ window.GameDataFutureEnemies.orc_dungeon.push({
   entrance: "有刺客！不会让你们接近魔王大人的。",
   skills: [
     { name: "坚守阵地", type: "passive", icon: "⭐", text: "锁定技，结束阶段，你将武将牌翻面，然后摸X张牌（X为你本回合使用过的牌数）。" },
-    { name: "突破重围", type: "passive", icon: "🔵", text: "你可以将一张黑色牌当【看破】使用或打出；你可以将一张红色牌当【佯攻】使用或打出。" },
+    { name: "突破重围", type: "passive", icon: "🔵", text: "非锁定技，你可以将一张黑色牌当【看破】使用或打出；你可以将一张红色牌当【佯攻】使用或打出。" },
     { name: "精灵守护", type: "passive", icon: "⭐", text: "锁定技，当一名其他友方角色受到生命值伤害后，若其存活，你令其获得X点护甲（X为你的魔力值）。" }
   ],
   ai: "guard_kelly"

@@ -83,7 +83,7 @@ window.GameDataCharactersCore = [
     stats: { attack: 10, magic: 10, speed: 11, maxHp: 124, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1 },
     evaluation: "单体杀牌与全体直伤输出角色。指挥官责任在队友受击前调配手牌，重火力支援使实体杀牌附带继承其伤害属性的全体直伤。",
     skills: [
-      { name: "指挥官责任", type: "trigger", icon: "🔵", text: "当一名其他友方角色成为单体【杀】的目标时，你可以摸1张牌，然后交给其1张手牌。若该角色为温蒂，改为摸2张牌并交给其2张手牌。" },
+      { name: "指挥官责任", type: "trigger", icon: "🔵", text: "非锁定技，当一名其他友方角色成为单体【杀】的目标时，你可以摸1张牌，然后交给其1张手牌。若该角色为温蒂，改为摸2张牌并交给其2张手牌。" },
       { name: "重火力支援", type: "passive", icon: "⭐", text: "锁定技，当你使用一张实体【杀】后，你对所有存活的敌方角色各造成等同于你攻击力的无视护甲伤害；该伤害继承此【杀】的伤害属性与物理/魔法类别。" }
     ]
   },

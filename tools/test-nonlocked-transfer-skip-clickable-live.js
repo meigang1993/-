@@ -59,7 +59,18 @@ const SETUP = `(() => {
     (await btn.innerText()).includes("跳过（不发动）"));
 
   // ── 2. 可点击性硬证（挂起 / 锁定态下仍可点） ──
-  const probe = await btn.evaluate(el => {
+  // 游戏在挂起后仍可能因自动推进/定时器重渲染，把按钮节点替换掉；
+  // locator 绑定的 el 会变成 detached（rect 全 0、computedStyle 为空）。
+  // 因此在页面内重新查询当前节点，并先等它稳定有尺寸。
+  await page.waitForFunction(() => {
+    const el = document.querySelector("[data-dimension-transfer-skip]");
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    return r.width > 20 && r.height > 12;
+  }, { timeout: 8000 });
+  const probe = await page.evaluate(() => {
+    const el = document.querySelector("[data-dimension-transfer-skip]");
+    if (!el) return { missing: true };
     const r = el.getBoundingClientRect();
     const cs = getComputedStyle(el);
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;

@@ -673,6 +673,7 @@ const groups = Object.freeze({
     "check-split-283.js",
     "check-split-283-browser.js",
     "check-nonlocked-skill-and-transfer-skip.js",
+    "check-blue-skill-nonlocked-and-skip.js",
     "test-nonlocked-transfer-skip-live.js",
     "test-nonlocked-transfer-skip-clickable-live.js",
     "test-butler-manual-tutorial-goal-live.js",

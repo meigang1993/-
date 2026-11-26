@@ -116,9 +116,14 @@ function sandbox(extra = {}) {
   return ctx;
 }
 function load(ctx, src, name) { vm.runInContext(src, ctx, { filename: name }); }
-// HEAD 版（拆分前，281）作为导出接口基线
+// 拆分前基线固定为「281 版记账提交」dba9a99（HEAD 的父），不能用 HEAD：
+// 283 拆分已随 285 推送进入 HEAD，HEAD 里的主文件本身含显式 throw，
+// 拿它当「拆分前旧版」加载会直接抛「缺少子模块」，导致 B 段全崩。
+// 也不用更早的 65e4c15：FUSE 上更老的 pack 偶发 cannot pread，dba9a99 的
+// loose/tree 对象稳定可读（已验证三个主文件均为拆分前 173/179/179 行）。
+const SPLIT_BASE = "dba9a99";
 function headSrc(file) {
-  return cp.execFileSync("git", ["show", `HEAD:src/original/${file}`], {
+  return cp.execFileSync("git", ["show", `${SPLIT_BASE}:src/original/${file}`], {
     cwd: ROOT, encoding: "utf8",
     env: { ...process.env, GIT_CONFIG_COUNT: "1", GIT_CONFIG_KEY_0: "safe.directory", GIT_CONFIG_VALUE_0: ROOT },
   });
@@ -127,7 +132,7 @@ const exportKeys = api => Object.keys(api).sort().join("|");
 for (const [main, sub, dep] of PAIRS) {
   const oldCtx = sandbox();
   // 旧版主文件不含新子模块引用；给旧版环境补上惰性代理避免误报
-  load(oldCtx, headSrc(main), `HEAD:${main}`);
+  load(oldCtx, headSrc(main), `${SPLIT_BASE}:${main}`);
   const oldApi = oldCtx[main.replace(/-([a-z])/g, (_, c) => c.toUpperCase()).replace(/\.js$/, "")];
   // 用更稳的方式取挂载名
   const mount = Object.keys(oldCtx).find(k => /^(RuinsDragonSkills|LocalCoreDungeonOps|RuinsEliteSkills)$/.test(k));
