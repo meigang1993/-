@@ -117,6 +117,8 @@ const guardTpl = paralyze => `(() => {
     alive: u => !!u && u.hp > 0,
     visible: u => (u?.hand || []).filter(c => !c._pendingDraw),
     isSlash: c => window.CardUtils?.isKillCard?.(c) || c?.type === "kill",
+    // 护驾已收窄为「单体【杀】」触发，构造模块时必须同步传入该判据。
+    isSingleKill: c => !!window.CardUtils?.isSingleKill?.(c),
     line: () => {},
   });
   const r = inst.guardOphelia(st, foe, target, 10, "测试",

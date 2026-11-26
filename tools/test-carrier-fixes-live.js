@@ -15,7 +15,10 @@ const SRC = path.join(__dirname, "..", "src", "original");
 
 // 浏览器侧拿不到闭包实例，这几处"链路是否真的接上"只能靠源码静态核对。
 function checkWiring() {
-  const read = f => fs.readFileSync(path.join(SRC, f), "utf8");
+  // 伤害修正链已拆到子模块，静态核对走 split-source-view 的拼接视图，
+  // 与 publish-bundles.json 的加载顺序一致，避免按单文件读导致假红。
+  const { sourceOf } = require("./split-source-view");
+  const read = f => sourceOf(path.join(SRC, f));
   const hit = (f, re) => re.test(read(f));
   return {
     // 直伤入口 battle-damage-utils.directDamage 必须独立判定免疫

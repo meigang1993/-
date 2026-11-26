@@ -1,6 +1,6 @@
 // 专项：机械AI龙「电钻火花」追加多段 × 星野海一「半魅魔血」的边界场景
 //
-// MODE=propeller  海一同时装备「螺旋桨」：摸牌会触发螺旋桨面板（通用触发面板），
+// MODE=propeller  海一同时装备「螺旋桨」：290 后续改锁定技，摸牌自动触发虚拟杀、不弹面板，
 //                 与半魅魔血交牌窗两个 locked 弹窗是否会打架 / 卡死 / 吞段。
 // MODE=death      海一血量只够撑 2 段：中途死亡后剩余追加段的行为。
 // MODE=propdeath  两者叠加。
@@ -12,7 +12,7 @@ const { openGame, startRegressionBattle } = require(
   path.join(__dirname, "..", "tests", "helpers", "preview-game.js"));
 
 const MODE = process.env.MODE || "propeller";
-// MODE=propskip 与 propeller 相同，但螺旋桨面板点「跳过」，用于对照发动/跳过两条分支。
+// MODE=propskip 保留模式名兼容历史命令；锁定技没有「发动/跳过」分支，行为与 propeller 一致。
 const KILL = `{ name: "杀", type: "slash", suit: "♠" }`;
 const PROPELLER = MODE === "propeller" || MODE === "propdeath" || MODE === "propskip";
 const USE_PROPELLER = MODE !== "propskip";
@@ -219,15 +219,19 @@ run().then(res => {
     (res.errors || []).slice(0, 2).join(" | "));
   if (PROPELLER) {
     const propFire = logs.filter(l => l.includes("的螺旋桨触发，对")).length;
-    check("3 螺旋桨面板已触发", (f.panelCount || 0) > 0, `次数=${f.panelCount}`);
-    // 电钻火花 7 段 × 半魅魔血逐段摸牌，修复前每段各弹一次面板（实测 7 次）。
-    check("3b 同一次伤害链只弹一次螺旋桨面板",
-      (f.panelCount || 0) === 1, `次数=${f.panelCount}`);
-    check("3c 面板已被玩家消费（无残留）",
+    // 290 后续螺旋桨改锁定技：不再有「发动 / 跳过」面板，改为自动触发。
+    // 面板计数必须恒 0；去重语义由「只弹一次面板」变为「只自动触发一次」。
+    check("3 螺旋桨锁定技自动触发且不弹面板",
+      propFire >= 1 && (f.panelCount || 0) === 0,
+      `触发=${propFire} 面板=${f.panelCount}`);
+    // 电钻火花 7 段 × 半魅魔血逐段摸牌，修复前每段各触发一次（实测 7 次）。
+    check("3b 同一次伤害链只自动触发一次螺旋桨",
+      propFire === 1, `触发=${propFire}`);
+    check("3c 无触发面板残留（锁定技不进通用面板）",
       !f.counterTrigger && !(f.ctQueue || 0),
       `counterTrigger=${f.counterTrigger} 队列=${f.ctQueue}`);
-    check("3d " + (USE_PROPELLER ? "点发动后螺旋桨生效" : "点跳过后螺旋桨不生效"),
-      USE_PROPELLER ? propFire >= 1 : propFire === 0, `实际发动=${propFire}`);
+    check("3d 锁定技不可跳过：自动触发生效（两种模式一致）",
+      propFire >= 1, `实际发动=${propFire}`);
     check("4 两个弹窗不会同时卡住（未双双残留）",
       !(f.kaiichiShare && f.counterTrigger),
       `kaiichiShare=${f.kaiichiShare} counterTrigger=${f.counterTrigger}`);

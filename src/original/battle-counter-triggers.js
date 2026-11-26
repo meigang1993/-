@@ -24,8 +24,9 @@ window.BattleCounterTriggers = (() => {
     const unit = battle?.allies?.find(item => item.uid === payload?.unitUid);
     if (!battle || !unit || unit.hp <= 0
       || !payload?.skill || !payload?.sourceUid) return false;
-    // 时停（米尔尤拉【神奇怀表】）：非锁定技（复仇反击/终焉回旋斩/螺旋桨等）
+    // 时停（米尔尤拉【神奇怀表】）：非锁定技（复仇反击/终焉回旋斩等）
     // 同样属于「技能」，被时停者一律不能发动。
+    // 注：螺旋桨 290 起已改为锁定技，不再走本面板（自动触发）。
     if (window.MieryulaTimeStop?.isSkillDisabled?.(unit)) return false;
     const prompt = entry(payload, unit);
     if (battle.counterTrigger || battle._counterTriggerResolving
@@ -58,6 +59,7 @@ window.BattleCounterTriggers = (() => {
           "贝尔蒂丝受伤反击": () => window.BertisGerlotSkills?.resolveRevengeTrigger?.(state, source, target, prompt.count, api, prompt.skill),
           "刺刀AK47": () => window.MannySkills?.resolveCounterTrigger?.(state, source, target, api),
           "血色刺伞": () => window.SakuraRisaSkills?.resolveUmbrellaTrigger?.(state, source, api),
+          // 兼容 290 前旧存档残留的「螺旋桨」面板；锁定技下不再新建。
           "螺旋桨": () => window.RuinsRelicEffects?.resolvePropeller?.(state, source),
         };
         const resolver = resolvers[prompt.skill];

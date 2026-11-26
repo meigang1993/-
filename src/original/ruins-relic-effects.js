@@ -67,7 +67,7 @@ window.RuinsRelicEffects = (() => {
     log(state, `${unit.name} 的物资货物触发：友方${others.length}名角色各摸${count}张牌。`);
   }
 
-  // 螺旋桨逻辑已拆至 ruins-relic-propeller.js（含「同一次伤害链内只弹一次」）：
+  // 螺旋桨逻辑已拆至 ruins-relic-propeller.js（含「同一次伤害链内只触发一次」）：
   // 本文件加入去重后超过 200 行硬约束，故仅保留代理。
   const propeller = () => window.RuinsRelicPropeller;
   const openPropeller = (state, unit, ctx) =>

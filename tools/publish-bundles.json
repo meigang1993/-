@@ -234,6 +234,7 @@
     "battle-damage-relics.js",
     "battle-damage-lifecycle.js",
     "battle-white-lolita.js",
+    "battle-damage-resolution-modifiers.js",
     "battle-damage-resolution.js",
     "battle-damage-hit.js",
     "battle-damage.js",

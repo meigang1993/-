@@ -18,6 +18,7 @@ const SUBS = Object.freeze({
   "ruins-dragon-skills.js": ["ruins-dragon-tailgun.js"],
   "local-core-dungeon.js": ["local-core-dungeon-settlement.js"],
   "ruins-elite-skills.js": ["ruins-elite-prepare-skills.js"],
+  "battle-damage-resolution.js": ["battle-damage-resolution-modifiers.js"],
 });
 
 function sourceOf(file) {

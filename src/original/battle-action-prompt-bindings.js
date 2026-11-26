@@ -39,6 +39,13 @@ window.BattleActionPromptBindings = (() => {
         () => tryDimensionTransfer(null),
       ),
     );
+    document.querySelector("[data-ophelia-guard-skip]")?.addEventListener(
+      "click",
+      event => queuePrompt(
+        event, "为我护驾跳过失败", "opheliaGuard",
+        () => BattleSystem.resolveOpheliaGuard(state, null, render),
+      ),
+    );
     document.querySelector("[data-new-moon-skip]")?.addEventListener(
       "click",
       event => queuePrompt(

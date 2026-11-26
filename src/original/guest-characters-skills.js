@@ -11,7 +11,8 @@ window.GuestCharacterSkills = (() => {
   const visibleHandCount = unit => visible(unit).filter(card => countsForLimit(unit, card)).length;
   const stat = (unit, key) => (unit.stats?.[key] || 0) + (key === "attack" ? (unit.tempAttack || 0) : key === "magic" ? (unit.tempMagic || 0) : 0);
   const line = (state, unit, name, target) => window.BattleLines?.skill(state, unit, name, target);
-  const guard = window.GuestOpheliaGuard({ alive, visible, isSlash, line });
+  const guard = window.GuestOpheliaGuard({ alive, visible, isSlash, line,
+    isSingleKill: card => !!window.CardUtils?.isSingleKill?.(card) });
   const virtualCard = (name, extra = {}) => window.CardUtils.fromEntity(name, extra);
   const queenTailCard = (actor, card) =>
     actor?.ref === "ophelia" && !card?._skipUseKillTriggers

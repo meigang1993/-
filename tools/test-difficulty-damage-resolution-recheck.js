@@ -9,6 +9,7 @@ const { execFileSync } = require("child_process");
 const REVERT = process.env.REVERT || "";
 const code = f => fs.readFileSync(`./${f}`, "utf8");
 const RES = "src/original/battle-damage-resolution.js";
+const SUB = "src/original/battle-damage-resolution-modifiers.js";
 
 // ---- 数据侧：复用既有夹具加载真实 GameData（含 238 难度表与全部怪物）----
 global.window = global;
@@ -93,7 +94,10 @@ function patchedWorld(src) {
     .replace(/hp: 200, power: 200, speed: 200/g, "hp: 100, power: 100, speed: 100");
 }
 const RAW_RES = code(RES);
-const RES_SRC = patchedResolution(RAW_RES);
+// 修正链已拆到子模块：vm 必须按 publish-bundles.json 的顺序拼接加载，
+// 否则主文件的显式装配守卫会抛错（快速失败，不是产品 BUG）。
+const CLUSTER = () => code(SUB) + "\n" + code(RES);
+const RES_SRC = patchedResolution(CLUSTER());
 const WORLD_SRC = patchedWorld(code("src/original/data-world.js"));
 const NOTICE_SRC = patchedNotice(code("src/original/update-notice-recent.js"));
 
@@ -109,25 +113,24 @@ const actor = () => ({ side: "ally", name: "A", hand: [] });
 const target = () => ({ side: "enemy", name: "B", hand: [], gender: "female", noResponse: false });
 const card = (extra = {}) => ({ type: "slash", name: "杀", ...extra });
 
-console.log("=== A. 压缩完整性：238 未改核心结算文件、守卫齐全 ===");
-let headSha;
-try {
-  const tree = execFileSync("git", ["ls-tree", "-r", "HEAD"], { encoding: "utf8" });
-  headSha = (tree.split("\t" + RES + "\n")[0].match(/([0-9a-f]{40})\s*$/) || [])[1] || "";
-} catch (_) { headSha = ""; }
-const workSha = require("crypto").createHash("sha1")
-  .update(Buffer.concat([Buffer.from(`blob ${Buffer.byteLength(code(RES))}\0`), Buffer.from(code(RES))]))
-  .digest("hex");
-ok(headSha && headSha === workSha, "A1 核心结算文件相对 HEAD(237) 逐字节未改（压缩态保持）", { headSha, workSha });
+console.log("=== A. 压缩完整性：结算簇装配完整、守卫齐全 ===");
+// 原 A1 用「相对 HEAD(237) 逐字节未改」做基线，但本地 HEAD 是 286 记账提交、
+// 工作树是未提交的 290，该断言在常态下恒红，早已失去防漂移意义。290 拆出
+// 伤害修正链子模块后改为拆分感知断言：主+子拼接视图须含装配点与真实调用。
+const CLUSTER_RAW = CLUSTER();
+ok(CLUSTER_RAW.includes("BattleDamageResolutionModifiers")
+  && CLUSTER_RAW.includes("modifiers.compute(")
+  && /throw\s+new\s+Error/.test(CLUSTER_RAW),
+  "A1 核心结算簇（主+子）装配完整、装配点显式抛错（290 拆分感知）");
 const lines = RAW_RES.split("\n").length;
 ok(lines <= 180, "A2 压缩后仍 <=180 行硬约束", lines);
 const GUARDS = ["BattleWhiteLolita", "allowKill", "invalidateKillCard", "tsStopped", "tacticDamage",
   "modifyOutgoingDamage", "modifyIncomingDamage", "immuneIncoming", "Math.max(1, Math.round(amount))",
   "beforeResponseCheck", "needsResponse", "autoDodge", "guardOphelia", "state.battle?.locked",
   "getHitWithoutDodge()("];
-ok(GUARDS.every(g => RAW_RES.includes(g)), "A3 压缩后 15 处关键守卫/链路无丢失",
-  GUARDS.filter(g => !RAW_RES.includes(g)));
-ok(!/scaleEnemyStats|difficult|enemy\[/.test(RAW_RES), "A4 结算链不含难度倍率（倍率只在 scaleEnemyStats 应用一次）");
+ok(GUARDS.every(g => CLUSTER_RAW.includes(g)), "A3 压缩后 15 处关键守卫/链路无丢失",
+  GUARDS.filter(g => !CLUSTER_RAW.includes(g)));
+ok(!/scaleEnemyStats|difficult|enemy\[/.test(CLUSTER_RAW), "A4 结算链不含难度倍率（倍率只在 scaleEnemyStats 应用一次）");
 
 console.log("=== B. 运行时守卫：压缩没丢逻辑 ===");
 const mk = flags => makeResolution(RES_SRC, flags);

@@ -39,7 +39,7 @@ const SPLITS = [
   },
   {
     main: "battle-damage-resolution.js",
-    deps: ["BattleWhiteLolita"],
+    deps: ["BattleWhiteLolita", "BattleDamageResolutionModifiers"],
   },
   // 2026-11-11 预防性拆分：3 个 189 行文件各拆出一个子模块。
   {
@@ -123,7 +123,7 @@ if (!fs.existsSync(bundlesPath)) {
       "mieryula-skills.js",
       "battle-playability-registries.js",
     ],
-    "battle-damage-resolution.js": ["battle-white-lolita.js"],
+    "battle-damage-resolution.js": ["battle-white-lolita.js", "battle-damage-resolution-modifiers.js"],
     "battle-combat.js": [
       "battle-combat-trail.js",
       "battle-krow-repeat-resume.js",

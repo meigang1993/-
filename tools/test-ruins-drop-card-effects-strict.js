@@ -288,7 +288,8 @@ const slash = (name = "杀") => card(name, "slash", { suit: "♠" });
 
 // ---------- G 装配与静态 ----------
 {
-  const dmgRes = raw("battle-damage-resolution.js");
+  // 修正链已拆到子模块，静态断言看「子模块 + 主文件」拼接视图。
+  const dmgRes = raw("battle-damage-resolution.js") + "\n" + raw("battle-damage-resolution-modifiers.js");
   const trig = raw("battle-damage-triggers.js");
   const dmg = raw("battle-damage.js");
   const end = raw("battle-end-phase.js");

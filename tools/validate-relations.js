@@ -164,7 +164,7 @@ const dependencies = [
   ["battle-turn-state.js", "battle-runtime-helpers.js", "battle-relic-turns.js", "battle-share-flow.js", "battle-session-settlement.js", "battle-session.js", "battle-auto-enemy.js", "battle-turn-start.js", "battle-turn-input.js", "battle-turn-preparation.js", "battle-turn-completion.js", "battle-turn-flow.js", "battle-resolution-actions.js", "battle.js"],
   ["battle-ai-skill-helpers.js", "battle-ai-skill-evaluation.js", "battle-ai-skill-moves.js", "battle-ai-skill-planner.js", "battle-ai.js"],
   ["battle-card-hand-interactions.js", "battle-card-counter-interactions.js", "battle-card-interactions.js", "battle-card-specials.js"],
-  ["battle-damage-relics.js", "battle-damage-lifecycle.js", "battle-white-lolita.js", "battle-damage-resolution.js", "battle-damage-hit.js", "battle-damage.js"],
+  ["battle-damage-relics.js", "battle-damage-lifecycle.js", "battle-white-lolita.js", "battle-damage-resolution-modifiers.js", "battle-damage-resolution.js", "battle-damage-hit.js", "battle-damage.js"],
   ["battle-card-resume-state.js", "battle-card-resume-hooks.js", "battle-card-resume-flow.js", "battle-card-resume.js", "battle-combat-trail.js", "battle-krow-repeat-resume.js", "battle-combat.js"],
   ["machine-factory-skills.js", "enemy-status-effects.js", "enemy-kill-hooks.js", "enemy-damage-hooks.js", "enemy-combat-hooks.js", "enemy-tactical-skills.js", "enemy-skills.js"],
   ["underwater-train-target-counters.js", "underwater-train-target-actions.js", "underwater-train-target-skills.js", "underwater-train-combat-skills.js"],

@@ -85,8 +85,13 @@ window.GameUIBattleScene = (U, I) => {
     const hammerPicking = !!battle.thunderHammer;
     // 记忆泡泡挂起同理：玩家需要点「放入泡泡区」按钮，手牌面板不能被置灰禁点。
     const karunaBubblePicking = !!battle.karunaBubble;
+    // 为我护驾改为非锁定技后，底部提示条多了「跳过（不发动）」按钮：挂起时
+    // 必须和次元转移一样纳入 hand-sharing，否则 battle-overlays.css 第 68/70 行
+    // 的 :not(.hand-sharing) 仍会命中，把 .hand-panel 与按钮置灰 + pointer-events:none
+    // （实测按钮 opacity .35、被 .battle-screen 拦截，玩家点不动）。
     const handSharing = visible.kaiichiVisible || visible.responsibilityVisible
-      || visible.dimensionVisible || borrowChoice || allyPicking || enemyPicking;
+      || visible.dimensionVisible || visible.guardVisible
+      || borrowChoice || allyPicking || enemyPicking;
     const headshotPending = battle.judgement?.skill === "爆头一击"
       || battle.animQueue?.some(event => event.type === "judgement" && event.skill === "爆头一击");
     return `${battle.locked ? "battle-locked" : ""} ${headshotPending ? "headshot-pending" : ""} ${visible.dimensionVisible ? "dimension-transfering" : ""} ${visible.guardVisible ? "ophelia-guarding" : ""} ${battle.gerdaComfort ? "gerda-comforting" : ""} ${visible.kaiichiVisible ? "kaiichi-sharing" : ""} ${visible.reactionPending ? "reaction-prompt-pending" : ""} ${handSharing ? "hand-sharing" : ""} ${allyPicking ? "ally-picking" : ""} ${enemyPicking ? "enemy-picking" : ""} ${hammerPicking ? "hammer-picking" : ""} ${karunaBubblePicking ? "karuna-bubble-picking" : ""} ${battle.manualDodge || battle.manualCounter || battle.counterTrigger || battle.recklessPrompt || battle.risaEyePrompt || battle.landmineRpsPrompt || ["magicBullet", "magicBulletReveal"].includes(battle.handReveal?.mode) ? "manual-dodge-active" : ""}`;

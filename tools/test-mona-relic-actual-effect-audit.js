@@ -14,7 +14,9 @@ const REVERT = process.env.REVERT || "";
 const src = f => fs.readFileSync(`./src/original/${f}`, "utf8");
 
 // 真实伤害取整公式直接从产品源码提取，避免测试自己写死一个等价公式造成空转。
-const resolutionSrc = src("battle-damage-resolution.js");
+// 取整公式已拆到子模块，按 publish-bundles.json 的加载顺序拼出拆分感知视图，
+// 断言仍直接从产品源码提取，不写死等价公式（避免空转）。
+const resolutionSrc = src("battle-damage-resolution-modifiers.js") + "\n" + src("battle-damage-resolution.js");
 const roundMatch = resolutionSrc.match(/amount = amount > 0 \? ([^;]+) : 0;/);
 if (!roundMatch) throw new Error("未能从 battle-damage-resolution.js 提取取整公式");
 const roundAmount = new Function("amount", `return amount > 0 ? ${roundMatch[1]} : 0;`);

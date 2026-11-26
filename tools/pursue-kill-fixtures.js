@@ -51,7 +51,7 @@ window.RuinsRelicEffects = { missileLauncherBlock: () => true };
   "battle-dodge-cards.js", "battle-dodge-resume.js", "battle-dodge-deflect.js",
   "battle-dodge-response.js",
   "battle-damage-response.js", "battle-damage-relics.js",
-  "battle-damage-lifecycle.js", "battle-white-lolita.js", "battle-damage-resolution.js",
+  "battle-damage-lifecycle.js", "battle-white-lolita.js", "battle-damage-resolution-modifiers.js", "battle-damage-resolution.js",
   "battle-damage-hit.js", "battle-damage.js",
   "battle-combat-responses.js", "battle-card-cleanup.js", "battle-combat-card-effects.js",
   "battle-combat-attack-values.js", "battle-combat-attack-flow.js",

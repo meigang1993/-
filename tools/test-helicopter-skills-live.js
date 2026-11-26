@@ -1,7 +1,7 @@
 // 武装直升机 · 实战回归
 //   ⚔️ 战场扫射：出牌阶段，将2张同花色牌当做【机枪扫杀】使用，不消耗淫气
 //   ⭐ 继续压制：锁定技，当你使用的【杀】牌被【闪】抵消时，你摸1张牌
-//   螺旋桨（触发）：出牌阶段，当你摸牌时，你可以随机对敌方一名角色视为使用一张虚拟【杀（普攻）】
+//   ⭐ 螺旋桨（锁定技）：出牌阶段，当你摸牌时，自动随机对敌方一名角色视为使用一张虚拟【杀（普攻）】
 //   导弹发射器（被动）：你使用的【杀】牌指定目标时，目标角色需要额外弃置1张【杀】牌才能响应【闪】
 process.env.PLAYWRIGHT_BROWSERS_PATH = process.env.PLAYWRIGHT_BROWSERS_PATH
   || "/data/workspace/.pw-browsers";
@@ -102,8 +102,7 @@ const multiTpl = `(() => {
     name1: m1?.card?.name, name2: m2?.card?.name };
 })()`;
 
-// 螺旋桨标签：触发类（🔵 + 触发）。它不是「装备后永久生效」的锁定技，
-// 而是「出牌阶段摸牌时」满足条件的触发效果。
+// 螺旋桨标签：290 起改为锁定类（⭐ + 锁定），满足条件自动生效，不再询问玩家。
 const propTagTpl = `(() => {
   const R = window.RelicSystem;
   return { icon: R?.skillIcon?.("螺旋桨"), type: R?.typeName?.("螺旋桨"),
@@ -135,8 +134,7 @@ const suppressTpl = `(() => {
     logs: (st.log || []).slice(-3).map(String) };
 })()`;
 
-// 螺旋桨：我方佩戴 → 出牌阶段摸牌时弹出触发面板，由玩家决定发动或跳过
-// （描述写的是「你可以……」，不能自动生效；历史实现是无条件自动打虚拟杀）
+// 螺旋桨：锁定技 → 我方佩戴在出牌阶段摸牌时自动触发，不弹面板、不锁定战斗
 const propPromptTpl = `(() => {
   const st = window.state, b = st.battle;
   const a = b.allies[0];
@@ -181,7 +179,7 @@ const propEnemyTpl = `(() => {
     logs: (st.log || []).slice(-4).map(String) };
 })()`;
 
-// 选择之后（发动或跳过）统一采样：基线是模板里设的 300 血
+// 自动触发后采样：基线是模板里设的 300 血
 const propDealtTpl = `(() => {
   const b = window.state.battle;
   return { dealt: b.enemies.map(u => 300 - u.hp),
@@ -194,6 +192,25 @@ const propPanelTpl = `(() => {
   return { exists: !!el, text: el?.innerText || "",
     hasUse: !!document.querySelector("[data-counter-trigger-use]"),
     hasSkip: !!document.querySelector("[data-counter-trigger-skip]") };
+})()`;
+
+// 290 前旧存档可能残留 skill="螺旋桨" 的 counterTrigger：通用面板的执行器仍须可用。
+const propLegacyTpl = `(() => {
+  const st = window.state, b = st.battle;
+  const a = b.allies[0];
+  a.battleRelics = ["螺旋桨"];
+  b.phase = 4; b.activeUid = a.uid; b.animQueue = []; b.locked = false;
+  b.enemies.forEach(u => { u.hp = 300; u.maxHp = 300; u.hand = []; });
+  const before = b.enemies.map(u => u.hp);
+  const resolvers = window.BattleCounterTriggers;
+  b.counterTrigger = { skill: "螺旋桨", unitUid: a.uid, sourceUid: a.uid,
+    targetUid: b.enemies[0].uid, count: 1 };
+  st.log = [];
+  const resolver = typeof resolvers?.resolve === "function";
+  if (resolver) resolvers.resolve(st, true, {});
+  return { resolver, dealt: b.enemies.map((u, i) => before[i] - u.hp),
+    prompt: b.counterTrigger?.skill || null,
+    logs: (st.log || []).slice(-4).map(String) };
 })()`;
 
 // 导弹发射器：目标无额外杀牌时响应失败；有额外杀牌时被弃置
@@ -267,43 +284,43 @@ const missileTpl = (targetHand) => `(() => {
   console.log(`  日志: ${JSON.stringify(sup.logs)}`);
   T("继续压制：杀被闪抵消后摸 1 张牌", sup.after - sup.before === 1, sup);
 
-  // ===== 螺旋桨：我方佩戴应由玩家决定 =====
+  // ===== 螺旋桨：锁定技（标签 ⭐） =====
+  await page.evaluate(setupTpl({}));
+  const tag = await page.evaluate(propTagTpl);
+  console.log(`[螺旋桨·标签] ${JSON.stringify(tag)}`);
+  T("螺旋桨：标签为 ⭐ 锁定饰品（不再是 🔵 触发）",
+    tag.icon === "⭐" && tag.type === "锁定", tag);
+  T("螺旋桨：提示为「装备后生效」，不再提示玩家响应选择",
+    !String(tag.hint || "").includes("响应选择"), tag);
+
   await page.evaluate(setupTpl({}));
   const prop = await page.evaluate(propPromptTpl);
-  console.log(`[螺旋桨·我方] prompt=${prop.prompt} locked=${prop.locked} 立即伤害=${JSON.stringify(prop.dealt)}`);
+  await page.waitForTimeout(1200);
+  const auto = await page.evaluate(propDealtTpl);
+  console.log(`[螺旋桨·我方自动] 立即=${JSON.stringify(prop.dealt)} 最终=${JSON.stringify(auto.dealt)} prompt=${prop.prompt} locked=${prop.locked}`);
   console.log(`  日志: ${JSON.stringify(prop.logs)}`);
-  T("螺旋桨：我方佩戴时弹出触发面板（不自动生效）", prop.prompt === "螺旋桨", prop);
-  T("螺旋桨：玩家未选择前不造成伤害", prop.dealt.every(d => d === 0), prop);
+  T("螺旋桨：锁定技自动触发，对敌方随机一名造成虚拟杀伤害",
+    auto.dealt.some(d => d > 0), auto);
+  T("螺旋桨：不弹触发面板、不锁定战斗",
+    prop.prompt === null && prop.locked === false && auto.prompt === null && auto.locked === false,
+    { prop, auto });
   const panel = await page.evaluate(propPanelTpl);
-  console.log(`[螺旋桨·面板] ${JSON.stringify({ exists: panel.exists, hasUse: panel.hasUse, hasSkip: panel.hasSkip })}`);
-  T("螺旋桨：面板同时提供「发动」与「跳过」", panel.exists && panel.hasUse && panel.hasSkip, panel);
-  T("螺旋桨：面板显示技能名", (panel.text || "").includes("螺旋桨"), panel);
+  console.log(`[螺旋桨·面板] ${JSON.stringify(panel)}`);
+  T("螺旋桨：无「发动 / 跳过」入口（锁定技不可放弃）",
+    !panel.exists && !panel.hasUse && !panel.hasSkip, panel);
+  T("螺旋桨：日志写「触发」而非「可以发动」",
+    prop.logs.some(x => String(x).includes("螺旋桨触发"))
+    && !prop.logs.some(x => String(x).includes("可以发动螺旋桨")), prop.logs);
 
-  const clickedUse = await clickIfPresent(page, "[data-counter-trigger-use]");
-  await page.waitForTimeout(1500);
-  const used = await page.evaluate(propDealtTpl);
-  console.log(`[螺旋桨·发动] 敌方掉血=${JSON.stringify(used.dealt)}`);
-  T("螺旋桨：「发动」按钮可点击", clickedUse === true, { clickedUse });
-  T("螺旋桨：点「发动」后对敌方随机一名造成虚拟杀伤害",
-    used.dealt.some(d => d > 0), used);
-  T("螺旋桨：发动后面板关闭并解锁",
-    used.prompt === null && used.locked === false, used);
-
-  // ===== 螺旋桨：玩家可以跳过 =====
+  // 旧存档兼容：290 前残留的「螺旋桨」触发面板仍可被消费，不会卡死或报「暂无执行器」
   await page.evaluate(setupTpl({}));
-  await page.evaluate(propPromptTpl);
-  // 上一场景的「发动」可能有异步收尾在跑；BattleActionGuard 在 running 时会直接丢弃点击，
-  // 必须先等空闲，否则这次点击会被静默吞掉、prompt 一直挂着（曾误判为「跳过无效」）
-  await page.evaluate(`(() => window.BattleActionGuard?.whenIdle?.() || Promise.resolve())()`);
-  const clickedSkip = await clickIfPresent(page, "[data-counter-trigger-skip]");
-  await page.waitForTimeout(1500);
-  const skipped = await page.evaluate(propDealtTpl);
-  console.log(`[螺旋桨·跳过] 敌方掉血=${JSON.stringify(skipped.dealt)} 日志=${JSON.stringify(skipped.logs)}`);
-  T("螺旋桨：「跳过」按钮可点击", clickedSkip === true, { clickedSkip });
-  T("螺旋桨：点「跳过」后不造成伤害", skipped.dealt.every(d => d === 0), skipped);
-  T("螺旋桨：跳过写入日志", skipped.logs.some(t => String(t).includes("跳过螺旋桨")), skipped);
+  const legacy = await page.evaluate(propLegacyTpl);
+  await page.waitForTimeout(1200);
+  console.log(`[螺旋桨·旧存档兼容] ${JSON.stringify(legacy)}`);
+  T("螺旋桨：旧存档残留面板有可用执行器且能自动结算",
+    legacy.resolver === true && legacy.dealt.some(d => d > 0), legacy);
 
-  // ===== 螺旋桨：敌方佩戴自动发动（AI 没有玩家可点） =====
+  // ===== 螺旋桨：敌方佩戴同样自动发动（锁定技无阵营差异） =====
   await page.evaluate(setupTpl({}));
   const propE = await page.evaluate(propEnemyTpl);
   await page.waitForTimeout(1200);

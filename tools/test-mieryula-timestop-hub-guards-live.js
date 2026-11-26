@@ -119,7 +119,9 @@ const endPhaseTpl = `(() => {
 
   // 静态校验：其余派发中枢均已按「归属方」加判
   const trig = read("src/original/battle-damage-triggers.js");
-  const res = read("src/original/battle-damage-resolution.js");
+  // tsBlocked / tsInStopped 已随伤害修正链拆到子模块，静态校验看拼接视图。
+  const res = read("src/original/battle-damage-resolution.js")
+    + "\n" + read("src/original/battle-damage-resolution-modifiers.js");
   const hook = read("src/original/battle-card-resume-hooks.js");
   const turn = read("src/original/battle-turn-start.js");
   T("S1 afterDamage 中枢：受击类被动按归属方加判",

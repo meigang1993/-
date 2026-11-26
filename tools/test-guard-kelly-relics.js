@@ -111,6 +111,7 @@ window.BondiSkills = {};
 require("../src/original/battle-damage-relics.js");
 require("../src/original/battle-damage-lifecycle.js");
 require("../src/original/battle-white-lolita.js");
+require("../src/original/battle-damage-resolution-modifiers.js");
 require("../src/original/battle-damage-resolution.js");
 require("../src/original/hp-value.js");
 require("../src/original/battle-damage-hit.js");

@@ -13,6 +13,7 @@ const extra = [
   "battle-damage-lifecycle.js",
   "battle-damage-hit.js",
   "battle-white-lolita.js",
+  "battle-damage-resolution-modifiers.js",
   "battle-damage-resolution.js",
   "battle-damage-response.js",
   "battle-damage-triggers.js",

@@ -4,7 +4,9 @@ window.BattleDamageResolution = ({
 }) => {
   const { queueAttackAnim } = utils;
   if (!window.BattleWhiteLolita) throw new Error("[battle-white-lolita] 模块未装配：battle-white-lolita.js 必须先于 battle-damage-resolution.js 加载");
+  if (!window.BattleDamageResolutionModifiers) throw new Error("[battle-damage-resolution-modifiers] 模块未装配：battle-damage-resolution-modifiers.js 必须先于 battle-damage-resolution.js 加载");
   const { triggerWhiteLolita } = window.BattleWhiteLolita({ deps });
+  const modifiers = window.BattleDamageResolutionModifiers({ deps });
 
   function resolveDamage(state, target, amount, source, actor, card) {
     triggerWhiteLolita(state, actor, target, card);
@@ -43,58 +45,14 @@ window.BattleDamageResolution = ({
       amount = window.ElranaAceNanaliSkills?.modifySlashDamage?.(
         state, actor, target, amount, effectiveCard) ?? amount;
     }
-    const effectiveActor =
-      window.NonokaLokiSkills?.sourceActor?.(state.battle, actor) || actor;
-    // 时停：技能归属方被标记时，其增减伤 / 免疫 / 压制类被动一律失效
-    // （主动技另由 canPlay 拦截）。判据按归属方区分，避免误伤非标记方。
-    const tsStopped = unit => !!window.MieryulaTimeStop?.isSkillDisabled?.(unit);
-    const tsBlocked = tsStopped(actor) || tsStopped(effectiveActor);
-    const tsInStopped = tsStopped(target);
-    // 智能大脑（战术牌造成的伤害翻倍）：放在统一伤害结算链里，
-    // 才能覆盖与我一战 / 魔法对决 / 魔弹特攻 / 魔王军入侵等不走攻击流程的战术牌。
-    amount = window.RuinsRelicEffects?.tacticDamage?.(
-      state, actor, effectiveCard, amount) ?? amount;
-    if (!tsBlocked) amount = window.BakarSkills?.modifyOutgoingDamage?.(
-      state, actor, amount, effectiveCard, effectiveActor) ?? amount;
-    if (!tsBlocked) amount = window.BondiSkills?.modifyOutgoingDamage?.(
-      state, actor, amount, effectiveCard) ?? amount;
-    // 力量爆发：实体【杀】结算完成后累积的伤害增益，作用于安洁莉卡造成的所有伤害。
-    if (!tsBlocked) amount = window.AngelicaLukaSkills?.modifyOutgoingDamage?.(
-      state, effectiveActor, amount, effectiveCard) ?? amount;
-    // 魅魔吸精术「对无性别角色造成的伤害为2倍」：需拿到被打者才能判性别，
-    // 故与 BakarSkills / BondiSkills 同走 outgoing 链。
-    amount = window.RuinsWithererSkills?.modifyOutgoingDamage?.(
-      state, actor, target, amount, effectiveCard) ?? amount;
-    // 女王威压：手牌为全场最多时，普雷希造成的伤害翻倍。
-    if (!tsBlocked) amount = window.PreshiSkills?.modifyOutgoingDamage?.(
-      state, effectiveActor, amount, effectiveCard) ?? amount;
-    // 无谋霸姬：手牌中没有战术牌时，米尔尤拉的实体牌与虚拟牌伤害翻倍。
-    amount = window.MieryulaSkills?.modifyOutgoingDamage?.(
-      state, effectiveActor, amount, effectiveCard) ?? amount;
-    if (!effectiveCard?.skipDamageModify) {
-      amount = window.EnemySkills?.modifyDamage(
-        state, target, amount, effectiveCard) ?? amount;
-    }
-    if (!tsInStopped) amount = window.BondiSkills?.modifyIncomingDamage?.(
-      state, target, amount, effectiveCard) ?? amount;
-    if (!tsInStopped) amount = window.BakarSkills?.modifyIncomingDamage?.(
-      state, target, amount, effectiveCard) ?? amount;
-    // 女王威压：手牌为全场最多时，普雷希受到的伤害同样翻倍。
-    if (!tsInStopped) amount = window.PreshiSkills?.modifyIncomingDamage?.(
-      state, target, amount, effectiveCard) ?? amount;
-    source = window.NonokaLokiSkills?.sourceLabel?.(
-      state.battle, actor, source) || source;
-    if (!tsInStopped) amount = window.RuinsCardSkills?.modifyIncomingDamage?.(
-      state, target, amount, effectiveCard) ?? amount;
-    // 粉色魅魔装（被动）：红色牌对该角色无效。
-    if (!tsInStopped) amount = window.RuinsRelicEffects?.modifyIncomingDamage?.(
-      state, target, amount, effectiveCard) ?? amount;
-    // 坚硬装甲：免疫判定必须放在 Math.max(1,...) 之前，否则 0 会被抬成 1。
-    // 也不能只依赖 EnemySkills.modifyDamage——该调用被 skipDamageModify 短路。
-    if (!tsInStopped && window.RuinsEliteSkills?.immuneIncoming?.(state, target, effectiveCard)) {
-      amount = 0;
-    }
-    amount = amount > 0 ? Math.max(1, Math.round(amount)) : 0;
+    // 伤害数值修正链已拆到 battle-damage-resolution-modifiers.js（加载顺序见
+    // publish-bundles.json）。返回值含 effectiveActor / tsBlocked / tsInStopped，
+    // 后续「不可响应」判定仍要用，故一并返回而不是只取 amount。
+    const mods = modifiers.compute(
+      state, target, amount, source, actor, effectiveCard);
+    amount = mods.amount;
+    source = mods.source;
+    const { effectiveActor, tsBlocked, tsInStopped } = mods;
     window.RuinsCardSkills?.beforeResponseCheck?.(state, actor, target, effectiveCard);
     // 粉色魅魔装（被动）：佩戴者使用的红色牌不可被响应。
     window.RuinsRelicEffects?.beforeResponseCheck?.(state, actor, target, effectiveCard);
@@ -113,66 +71,74 @@ window.BattleDamageResolution = ({
         `${target.name} 无法使用响应牌响应本次杀。`);
     }
     window.WithererSkills?.refreshShiftState?.(target);
-    const responseCards = !(effectiveCard?.ignoreResponse || preshiNoResponse || timeStopNoResponse)
-      && needsResponse(effectiveCard)
-      ? (target.noResponse ? [] : target.hand.filter(candidate => canDodge(effectiveCard, candidate)))
-      : [];
-    let response = !state.settings?.manualResponse
-      && actor.side === "enemy" && target.side === "ally"
-      ? responseCards.find(candidate => candidate.deflect) || responseCards[0]
-      : responseCards[0];
-    if (response
-      && !window.RuinsRelicEffects?.missileLauncherBlock?.(state, actor, target, effectiveCard, responseCards, response)) {
-      response = null;
-    }
-    if (response) {
-      const api = getResponseApi();
-      if (api.shouldManualDodge(
-        state, actor, target, effectiveCard, response
+    // 响应链成闭包：跳过护驾后由 api.resumeResponse 回到这里继续自动响应
+    // （曹操【护驾】「无人响应后你仍可自行使用【闪】」）。
+    const continueResponse = () => {
+      const responseCards = !(effectiveCard?.ignoreResponse || preshiNoResponse || timeStopNoResponse)
+        && needsResponse(effectiveCard)
+        ? (target.noResponse ? [] : target.hand.filter(candidate => canDodge(effectiveCard, candidate)))
+        : [];
+      let response = !state.settings?.manualResponse
+        && actor.side === "enemy" && target.side === "ally"
+        ? responseCards.find(candidate => candidate.deflect) || responseCards[0]
+        : responseCards[0];
+      if (response
+        && !window.RuinsRelicEffects?.missileLauncherBlock?.(state, actor, target, effectiveCard, responseCards, response)) {
+        response = null;
+      }
+      if (response) {
+        const api = getResponseApi();
+        if (api.shouldManualDodge(
+          state, actor, target, effectiveCard, response
+        )) {
+          api.queueManualDodge(
+            state, actor, target, amount, source, effectiveCard,
+            responseCards.indexOf(response),
+            response.deflect && !state.settings?.manualResponse);
+          return { dodged: true, hpLoss: 0 };
+        }
+      }
+      // 神速之翼：对所有"需用【闪】抵消"的牌生效（含【杀】、机枪扫杀、坦克炮弹）。
+      // 双闪威胁若凑不齐 2 张响应资源，不要先转化第一张：dodgeAsFlash 会立刻把源牌
+      // 移出手牌并播日志，随后 autoDodge 凑不齐第二张 → 抵消失败却白丢一张牌。
+      const wingCanUse = c => !target.noResponse && canDodge(effectiveCard, c);
+      const needTwoDodges = !!(effectiveCard?.krowFemaleTarget || effectiveCard?.twoDodgesRequired);
+      const wingPool = (target.hand || []).filter(item => wingCanUse({ ...item, name: "闪", type: "response" })).length;
+      if (!response && !(effectiveCard?.ignoreResponse || preshiNoResponse || timeStopNoResponse)
+        && needsResponse(effectiveCard)
+        && (!needTwoDodges || wingPool >= 2)) {
+        response = window.FloraCarlosSkills?.dodgeAsFlash?.(
+          state, target, actor, effectiveCard,
+          { ...deps, afterCardResponded: window.NonokaLokiSkills?.afterCardResponded },
+          [], wingCanUse);
+      }
+      if (response && response.name !== "闪"
+        && !window.RuinsRelicEffects?.missileLauncherBlock?.(state, actor, target, effectiveCard, responseCards, response)) {
+        response = null;
+      }
+      if (response && getResponseApi().autoDodge(
+        state, actor, target, amount, source, effectiveCard, response
       )) {
-        api.queueManualDodge(
-          state, actor, target, amount, source, effectiveCard,
-          responseCards.indexOf(response),
-          response.deflect && !state.settings?.manualResponse);
+        window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(
+          state, effectiveCard);
         return { dodged: true, hpLoss: 0 };
       }
-    }
-    // 神速之翼：对所有"需用【闪】抵消"的牌生效（含【杀】、机枪扫杀、坦克炮弹）。
-    // 双闪威胁若凑不齐 2 张响应资源，不要先转化第一张：dodgeAsFlash 会立刻把源牌
-    // 移出手牌并播日志，随后 autoDodge 凑不齐第二张 → 抵消失败却白丢一张牌。
-    const wingCanUse = c => !target.noResponse && canDodge(effectiveCard, c);
-    const needTwoDodges = !!(effectiveCard?.krowFemaleTarget || effectiveCard?.twoDodgesRequired);
-    const wingPool = (target.hand || []).filter(item => wingCanUse({ ...item, name: "闪", type: "response" })).length;
-    if (!response && !(effectiveCard?.ignoreResponse || preshiNoResponse || timeStopNoResponse)
-      && needsResponse(effectiveCard)
-      && (!needTwoDodges || wingPool >= 2)) {
-      response = window.FloraCarlosSkills?.dodgeAsFlash?.(
-        state, target, actor, effectiveCard,
-        { ...deps, afterCardResponded: window.NonokaLokiSkills?.afterCardResponded },
-        [], wingCanUse);
-    }
-    if (response && response.name !== "闪"
-      && !window.RuinsRelicEffects?.missileLauncherBlock?.(state, actor, target, effectiveCard, responseCards, response)) {
-      response = null;
-    }
-    if (response && getResponseApi().autoDodge(
-      state, actor, target, amount, source, effectiveCard, response
-    )) {
-      window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(
-        state, effectiveCard);
-      return { dodged: true, hpLoss: 0 };
-    }
+      return getHitWithoutDodge()(
+        state, actor, target, amount, source, effectiveCard);
+    };
+    // 护驾先于自动响应询问：有【闪】也能选让队友替出，不被自动用闪抢掉时机。
     const guarded = window.GuestCharacterSkills?.guardOphelia?.(
       state, actor, target, amount, source, effectiveCard,
-      { canDodge, draw: deps.draw, hitWithoutDodge: getHitWithoutDodge() });
+      { canDodge, draw: deps.draw, hitWithoutDodge: getHitWithoutDodge(),
+        resumeResponse: continueResponse });
     if (guarded) {
       window.FloraCarlosSkills?.queueSpeedAssaultSettlement?.(
         state, effectiveCard);
       return guarded;
     }
+    // 挂起时必须停住，否则继续自动响应会先耗掉自己的【闪】。
     if (state.battle?.locked) return { dodged: false, hpLoss: 0 };
-    return getHitWithoutDodge()(
-      state, actor, target, amount, source, effectiveCard);
+    return continueResponse();
   }
 
   return { resolveDamage, triggerWhiteLolita };
