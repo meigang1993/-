@@ -17,7 +17,8 @@ window.WendySkills = (() => {
     if (actor.side === "ally") {
       state.battle.wendyTutorPicker = { uid: actor.uid };
       state.battle.locked = true;
-      line(state, actor, "解答迷惑");
+      // 选牌提示阶段不播台词：grantTutorCard 在玩家确认选牌后会播一次，
+      // 此处再播会重复台词，且在「还没选牌」时先显示「发动了」。
       window.BattleLog.add(state,
         `${actor.name} 打开战术牌图鉴，等待选择临时战术牌。`);
       return true;

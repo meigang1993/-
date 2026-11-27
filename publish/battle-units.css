@@ -62,6 +62,9 @@
 .active-portrait-shell .conquer-count { bottom: 8px; min-width: 30px; height: 30px; font-size: 17px; }
 .gender-mark { position: absolute; right: 3px; top: 3px; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: rgba(255,209,250,.9); color: #8b145f; font-size: 13px; font-weight: 900; box-shadow: 0 0 8px rgba(255,92,171,.55); }
 .enemy-relic-badge { position: absolute; left: 3px; top: 25px; z-index: 5; padding: 1px 5px; border-radius: 999px; background: rgba(255,222,116,.94); color: #4a2500; font-size: 10px; font-weight: 900; box-shadow: 0 0 10px rgba(255,222,116,.55); }
+/* 角色牌上的存储牌（移出游戏）：与饰品徽章错开一行，蓝色区别于黄色饰品 */
+.stored-card-badge { position: absolute; left: 3px; top: 44px; z-index: 5; padding: 1px 5px; border-radius: 999px; background: rgba(140,205,255,.94); color: #062b45; font-size: 10px; font-weight: 900; box-shadow: 0 0 10px rgba(140,205,255,.55); }
+.active-portrait-shell .stored-card-badge { left: 5px; top: 48px; }
 .enemy-relic-list { margin: 0 0 8px; padding-left: 18px; display: grid; gap: 4px; color: #ffe9b6; font-weight: 800; }
 .duplicate-label { position: absolute; right: 3px; top: 3px; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,.92); color: #4c1761; font-size: 12px; font-weight: 900; opacity: 0; transform: scale(.82); transition: opacity .15s, transform .15s; box-shadow: 0 0 12px rgba(255,255,255,.7); }
 .unit:hover .duplicate-label, .unit.selectable-target:hover .duplicate-label, .unit.chosen-target .duplicate-label { opacity: 1; transform: scale(1); }

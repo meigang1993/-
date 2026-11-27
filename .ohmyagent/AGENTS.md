@@ -98,32 +98,30 @@
 
 ## 当前状态指针(2026-11-26,只给指针不记流水)
 
-- **远端**: `main` = `49693215`(2026-11-26 推送成功,API 实时查证)= **286 版**
-  「全库 🔵 图标技能描述统一补齐「非锁定技」前缀,复查所有角色跳过按键与复用现状」,
-  parent `5b7f75e1`,新 tree `d2dec5d8`,25 files(1 增 / 24 改 / 0 删),
-  提交说明 11 行;推后硬校验 远端 1655 = 本地 1655,DIFF 0 / MISSING 0 / EXTRA 0,
-  26 个关键文件远端 blob 解码与磁盘逐字节 MATCH。
-  远端 tree 1655 文件:`skill-art-*.webp` **0 张**、`card-art-*.webp` **59 张全保留**;
-  根目录 `天日国鹰7研究所.zip` SHA 未变、原样保留。
-- **本地记账**: 本提交 `【记账】286 版已推送 49693215`,在工作区推送完成后补记。
-- **版本**: `20260915-286` ×13 + villa.css ×4 + electron `26.0915.286`,
-  11 个 bundle current,工作树干净。
-- **deliveries/**: **285 版两个包**(`app.asar` + `魅魔杀-完整项目-20261030-285.zip`,
-  2026-11-26 已出,281 两包已备份进 `deliveries_backup/`)。**未出 286 包**:
-  285 包不含 286 的 19 个 🔵 描述前缀统一;要分发须出 286 包。
+- **远端**: `main` = `2d5d2e93`(2026-11-26 推送成功)= **293 版**；本地已到 **304 版待推送**,工作树有改动,见 `docs/开发日记.md` § 294~297 / § 298 / § 299 / § 301 与待推送清单。
+- **本地记账**: 上一提交 `ef2938f`「【记账】293 版已推送 2d5d2e93」;本轮修复**未推送、未记账提交**,按 Push Policy 等明确「推送」指令后再补记。
+- **版本**: `20260915-304` ×13 + villa.css ×4 + electron `26.0915.304`,11 个 bundle current(301 源码改动、303 幂等修复、302/304 文档同步各 bump 一次)。
+- **deliveries/**: **293 版两个包**(2026-11-26 已出)。**不含 294~297 的非锁定技台词/饰品修复、298 的角色牌存储牌机制,也不含 299~304 的一次性放牌、时停返还、手牌数相对增量 3 个 BUG 修复**;要分发须重新出包。
+- **非锁定技台词口径(294~297 修复,易错点)**:台词 / `「XX 发动了 Y」`字幕 / `「发动技能【Y】」`战报**只能在确认发动分支**播放;挂起「可发动 / 请选择」提示阶段一句都不能播,点「跳过 / 不交 / 放弃」后不得残留。已删除废弃的 `skillWhenPromptVisible`;`BattleLog.maybeRelicCaption` 的 `NOT_ACTIVATED` / `SKIPPED_SKILL` 两道守门拦住提示与跳过日志,真触发(含「拼花失败」「触发,跳过弃牌阶段」等)仍正常显示。
+- **全库饰品三类口径(294~297)**:`relics.js` 的 `skillsForNames` / `skillIcon` 是单一真相源——`activeCard` → ⚔️ 主动技(不加前缀);`skillType:"trigger"` → 🔵 非锁定技(`effect` 以「非锁定技,」开头 + 含「你可以」+ 有跳过入口);其余 → ⭐ 锁定技(`effect` 以「锁定技,」开头 + 不含「你可以」)。**饰品有 3 个数据源**:`data-relics.js`(18) / `data-ruins-content.js`(10) / `data-future-relics.js`(12,末尾合并 ruins 10);286/651 轮只扫前两个,漏了【血色刺伞】(可选发动却一直 ⭐ 无前缀),297 轮补齐 🔵。新增饰品/技能漏写标签、图标与语义不符,`tools/check-relic-skill-tags.js`(vm 加载 3 源逐件校验 40 件)+ `tools/check-nonlocked-prompt-caption.js` 会立刻打红,均已登记 QA 目录,别再靠人工记忆扫数据源。
+- **角色牌存储牌机制(298,易错点)**:参考三国杀界徐盛【破军】「扣置于武将牌旁 / 移出游戏直到回合结束」规则。新增 `battle-character-card-storage.js`(`window.BattleCharacterCardStorage`),数据 `unit.storedCards=[{card,source,ownerUid,release,storedTurn}]`,提供 `store/cardsOf/count/namesOf/release/endTurn/discardForDead/clear`。【魔刀阿波罗】扣出的牌放目标自己的角色牌上(存储牌,不计手牌、不能使用/打出/弃置),头像「存×N」徽章公开可见,扣置/返还动画以角色牌为起落点,任意角色回合结束由该角色获得并进手牌,阵亡直接入弃牌堆,旧档 `nanaliSealed` 自动迁移。**以后任何「放到角色牌上/武将牌上/存储牌」的新技能必须走此模块**,别再建私有暂存字段;`release` 支持 `anyTurnEnd`(现行)/`currentTurnEnd`(界徐盛严格口径)/`manual`。护栏 `tools/check-character-card-storage.js`(19/19 + 6 组反向)与实机 `tools/test-character-card-storage-live.js`(12/12)已登记 QA 目录。
+- **一次性放牌 + 存储牌返还(299~300,易错点)**:`BattleEffectCardMotion.placeStoredCards` 负责【魔刀阿波罗】扣置牌「一次性放到角色牌上」——整批 1 个 DOM(叠层 + `×N` 角标)/1 段动画/1 次 `cardLand`,`sealCards` 事件须带 `toCharacterCard + placeOnce`;敌方 `handSpot` 退化成 `unitArt` 会让起点终点重合,函数内距离 <24px 时把起点抬到角色牌上方(夹回视口)。**别只看 `stagger:0` 就当「一次性」**:`flyFrontCards` 仍会为每张牌各建一个 DOM。**存储牌回合结束返还是规则清算不是技能发动**,放在 `battle-end-phase.js` 的 while 全部步骤成功后、`cleanupTurn` 之前无条件调用 `BattleCharacterCardStorage.endTurn(state)`;时停会 `steps.length=0`,挂 steps 里会被吞、牌滞留。护栏 `check-character-card-storage.js`(21/21 + 8 组反向,含 `timestop`/`once`)、实机 `test-character-card-storage-live.js`(13/13,A3b spy 数 DOM/落位)、`test-apollo-storage-deep-live.js`(11/11) 已登记 QA 目录。
+- **验证环境易错点(300)**: 容器负载高时 Playwright 默认 `timeout:60000` 会在 `Tearing down "context"` 阶段假失败（测试体断言已全过、截图/trace 也生成）；用 `node node_modules/@playwright/test/cli.js test --timeout=180000 <spec>` 单跑即可，别误判成功能回归。本轮 7 个预览 spec 放宽后 7/7 通过。
+- **手牌数显示相对增量(301~304,易错点)**:任何改变角色手牌数的动画事件必须携带 `visualHandDelta` 并按 `Math.max(0, current + delta)` 推进 `unit.visualHandCount`(`current = unit.visualHandCount ?? event.visualHandBefore ?? …`),**禁止用事件发生时的绝对快照覆盖**。`sealCards`(阿波罗扣置)此前漏了这条,队列里两次扣置之间夹着目标获得牌时会把 `syncIncomingHand` 已加的增量抹掉(实测 `6→4→3→1` 应为 `6→4→3→2`)。与 `BattleCards.queueResponse` / `battle-effect-handlers.response` 同口径;旧事件无 delta 时兜底绝对快照。相对增量必须**按事件幂等消耗**(`event._handDeltaApplied`,重播跳过),否则预览夹具/动画恢复重播同一事件会重复扣减(既有 `preview-battle-effects` 的后台 drain 实测会先消费队首);旧无 delta 事件仍绝对快照兼容。护栏 `check-character-card-storage.js` A13/A15 + 反向 `handDelta`/`absCover`/`idempotent`、实机 `test-apollo-handcount-matrix-live.js`(26/26,含扣 0/1/2/3/多张、扣牌数>手牌数、目标空手、连击不同扣牌数、真实 useCard、混合队列、重播幂等)已登记 QA 目录。
 - **🔵 技能口径(易错点)**: 全库 **19 个** `🔵` 技能(含 8 个敌方技)公开描述一律以
   「非锁定技,」开头,权威源 `src/original/data-*.js` 的 `skills[].text`;
   `card.text` 是出牌卡面说明不加前缀。敌方 🔵 由 AI 自动决定,不设玩家跳过。
   玩家侧跳过入口三类:① 通用反击面板「发动/跳过」(`data-counter-trigger-skip`,
-  复用给复仇反击/终焉回旋斩/护母反击/刺刀AK47/血色刺伞/螺旋桨);
+  复用给复仇反击/终焉回旋斩/护母反击/刺刀AK47/血色刺伞;螺旋桨 290 后续已改锁定技,不再共用);
   ② 8 个专属提示条按钮(各有 `data-*-skip`,含 `data-ophelia-guard-skip`);
   ③ 仅转换技(突破重围)按语义不设独立跳过。【为我护驾】已按三国杀曹操【护驾】
   改为真正非锁定技:不再要求自己没有【闪】、用「你可以指定」、提示条有
   「跳过(不发动)」;跳过后回到正常响应链(有闪自动出、无闪才由原目标承伤)。
   判定已提前到自动响应之前,触发范围收窄为「成为单体【杀】的目标」
   (`CardUtils.isSingleKill`),全体类杀牌不护驾;连击杀只在第 1 段弹窗。
-  **🔵 饰品 2 个(霹雳之锤/螺旋桨,`skillType:"trigger"` 动态挂图标)的 `effect`
-  也已补「非锁定技,」前缀**;286 轮只覆盖 `skills[].text`,别再漏饰品数据源。
+  **🔵 饰品曾 2 个(霹雳之锤/螺旋桨,`skillType:"trigger"` 动态挂图标)的 `effect`
+  补过「非锁定技,」前缀**;286 轮只覆盖 `skills[].text`,别再漏饰品数据源。
+  (螺旋桨 290 后续已改锁定技,现只剩霹雳之锤 1 个 🔵 饰品,见下文。)
   `battle-damage-resolution.js` 已预防性拆出伤害修正链子模块
   `battle-damage-resolution-modifiers.js`(主 145 行),装配点显式抛错;
   按单文件读该文件做静态断言/vm 的 fixture 走 `split-source-view.js` 拼接视图。

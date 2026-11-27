@@ -72,8 +72,9 @@ window.MannySkills = (() => {
     if (card.lockSuitResponse) { delete transferCard.ignoreResponse; delete transferCard.lockSuitResponse; }
     b.dimensionTransfer = { actorUid: actor?.uid, targetUid: target.uid, mannyUid: manny.uid, amount, source, costIndex: null, card: transferCard };
     b.locked = true;
-    window.BattleLines?.skillWhenPromptVisible?.(
-      state, manny, "次元转移", target, "dimensionTransfer", b.dimensionTransfer);
+    // 非锁定技：只挂起「可发动」提示，不播台词、不显示「发动了」字幕、
+    // 不写「发动技能」战报。玩家点「跳过（不发动）」时必须完全没有这些表现。
+    // 台词/字幕统一放到 resolveDimensionTransfer 里真正弃牌转移的分支。
     window.BattleLog.add(state, `${manny.name} 可发动次元转移保护${target.name}：请选择1张黑色手牌，再指定一名敌人承受${source}。`);
     return true;
   }
@@ -100,6 +101,8 @@ window.MannySkills = (() => {
     }
     b.dimensionTransfer = null; b.locked = false;
     if (cost) {
+      // 玩家已弃黑色牌并指定敌人 = 确认发动，此时才播台词与「发动了」字幕。
+      window.BattleLines?.skill(state, manny, "次元转移", target);
       window.BattleLog.add(state, `${manny.name} 弃置${cost.suit}${cost.name}发动次元转移，将${p.source}转移给${target.name}。`);
       window.MannyGunSkinFX?.dimensionTransfer?.(state, manny, originalTarget, target);
     } else window.BattleLog.add(state, `${manny.name} 放弃发动次元转移，${originalTarget.name}继续承受${p.source}。`);

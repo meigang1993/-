@@ -6,7 +6,20 @@ window.BattleLog = (() => {
   function unitRelics(state, unit) {
     return [...(unit?.battleRelics || []), ...((state?.equipment || {})[unit?.ref] || []), ...((state?.testEquipment || {})[unit?.ref] || [])];
   }
+  // 只给「饰品已实际发动/触发」的战报自动配字幕。
+  // 非锁定技/饰品的「可发动」「放弃发动」「发动失败」只是提示或失败回执，
+  // 玩家并没有发动，绝不能显示「触发了 XX」字幕、也不能写「触发饰品」战报。
+  // 注意不能一刀切排除所有「失败/跳过/无效」：如「剪刀刃拼花失败」
+  // 「母亲怀表触发，跳过弃牌阶段」「粉色魅魔装触发，红牌对其无效」
+  // 都是饰品真的触发了，字幕应当保留。故只排除「尚未发动」的措辞。
+  const NOT_ACTIVATED = /可发动|可以发动|放弃发动|不发动|跳过（不发动）|请选择|发动[^，。]*失败|未能发动|不再额外结算前的提示/;
+  // 通用反击面板点「跳过」写的是「<角色>跳过<技能>。」（无逗号短句），
+  // 这同样属于「玩家没有发动」，饰品不得因此弹「触发了 XX」字幕。
+  // 只匹配无逗号短句：「母亲怀表触发，跳过弃牌阶段」「…将跳过其回合」等
+  // 饰品真触发的描述含逗号，不会被误杀。
+  const SKIPPED_SKILL = /^[^，。]{1,30}跳过[^，。]{1,30}。$/;
   function maybeRelicCaption(state, text) {
+    if (NOT_ACTIVATED.test(text) || SKIPPED_SKILL.test(text)) return;
     const b = state?.battle, units = b?.allies?.concat(b.enemies || []) || [];
     const unit = units.find(u => text.startsWith(u.name));
     if (!unit) return;

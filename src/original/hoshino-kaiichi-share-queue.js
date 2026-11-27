@@ -44,9 +44,9 @@ window.HoshinoKaiichiShareQueue = ({ alive, allUnits }) => {
     if (battle._deferSharePrompts) return false;
     battle.kaiichiShare = battle.kaiichiShareQueue.shift();
     battle.locked = true;
-    const unit = allUnits(battle).find(item => item.uid === battle.kaiichiShare.unitUid);
-    const source = allUnits(battle).find(item => item.uid === battle.kaiichiShare.sourceUid);
-    scheduleBloodCaption(state, unit, source, battle.kaiichiShare);
+    // 非锁定技：交牌提示挂起阶段不播台词 / 不显示「发动了」字幕。
+    // scheduleBloodCaption 仅保留给「没有可选交牌对象、技能已实际发动」的路径
+    // （hoshino-kaiichi-skills.js 的 !shareQueued 分支）；玩家点「不交」时不播。
     return true;
   }
 

@@ -3,10 +3,18 @@
 window.BattleCombatDefeat = ({ deps, allUnits, pendingFatalAnim, clearSelection }) => {
   function discardDeadHands(state, b) {
     const units = allUnits(b);
-    units.filter(u => u.hp <= 0 && !window.SakuraRisaSkills?.pendingRevival?.(u) && !u.deathDiscarded && u.hand?.length).forEach(u => {
-      const cards = u.hand.splice(0); u.deathDiscarded = true;
-      window.BattleCards?.putMany?.(b, u, cards, "discard", { skipAfterHandLost: true });
-      window.BattleLog.add(state, `${u.name} 被击倒，弃置所有手牌。`);
+    units.filter(u => u.hp <= 0 && !window.SakuraRisaSkills?.pendingRevival?.(u)).forEach(u => {
+      if (!u.deathDiscarded && u.hand?.length) {
+        const cards = u.hand.splice(0); u.deathDiscarded = true;
+        window.BattleCards?.putMany?.(b, u, cards, "discard", { skipAfterHandLost: true });
+        window.BattleLog.add(state, `${u.name} 被击倒，弃置所有手牌。`);
+      }
+      // 角色牌上的存储牌即使手牌为空也要清：按三国杀破军 FAQ，被击倒时
+      // 扣置于武将牌旁的牌直接置入弃牌堆，不回到手牌、不触发获得牌类效果。
+      if (!u.storedDiscarded) {
+        window.BattleCharacterCardStorage?.discardForDead?.(state, u);
+        u.storedDiscarded = true;
+      }
     });
   }
   function checkDefeat(state) {

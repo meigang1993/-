@@ -128,5 +128,52 @@ window.BattleEffectCardMotion = U => {
     if (moving || clearPending) renderStep();
   }
 
-  return { flyBackCards, flyFrontCards, transfer };
+  // 一次性放牌：整批扣置牌作为「一摞」一次飞到角色牌、一次落位。
+  // 与 flyFrontCards 的本质区别：只创建 1 个 DOM、1 段动画、1 次落位音效，
+  // 不再为每张牌各建一张并行飞（stagger:0 也只是 N 张同时原地飞，观感是
+  // 一堆牌散开而非「一次性放到角色牌上」）。
+  // 敌方目标 handSpot 退化成 unitArt 时起点终点重合，抬到角色牌上方起落，
+  // 保证「放到角色牌上」这个动作看得见位移。
+  async function placeStoredCards(options) {
+    const {
+      cards = [], count = cards.length, from, to,
+      enemy = false, active = () => true,
+    } = options;
+    if (!count || !active()) return;
+    const end = point(to);
+    if (!end) return;
+    let start = point(from);
+    if (!start || Math.hypot(end.x - start.x, end.y - start.y) < 24) {
+      start = { x: Math.max(16, end.x - 36), y: Math.max(16, end.y - 170) };
+    }
+    const stack = window.BattleEffectCardDOM.front(cards[0] || {}, enemy,
+      "seal-card-fly stored-card-place");
+    window.BattleEffectAnimation.stampCssTiming(stack);
+    stack.style.left = `${start.x}px`;
+    stack.style.top = `${start.y}px`;
+    // 叠层：整批牌画成一摞（最多 3 层），角标写明本次一次性放了几张。
+    for (let i = 1; i < Math.min(3, count); i++) {
+      const layer = document.createElement("span");
+      layer.className = "stored-place-layer";
+      layer.style.setProperty("--layer", String(i));
+      stack.appendChild(layer);
+    }
+    const badge = document.createElement("i");
+    badge.className = "stored-place-count";
+    badge.textContent = `×${count}`;
+    stack.appendChild(badge);
+    window.BattleFX?.cardMove?.();
+    const dx = end.x - start.x, dy = end.y - start.y;
+    await runAnim(stack, [
+      { transform: "translate3d(0,0,0) rotate(-6deg) scale(.9)", opacity: 1 },
+      { transform: `translate3d(${dx * .55}px,${dy * .5 - 24}px,0) rotate(3deg) scale(1)`, opacity: 1, offset: .55 },
+      { transform: `translate3d(${dx}px,${dy}px,0) rotate(0deg) scale(.62)`, opacity: .28 },
+    ], { duration: FLY_MS + 40, easing: FLIGHT_EASE, fill: "forwards" });
+    if (!active()) return stack.remove();
+    window.BattleFX?.cardLand?.();  // 整批只落位一次
+    await wait(90);
+    stack.remove();
+  }
+
+  return { flyBackCards, flyFrontCards, transfer, placeStoredCards };
 };

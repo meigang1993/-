@@ -42,7 +42,7 @@ window.BattleLines = (() => {
   return {
     show: speech.show,
     skill: captions.skill,
-    skillWhenPromptVisible: captions.skillWhenPromptVisible,
+    // skillWhenPromptVisible 已移除：见 battle-caption-controller.js 说明。
     promptVisible: captions.promptVisible,
     clearSkillCaption: captions.clearSkillCaption,
     intro: state => introFlow.start(state),

@@ -20,7 +20,7 @@ test("Nanali partial Apollo seal updates the target hand count before the flight
     });
     Object.assign(source, {
       ref: "test_enemy", name: "测试敌人", side: "enemy", ai: null, hp: 30, maxHp: 30,
-      block: 0, defenseSystem: 0, skills: [], discard: [], consumed: [], nanaliSealed: [],
+      block: 0, defenseSystem: 0, skills: [], discard: [], consumed: [], storedCards: [],
     });
     const slash = { name: "杀（普攻）", suit: "♠", type: "slash", power: 1, scale: "attack", ignoreResponse: true };
     nanali.hand = [slash];
@@ -44,7 +44,7 @@ test("Nanali partial Apollo seal updates the target hand count before the flight
       stale,
       during: handText(),
       targetHand: source.hand.length,
-      sealed: source.nanaliSealed.length,
+      sealed: source.storedCards.length,
       flying: document.querySelectorAll(".seal-card-fly").length,
     };
   });
@@ -77,7 +77,7 @@ test("Nanali repeated Apollo seals display every hand-count decrement", async ({
     });
     Object.assign(source, {
       ref: "test_enemy", name: "测试敌人", side: "enemy", ai: null, hp: 30, maxHp: 30,
-      block: 0, defenseSystem: 0, skills: [], discard: [], consumed: [], nanaliSealed: [],
+      block: 0, defenseSystem: 0, skills: [], discard: [], consumed: [], storedCards: [],
       hand: [
         { name: "目标牌1", suit: "♣", type: "tactic" },
         { name: "目标牌2", suit: "♥", type: "tactic" },
@@ -108,7 +108,7 @@ test("Nanali repeated Apollo seals display every hand-count decrement", async ({
       counts,
       snapshots: events.map(event => [event.visualHandBefore, event.visualHandCount]),
       targetHand: source.hand.length,
-      sealed: source.nanaliSealed.length,
+      sealed: source.storedCards.length,
     };
   });
   expect(result).toEqual({

@@ -47,6 +47,10 @@ window.BattleEffectCardTransfers = U => {
   }
 
   function gainOrigin(event) {
+    // 从角色牌上的存储区返还：起点是自己的角色牌（头像），不是公共区。
+    if (event.fromZone === "characterCard") {
+      return unitArt(event.uid) || publicZone() || drawOrigin(event.side);
+    }
     if (event.fromZone === "public" || !event.fromUid || event.fromUid === event.uid) {
       return publicZone() || drawOrigin(event.side);
     }

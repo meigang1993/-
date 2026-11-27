@@ -117,30 +117,11 @@ window.BattleCaptionController = ({
     return !!(battle?.[key] && !battle.animQueue?.length
       && !window.BattleEffects?.animating && !window.BattleEffects?.draining);
   }
-  function skillWhenPromptVisible(state, unit, name, target, key, prompt) {
-    const battle = state?.battle;
-    if (!battle || !prompt) return;
-    const frame = window.requestAnimationFrame;
-    if (typeof frame !== "function") {
-      if (battle[key] === prompt && promptVisible(battle, key)) {
-        skill(state, unit, name, target);
-      }
-      return;
-    }
-    const deadline = (window.performance?.now?.() || Date.now()) + 10000;
-    const show = () => {
-      if (state.battle !== battle || battle[key] !== prompt) return;
-      if (!promptVisible(battle, key)) {
-        if ((window.performance?.now?.() || Date.now()) < deadline) frame(show);
-        else console.warn(`${name}提示等待动画超时`);
-        return;
-      }
-      if (prompt.captionShown) return;
-      prompt.captionShown = true;
-      skill(state, unit, name, target);
-    };
-    frame(show);
-  }
+  // 【已移除】原 skillWhenPromptVisible：提示条一可见就调 skill()，
+  // 会让「可发动」的非锁定技在玩家还没选择时就播台词、显示「XX 发动了 Y」字幕、
+  // 写「发动技能【Y】」战报，点「跳过（不发动）」后也清不掉。
+  // 非锁定技的台词/字幕必须由「确认发动」分支显式调用 skill()，
+  // 新增非锁定技禁止在挂起/提示阶段触发任何台词。
   function cancel(state) {
     [skillTimer, skillCaptionTimer, ...relicCaptionTimers.values()].forEach(clearTimeout);
     skillTimer = null;
@@ -155,6 +136,6 @@ window.BattleCaptionController = ({
     }
   }
   return {
-    skill, skillWhenPromptVisible, promptVisible, clearSkillCaption, cancel,
+    skill, promptVisible, clearSkillCaption, cancel,
   };
 };

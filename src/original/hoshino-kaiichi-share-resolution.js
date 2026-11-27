@@ -56,7 +56,12 @@ window.HoshinoKaiichiShareResolution = ({ alive, allUnits, queue }) => {
     window.NoaCharmSkills?.onHandGained?.(window.state, target);
   window.BattleCards?.afterHandLost?.(battle, unit);
     window.BattleLog.add(state, `${unit.name}将${cards.length}张手牌交给${target.name}。`);
-    return finishShare(state, prompt);
+    const done = finishShare(state, prompt);
+    // 玩家确认交牌后才播台词与字幕；放在 finishShare 之后，避免被它内部的
+    // clearSkillCaption 清掉。点「不交」走 finishShare 的另一条路径，不播。
+    const source = allUnits(battle).find(item => item.uid === prompt.sourceUid);
+    window.BattleLines?.skill(state, unit, "半魅魔血", source);
+    return done;
   }
 
   function finishShare(state, prompt) {

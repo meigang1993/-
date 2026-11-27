@@ -75,7 +75,8 @@ window.GuestAilengSkills = (() => {
     if (!hasSkill(actor, "战斗演练") || !isEntityCard(card) || (!isSlash(card) && card.type !== "tactic")) return;
     const receivers = state.battle.allies.filter(unit => unit.uid !== actor.uid && alive(unit));
     if (!receivers.length) return;
-    if (actor.side === "ally") { state.battle.ailengDrillPicker = { actorUid: actor.uid, card }; state.battle.locked = true; line(state, actor, "战斗演练"); return; }
+    // 非锁定技：挂起「不交」提示时不播台词/字幕；确认交牌由 resolveBattleDrill 播放。
+    if (actor.side === "ally") { state.battle.ailengDrillPicker = { actorUid: actor.uid, card }; state.battle.locked = true; return; }
     resolveBattleDrill(state, receivers.sort((a, b) => visible(a).length - visible(b).length)[0].uid);
   }
   function resolveBattleDrill(state, targetUid) {

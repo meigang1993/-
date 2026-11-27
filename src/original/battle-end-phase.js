@@ -18,7 +18,6 @@ window.BattleEndPhase = deps => {
       () => window.CharacterSkinFX?.endTurn?.(state, unit),
       () => window.EnemySkills?.endTurn?.(state, unit, draw, combat.damage),
       () => window.UnderwaterTrainSkills?.endTurn?.(state, unit),
-      () => window.ElranaAceNanaliSkills?.endTurn?.(state, unit, { draw, damage: combat.damage, pushFloat: combat.pushFloat }),
       () => window.ArtinaMariaSkills?.endTurn?.(state, unit),
       () => window.AbeKarunaDivaSkills?.endTurn?.(state, unit),
       () => window.AbeKarunaBubbleSkills?.endTurn?.(state, unit),
@@ -40,6 +39,13 @@ window.BattleEndPhase = deps => {
     }
     delete b.endPhaseStep;
     delete b.endPhaseUnitUid;
+    // 角色牌上的存储牌「回合结束回归」是牌临时移出游戏后的规则清算，不是
+    // 技能发动：时停会清空上面整个 steps，若挂在 steps 里会漏返还，牌会滞留
+    // 到下个非时停回合甚至战斗结束。故放在所有结束步骤成功跑完之后、
+    // cleanupTurn 之前无条件执行（挂起返回 false 时不会走到这里）。
+    // ElranaAceNanaliSkills.endTurn / NanaliSealed.returnSealed 转发层保留，
+    // 供预览 spec 与既有调用方直接使用。
+    window.BattleCharacterCardStorage?.endTurn?.(state);
     window.BattleTurnState.cleanupTurn(b, unit, true, allUnits(b));
     return true;
   }

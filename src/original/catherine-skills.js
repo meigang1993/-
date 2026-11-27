@@ -69,6 +69,8 @@ window.CatherineSkills = (() => {
       toUid: receiver.uid, toSide: receiver.side, count: 1, cards: [card],
     });
     window.BattleCards?.afterHandLost?.(battle, victim);
+    // 玩家确认接收者并真正完成窃取 = 确认发动，此时才播台词与字幕。
+    line(state, actor, "窃取");
     window.BattleLog.add(state,
       `${actor.name} 使用窃取，将${victim.name}一张${card.suit || ""}${card.name}转移给${receiver.name}。`);
     syncMagic(state, receiver);
@@ -90,7 +92,8 @@ window.CatherineSkills = (() => {
       ? target : window.GameRandom.sample(foes, state);
     if (!victim || !visible(victim).length) return false;
     actor.usedCatherineSteal = true;
-    line(state, actor, "窃取");
+    // 非锁定技：这里只挂起「选接收者」提示，玩家还可以点「放弃」；
+    // 台词与「发动了」字幕统一放到 resolveSteal 真正拿到牌时再播。
     if (actor.side !== "ally") {
       return transferCard(state, actor, victim,
         window.GameRandom.sample(mates, state),

@@ -23,13 +23,12 @@ window.CadicisResponsibility = (() => {
       comboPartnerUid: state.battle.comboPartnerUid || null,
     };
     state.battle.locked = true;
-    window.BattleLines?.skillWhenPromptVisible?.(
-      state, cadicis, "指挥官责任", target,
-      "cadicisResponsibility", state.battle.cadicisResponsibility);
+    // 非锁定技：挂起阶段只提示「可发动」，不播台词 / 不显示「发动了」字幕 /
+    // 不写「发动技能」战报；台词统一放到玩家实际交牌时（resolveResponsibility）。
     const drawText = window.BattleDrawFeedback.action(cadicis, count, drawn);
     const separator = window.BattleDrawFeedback.count(count, drawn) ? "后" : "；";
     window.BattleLog.add(state,
-      `${cadicis.name} 触发指挥官责任，${drawText}${separator}请选择${count}张手牌交给${target.name}。`);
+      `${cadicis.name} 可发动指挥官责任，${drawText}${separator}请选择${count}张手牌交给${target.name}。`);
   }
 
   function resolveResponsibility(state, cardIndex) {
@@ -55,6 +54,11 @@ window.CadicisResponsibility = (() => {
       fromBefore, toBefore,
     });
     window.BattleCards?.afterHandLost?.(battle, cadicis);
+    // 玩家真的交出第一张牌 = 确认发动，此时才播台词与字幕（多张牌只播一次）。
+    if (!prompt.captionShown) {
+      prompt.captionShown = true;
+      window.BattleLines?.skill(state, cadicis, "指挥官责任", target);
+    }
     prompt.remaining = Math.max(0,
       (prompt.remaining || prompt.count || 1) - 1);
     window.BattleLog.add(state,

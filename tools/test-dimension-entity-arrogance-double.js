@@ -148,7 +148,7 @@ function mkContext() {
   c.GameDataCards = { cardCodex: [], baseDeck: [], eliteCards: [] };
   vm.runInContext(codeOf("card-utils.js"), c, { filename: "card-utils.js" });
   c.BattleLog = { add() {} };
-  c.BattleLines = { skill() {}, skillWhenPromptVisible() {}, promptVisible: () => true };
+  c.BattleLines = { skill() {}, promptVisible: () => true };
   c.__fx = 0;
   c.MannyGunSkinFX = { weaponAttack() { c.__fx += 1; }, spikeMark() {} };
   c.BattleCards = { put(_b, unit, card) { unit.discard.push(card); } };

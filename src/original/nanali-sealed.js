@@ -1,18 +1,10 @@
 window.NanaliSealed = (() => {
+  // 293 前这里自己遍历 unit.nanaliSealed 回手牌。现统一由
+  // BattleCharacterCardStorage 管理「角色牌上的存储牌」：任意角色回合结束时
+  // 返还 release=anyTurnEnd 的条目，阵亡者不返还（其牌已入弃牌堆）。
+  // 保留本转发层，battle-end-phase 的既有装配链无需改动。
   function returnSealed(state) {
-    const b = state.battle;
-    if (!b) return;
-    b.allies.forEach(u => returnUnitSealed(state, u));
-    b.enemies.forEach(u => returnUnitSealed(state, u));
-  }
-  function returnUnitSealed(state, u) {
-    const cards = u.nanaliSealed || []; if (!cards.length) return;
-    cards.forEach(c => { if (state.battle.animQueue) c._pendingDraw = true; });
-    u.hand.push(...cards); u.nanaliSealed = [];
-    window.BattleCards?.syncStatusCards?.(u);
-    // 与扣置同口径：整批同时起飞、一次落位（stagger:0）。
-    state.battle.animQueue?.push({ type: "gainCards", uid: u.uid, side: u.side, fromZone: "public", count: cards.length, cards, stagger: 0 });
-    window.BattleLog.add(state, `${u.name} 被魔刀阿波罗扣置的${cards.length}张牌返回手中。`);
+    return window.BattleCharacterCardStorage?.endTurn?.(state) ?? 0;
   }
   return { returnSealed };
 })();

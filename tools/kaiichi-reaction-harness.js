@@ -4,6 +4,7 @@ const { combat, card, unit, scenario } = require("./pursue-kill-fixtures");
 window.RuinsRelicEffects = { missileLauncherBlock: () => true };
 
 require("../src/original/green-hat.js");
+require("../src/original/battle-character-card-storage.js");
 require("../src/original/nanali-sealed.js");
 require("../src/original/hp-value.js");
 require("../src/original/elrana-healing-skills.js");

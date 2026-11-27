@@ -79,6 +79,16 @@ window.GameUIBattleUnits = (U, I) => {
     return items.length ? `<div class="mark-badges">${items.join("")}</div>` : "";
   }
 
+  // 角色牌上的存储牌（移出游戏）要像三国杀武将牌上的「军/田/醇」一样公开可见：
+  // 头像上挂「存×N」徽章，悬停列出牌名，避免玩家以为牌凭空消失了。
+  function storedCardBadge(unitData) {
+    const cards = window.BattleCharacterCardStorage?.cardsOf?.(unitData) || [];
+    if (!cards.length) return "";
+    const names = window.BattleCharacterCardStorage?.namesOf?.(cards) || "";
+    const tip = `角色牌上的存储牌（移出游戏，不计入手牌，不能使用/打出/弃置）：${names}`;
+    return `<span class="stored-card-badge" title="${U.esc(tip)}">存×${cards.length}</span>`;
+  }
+
   function unitBody(unitData, battle) {
     const status = statusIcons(unitData);
     const intentMax = Math.min(99, Math.max(1, (unitData.stats?.bloodlust || 1) + (unitData.intentMaxBonus || 0)));
@@ -100,7 +110,7 @@ window.GameUIBattleUnits = (U, I) => {
       + (battle.activeUid === unitData.uid && battle.phase > 0 && battle.phase < 6 ? 1 : 0);
     const action = `<span class="action-count" title="本场行动数">${count}</span>`;
     const speech = unitSpeech(unitData, battle);
-    return `<div class="unit-frame"><div class="unit-main ${unitData.side === "ally" ? "ally-main" : "enemy-main"}">${speech}${U.artBox(unitData, "unit-art", unitData.avatar || unitData.art, unitData.face)}${badgeStack(unitData)}${I.jokerSuitMark(unitData)}${conquerMark(unitData)}${action}${unitData.label ? `<span class="duplicate-label">${U.esc(unitData.label)}</span>` : ""}${gender ? `<span class="gender-mark">${gender}</span>` : ""}${relics}${marks}${intent}<span class="hand-count unit-hand"><i></i>${U.handCount(unitData)}/${U.handLimit(unitData)}<i></i></span>${battle.thinkingUid === unitData.uid ? `<span class="thinking-label">思考中</span>` : ""}</div>${U.combatBar(unitData)}</div><div class="unit-name"><b>${U.esc(unitData.name)}</b></div>`;
+    return `<div class="unit-frame"><div class="unit-main ${unitData.side === "ally" ? "ally-main" : "enemy-main"}">${speech}${U.artBox(unitData, "unit-art", unitData.avatar || unitData.art, unitData.face)}${badgeStack(unitData)}${I.jokerSuitMark(unitData)}${conquerMark(unitData)}${action}${unitData.label ? `<span class="duplicate-label">${U.esc(unitData.label)}</span>` : ""}${gender ? `<span class="gender-mark">${gender}</span>` : ""}${relics}${storedCardBadge(unitData)}${marks}${intent}<span class="hand-count unit-hand"><i></i>${U.handCount(unitData)}/${U.handLimit(unitData)}<i></i></span>${battle.thinkingUid === unitData.uid ? `<span class="thinking-label">思考中</span>` : ""}</div>${U.combatBar(unitData)}</div><div class="unit-name"><b>${U.esc(unitData.name)}</b></div>`;
   }
 
   if (!window.GameUIBattleUnitStatus) throw new Error("[ui-battle-units-status] 模块未装配：ui-battle-units-status.js 必须先于 ui-battle-units.js 加载");
@@ -134,7 +144,7 @@ window.GameUIBattleUnits = (U, I) => {
     const mimic = shown.mimicName
       ? `<div class="target-mark mimic-name" title="模仿之音记录：${U.esc(shown.mimicName)}">仿：${U.esc(shown.mimicName)}</div>`
       : "";
-    return `<aside class="active-info">${skills.length ? `<div class="skill-list active-skills">${skills.join("")}</div>` : ""}<div class="active-portrait-shell" data-active-info="${U.esc(shown.uid)}" role="button" tabindex="0" aria-label="查看${U.esc(shown.name)}角色详情">${U.artBox(shown, "portrait large", shown.art, shown.face || shown.name[0])}${badgeStack(shown)}${I.jokerSuitMark(shown)}${conquerMark(shown)}${mimic}<span class="hand-count unit-hand"><i></i>${U.handCount(shown)}/${U.handLimit(shown)}<i></i></span></div>${U.combatBar(shown)}</aside>`;
+    return `<aside class="active-info">${skills.length ? `<div class="skill-list active-skills">${skills.join("")}</div>` : ""}<div class="active-portrait-shell" data-active-info="${U.esc(shown.uid)}" role="button" tabindex="0" aria-label="查看${U.esc(shown.name)}角色详情">${U.artBox(shown, "portrait large", shown.art, shown.face || shown.name[0])}${badgeStack(shown)}${I.jokerSuitMark(shown)}${conquerMark(shown)}${mimic}${storedCardBadge(shown)}<span class="hand-count unit-hand"><i></i>${U.handCount(shown)}/${U.handLimit(shown)}<i></i></span></div>${U.combatBar(shown)}</aside>`;
   }
 
   return { unit, activeInfo };

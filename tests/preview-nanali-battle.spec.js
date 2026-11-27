@@ -39,19 +39,19 @@ test("Nanali skills resolve through the real battle system", async ({ page }) =>
     window.BattleSystem.useCard(window.state, nanali, source, slash);
     const apollo = {
       targetHp: source.hp,
-      sealed: source.nanaliSealed?.length || 0,
+      sealed: source.storedCards?.length || 0,
       targetHand: source.hand.length,
       drewTactic: nanali.hand.some(card => card.name === "阿波罗摸牌"),
     };
     window.ElranaAceNanaliSkills.endTurn(window.state, ally, window.BattleSystem);
-    const returned = { targetHand: source.hand.length, sealed: source.nanaliSealed?.length || 0 };
+    const returned = { targetHand: source.hand.length, sealed: source.storedCards?.length || 0 };
 
     battle.animQueue = [];
     const convertedCost = { name: "转换费用", suit: "♦", type: "tactic" };
     nanali.hand = [];
     nanali.discard.push(convertedCost);
     source.hand = [{ name: "转换扣置牌", suit: "♣", type: "tactic" }];
-    source.nanaliSealed = [];
+    source.storedCards = [];
     source.hp = 30;
     window.BattleSystem.useCard(window.state, nanali, source,
       window.CardUtils.convertAs("杀（普攻）", convertedCost, {
@@ -60,14 +60,14 @@ test("Nanali skills resolve through the real battle system", async ({ page }) =>
       }));
     const converted = {
       targetHp: source.hp,
-      sealed: source.nanaliSealed?.length || 0,
+      sealed: source.storedCards?.length || 0,
       targetHand: source.hand.length,
     };
 
     battle.animQueue = [];
     nanali.hand = [{ name: "虚拟杀计数牌", suit: "♦", type: "tactic" }];
     source.hand = [{ name: "虚拟杀扣置牌", suit: "♣", type: "tactic" }];
-    source.nanaliSealed = [];
+    source.storedCards = [];
     source.hp = 30;
     window.BattleSystem.damage(
       window.state,
@@ -79,14 +79,14 @@ test("Nanali skills resolve through the real battle system", async ({ page }) =>
     );
     const virtual = {
       targetHp: source.hp,
-      sealed: source.nanaliSealed?.length || 0,
+      sealed: source.storedCards?.length || 0,
       targetHand: source.hand.length,
     };
 
     battle.animQueue = [];
     nanali.hand = [{ name: "复仇费用计数", suit: "♦", type: "tactic" }];
     source.hand = [{ name: "复仇扣置牌", suit: "♣", type: "tactic" }];
-    source.nanaliSealed = [];
+    source.storedCards = [];
     source.hp = 30;
     ally.hp = 20;
     window.BattleSystem.damage(
@@ -118,7 +118,7 @@ test("Nanali skills resolve through the real battle system", async ({ page }) =>
         prompt: revengePrompt,
         allyHp: ally.hp,
         sourceHp: source.hp,
-        sealed: source.nanaliSealed?.length || 0,
+        sealed: source.storedCards?.length || 0,
         sourceHand: source.hand.length,
       },
     };
@@ -173,7 +173,7 @@ test("Abe Mike's Starlight Drawslash settles without a Nanali counter line", asy
         { name: "补牌演练", suit: "♦", type: "tactic" },
         { name: "保留手牌", suit: "♣", type: "tactic" },
       ],
-      discard: [], consumed: [], nanaliSealed: [],
+      discard: [], consumed: [], storedCards: [],
     });
     Object.assign(abe, {
       ref: "abe_mike", ai: "abe_mike", name: "鱼人武士安倍麦克",
@@ -230,12 +230,12 @@ test("Abe Mike's Starlight Drawslash settles without a Nanali counter line", asy
       sequence,
       nanaliHp: nanali.hp,
       abeHp: abe.hp,
-      sealed: abe.nanaliSealed?.length || 0,
+      sealed: abe.storedCards?.length || 0,
       abeHand: abe.hand.length,
       locked: battle.locked,
       pendingAnimations: battle.animQueue?.length || 0,
       pendingReactions: battle.reactionQueue?.length || 0,
-      returnedSealed: abe.nanaliSealed?.length || 0,
+      returnedSealed: abe.storedCards?.length || 0,
       returnedPending: abe.hand.some(card => card._pendingDraw),
       abeUid: abe.uid,
       activeUid: battle.activeUid,

@@ -16,6 +16,14 @@ const timeouts = Object.freeze({
   // 机尾机枪 × 半魅魔血：一次 boot 内跑挂起/解锁/续跑 + 机枪扫杀对照
   "test-tailgun-halfblood-continuation-live.js": 240,
   "test-nonlocked-transfer-skip-live.js": 240,
+  // 一次 boot 内跑 10 组挂起/确认发动场景，含饰品字幕与图标
+  "test-nonlocked-caption-live.js": 240,
+  // 角色牌存储牌：扣置/UI 徽章/回合结束返还/阵亡清理/旧档迁移，一次 boot 跑完
+  "test-character-card-storage-live.js": 240,
+  // 阿波罗实际效果深查：时停返还/几何/存档/连击/阵亡/复活，一次 boot
+  "test-apollo-storage-deep-live.js": 240,
+  // 阿波罗不同扣牌数：显示矩阵/真实 useCard/混合队列相对增量回归
+  "test-apollo-handcount-matrix-live.js": 240,
   "test-nonlocked-transfer-skip-clickable-live.js": 240,
   "test-chain-slash-dodge-live.js": 300,
   "test-reaction-queue-guards-live.js": 300,
@@ -679,6 +687,13 @@ const groups = Object.freeze({
     "check-split-283-browser.js",
     "check-nonlocked-skill-and-transfer-skip.js",
     "check-blue-skill-nonlocked-and-skip.js",
+    "check-nonlocked-prompt-caption.js",
+    "check-relic-skill-tags.js",
+    "check-character-card-storage.js",
+    "test-character-card-storage-live.js",
+    "test-apollo-storage-deep-live.js",
+    "test-apollo-handcount-matrix-live.js",
+    "test-nonlocked-caption-live.js",
     "check-ophelia-guard-optional.js",
     "test-ophelia-guard-skip-live.js",
     "test-ophelia-guard-front-single-live.js",
