@@ -24,6 +24,8 @@ const timeouts = Object.freeze({
   "test-apollo-storage-deep-live.js": 240,
   // 阿波罗不同扣牌数：显示矩阵/真实 useCard/混合队列相对增量回归
   "test-apollo-handcount-matrix-live.js": 240,
+  // 扣置飞牌背面朝上：1/2/3 张各播一次完整 sealCards 动画
+  "test-stored-card-face-live.js": 240,
   "test-nonlocked-transfer-skip-clickable-live.js": 240,
   "test-chain-slash-dodge-live.js": 300,
   "test-reaction-queue-guards-live.js": 300,
@@ -693,6 +695,8 @@ const groups = Object.freeze({
     "test-character-card-storage-live.js",
     "test-apollo-storage-deep-live.js",
     "test-apollo-handcount-matrix-live.js",
+    "check-stored-card-face.js",
+    "test-stored-card-face-live.js",
     "test-nonlocked-caption-live.js",
     "check-ophelia-guard-optional.js",
     "test-ophelia-guard-skip-live.js",

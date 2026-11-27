@@ -1,6 +1,6 @@
 // 「角色牌存储牌」机制护栏：装配、UI、动画、描述、vm 行为一次性拦全。
 // 正向：node tools/check-character-card-storage.js
-// 反向：REVERT=zone|return|death|ui|anim|legacy node tools/check-character-card-storage.js
+// 反向：REVERT=zone|return|death|ui|anim|legacy|timestop|once|handDelta|absCover|idempotent|face node tools/check-character-card-storage.js
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -44,6 +44,12 @@ const read = rel => {
   if (REVERT === "once" && rel === SRC + "battle-effect-card-motion.js") {
     t = t.replace("  async function placeStoredCards(options) {",
       "  async function placeStoredCards(options) {\n    await flyFrontCards({ ...options, className: \"seal-card-fly\" }); return;", 1);
+  }
+  if (REVERT === "face" && rel === SRC + "battle-effect-card-motion.js") {
+    // 还原本轮修复前的 BUG：正面飞牌 + 正面 DOM 残留牌名/卡图/效果文字
+    t = t.replace("const stack = window.BattleEffectCardDOM.back(",
+      "const stack = window.BattleEffectCardDOM.front(", 1);
+    t = t.replace('    stack.querySelector(".card-flight-front")?.replaceChildren();\n', "", 1);
   }
   if (REVERT === "handDelta" && rel === N) {
     t = t.replace(/\s*visualHandDelta: -cards\.length,/, "", 1);
@@ -144,10 +150,23 @@ check("A11", "存储牌返还在结束步骤之后无条件执行：时停清空
     > endPhase.indexOf("while (index < steps.length)"));
 const onceBody = motion.slice(motion.indexOf("async function placeStoredCards"));
 check("A12", "一次性放牌函数：1 个 DOM、1 次落位音效、不逐张飞、起点终点重合时抬起",
-  (onceBody.match(/BattleEffectCardDOM\.front\(/g) || []).length === 1
+  (onceBody.match(/BattleEffectCardDOM\.(front|back)\(/g) || []).length === 1
   && (onceBody.match(/cardLand\?\.\(\)/g) || []).length === 1
   && !/flyFrontCards\(|Promise\.all/.test(onceBody)
   && onceBody.includes("Math.hypot(end.x - start.x, end.y - start.y) < 24"));
+check("A16", "【BUG 修复】扣置飞牌背面朝上：back() + 清空正面 DOM + 牌背图 + 叠层也是牌背",
+  onceBody.includes("BattleEffectCardDOM.back(")
+  && onceBody.includes('stack.querySelector(".card-flight-front")?.replaceChildren();')
+  && !/BattleEffectCardDOM\.front\(/.test(onceBody)
+  && motionCss.includes(".card-flight.stored-card-place.is-back .card-flight-back")
+  && /\.card-flight-back \{[^}]*succubus-card-back/.test(motionCss)
+  && /\.stored-place-layer \{[^}]*succubus-card-back/.test(motionCss));
+check("A17", "扣置背面专项：静态护栏 + 实机 hook back + 记忆文件 + QA 登记齐备",
+  read("tools/qa-test-catalog.js").includes("test-stored-card-face-live.js")
+  && read("tools/test-character-card-storage-live.js").includes("const origBack")
+  && read("tools/test-stored-card-face-live.js").includes("cardFace")
+  && settings.includes("背面朝上")
+  && notice.includes("背面朝上"));
 const responseHandler = codeOnly(src("battle-effect-handlers.js"));
 check("A13", "【BUG 修复】sealCards 手牌数按相对增量推进，不再用绝对快照覆盖",
   nanali.includes("visualHandDelta: -cards.length")
@@ -282,7 +301,7 @@ if (!REVERT) {
 const EXPECT = {
   zone: ["A3", "A9"], return: ["B4"], death: ["B5"],
   ui: ["A7"], anim: ["A6"], legacy: ["B6"],
-  timestop: ["A11"], once: ["A12"],
+  timestop: ["A11"], once: ["A12"], face: ["A16"],
   handDelta: ["A13"], absCover: ["A13"], idempotent: ["A15"],
 }[REVERT] || [];
 const same = JSON.stringify(red) === JSON.stringify(EXPECT);

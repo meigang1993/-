@@ -101,26 +101,46 @@ const SNAP = (uid) => `(() => {
     await window.BattleEffects.whenIdle();
     window.state.battle.animQueue = [];
     const ev = window.__ccsSealEvent;
+    const origBack = window.BattleEffectCardDOM.back;
     const origFront = window.BattleEffectCardDOM.front;
     const origLand = window.BattleFX.cardLand;
-    let domCount = 0, landCount = 0, lastEl = null;
+    let domCount = 0, landCount = 0, frontCount = 0, lastEl = null;
+    let face = null, frontText = "", frontImgs = 0, backBg = "";
+    window.BattleEffectCardDOM.back = (...args) => {
+      const el = origBack(...args);
+      lastEl = el; domCount++;
+      face = el.dataset.cardFace;
+      // placeStoredCards 在 back() 返回后才同步清空正面侧，microtask 取样
+      // 才能验证「最终 DOM 没有牌名/卡图」，而不是创建瞬间的中间态。
+      queueMicrotask(() => {
+        const front = el.querySelector(".card-flight-front");
+        frontText = front ? front.textContent.trim() : "";
+        frontImgs = front ? front.querySelectorAll(".card-art img").length : 0;
+        const backSide = el.querySelector(".card-flight-back");
+        backBg = backSide ? getComputedStyle(backSide).backgroundImage : "";
+      });
+      return el;
+    };
     window.BattleEffectCardDOM.front = (...args) => {
-      lastEl = origFront(...args); domCount++; return lastEl;
+      frontCount++; return origFront(...args);
     };
     window.BattleFX.cardLand = (...args) => { landCount++; return origLand(...args); };
     const node = document.querySelector('[data-target="' + ev.uid + '"] .unit-art');
     const rect = node?.getBoundingClientRect();
     const end = rect ? { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 } : null;
     await window.BattleEffectHandlers.sealCards(ev, () => {}, () => true);
+    window.BattleEffectCardDOM.back = origBack;
     window.BattleEffectCardDOM.front = origFront;
     window.BattleFX.cardLand = origLand;
     const start = lastEl
       ? { x: parseFloat(lastEl.style.left), y: parseFloat(lastEl.style.top) } : null;
     return {
-      domCount, landCount,
+      domCount, landCount, frontCount, face, frontText, frontImgs, backBg,
       cls: lastEl?.className || "",
       badge: lastEl?.querySelector(".stored-place-count")?.textContent || "",
       layers: lastEl?.querySelectorAll(".stored-place-layer").length || 0,
+      layerBg: lastEl?.querySelector(".stored-place-layer")
+        ? getComputedStyle(lastEl.querySelector(".stored-place-layer")).backgroundImage : "",
       start, end,
       distance: start && end
         ? Math.round(Math.hypot(end.x - start.x, end.y - start.y)) : null,
@@ -132,6 +152,11 @@ const SNAP = (uid) => `(() => {
     && once.cls.includes("stored-card-place")
     && once.badge === "×2" && once.layers === 1
     && once.distance >= 24, once);
+  T("A3c 扣置飞牌背面朝上：cardFace=back / 正面侧无牌名与卡图 / 牌背图在位 / 未创建正面牌",
+    once.face === "back" && once.frontCount === 0
+    && once.frontText === "" && once.frontImgs === 0
+    && once.backBg.includes("succubus-card-back")
+    && once.cls.includes("is-back"), once);
   T("A4 战报写明「扣置于其角色牌上（存储牌）」",
     a.battleLog.some(t => t.includes("扣置于其角色牌上（存储牌）")), a.battleLog);
 

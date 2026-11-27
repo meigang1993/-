@@ -16,6 +16,8 @@
 .card-flight.seal-card-fly .card-flight-front { box-shadow: 0 0 22px rgba(205,112,255,.82); }
 /* 一次性放牌：整批存储牌叠成一摞，只飞一次、只落位一次 */
 .card-flight.stored-card-place { z-index: 46; }
-.stored-place-layer { position: absolute; inset: 0; z-index: -1; border: 2px solid rgba(140,205,255,.82); border-radius: 7px; background: rgba(18,10,34,.92); transform: translate(calc(var(--layer, 1) * -7px), calc(var(--layer, 1) * -7px)) rotate(calc(var(--layer, 1) * -4deg)); }
+/* 一次性放牌整批背面朝上：叠层同样是牌背，不能露出深色空白或正面图案 */
+.card-flight.stored-card-place.is-back .card-flight-back { border-color: rgba(205,112,255,.82); box-shadow: 0 0 22px rgba(205,112,255,.82), 0 10px 22px rgba(0,0,0,.4); }
+.stored-place-layer { position: absolute; inset: 0; z-index: -1; border: 2px solid rgba(140,205,255,.82); border-radius: 7px; background: url('./assets/generated/succubus-card-back.1fdff617.webp') center / cover no-repeat, rgba(18,10,34,.92); transform: translate(calc(var(--layer, 1) * -7px), calc(var(--layer, 1) * -7px)) rotate(calc(var(--layer, 1) * -4deg)); }
 .stored-place-count { position: absolute; right: -12px; top: -12px; z-index: 3; min-width: 26px; padding: 2px 5px; border-radius: 999px; background: rgba(140,205,255,.96); color: #062b45; font-size: 12px; font-weight: 900; font-style: normal; text-align: center; box-shadow: 0 0 12px rgba(140,205,255,.7); }
 .card-flight.trail-exit-fly .card-flight-front { box-shadow: 0 0 18px rgba(255,255,255,.45); }

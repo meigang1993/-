@@ -146,8 +146,12 @@ window.BattleEffectCardMotion = U => {
     if (!start || Math.hypot(end.x - start.x, end.y - start.y) < 24) {
       start = { x: Math.max(16, end.x - 36), y: Math.max(16, end.y - 170) };
     }
-    const stack = window.BattleEffectCardDOM.front(cards[0] || {}, enemy,
+    // 扣置于角色牌上的存储牌是「移出游戏」的牌，必须背面朝上：
+    // 此前误用 front(cards[0])，动画里露出第一张牌的牌名/卡图/效果文字。
+    // 改用 back() 翻到牌背，并清空正面侧 DOM，避免调试器/无 CSS 时泄露牌面。
+    const stack = window.BattleEffectCardDOM.back(cards[0] || {}, enemy,
       "seal-card-fly stored-card-place");
+    stack.querySelector(".card-flight-front")?.replaceChildren();
     window.BattleEffectAnimation.stampCssTiming(stack);
     stack.style.left = `${start.x}px`;
     stack.style.top = `${start.y}px`;
