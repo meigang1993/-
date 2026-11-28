@@ -9,10 +9,17 @@
 // 2026-11-25：应用户要求撤销 11-24 的曲线重平衡，八项数值全部还原为用户原稿。
 // 同批按用户新稿修正四个技能的公开描述，并登记每只怪的 aiLogic（AI 实现见 tenri-institute-ai.js）。
 // 立绘取自并行提交 fc8c935c 的「研究所怪物立绘与BGM压缩包」，按 ASCII 命名接入 publish。
-// 精英/首领怪尚未设计：dungeon-enemies.js 的 tenriEnemies 分支三型节点都从本表随机。
+// 2026-11-28：首个研究所精英【魔王军枪炮师杰明】已补，首领怪仍待设计。
+// 数值口径沿用本表：drawPerTurn / initialDraw 存加成值 N，引擎按 2+N / 4+N 结算，
+// 用户稿「每回合摸牌数4、初始摸牌数5」为实摸总量，故落库 2 / 1。
 window.GameDataTenriInstituteEnemies = [
   { id: "tenri_assault", name: "机械警卫突击队", type: "normal", role: "杀牌压制", gender: "male", face: "突", art: "./assets/tenri-enemies/assault-guard.d3589992.png", hp: 260, attack: 43, magic: 35, speed: 48, bloodlust: 2, handLimit: 4, drawPerTurn: 1, initialDraw: 1, evaluation: "手牌杀牌数压制的突击型怪物，靠不可响应与每多一张杀牌+100%伤害放大单体输出。", skills: [{ name: "不可挡突袭", type: "passive", icon: "⭐", text: "锁定技，当你使用实体单体【杀】指定目标时，若你手牌中的【杀】牌数量大于该目标角色，你使用的此【杀】不可响应。你的【杀】牌数每超过该目标角色1张，伤害+100%。" }], ai: "tenri_assault", aiLogic: "优先使用蓄力，随后集中使用【杀】牌攻击手牌数最少的敌方角色。" },
   { id: "tenri_guard", name: "机械警卫防爆队", type: "normal", role: "护驾转移", gender: "male", face: "防", art: "./assets/tenri-enemies/riot-guard.6a9e9f17.png", hp: 300, attack: 36, magic: 34, speed: 43, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 3, evaluation: "替同阵营脆弱单位承受单体杀的防御型怪物，转移目标后由自身吃下全部结算。", skills: [{ name: "守护后方", type: "passive", icon: "⭐", text: "锁定技，当我方其他角色成为单体【杀】牌的目标时，若该角色没有此技能，将此【杀】牌的目标转移给你。" }], ai: "tenri_guard", aiLogic: "正常使用卡牌，优先保留【闪】用于响应转移到自身的伤害。" },
   { id: "tenri_railgun", name: "清理机器人", type: "normal", role: "全体压制", gender: "male", face: "清", art: "./assets/tenri-enemies/cleaner-bot.1f1a9c45.png", hp: 220, attack: 44, magic: 40, speed: 50, bloodlust: 2, handLimit: 3, drawPerTurn: 3, initialDraw: 2, evaluation: "依靠全体类实体牌打面伤的高速清扫单位，全体牌不可响应且伤害翻倍。", skills: [{ name: "极速射线", type: "passive", icon: "⭐", text: "锁定技，你使用的全体类实体牌不可被响应，且造成的伤害翻倍。" }], ai: "tenri_railgun", aiLogic: "优先使用蓄力，随后优先使用【机枪扫杀】等全体攻击牌。" },
   { id: "tenri_ghoul", name: "无垢食尸鬼", type: "normal", role: "不死复生", gender: "female", face: "垢", art: "./assets/tenri-enemies/pure-ghoul.fdcf7936.png", hp: 200, attack: 50, magic: 47, speed: 53, bloodlust: 2, handLimit: 3, drawPerTurn: 1, initialDraw: 1, evaluation: "队友尚存即可于下个回合满血复生的不死单位，与不死食尸鬼共用待复活结算链。", skills: [{ name: "快速复生", type: "passive", icon: "⭐", text: "锁定技，当你死亡后，下一个回合开始时若我方其他角色存活，你复活并恢复所有生命值。" }], ai: "tenri_ghoul", aiLogic: "悍不畏死，优先使用高伤害的【杀】牌进行输出。" },
+  { id: "tenri_jamin", name: "魔王军枪炮师杰明", type: "elite", role: "蓄力导弹与卫星压制精英", gender: "male", face: "杰", art: "./assets/tenri-enemies/jamin.f2b22b35.png", bgm: "./assets/new-bgm/jamin.f6fc5ddd.ogg", hp: 700, attack: 53, magic: 50, speed: 46, bloodlust: 1, handLimit: 4, drawPerTurn: 2, initialDraw: 1, evaluation: "魔王军枪炮师，以杀牌叠加蓄力点、满点后发射离子导弹全体雷击并附感电；开场以卫星射线锁定最高生命值目标持续雷击，潜能爆发在手中有杀牌时补牌并重置淫气。", skills: [
+    { name: "潜能爆发", type: "active", icon: "⚔️", text: "出牌阶段限一次，若你手牌中有【杀】牌，你可以摸X张牌，然后重置你的淫气（X为你手牌中【杀】牌的数量）。" },
+    { name: "离子导弹", type: "active", icon: "⚔️", text: "蓄力技 0/4，每次你使用【杀】牌后，你获得1点蓄力点。当蓄力点达到4点时，你可以对所有敌方角色造成等同于你攻击力的雷属性伤害，并施加1枚感电标记。" },
+    { name: "卫星射线", type: "active", icon: "🔺", text: "限定技，出牌阶段，你可以指定敌方一名角色，对其施加“射线”标记。拥有“射线”标记的角色每回合受到等同于你攻击力的雷属性伤害。若该角色死亡，此标记自动转移至另一名存活的敌方角色。" },
+  ], ai: "tenri_jamin", aiLogic: "潜能爆发：淫气耗尽且手中有【杀】时发动；离子导弹：蓄力点满4立即发动；卫星射线：第一个出牌阶段优先对最高生命值敌方发动；常规出牌优先蓄力，随后集中打出【杀】牌。" },
 ];

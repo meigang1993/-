@@ -45,8 +45,8 @@
 | 10 | `研究所普通战斗_min.ogg` | 普通战斗 BGM | 150.99 s / 131 kbps | 2,473,000 B | `08eb5ef19dc736b2` |
 | 11 | `被合体的食尸鬼少女们.ogg` | 角色/BOSS 曲目（无 _min 后缀） | 110.24 s / 134 kbps | 1,850,335 B | `c9517ec8fb8573dd` |
 | 12 | `被合体的食尸鬼少女们.png` | 怪物立绘 | 1248x1248 | 472,361 B | `1a7ef5811f4d2a84` |
-| 13 | `魔王军枪炮师杰明.png` | 怪物立绘 | 1248x1248 | 412,365 B | `f2b22b3536dae129` |
-| 14 | `魔王军枪炮师杰明_min.ogg` | 角色/BOSS 战斗曲（_min） | 111.26 s / 109 kbps | 1,521,064 B | `f6fc5ddda721ec76` |
+| 13 | `魔王军枪炮师杰明.png` | 怪物立绘（**308 已接入** → `publish/assets/tenri-enemies/jamin.f2b22b35.png`） | 1248x1248 | 412,365 B | `f2b22b3536dae129` |
+| 14 | `魔王军枪炮师杰明_min.ogg` | 角色/BOSS 战斗曲（_min，**308 已接入** → `publish/assets/new-bgm/jamin.f6fc5ddd.ogg`） | 111.26 s / 109 kbps | 1,521,064 B | `f6fc5ddda721ec76` |
 
 完整 SHA256 见同目录 `研究所素材清单.csv`。
 
@@ -66,7 +66,7 @@
 | 远端 `天日国鹰7研究所.zip` | **保留**，未删除、未改名、未重新提交 |
 | 本地原包 | 保留在 `/data/workspace/研究所素材/天日国鹰7研究所.zip` |
 | 本地解压目录 | 保留在 `/data/workspace/研究所素材/天日国鹰7研究所/`，14 个文件均已校验可打开 |
-| 游戏仓库 `/data/workspace/repo` | **未改动**：素材没有复制进 `publish/`，没有登记资源引用，没有改源码/公告/版本，工作树仍干净 |
+| 游戏仓库 `/data/workspace/repo` | **308 更新（2026-11-28）**：仅上述第 13/14 两项（魔王军枪炮师杰明立绘与 BGM）按**纯字节复制**接入 `publish/`，SHA256 逐字节一致；未压缩、未转码、未裁 padding。其余 12 项仍未接入，原 ZIP 仍保留不改。 |
 | 提交 / 推送 / 出包 | **本轮均未执行**；`deliveries/` 仍是 260 版两个包 |
 
 > 接入前提醒：现有 `check:asset-budget` 报 critical 0.13 MiB / long audio 17.61 MiB / total 30.80 MiB / 254 files。这批素材含约 10.22 MiB 音频与 2.48 MiB 图片，接入 `publish/` 前需先确认音频预算上限、是否需要转码压缩，并同步 `data-resources` 引用登记；另外 `devLocked` 入口锁仍按既有口径保持「未开发完成」。

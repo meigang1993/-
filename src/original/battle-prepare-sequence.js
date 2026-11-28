@@ -29,6 +29,8 @@ window.BattlePrepareSequence = deps => {
       } else if (step === 1) {
         battle.prepareStep += 1;
         window.EnemySkills?.tickPoison?.(state, unit, combat.damage);
+        // 【魔王军枪炮师杰明】“射线”每回合雷伤 + 火龙火箭筒存储牌齐射。
+        window.TenriJaminSkills?.prepare?.(state, unit, combat.damage);
       } else if (step === 2) {
         battle.prepareStep += 1;
         if (window.EnemySkills?.prepare?.(state, unit, combat.damage, nextAnim) === false) return false;

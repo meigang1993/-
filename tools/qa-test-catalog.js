@@ -701,6 +701,9 @@ const groups = Object.freeze({
     "test-counterattack-triggers-live.js",
     "check-soul-blade-scythe.js",
     "test-soul-blade-scythe-live.js",
+    // 308 新精英【魔王军枪炮师杰明】：11 组 46 项 + 13 组 REVERT 反向 + 实机矩阵 19 项
+    "check-tenri-jamin-strict.js",
+    "test-tenri-jamin-live.js",
     "test-relic-nonlocked-skip-live.js",
     "test-character-card-storage-live.js",
     "test-apollo-storage-deep-live.js",

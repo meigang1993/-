@@ -45,7 +45,9 @@ window.GameUIBattleUnitStatus = (U) => {
       ? `<span class="status-icon seal-locked" title="封魔：本回合跳过摸牌阶段，且无法摸牌">魔</span>` : "";
     const freeze = unitData.frozenSlash
       ? `<span class="status-icon freeze-locked" title="冰冻：本回合无法使用【杀】牌">冻</span>` : "";
-    return `<div class="status-icons">${burning}${lock}${statuses}${paralysis}${stun}${seal}${freeze}</div>`;
+    // 【离子导弹】蓄力技计数器：未满置灰、满 4 点亮，图标上显示当前点数。
+    const charge = window.TenriJaminSkills?.chargeBadge?.(unitData, U) || "";
+    return `<div class="status-icons">${charge}${burning}${lock}${statuses}${paralysis}${stun}${seal}${freeze}</div>`;
   }
   return { statusIcons };
 };

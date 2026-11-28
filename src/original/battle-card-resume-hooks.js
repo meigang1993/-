@@ -2,6 +2,9 @@ window.BattleCardResumeHooks = (api, stateApi) => {
   const { deps, damage, allUnits } = api;
   const hooks = [
     state => window.EdisSkills?.flushCopies?.(state),
+    // 【魔王军枪炮师杰明】离子导弹蓄力：每次使用【杀】牌后 +1。
+    (state, actor, target, card) =>
+      window.TenriJaminSkills?.afterCardPlayed?.(state, actor, target, card),
     (state, actor, target, card) =>
       window.GuestCharacterSkills?.afterCardPlayed?.(
         state, actor, target, card, deps),

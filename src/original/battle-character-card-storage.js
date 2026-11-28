@@ -130,6 +130,8 @@ window.BattleCharacterCardStorage = (() => {
 
   return {
     ZONE, ensure, cardsOf, count, namesOf,
-    store, release, endTurn, discardForDead, clear,
+    // take 供 release:"manual" 的技能显式取出并自行结算（如【火龙火箭筒】准备阶段齐射）。
+    // 此前只在模块内部使用、没导出，导致外部可选链恒为 undefined、存储牌永不结算。
+    take, store, release, endTurn, discardForDead, clear,
   };
 })();

@@ -2,7 +2,7 @@
 // 只从 BattleAI.choose 的 characterMoves 最前面接管；返回 null 即交回既有默认 AI。
 // 不改其它副本任何 AI 分支，也不改战斗结算链。
 window.TenriInstituteAI = (() => {
-  const IDS = ["tenri_assault", "tenri_guard", "tenri_railgun", "tenri_ghoul"];
+  const IDS = ["tenri_assault", "tenri_guard", "tenri_railgun", "tenri_ghoul", "tenri_jamin"];
   const isAi = (u, ai) => u?.ai === ai || u?.id === ai;
   const isTenri = u => IDS.some(id => isAi(u, id));
   const H = () => window.BattleAIHelpers;
@@ -29,6 +29,10 @@ window.TenriInstituteAI = (() => {
   function aiMove(state, actor, team, foes, rawHand, canPlay, ctx) {
     if (!isTenri(actor) || !ctx || !H() || !U()) return null;
     const h = H(), u = U();
+    // 【魔王军枪炮师杰明】：卫星射线 / 离子导弹 / 潜能爆发 / 常规蓄力出杀，
+    // 决策集中在 TenriJaminSkills.aiMove，本文件只负责转发。
+    if (isAi(actor, "tenri_jamin"))
+      return window.TenriJaminSkills?.aiMove?.(state, actor, team, foes, rawHand, canPlay, ctx) || null;
     const hand = (rawHand || []).filter(c => c && !c._pendingDraw
       && canPlay(actor, c));
     const aliveFoes = h.alive(foes || []);

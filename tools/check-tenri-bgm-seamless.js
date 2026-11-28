@@ -119,7 +119,12 @@ check("D", "D2 播放器已升级 WebAudio 采样级循环（保留原生兜底�
   && /s\.loopStart = loopStart \|\| 0/.test(webaudioJs)
   && /s\.loopEnd = loopEnd != null/.test(webaudioJs)
   && /LOOPSTART/.test(metaJs) && /LOOPLENGTH/.test(metaJs));
-check("D", "D3 4 只怪数据表不覆盖 mission 曲目", !/bgm:\s*["']/.test(enemiesJs));
+// 4 只普通怪不覆盖 mission 曲目；正式精英【杰明】有自己的专属战斗曲，
+// 按「BGM 原样接入不压缩」口径纯字节复制，不参与 mission 无缝循环曲判据。
+const normalSeg = enemiesJs.slice(0, enemiesJs.indexOf("tenri_jamin"));
+check("D", "D3 4 只普通怪不覆盖 mission 曲目；精英专属曲原样接入不压缩",
+  !/bgm:\s*["']/.test(normalSeg)
+  && /bgm: "\.\/assets\/new-bgm\/jamin\.f6fc5ddd\.ogg"/.test(enemiesJs));
 check("D", "D4 battleTrack 有 mission.bgm 回落分支", /\|\| mission\?\.bgm/.test(bgmJs));
 check("D", "D5 数据表已进 bundle 清单",
   Object.values(bundles).flat().includes("data-tenri-institute-enemies.js"));

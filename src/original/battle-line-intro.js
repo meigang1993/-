@@ -19,6 +19,20 @@ window.BattleLineIntro = ({ showMany, showPages, lineOf, lineKeyOf, refsOf }) =>
     ];
   }
 
+  // 魔王军枪炮师杰明 × 安洁莉卡：复用伊迪斯/安洁莉卡的逐气泡交换触发逻辑。
+  // 同一时刻研究所精英与伊迪斯不会同场，故放在 edis 分支之后即可。
+  function jaminIntro(angelica, jamin) {
+    return [
+      { unit: jamin, text: "红发女，我记得你，那个变态女同，还欺负我母亲。" },
+      { unit: angelica, text: "老子已不是女同了，成双性恋了。你就是她儿子？怪不得那个小妮子不是处，独角兽一族是纯洁的，不会乱搞！" },
+      { unit: jamin, text: "我在母亲肚子里时候家族被天使军毁灭了，只有少数同族幸存了下来，包括我母亲，父亲没能活下来。" },
+      { unit: angelica, text: "怪不得在奴隶市场独角兽卖好几百万，在魔物猎人眼里你们独角兽就是黄金。" },
+      { unit: jamin, text: "你！！！淫秽的魅魔炸飞吧！" },
+      { unit: angelica, text: "小帅哥♥，有本事试试，若你输了，抓你回去做人才♥，正好我母亲又开了一家牛郎店。" },
+      { unit: jamin, text: "闭嘴！无耻魅魔，我要把你交给哥布林轮大米！" },
+    ];
+  }
+
   function risaElranaIntro(risa, elrana) {
     return [
       { unit: risa, text: "艾尔拉娜姐姐，终于又见到你了。跟吾辈走吧，吾辈想死你了，想再次吃你会再生的肉呀，还要和你磨豆腐。这次先放他一马。" },
@@ -68,6 +82,8 @@ window.BattleLineIntro = ({ showMany, showPages, lineOf, lineKeyOf, refsOf }) =>
     const risa = battle?.enemies?.find(enemy => enemy.id === "assassin_sakura_risa" && enemy.hp > 0);
     const besta = battle?.allies?.find(ally => ally.ref === "besta" && ally.hp > 0);
     const bakaar = battle?.enemies?.find(enemy => enemy.id === "demon_king_bakaar" && enemy.hp > 0);
+    const jamin = battle?.enemies?.find(enemy => enemy.ai === "tenri_jamin" && enemy.hp > 0);
+    if (angelica && jamin) return showExchange(state, jaminIntro(angelica, jamin));
     if (angelica && edis) return showExchange(state, edisIntro(angelica, edis));
     if (besta && bakaar) return showExchange(state, bakaarBestaIntro(bakaar, besta));
     if (elrana && risa) return showExchange(state, risaElranaIntro(risa, elrana));

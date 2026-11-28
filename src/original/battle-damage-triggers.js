@@ -45,6 +45,10 @@ window.BattleDamageTriggers = (api) => {
   // 曼妮的武器效果归属「曼妮本人」，只有她被时停才失效。
   const tsStoppedManny = (a, b) => [a, b].some(u => u && u.ref === "manny" && tsStopped(u));
   function afterDamage(state, actor, target, card, hpLoss, blockLoss, cardUser = actor) {
+    // 【魔王军枪炮师杰明】：⭐战地功勋击杀加成 + “射线”标记死亡转移。
+    // 放在最前面，避免被后面的锁魂镰刀 return 分支跳过。
+    window.TenriJaminSkills?.afterDamage?.(state, actor, target, card, hpLoss);
+    if (target?.hp <= 0) window.TenriJaminSkills?.transferRay?.(state, target);
     // directDamage 一并提供：电钻火花改为「追加多段伤害」而非增加结算次数，
     // 需要直接发伤害的接口。
     if (!tsStopped(actor) && !tsStopped(target))

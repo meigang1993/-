@@ -31,6 +31,15 @@ window.BattleCombatCardEffects = api => {
       specials.repeatTactic(state, actor, target, card);
       return true;
     }
+    // 【魔王军枪炮师杰明】：潜能爆发 / 离子导弹 / 卫星射线三张技能卡。
+    if (card.jaminPotential || card.jaminMissile || card.jaminSatellite)
+      return run(() => window.TenriJaminSkills?.useSkillCard?.(state, actor, target, card,
+        { deps, damage, useCard }), () => specials.repeatTactic(state, actor, target, card));
+    // 掉落战术牌【嘲讽】【支援】。
+    if (card.taunt) return run(() => window.TenriJaminSkills?.useTaunt?.(state, actor, target, { useCard }),
+      () => specials.repeatTactic(state, actor, target, card));
+    if (card.support) return run(() => window.TenriJaminSkills?.useSupport?.(state, actor, target, { card }),
+      () => specials.repeatTactic(state, actor, target, card));
     if (card.radar) return run(() => window.EnemySkills?.useRadar(state, actor, target), () => specials.repeatTactic(state, actor, target, card));
     if (card.poisonGrenade) return run(() => window.EnemySkills?.useGrenade(state, actor), () => specials.repeatTactic(state, actor, target, card));
     if (card.flashbang) return run(() => window.UnderwaterTrainSkills?.useFlashbang(state, actor));

@@ -214,8 +214,11 @@ check("G", "手册 MAX_LEVEL 动态跟随成长模块", (() => {
   vm.runInNewContext(source("butler-manual-progress.js"), sandbox, { filename: "butler-manual-progress.js" });
   return sandbox.window.ButlerManualProgress.MAX_LEVEL === P.maxLevel;
 })());
-check("G", "怪物池为 4 只研究所专属普通怪", GD.enemies.tenri_institute.length === 4
-  && GD.enemies.tenri_institute.every(e => String(e.id).startsWith("tenri_") && e.type === "normal")
+check("G", "怪物池为 4 只普通怪 + 1 精英（共 5 只研究所专属）",
+  GD.enemies.tenri_institute.length === 5
+  && GD.enemies.tenri_institute.every(e => String(e.id).startsWith("tenri_"))
+  && GD.enemies.tenri_institute.filter(e => e.type === "normal").length === 4
+  && GD.enemies.tenri_institute.some(e => e.id === "tenri_jamin" && e.type === "elite")
   && GD.enemies.tenri_institute !== window.GameDataRuinsSandCityEnemies);
 check("G", "占位期不进手册避免重名点亮", has("butler-manual-progress.js", "!m?.devLocked"));
 

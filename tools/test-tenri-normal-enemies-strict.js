@@ -53,7 +53,9 @@ window.GameRandom = {
   chance: () => false, value: () => 0.5, id: () => "id",
 };
 load("data-tenri-institute-enemies.js");
-const POOL = window.GameDataTenriInstituteEnemies;
+const ALL = window.GameDataTenriInstituteEnemies;
+// 本检查只针对 4 只普通怪；第 5 只精英【杰明】由 check-tenri-jamin-strict.js 覆盖。
+const POOL = ALL.filter(e => e?.type === "normal");
 window.GameData = {
   difficulties: { normal: { enemy: { normal: { hp: 100, power: 100, speed: 100 } } } },
   enemies: { tenri_institute: POOL },
@@ -244,12 +246,15 @@ const wiring = [
 wiring.forEach(([f, text], i) => check("G", `G${i + 1} ${f} 接线`, patched(f).includes(text)));
 const bundles = JSON.parse(anyRaw("tools/publish-bundles.json"));
 const all = Object.values(bundles).flat();
-check("G", "G9 bundle 清单含 6 个新模块 + 专属数据表",
+check("G", "G9 bundle 清单含 7 个研究所模块 + 4 个杰明模块 + 数据表",
   ["data-tenri-institute-enemies.js", "tenri-institute-common.js", "tenri-assault-skills.js",
     "tenri-guard-skills.js", "tenri-railgun-skills.js", "tenri-ghoul-revival.js",
-    "tenri-institute-skills.js"].every(f => all.includes(f)));
+    "tenri-institute-skills.js", "data-tenri-jamin-content.js",
+    "tenri-jamin-core.js", "tenri-jamin-combat.js",
+    "tenri-jamin-charge-icon.js", "tenri-jamin-skills.js"].every(f => all.includes(f)));
 check("G", "G10 公告写入本期怪物设计",
   patched("update-notice-recent.js").includes("【天日国鹰7研究所】怪物设计落地（4 只普通怪）"));
+// 全库统一「淫气」；用户稿「杀意」旧称已在落库时归一（含精英技能文案）。
 const OLD_TERM = ["杀", "意"].join("");
 check("G", "G11 新增文案无资源旧称字面", !(patched("data-tenri-institute-enemies.js")
   + patched("update-notice-recent.js")).includes(OLD_TERM));

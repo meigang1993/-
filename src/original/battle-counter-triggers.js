@@ -61,6 +61,8 @@ window.BattleCounterTriggers = (() => {
           "血色刺伞": () => window.SakuraRisaSkills?.resolveUmbrellaTrigger?.(state, source, api),
           // 兼容 290 前旧存档残留的「螺旋桨」面板；锁定技下不再新建。
           "螺旋桨": () => window.RuinsRelicEffects?.resolvePropeller?.(state, source),
+          // 🔵【火龙火箭筒】：结束阶段把所有【杀】置于角色牌上（存储牌）。
+          "火龙火箭筒": () => window.TenriJaminSkills?.resolveRocket?.(state, source),
         };
         const resolver = resolvers[prompt.skill];
         if (!resolver) {

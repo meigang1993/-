@@ -80,6 +80,12 @@ window.DungeonEnemyGroups = (() => {
   // rand(1,4) + pickRepeatable（同 id 最多 4 只）+ withLabels（ABCD 编号区分）。
   // 精英/首领节点按对应难度倍率缩放，但不会混入其它副本的怪物 id。
   function tenriEnemies(pool, diff, type, state) {
+    // 2026-11-28：首个研究所精英【魔王军枪炮师杰明】已补，精英节点固定取它
+    // （首领怪仍待设计，boss 节点继续沿用普通池随机）。
+    if (type === "elite") {
+      const elite = pool.filter(e => e.type === "elite");
+      if (elite.length) return withLabels([scaleEnemy(elite[0], diff, type)]);
+    }
     const count = rand(1, 4, state), picked = [], normalPool = pool.filter(e => e.type === "normal");
     for (let i = 0; i < count; i++) picked.push(pickRepeatable(normalPool, picked, state));
     return withLabels(picked.map(e => scaleEnemy(e, diff, type)));

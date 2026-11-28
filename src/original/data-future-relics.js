@@ -106,3 +106,5 @@ window.GameDataFutureRelics = {
   },
 };
 Object.assign(window.GameDataFutureRelics, window.GameDataRuinsContent?.relics || {});
+// 【魔王军枪炮师杰明】2 件掉落饰品（2026-11-28）。
+Object.assign(window.GameDataFutureRelics, window.GameDataTenriJaminContent?.relics || {});

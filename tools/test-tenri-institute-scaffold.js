@@ -73,9 +73,12 @@ const all = window.GameData.missions.filter(x => x.id === m.id);
 check("B", "聚合进 GameData.missions 且唯一", all.length === 1 && all[0] === m);
 check("B", "GameDataFutureDungeons 条件展开", window.GameDataFutureDungeons.includes(m));
 check("B", "敌人池已挂载且非空", Array.isArray(window.GameData.enemies[m.id]) && window.GameData.enemies[m.id].length > 0);
-check("B", "敌人池为 4 只研究所专属普通怪", window.GameData.enemies[m.id].length === 4
-  && window.GameData.enemies[m.id].every(e => String(e.id).startsWith("tenri_")));
-check("B", "精英/首领待设计：池内仅普通怪", window.GameData.enemies[m.id].every(e => e.type === "normal"));
+check("B", "敌人池为 4 只普通怪 + 1 精英（共 5 只研究所专属）",
+  window.GameData.enemies[m.id].length === 5
+  && window.GameData.enemies[m.id].every(e => String(e.id).startsWith("tenri_"))
+  && window.GameData.enemies[m.id].filter(e => e.type === "normal").length === 4
+  && window.GameData.enemies[m.id].some(e => e.id === "tenri_jamin" && e.type === "elite"));
+check("B", "首领待设计：池内无 boss 型怪", window.GameData.enemies[m.id].every(e => e.type !== "boss"));
 check("B", "解锁前置判定", T.unlockCastReady({ chars: [{ id: "preshi", locked: false }, { id: "mieryula", locked: false }] })
   && !T.unlockCastReady({ chars: [{ id: "preshi", locked: false }] }));
 

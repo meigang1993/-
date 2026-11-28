@@ -13,6 +13,7 @@
     "BountyLedger", "BountyRender", "BountyRewards", "BountySystem", "BountyTaskGenerator", "BountyTaskRepair", "CardUtils", "DungeonEnemyGroups", "DungeonEvents",
     "DungeonMap", "DungeonNodeRewards", "DungeonRender", "DungeonRewardCore", "DungeonRewardPayload", "DungeonRewards", "DungeonRunRewards", "DungeonSettlementActions", "DungeonSystem", "EdisSkills",
     "CarlosSkills", "ElranaAceNanaliSkills", "EnemyCombatHooks", "EnemyDamageHooks", "EnemyKillHooks", "EnemySkills", "EnemyStatusEffects", "EnemyTacticalSkills", "ExtraUnlockEvents", "FloraCarlosSkills", "FloraSkills", "FloraSpeedAssault", "GameAssets",
+    "TenriJaminCore", "TenriJaminCombat", "TenriJaminChargeIcon", "TenriJaminSkills", "GameDataTenriJaminContent",
     "AppActionGuard", "GameBGM", "BGMLoopMetadata", "BGMWebAudio", "GameBattleStyles", "GameConfirm", "GameData", "GameDataCards", "GameDataCharacters", "GameDataCharactersCore", "GameRandom", "GameSkinData",
     "GameDataBakarEnemy", "GameDataCharactersExtra", "GameDataFutureCharacters", "GameDataFutureDungeons", "GameDataFutureEnemies", "GameDataFutureOrcEnemies", "GameDataTenriInstitute", "GameDataTenriInstituteEnemies", "TenriInstituteUnlockEvents",
     "TenriInstituteCommon", "TenriInstituteSkills", "TenriAssaultSkills", "TenriGuardSkills",

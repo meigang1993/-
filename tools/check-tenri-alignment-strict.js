@@ -232,34 +232,37 @@ const setState = s => { window.state = s; };
   const data = patched("data-tenri-institute-enemies.js");
   const ids = [...data.matchAll(/id: "([^"]+)"/g)].map(m => m[1]);
   const expected = ["tenri_assault", "tenri_guard", "tenri_railgun", "tenri_ghoul"];
-  check("C", "C1 怪物池只有 4 只正式普通怪，无临时/占位 id、无其它副本 id",
-    expected.every(id => ids.includes(id)) && ids.length === 4
+  // 2026-11-28：补首个正式精英【魔王军枪炮师杰明】，池变为 4 普通 + 1 精英。
+  const ELITE = "tenri_jamin";
+  check("C", "C1 怪物池 4 只正式普通怪 + 1 精英，无临时/占位 id、无其它副本 id",
+    expected.every(id => ids.includes(id)) && ids.includes(ELITE) && ids.length === 5
+    && /id: "tenri_jamin"[^\n]*type: "elite"/.test(data)
     && !/临时|占位|placeholder|temporary/i.test(data),
     `ids=${ids.join(",")}`);
-  check("C", "C2 三型节点仍从普通池随机（临时顶替方案未移除，如实确认）",
+  check("C", "C2 普通/boss 节点仍从普通池随机；精英节点固定取正式精英（顶替方案已收敛）",
     /if \(run\.missionId === "tenri_institute"\) return tenriEnemies/.test(raw("dungeon-enemies.js"))
-    && /function tenriEnemies\(pool, diff, type, state\)[\s\S]{0,320}normalPool = pool\.filter\(e => e\.type === "normal"\)/.test(raw("dungeon-enemies.js"))
-    && !/type === "elite"[\s\S]{0,200}tenri/.test(raw("dungeon-enemies.js")));
+    && /function tenriEnemies\(pool, diff, type, state\)[\s\S]{0,420}normalPool = pool\.filter\(e => e\.type === "normal"\)/.test(raw("dungeon-enemies.js"))
+    && /if \(type === "elite"\)[\s\S]{0,200}pool\.filter\(e => e\.type === "elite"\)/.test(raw("dungeon-enemies.js")));
   check("C", "C3 不会混入新手保护固定怪或其它副本敌人 id",
     !/mechanical_goblin|skeleton_patrol|pursuer_edis|ruins|orc_dungeon/.test(
       raw("data-tenri-institute-enemies.js")));
-  check("C", "C4 临时顶替仍在：精英/首领节点不会产出空组（可正常通关）",
+  check("C", "C4 普通池随机仍在：普通/首领节点不会产出空组（可正常通关）",
     (() => {
       const f = raw("dungeon-enemies.js");
       const seg = f.slice(f.indexOf("function tenriEnemies"), f.indexOf("function ruinsEnemies"));
       return /rand\(1, 4, state\)/.test(seg) && /withLabels\(picked\.map/.test(seg)
         && /scaleEnemy\(e, diff, type\)/.test(seg);
     })());
-  check("C", "C5 接入的立绘正好 4 张；素材包里另外 4 张是未接入素材、不是怪物数据",
+  check("C", "C5 接入的立绘正好 5 张（4 普通 + 1 精英）；素材包里其余是未接入素材",
     (() => {
       const dir = path.join(ROOT, "publish/assets/tenri-enemies");
       const pngs = fs.existsSync(dir)
         ? fs.readdirSync(dir).filter(f => f.endsWith(".png")) : [];
-      return pngs.length === 4 && expected.every(id =>
+      return pngs.length === 5 && expected.concat(ELITE).every(id =>
         data.includes(`id: "${id}"`));
     })(), `pngs=${fs.existsSync(path.join(ROOT, "publish/assets/tenri-enemies"))
       ? fs.readdirSync(path.join(ROOT, "publish/assets/tenri-enemies")).filter(f => f.endsWith(".png")).length : 0}`);
-  check("C", "C6 入口仍按占位口径锁「未开发完成」（精英/首领待补）",
+  check("C", "C6 入口仍按占位口径锁「未开发完成」（首领待补）",
     /devLocked: true/.test(raw("data-tenri-institute.js"))
     && /devHint: "未开发完成"/.test(raw("data-tenri-institute.js")));
 }
@@ -276,10 +279,10 @@ const setState = s => { window.state = s; };
   check("D", "D2 两个伤害出口的归属校验仍在",
     /isAi\(actor, "tenri_assault"\)/.test(raw("tenri-assault-skills.js"))
     && /isAi\(actor, "tenri_railgun"\)/.test(railgun));
-  check("D", "D3 AI 模块与 4 条 aiLogic 仍接线、描述仍为新稿",
+  check("D", "D3 AI 模块与 5 条 aiLogic 仍接线、描述仍为新稿",
     /TenriInstituteAI\?\.aiMove/.test(raw("battle-ai.js"))
     && /TenriInstituteAI\?\.aiHand/.test(raw("battle-ai.js"))
-    && (raw("data-tenri-institute-enemies.js").match(/aiLogic: "/g) || []).length === 4
+    && (raw("data-tenri-institute-enemies.js").match(/aiLogic: "/g) || []).length === 5
     && /锁定技，当我方其他角色成为单体【杀】牌的目标时/.test(
       raw("data-tenri-institute-enemies.js")));
 }

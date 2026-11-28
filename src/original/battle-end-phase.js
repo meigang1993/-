@@ -17,6 +17,7 @@ window.BattleEndPhase = deps => {
       () => window.BertisGerlotSkills?.endTurn?.(state, unit),
       () => window.CharacterSkinFX?.endTurn?.(state, unit),
       () => window.EnemySkills?.endTurn?.(state, unit, draw, combat.damage),
+      () => { window.TenriJaminSkills?.endTurn?.(state, unit); return true; },
       () => window.UnderwaterTrainSkills?.endTurn?.(state, unit),
       () => window.ArtinaMariaSkills?.endTurn?.(state, unit),
       () => window.AbeKarunaDivaSkills?.endTurn?.(state, unit),

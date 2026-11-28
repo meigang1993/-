@@ -2,8 +2,9 @@
 // 复用既有副本范式：mission 由 data-future-dungeons.js 聚合进 GameData.missions，
 // 路线走 DungeonMap.fixedRandomLayers，敌人池走 GameData.enemies，经验走
 // CharacterProgression.dungeonExpMultiplier，金币走 GameEconomy.missionRewards。
-// 怪物表已定稿 4 只普通怪：data-tenri-institute-enemies.js；精英/首领待补，
-// dungeon-enemies.js 的 tenriEnemies 分支三型节点都从普通池随机。
+// 怪物表：4 只普通怪 + 首个精英【魔王军枪炮师杰明】（2026-11-28）。
+// 精英节点固定取杰明，首领怪仍待设计、boss 节点继续从普通池随机。
+// 入口 devLocked 仍为 true：按既有口径不解除，讨伐任务与管家手册在解锁后自动纳入。
 // 入口暂锁：devLocked 为 true 时大厅面板 / 客户端 / 本地核心 / 悬赏生成一律拒绝，
 // 提示「未开发完成」；剧情解锁只负责把 requiresFlag 置真，不改变入口状态。
 window.GameDataTenriInstitute = (() => {

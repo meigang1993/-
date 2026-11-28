@@ -57,8 +57,10 @@ const baseValue = baseBody ? vm.runInThisContext(`(${baseBody})`, { filename: "b
 // ---------- 数据表 ----------
 global.window = global;
 vm.runInThisContext(patched("data-tenri-institute-enemies.js"), { filename: "data-tenri-institute-enemies.js" });
-const POOL = window.GameDataTenriInstituteEnemies || [];
-const byId = Object.fromEntries(POOL.map(e => [e.id, e]));
+const ALL = window.GameDataTenriInstituteEnemies || [];
+// 4 只普通怪的加成值表；第 5 只精英【魔王军枪炮师杰明】另有专项检查。
+const POOL = ALL.filter(e => e?.type === "normal");
+const byId = Object.fromEntries(ALL.map(e => [e.id, e]));
 
 // 用户稿：id -> [每回合摸牌 N, 初始摸牌 N, 实摸每回合, 实摸开局]
 const SPEC = {
@@ -69,7 +71,10 @@ const SPEC = {
 };
 
 // A 字段口径
-check("A", "A1 恰好 4 只且 id 齐全", POOL.length === 4 && Object.keys(SPEC).every(id => !!byId[id]));
+check("A", "A1 恰好 4 只普通怪 + 1 精英且 id 齐全",
+  POOL.length === 4 && Object.keys(SPEC).every(id => !!byId[id])
+  && ALL.length === 5 && byId.tenri_jamin?.type === "elite"
+  && byId.tenri_jamin?.drawPerTurn === 2 && byId.tenri_jamin?.initialDraw === 1);
 for (const [id, [nTurn, nInitial]] of Object.entries(SPEC)) {
   const e = byId[id];
   check("A", `A2 ${id} 字段存加成值 N = ${nTurn}/${nInitial}`,

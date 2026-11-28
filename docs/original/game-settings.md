@@ -866,3 +866,16 @@ When a setting changes:
   version of the handoff documents.
 - Both sets document the same project but the `项目文档` set is more
   comprehensive and uses .txt format for DeepSeek compatibility.
+
+
+## Tenri Institute elite: 魔王军枪炮师杰明 / Demon Army Gunner Jamin (308, 2026-11-28)
+
+- Elite / male / 天日国鹰7研究所. Normal-tier base: attack 53, magic 50, speed 46, HP 700, bloodlust 1, hand limit 4, per-turn draw 2+2, initial draw 4+1 (stored as bonus values drawPerTurn:2 / initialDraw:1).
+- Portrait `jamin.f2b22b35.png` and theme `jamin.f6fc5ddd.ogg` copied byte-for-byte from the asset pack; the BGM is NOT re-compressed, transcoded, or padding-trimmed (SHA256 verified).
+- Opening line and the seven-line 安洁莉卡 special exchange reuse the 伊迪斯/安洁莉卡 sequential speaker-bubble flow (`BattleLineIntro.showExchange`).
+- ⚔️ 潜能爆发 (once per play phase): if you hold 【杀】 cards, draw X cards then reset bloodlust (X = number of 【杀】 in hand).
+- ⚔️ 离子导弹 (charge skill 0/4): each 【杀】 used grants 1 charge; at 4 charges deal attack-power lightning damage to all enemies and apply 1 感电 to each. Skill-bar icon is a magatama (勾玉): dimmed + disabled while below 4, lit + clickable at 4, showing N/4 on the icon. Charge itself is a virtual card, so it never triggers 额外结算-type amplification.
+- 🔺 卫星射线 (limited skill): mark one enemy with "射线"; that unit takes attack-power lightning damage each turn; on death the mark transfers to another living enemy. AI casts it on the highest-HP enemy in the first play phase.
+- Drops: 嘲讽 (tactic, 2000) and 支援 (tactic, 1400); 🔵 火龙火箭筒 (stores all 【杀】 on the character card via BattleCharacterCardStorage, release=manual; next prepare phase discards them and deals attack-power fire damage to all enemies; enemy AI only stores with >=3 【杀】) and ⭐ 战地功勋 (after an entity card kill, base attack and magic each +100% for this battle, stackable). Both relics carry the user-authored lore.
+- 讨伐任务 and 管家手册 are wired through eliteUnlocks / enemyRelics / enemiesOf(type=elite): auto-included when the dungeon's devLocked flag is lifted; the entrance stays locked with "未开发完成" per the existing placeholder policy.
+- Strict check: `tools/check-tenri-jamin-strict.js` (11 groups + REVERT reverse groups) and the live matrix; six pre-existing Tenri guards were synced to the "4 normal + 1 elite" pool.

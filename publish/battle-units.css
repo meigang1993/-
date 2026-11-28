@@ -118,3 +118,27 @@
 .unit-main .mark-badges > .green-hat-badge,
 .active-portrait-shell .mark-badges > .green-hat-badge { position: static; left: auto; right: auto; top: auto; bottom: auto; transform: none; max-width: 92px; }
 .active-portrait-shell .mark-badges > .green-hat-badge { font-size: 12px; }
+
+/* 【离子导弹】蓄力技图标：勾玉（magatama）造型 + N/4 计数。
+   未满 4 点置灰且 disabled，满 4 点亮发光、可点击态。*/
+.jamin-charge-skill {
+  display: inline-flex; align-items: center; gap: 3px; padding: 1px 5px 1px 2px;
+  border-radius: 9px; border: 1px solid #4a5568; background: #2d3748;
+  color: #a0aec0; font-size: 10px; line-height: 1.4; white-space: nowrap;
+  vertical-align: middle; cursor: default;
+}
+.jamin-charge-skill.dim { opacity: .5; filter: grayscale(1); }
+.jamin-charge-skill.ready {
+  opacity: 1; filter: none; border-color: #f6ad55; background: #744210;
+  color: #fbd38d; box-shadow: 0 0 7px rgba(246, 173, 85, .75); cursor: pointer;
+}
+.jamin-charge-art { position: relative; display: inline-flex; }
+.jamin-magatama { width: 16px; height: 16px; display: block; }
+.jamin-magatama-hole { fill: #1a202c; }
+.jamin-charge-skill.ready .jamin-magatama-hole { fill: #3b2606; }
+.jamin-charge-num {
+  position: absolute; inset: 0; display: flex; align-items: center;
+  justify-content: center; font-size: 8px; font-weight: 700;
+  color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000;
+}
+.jamin-charge-label { font-size: 10px; }
