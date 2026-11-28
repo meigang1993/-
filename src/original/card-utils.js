@@ -90,6 +90,14 @@ window.CardUtils = (() => {
   //                    必须照常可被【看破】/【后空翻】抵消，否则持有该饰品时对
   //                    响应牌近乎免疫 —— 抵消第一次后额外结算必定生效。
   const isCounterableTactic = card => !!(card?.type === "tactic" && !card.ignoreResponse && (!card._skill || card.virtual || card.convertedFrom || card._repeat));
+  // 【锁魂镰刀】触发源判据（单一真相源）：实体单体【杀】（含 convertAs 转换杀）触发；
+  // 技能生成的虚拟【杀】不触发。唯一例外是【追魂之刃】重放的杀——它**不是额外结算**，
+  // 而是原实体【杀】的再次使用（内部带 virtual 只为跳过手牌移动、并避免触发
+  // 「额外结算」类技能如伊迪斯电锯剑 / 终极刀魔 / 三头齐攻），造成伤害时按
+  // 实体单体【杀】口径触发锁魂镰刀。判据集中在此，避免各调用点漂移。
+  const isSoulScytheTriggerCard = card =>
+    isEntitySingleKill(card)
+    || (!!card?._soulBladeRepeat && isSingleKillCard(card));
   // 出牌文案口径：只有技能才是「发动」，战术牌与实体牌一律「使用」。
   // （响应 AOE/决斗打出的牌才记「打出」，由响应链显式标注，不在此处判定。）
   // 此前战术牌被误归入「发动」，且出牌区/战报两处各写一份导致口径分叉，
@@ -148,7 +156,7 @@ window.CardUtils = (() => {
     revertConvertedCopy,
     isKillCard, isEntityKillCard, isEntityCard, isEntityOrVirtualCard, isGroupTargetCard, isSingleTargetCard,
     targetScope, isGroupKillCard, isSingleKill, isPhysicalSingleKill,
-    isEntitySingleKill, isPlainSlash,
+    isEntitySingleKill, isPlainSlash, isSoulScytheTriggerCard,
     isSingleKillCard, isCounterableTactic, canRespondTo, generatedSource,
     isSkillPlay, playVerb,
     canMagicBulletDisplay, magicBulletCards, battleView, damageStatKey,

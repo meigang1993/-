@@ -26,7 +26,9 @@ window.BattleDamageTriggers = (api) => {
       skipMvpCardCount: true,
     });
     window.CharacterSkinFX?.soulBlade?.(state, actor, target);
-    window.BattleLog.add(state, `${actor.name} 触发追魂之刃，额外再次使用${repeatedCard.name}。`);
+    // 追魂之刃不是「额外结算」：这是原实体【杀】的再次使用，重放牌仍带 virtual
+    // 只为跳过手牌移动、避免触发额外结算类技能；伤害后按实体单体杀口径触发锁魂镰刀。
+    window.BattleLog.add(state, `${actor.name} 触发追魂之刃，再次使用${repeatedCard.name}。`);
     window.BattleLines?.skill(state, actor, "追魂之刃");
     damage.useCard(state, actor, target, replay);
   }
@@ -90,9 +92,11 @@ window.BattleDamageTriggers = (api) => {
     // 时整条链不执行，额外目标会全部丢失。现改由 battle-damage.js 的伤害出口统一触发。
     window.BertisGerlotSkills?.refreshArrogance?.(state);
     window.BertisGerlotSkills?.afterAnyDeath?.(state);
-    // 锁魂镰刀仅由实体单体【杀】触发：技能生成的虚拟【杀】不触发。
+    // 锁魂镰刀由「实体单体【杀】造成生命伤害」触发：技能生成的虚拟【杀】不触发。
     // 转换杀由手牌实体牌转换而来（convertedFrom，非 virtual），仍算实体牌。
-    if (!hpLoss || !window.CardUtils?.isEntitySingleKill?.(card)
+    // 【追魂之刃】重放的杀不是额外结算，是原实体【杀】的再次使用，按同一口径放行；
+    // 判据集中在 CardUtils.isSoulScytheTriggerCard（单一真相源）。
+    if (!hpLoss || !window.CardUtils?.isSoulScytheTriggerCard?.(card)
       || card.soulScythe || !ctx.hasSkill(actor, "锁魂镰刀")) return;
     triggerSoulScythe(state, actor);
   }

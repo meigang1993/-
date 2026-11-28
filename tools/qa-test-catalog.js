@@ -699,6 +699,8 @@ const groups = Object.freeze({
     "check-relic-nonlocked-skip.js",
     "check-counterattack-triggers.js",
     "test-counterattack-triggers-live.js",
+    "check-soul-blade-scythe.js",
+    "test-soul-blade-scythe-live.js",
     "test-relic-nonlocked-skip-live.js",
     "test-character-card-storage-live.js",
     "test-apollo-storage-deep-live.js",
