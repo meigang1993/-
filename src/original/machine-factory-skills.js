@@ -87,8 +87,11 @@ window.MachineFactorySkills = deps => {
   }
   // 参数名用 damageCard：函数体内已有 const { card } = drawJudge(...)，重名会解析报错。
   function afterDamage(state, actor, target, hpLoss, damage, damageCard = null) {
+    // 反击类统一口径：只有实体杀或虚拟杀造成的伤害才触发电磁反制装置；
+    // 战术牌 / 技能伤害 / 燃烧毒感电等状态 DOT 一律不反制。
     if (!hpLoss || target.ai !== "mechanical_bull_king" || !target.annihilationMode
-      || hpPct(target) >= .6 || actor?.hp <= 0 || actor.uid === target.uid) return;
+      || hpPct(target) >= .6 || actor?.hp <= 0 || actor.uid === target.uid
+      || !window.BattleCounterattackRules?.isTriggerCard?.(damageCard)) return;
     window.BattleLines?.skill(state, target, "电磁反制装置");
     const { card, success } = drawJudge(state.battle, target, "电磁反制装置", black);
     window.BattleLog.add(state, `${target.name} 电磁反制判定：${card.suit}${card.name}，${success ? "反制成功" : "未触发"}。`);

@@ -21,6 +21,10 @@ window.SakuraRisaCombatSkills = ({
       window.BattleLog.add(state, `${actor.name} 使用响应牌触发轻身飞翼，${window.BattleDrawFeedback.action(actor, 1, drawn)}。`);
     }
     if (actor.hp <= 0 || !hasRelic(state, actor, "血色刺伞")) return;
+    // 反击类统一口径（306）：只有「响应实体杀或虚拟杀」而使用/打出响应牌时才能发动。
+    // 响应战术牌（看破 / 后空翻 / 佯攻 / 无谋冲拳等）或威胁牌不明时不触发。
+    const threat = api?.triggerCard || api?.responseTo || api?.threatCard || api?.effectiveCard;
+    if (!window.BattleCounterattackRules?.isTriggerCard?.(threat)) return;
     if (window.BattleCounterTriggers?.open(state, {
       skill: "血色刺伞", unitUid: actor.uid, sourceUid: actor.uid, targetUid: actor.uid,
     })) return;

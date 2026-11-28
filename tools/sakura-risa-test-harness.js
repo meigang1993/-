@@ -14,7 +14,7 @@ load("battle-cards-system.js");
 window.BattleSystem = { pushFloat() {} };
 
 [
-  "economy-config.js", "data-cards.js", "card-utils.js", "card-ownership.js",
+  "economy-config.js", "data-cards.js", "card-utils.js", "battle-counterattack-rules.js", "card-ownership.js",
   "data-future-orc-enemies.js", "data-bakar-enemy.js", "data-future-enemies.js",
   "data-orc-bondi.js", "data-guard-kelly.js", "data-sakura-risa.js",
   "data-machine-factory-enemies.js", "data-underwater-train-enemies.js",

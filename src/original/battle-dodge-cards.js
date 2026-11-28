@@ -63,7 +63,7 @@ window.BattleDodgeCards = ({ deps, ctx, canDodge }) => {
         state.battle, target, source, cut ? "consumed" : "discard",
         { skipAnim: true });
       window.NonokaLokiSkills?.afterCardResponded?.(
-        state, target, actor, played[cardIndex], deps);
+        state, target, actor, played[cardIndex], { ...deps, responseTo: threat });
     });
     // 地雷描述限定「使用或打出响应牌」：响应 AOE 打出的是【杀】，
     // 属打出但非响应牌，不触发地雷（与决斗同等口径）。

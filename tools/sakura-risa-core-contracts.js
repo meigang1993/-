@@ -73,17 +73,21 @@ function runSakuraRisaCoreContracts() {
   umbrellaUses += 1;
   assert(card.virtual && card.name === "机枪扫杀" && card.forceAutoResponse, "Blood Umbrella must use a guarded virtual sweep");
   const responder = actor.uid === risa.uid ? target : risa;
-  SakuraRisaSkills.afterResponse(current, responder, { name: "递归响应", type: "response" }, { draw, useCard });
+  SakuraRisaSkills.afterResponse(current, responder, { name: "递归响应", type: "response" },
+    { draw, useCard, responseTo: umbrellaThreat });
   };
-  SakuraRisaSkills.afterResponse(state, risa, { name: "看破", type: "response" }, { draw, useCard });
+  const umbrellaThreat = { name: "杀（普攻）", type: "slash" };
+  SakuraRisaSkills.afterResponse(state, risa, { name: "看破", type: "response" },
+    { draw, useCard, responseTo: umbrellaThreat });
   assert(umbrellaUses === 2, "Blood Umbrella should allow another holder once while blocking same-holder recursion");
   assert(!state.battle.risaUmbrellaResolvingUids, "Blood Umbrella recursion guard must clean up after resolution");
   target.battleRelics = [];
-  SakuraRisaSkills.afterResponse(state, target, { name: "闪", type: "response" }, { draw, useCard });
+  SakuraRisaSkills.afterResponse(state, target, { name: "闪", type: "response" },
+    { draw, useCard, responseTo: umbrellaThreat });
   assert(!state.battle.risaUmbrellaResolvingUids, "Responses without Blood Umbrella must not leave recursion state");
   let umbrellaThrew = false;
   try {
-  SakuraRisaSkills.afterResponse(state, risa, { name: "闪", type: "response" }, { draw, useCard() { throw new Error("controlled umbrella failure"); } });
+  SakuraRisaSkills.afterResponse(state, risa, { name: "闪", type: "response" }, { draw, responseTo: umbrellaThreat, useCard() { throw new Error("controlled umbrella failure"); } });
   } catch (error) {
   umbrellaThrew = error.message === "controlled umbrella failure";
   }

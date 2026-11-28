@@ -6,7 +6,7 @@ window.BattleDamageTriggers = (api) => {
     if (!tsStopped(actor) && !tsStopped(target))
     window.WithererSkills?.afterDodged?.(state, actor, target, card);
     if (!tsStopped(target))
-    window.ElranaAceNanaliSkills?.afterResponse?.(state, target, actor, { damage });
+    window.ElranaAceNanaliSkills?.afterResponse?.(state, target, actor, { damage, triggerCard: card });
     window.BertisGerlotSkills?.afterDodge?.(state, actor, target, card, { damage });
     window.GuestCharacterSkills?.afterDodge?.(state, actor, target, card, { damage });
     if (!tsStopped(actor) && !tsStopped(target))

@@ -8,6 +8,7 @@ require("../src/original/battle-pile-stats.js");
 require("../src/original/gaianis-amulet-skills.js");
 require("../src/original/holy-eagle-sword-skills.js");
 require("../src/original/battle-cards-system.js");
+require("../src/original/battle-counterattack-rules.js");
 require("../src/original/data-future-relics.js");
 require("../src/original/data-relics.js");
 require("../src/original/relics.js");

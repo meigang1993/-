@@ -62,7 +62,7 @@ window.GuestOpheliaGuard = (deps) => {
         action: `${guardVerb}了`,
       }, visualHandBefore, window.BattleCards.visibleHandCount(guard));
       window.NonokaLokiSkills?.afterCardResponded?.(
-        state, guard, actor, dodge[0], api);
+        state, guard, actor, dodge[0], { ...api, responseTo: card });
       api.afterDodged?.(state, actor, guard, card);
       window.BattleLog.add(
         state, `${guard.name} 为${target.name}护驾，${guardVerb}`

@@ -1,6 +1,7 @@
 window.UnderwaterTrainTargetCounters = ({ stat }) => {
   function swordShieldCounter(state, mona, source, incoming) {
-    if (!window.CardUtils.isEntitySingleKill(incoming)) return;
+    // 反击类统一口径：实体杀或虚拟杀（单体）都能触发；此前只认实体单体杀。
+    if (!window.BattleCounterattackRules?.isSingleTriggerCard?.(incoming)) return;
     const drawn = window.BattleSystem?.draw?.(mona, 2, state.battle) || [];
     window.BattleLines?.skill(state, mona, "剑盾反攻", source);
     window.BattleLog.add(state, `${mona.name} 触发剑盾反攻，${window.BattleDrawFeedback.action(mona, 2, drawn)}。`);
@@ -10,7 +11,7 @@ window.UnderwaterTrainTargetCounters = ({ stat }) => {
     mona.hand.splice(mona.hand.indexOf(slash), 1);
     window.BattleCards?.put(state.battle, mona, slash, "discard", { skipAnim: true });
     const counterCard = {
-      ...slash, virtual: true, holy: true, twoDodgesRequired: true,
+      ...slash, virtual: true, holy: true, twoDodgesRequired: true, counterattack: true,
     };
     state.battle.animQueue?.push({
       type: "virtualPlay",

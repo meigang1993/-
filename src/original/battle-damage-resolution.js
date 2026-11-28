@@ -109,7 +109,7 @@ window.BattleDamageResolution = ({
         && (!needTwoDodges || wingPool >= 2)) {
         response = window.FloraCarlosSkills?.dodgeAsFlash?.(
           state, target, actor, effectiveCard,
-          { ...deps, afterCardResponded: window.NonokaLokiSkills?.afterCardResponded },
+          { ...deps, responseTo: effectiveCard, afterCardResponded: window.NonokaLokiSkills?.afterCardResponded },
           [], wingCanUse);
       }
       if (response && response.name !== "闪"

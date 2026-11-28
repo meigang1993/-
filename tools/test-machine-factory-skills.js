@@ -9,6 +9,12 @@ global.CardUtils = {
   fromEntity: (name, extra) => ({ name, virtual: true, ...extra }),
   isSingleKill: card => card?.type === "slash"
     && !card.targetless && !card.sweep && !card.allTargets && !card.aoeLineShown,
+  isKillCard: card => card?.type === "slash",
+  isSingleTargetCard: card => !!card && !card.targetless
+    && !card.sweep && !card.allTargets && !card.aoeLineShown,
+  isEntityOrVirtualCard: card => !!card && (!!card.virtual
+    || (card.type !== "skill" && !card.generatedBySkill && !card.virtual
+      && (!card._skill || !!card._entityConversion))),
 };
 window.BattleLog = { add: (_state, message) => logs.push(message) };
 window.BattleLines = { skill() {} };
@@ -20,6 +26,7 @@ window.BattleCards = {
 
 require("../src/original/battle-pile-stats.js");
 require("../src/original/battle-draw-feedback.js");
+require("../src/original/battle-counterattack-rules.js");
 require("../src/original/machine-factory-skills.js");
 require("../src/original/hp-value.js");
 require("../src/original/enemy-status-effects.js");
@@ -132,7 +139,11 @@ skills.endTurn(bull);
 assert(!bull.hammerUsed, "hammer limit should reset at turn end");
 
 bull.hp = 59;
-skills.afterDamage(state, ally, bull, 1, damage);
+// 306 口径：电磁反制只由实体杀或虚拟杀触发，战术牌 / 技能伤害不反制。
+const beforeNonKill = damageCalls.length;
+skills.afterDamage(state, ally, bull, 1, damage, { name: "燃烧", type: "skill" });
+assert(damageCalls.length === beforeNonKill, "electromagnetic counter must ignore skill damage");
+skills.afterDamage(state, ally, bull, 1, damage, { name: "杀（普攻）", type: "slash" });
 const counter = damageCalls.at(-1);
 assert(counter[1] === ally && counter[2] === 8, "electromagnetic counter should hit the damage source");
 assert(counter[5].shock && counter[5].skipDamageModify, "counter should apply shock without damage modifiers");
@@ -191,11 +202,15 @@ const chiyoCard = { name: "杀（普攻）", type: "slash" };
 const chiyoState = { battle: { allies: [chiyo], enemies: [chiyoTarget], animQueue: [] } };
 const chiyoLogStart = logs.length;
 window.EnemySkills.beforeKillTargeted(chiyoState, chiyo, chiyoTarget, chiyoCard);
-assert(chiyoCard.ignoreResponse, "playable Chiyo should retain Heart-sealing Slash");
-assert(chiyoCard.gatlingRepeats === 10, "Red Cherry Chain Slash must continue beyond eight red judgements until black");
 const chiyoLogs = logs.slice(chiyoLogStart);
-assert(chiyoLogs.some(line => line.includes("本次杀额外结算9次")),
-  "Red Cherry Chain Slash must describe repeated hits as extra settlements");
+assert(chiyoCard.ignoreResponse, "playable Chiyo should retain Heart-sealing Slash");
+// 产品文案早已从「额外结算N次」改为「额外使用N张虚拟【杀（普攻）】」，
+// 旧断言仍检查已移除的 gatlingRepeats 字段，属历史 fixture 漂移（306 轮同步）。
+assert(chiyoLogs.filter(line => line.includes("继续。")).length === 9
+  && chiyoLogs.some(line => line.includes("停止。")),
+  "Red Cherry Chain Slash must continue beyond eight red judgements until black");
+assert(chiyoLogs.some(line => line.includes("额外使用9张虚拟")),
+  "Red Cherry Chain Slash must describe repeated hits as virtual kills");
 assert(!chiyoLogs.some(line => line.includes("虚拟攻击")),
   "Red Cherry Chain Slash must not mislabel same-card settlements as virtual attacks");
 chiyo.deck = [{ suit: "♠", name: "群体黑色判定" }, { suit: "♥", name: "群体红色判定" }];

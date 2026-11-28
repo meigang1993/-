@@ -135,7 +135,10 @@ window.MannySkills = (() => {
         || window.BattleDamageLifecycle?.delayUntilHitSettled?.(state, spike))) spike();
     }
     // 逐段结算：多段/连击的每一段各自触发一次反击。
-    if (target?.ref === "manny" && target.hp > 0 && target.mannyWeapon === "ak47" && actor?.hp > 0 && !card?.mannyCounter) {
+    // 反击类统一口径：只有实体杀或虚拟杀（单体）才能触发刺刀AK47；
+    // 此前任意 hpLoss（含战术牌 / 技能伤害 / 状态 DOT）都会反击。
+    if (target?.ref === "manny" && target.hp > 0 && target.mannyWeapon === "ak47" && actor?.hp > 0
+      && !card?.mannyCounter && window.BattleCounterattackRules?.isSingleTriggerCard?.(card)) {
       if (window.BattleCounterTriggers?.open(state, {
         skill: "刺刀AK47", unitUid: target.uid, sourceUid: actor.uid, targetUid: actor.uid,
       })) return;
@@ -145,7 +148,7 @@ window.MannySkills = (() => {
   function resolveCounterTrigger(state, target, actor, api) {
     window.BattleLines?.skill(state, target, "刺刀AK47");
     window.MannyGunSkinFX?.weaponAttack?.(state, target, actor, "ak47");
-    const counter = virtualCard("杀（普攻）", { mannyCounter: true });
+    const counter = virtualCard("杀（普攻）", { mannyCounter: true, counterattack: true });
     if (window.MannyGunSkinFX?.active?.(target)) {
       counter._playedFlightDone = true;
       counter._playedTargetUid = actor.uid;

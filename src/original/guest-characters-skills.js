@@ -111,7 +111,9 @@ window.GuestCharacterSkills = (() => {
     });
   }
   function afterDodge(state, actor, target, card, api) {
-    if (target?.ref !== "besta" || !alive(target)) return;
+    // 反击类统一口径：抵消的必须是实体杀或虚拟杀。
+    if (target?.ref !== "besta" || !alive(target)
+      || !window.BattleCounterattackRules?.isTriggerCard?.(card)) return;
     const count = visible(target).filter(item => black(item) && isSlash(item)).length, foes = state.battle.enemies.filter(alive); if (!count || !foes.length) return;
     if (window.BattleCounterTriggers?.open(state, {
       skill: "终焉回旋斩", unitUid: target.uid, sourceUid: actor.uid,

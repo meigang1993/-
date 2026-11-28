@@ -30,7 +30,7 @@ window.BattleCardCounterInteractions = (deps, ctx, helpers) => {
         { ...deps, useCard: ctx.useCard }
       ) ?? true;
       window.ElranaAceNanaliSkills?.afterResponse?.(
-        state, unit, actor, { damage: ctx.damage });
+        state, unit, actor, { damage: ctx.damage, triggerCard: card });
       if (cancelled) {
         window.BattleStatusCards?.triggerLandmine?.(state, unit);
         return true;
@@ -73,7 +73,7 @@ window.BattleCardCounterInteractions = (deps, ctx, helpers) => {
     }
     if (target?.uid === unit.uid) {
       window.ElranaAceNanaliSkills?.afterResponse?.(
-        state, unit, actor, { damage: ctx.damage });
+        state, unit, actor, { damage: ctx.damage, triggerCard: card });
     }
     return true;
   }

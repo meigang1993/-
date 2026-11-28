@@ -31,6 +31,7 @@ contract("血色刺伞", () => {
   const state = stateOf([holder], [enemy]);
   const used = [];
   SakuraRisaSkills.afterResponse(state, holder, { name: "闪", type: "response" }, {
+    responseTo: { name: "杀（普攻）", type: "slash" },
     useCard(_state, actor, target, usedCard) { used.push({ actor, target, card: usedCard }); },
   });
   assert.strictEqual(used.length, 1);

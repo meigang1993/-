@@ -14,7 +14,7 @@ window.GameDataCharactersExtra = [
     stats: { attack: 10, magic: 5, speed: 13, maxHp: 118, bloodlust: 2, handLimit: 4, drawPerTurn: 3, initialDraw: 2 },
     evaluation: "杀牌反击与判定爆发输出。复仇反击围绕自己和贝尔蒂丝遭受的单体杀牌展开反攻，爆头一击通过同色判定翻倍伤害，疯狂屠戮提供一次群体爆发。",
     skills: [
-      { name: "复仇反击", type: "trigger", icon: "🔵", text: "非锁定技，当你成为实体单体【杀】的目标并使用【闪】后，你可以视为对伤害来源使用1张虚拟【杀（普攻）】；贝尔蒂丝以此法使用【闪】后也可以发动此效果。若贝尔蒂丝受到实体单体【杀】造成的伤害，你可以视为对伤害来源使用2张虚拟【杀（普攻）】。" },
+      { name: "复仇反击", type: "trigger", icon: "🔵", text: "非锁定技，当你成为单体【杀】（实体或虚拟）的目标并使用【闪】后，你可以视为对伤害来源使用1张虚拟【杀（普攻）】；贝尔蒂丝以此法使用【闪】后也可以发动此效果。若贝尔蒂丝受到单体【杀】（实体或虚拟）造成的伤害，你可以视为对伤害来源使用2张虚拟【杀（普攻）】。" },
       { name: "爆头一击", type: "passive", icon: "⭐", text: "锁定技，当你使用的【杀】未被【闪】抵消且即将造成伤害时，进行判定。若此【杀】与判定牌颜色相同，此伤害变为2倍。" },
       { name: "疯狂屠戮", type: "active", icon: "🔺", text: "限定技，出牌阶段，你视为使用X张虚拟【机枪扫杀】（X为你本场战斗已经行动过的回合数，至少为1）。", card: { name: "疯狂屠戮", type: "tactic", crazySlaughter: true, targetless: true, icon: "🔺", text: "视为使用等同于本场已行动回合数的虚拟【机枪扫杀】，至少使用1张。" } }
     ]
@@ -106,7 +106,7 @@ window.GameDataCharactersExtra = [
     skills: [
       { name: "终焉鬼影斩", type: "active", icon: "⚔️", text: "出牌阶段限一次，你可以依次将所有黑色手牌当【魔杀】使用，随机指定敌方角色为目标；这些【魔杀】不消耗淫气。", card: { name: "终焉鬼影斩", type: "tactic", targetless: true, bestaEndSlash: true, icon: "⚔️", text: "依次将所有黑色手牌当不消耗淫气的【魔杀】使用，并随机指定敌方目标。" } },
       { name: "黑暗之力", type: "passive", icon: "⭐", text: "锁定技，你的黑色牌不计入手牌上限。你使用的黑色且以攻击力结算的【杀】附加暗属性，并改为以魔力结算。" },
-      { name: "终焉回旋斩", type: "trigger", icon: "🔵", text: "非锁定技，当你使用【闪】抵消【杀】后，你可以视为使用X张指定所有敌方角色为目标的虚拟【魔杀】（X为你手牌中的黑色【杀】数量）。" }
+      { name: "终焉回旋斩", type: "trigger", icon: "🔵", text: "非锁定技，当你使用【闪】抵消实体或虚拟【杀】后，你可以视为使用X张指定所有敌方角色为目标的虚拟【魔杀】（X为你手牌中的黑色【杀】数量）。" }
     ]
   },
   {

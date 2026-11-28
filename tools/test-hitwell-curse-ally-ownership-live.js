@@ -59,7 +59,7 @@ const driveTpl = fromFoe => `(() => {
   a0.hand.push(card);
   st.log = [];
   // 友方 a0 对友方希特威 a1 造成 5 点伤害 —— 走真实的 afterDamage 入口
-  window.HitwellSkills.afterDamage(st, a0, a1, null, 5, { damage: () => {} });
+  window.HitwellSkills.afterDamage(st, a0, a1, card, 5, { damage: () => {} });
   const got = a1.hand.find(c => c === card) || null;
   const logs = (st.log || []).map(l => typeof l === "string" ? l : (l.text || ""));
   if (got) window.BattleCards.put(b, a1, got, "discard", { skipAnim: true });

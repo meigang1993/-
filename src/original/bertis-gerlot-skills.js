@@ -6,7 +6,8 @@ window.BertisGerlotSkills = (() => {
   const allUnits = b => b?.allies.concat(b.enemies) || [];
   const intentMax = u => Math.min(99, Math.max(1, u.stats?.bloodlust || 1));
   const isKill = c => c?.type === "slash" || /杀(?:（[^）]*）)?$/.test(c?.name || "");
-  const hasTargetLine = c => isKill(c) && !c?.virtual && !c?.sweep && !c?.targetless && !c?.allTargets && !c?.aoeLineShown;
+  // 反击类统一口径：实体杀或虚拟杀（单体）才触发；战术牌/技能伤害载荷不触发。
+  const hasTargetLine = c => !!window.BattleCounterattackRules?.isSingleTriggerCard?.(c);
   const headshotCard = c => c?._entitySourceCard || c;
   const virtualCard = (name, extra = {}) => window.CardUtils.fromEntity(name, extra);
   if (!window.GerlotRevengeSkills) throw new Error("[gerlot-revenge-skills] 模块未装配：gerlot-revenge-skills.js 必须先于 bertis-gerlot-skills.js 加载");
@@ -97,7 +98,7 @@ window.BertisGerlotSkills = (() => {
     return true;
   }
   function afterDodge(state, actor, target, card, api) {
-    if (!hasTargetLine(card) || card?.revengeCounter || !alive(actor)) return;
+    if (!hasTargetLine(card) || card?.revengeCounter || card?.counterattack || !alive(actor)) return;
     const gerlot = state.battle.allies.find(u => u.ref === "gerlot" && alive(u) && hasSkill(u, "复仇反击"));
     const source = target?.ref === "bertis" ? gerlot : target;
     if (!alive(source) || !hasSkill(source, "复仇反击")) return;
@@ -107,7 +108,7 @@ window.BertisGerlotSkills = (() => {
   }
   function afterDamage(state, actor, target, card, hpLoss, api) {
     if (hpLoss && target?.ref === "bertis") window.BertisQueenSkinFX?.hit?.(state, target, actor);
-    if (!hpLoss || card?.revengeCounter || !hasTargetLine(card) || target?.ref !== "bertis" || !alive(actor)) return;
+    if (!hpLoss || card?.revengeCounter || card?.counterattack || !hasTargetLine(card) || target?.ref !== "bertis" || !alive(actor)) return;
     const gerlot = state.battle.allies.find(u => u.ref === "gerlot" && alive(u) && hasSkill(u, "复仇反击"));
     if (!gerlot) return;
     if (window.BattleCounterTriggers?.open(state, { skill: "贝尔蒂丝受伤反击", unitUid: gerlot.uid, sourceUid: actor.uid, targetUid: actor.uid, count: 2 })) return;

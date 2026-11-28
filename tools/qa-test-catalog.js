@@ -24,6 +24,10 @@ const timeouts = Object.freeze({
   "test-apollo-storage-deep-live.js": 240,
   // 阿波罗不同扣牌数：显示矩阵/真实 useCard/混合队列相对增量回归
   "test-apollo-handcount-matrix-live.js": 240,
+  // 饰品非锁定技：2 件 🔵 各真实点击跳过 + isActive=true「使用了」字幕分支
+  "test-relic-nonlocked-skip-live.js": 240,
+  // 反击类触发口径：4 类面板技能 × 5 类载荷 + 血色刺伞响应上下文
+  "test-counterattack-triggers-live.js": 240,
   // 扣置飞牌背面朝上：1/2/3 张各播一次完整 sealCards 动画
   "test-stored-card-face-live.js": 240,
   "test-nonlocked-transfer-skip-clickable-live.js": 240,
@@ -692,6 +696,10 @@ const groups = Object.freeze({
     "check-nonlocked-prompt-caption.js",
     "check-relic-skill-tags.js",
     "check-character-card-storage.js",
+    "check-relic-nonlocked-skip.js",
+    "check-counterattack-triggers.js",
+    "test-counterattack-triggers-live.js",
+    "test-relic-nonlocked-skip-live.js",
     "test-character-card-storage-live.js",
     "test-apollo-storage-deep-live.js",
     "test-apollo-handcount-matrix-live.js",

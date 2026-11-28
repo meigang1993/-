@@ -350,8 +350,12 @@ async function runEyeFeed(browser, errors, cardJson) {
     check("3.0 电钻火花已发动且为多段（非构造失效）", r3.drill > 0 && r3.seg > 1,
       `发动=${r3.drill} 段数=${r3.seg}`);
     const r3Total = r3.drill * (r3.seg || 0);
-    check("3.1 曼妮【刺刀AK47】逐段结算（每段各入队一次）", r3.opens === r3Total,
-      `入队=${r3.opens} 总段数=${r3Total}(发动${r3.drill}×每次${r3.seg})`);
+    // 306 口径：刺刀AK47 属反击类，只由【杀】触发；电钻火花的追加段是
+    // type:"skill" 的技能伤害，不再逐段反击。故入队次数应等于发动次数
+    // （每次攻击的首段实体杀），且明显小于总段数——与 1.1 / 2.2 同口径。
+    check("3.1 曼妮【刺刀AK47】只响应杀牌段（追加技能段不触发）",
+      r3.opens === r3.drill && r3.opens < r3Total,
+      `入队=${r3.opens} 发动=${r3.drill} 总段数=${r3Total}(发动${r3.drill}×每次${r3.seg})`);
 
     // ---------- 场景4：卡洛斯【疯狂刺刀】多段 × 凋零者【外神之眼】 ----------
     const r4 = await runEyeCase(browser, errors, true);

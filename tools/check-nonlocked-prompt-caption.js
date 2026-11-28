@@ -195,7 +195,9 @@ function sandbox() {
     queueMicrotask: fn => { try { fn(); } catch (e) { /* 同步兜底 */ } },
     GameRandom: { id: () => "cap1" },
     render: () => {},
-    RelicSystem: { isKnown: n => relicNames.includes(n), isActive: () => false },
+    // isActive=true 让 showRelicCaption 走「使用了」字幕分支（306 轮补齐覆盖面）：
+    // 此前写死 false 只测到「触发了」，主动技饰品/「你使用了」字幕从未被验证。
+    RelicSystem: { isKnown: n => relicNames.includes(n), isActive: () => true },
     BattleSpeechController: () => ({
       showSkillPages: (st, items) => { st.__speech = items.map(x => x.text); },
       show() {}, showMany() {}, showPages() {}, cancel() {}, dismiss() {},
@@ -259,6 +261,31 @@ try {
     (st2.battle.skillCaptions || []).some(c => c.text.includes("发动了 次元转移"))
     && st2.battleLog.some(t => t.includes("发动技能【次元转移】"))
     && Array.isArray(st2.__speech), { caps: st2.battle.skillCaptions, log: st2.battleLog });
+  // B4（306 轮新增）：isActive=true 时字幕文案为「使用了」，守门必须同样拦住
+  // 所有「不发动」日志；真触发才允许出现「使用了 XX」。
+  const notLaunch = [
+    "曼妮 的霹雳之锤可发动：选择一张手牌弃置。",
+    "曼妮 可以发动血色刺伞。",
+    "曼妮 放弃发动霹雳之锤。",
+    "曼妮跳过血色刺伞。",
+    "曼妮 发动鬼王扑克失败：请选择一张非战术牌。",
+  ];
+  const capOf = st => (st.battle.relicCaptions || []).map(c => c.text)
+    .concat((st.battle.skillCaptions || []).map(c => c.text));
+  const usedBad = [];
+  for (const text of notLaunch) {
+    const { st: s } = stateOf(ctx);
+    ctx.BattleLog.add(s, text);
+    if (capOf(s).some(t => /使用了|触发了|发动了/.test(t)) || s.__speech) {
+      usedBad.push({ text, caps: capOf(s), speech: s.__speech });
+    }
+  }
+  check("B4", "vm isActive=true（字幕为「使用了」）：5 类「不发动」日志仍 0 字幕、0 台词",
+    usedBad.length === 0, usedBad.slice(0, 3));
+  const { st: st3 } = stateOf(ctx);
+  ctx.BattleLog.add(st3, "曼妮 的霹雳之锤触发，该杀强制造成伤害。");
+  check("B5", "vm isActive=true 正向：真发动仍显示「曼妮 使用了 霹雳之锤」字幕",
+    capOf(st3).some(t => t.includes("使用了") && t.includes("霹雳之锤")), capOf(st3));
 } catch (e) {
   check("B0", "vm 装配未抛异常", false, { error: String(e).slice(0, 220) });
 }

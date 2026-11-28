@@ -278,7 +278,7 @@ const selfDamageTpl = `(() => {
     t.hp = 30; t.maxHp = 34; t.stats = { attack: 3, magic: 3, speed: 4 };
     src.hp = 60; src.maxHp = 100;
     src.hand = [{ name: "来源手牌", type: "slash", suit: "♥" }];
-    window.HitwellSkills.afterDamage(st, src, t, { name: "攻击" }, 4,
+    window.HitwellSkills.afterDamage(st, src, t, { name: "攻击", type: "slash" }, 4,
       { damage: () => {}, directDamage: () => {} });
   })()`);
   await page.waitForTimeout(250);
@@ -395,7 +395,7 @@ const selfDamageTpl = `(() => {
   await page2.evaluate(`(() => {
     const st = window.state;
     const c = st.chars.find(x => x.id === "hitwell");
-    if (c) { c.locked = false; c.level = 20; }
+    if (c) { c.locked = false; c.level = 70; }
     window.render();
   })()`);
   await page2.locator("[data-open-butler]").click();

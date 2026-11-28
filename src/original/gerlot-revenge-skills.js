@@ -12,14 +12,14 @@ window.GerlotRevengeSkills = ({ stat, virtualCard, alive, line, isKill, headshot
     for (let i = 0; i < times; i += 1) {
       const action = window.BattleReactionQueue?.damageAction?.(
         source, target, amount, "复仇反击",
-        virtualCard("杀（普攻）", { revengeCounter: true }));
+        virtualCard("杀（普攻）", { revengeCounter: true, counterattack: true }));
       if (action) actions.push(action);
     }
     if (actions.length && window.BattleReactionQueue?.enqueue?.(state, actions)) {
       window.BattleReactionQueue.flush(state, api.damage);
       return;
     }
-    for (let i = 0; i < times && alive(source) && alive(target); i++) api.damage(state, target, amount, "复仇反击", source, virtualCard("杀（普攻）", { revengeCounter: true }));
+    for (let i = 0; i < times && alive(source) && alive(target); i++) api.damage(state, target, amount, "复仇反击", source, virtualCard("杀（普攻）", { revengeCounter: true, counterattack: true }));
   }
   function resolveRevengeTrigger(state, source, target, times, api, skill = "复仇反击") {
     line(state, source, skill, target);

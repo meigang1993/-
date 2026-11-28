@@ -144,7 +144,7 @@ function runSakuraRisaAdvancedContracts(context) {
   const guard = unit({ uid: "guard", id: "guard", ref: "guard", ai: "ally", side: "ally", hand: [] });
   const umbrellaEnemy = unit({ uid: "umbrella-enemy", side: "enemy" });
   const guardState = { battle: { allies: [ophelia, guard], enemies: [umbrellaEnemy], animQueue: [], locked: false } };
-  const opheliaGuard = GuestOpheliaGuard({ alive: owner => owner?.hp > 0, visible: owner => owner.hand, isSlash: card => card?.type === "slash", line() {} });
+  const opheliaGuard = GuestOpheliaGuard({ alive: owner => owner?.hp > 0, visible: owner => owner.hand, isSlash: card => card?.type === "slash", isSingleKill: card => window.CardUtils.isSingleKill(card), line() {} });
   const guardResult = opheliaGuard.guardOphelia(guardState, umbrellaEnemy, ophelia, 5, "血色刺伞", { type: "slash", forceAutoResponse: true, ignoreResponse: true }, { canDodge: () => false, draw() {}, hitWithoutDodge: () => ({ hpLoss: 5 }) });
   assert(guardResult?.hpLoss === 5 && !guardState.battle.locked && !guardState.battle.opheliaGuard, "Forced umbrella responses must resolve Ophelia guard automatically");
 

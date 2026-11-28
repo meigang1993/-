@@ -223,6 +223,7 @@
     "battle-damage-utils.js",
     "battle-reaction-queue-store.js",
     "battle-reaction-queue-run.js",
+    "battle-counterattack-rules.js",
     "battle-reaction-queue.js",
     "battle-damage-triggers.js",
     "battle-thunder-hammer-response.js",
